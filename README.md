@@ -16,7 +16,7 @@ oops-framework-plugin 是基于 Cocos Creator 3.x 以插件形式使用的游戏
 #### 使用说明
 ###### windows
 ```
-rm extensions
+md extensions
 cd extensions
 git clone -b master https://gitee.com/dgflash/oops-plugin-framework.git
 git pull
