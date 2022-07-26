@@ -1,11 +1,5 @@
-<!--
- * @Author: dgflash
- * @Date: 2022-07-25 18:16:13
- * @LastEditors: dgflash
- * @LastEditTime: 2022-07-25 18:26:58
--->
 #### 介绍
-oops-framework-plugin 是基于 Cocos Creator 3.x 以插件形式使用的游戏框架，此版本框架代码与游戏具体业务逻辑代码分离，方便在项目开发过程随时更新框架最新版本代码。
+oops-plugin-framework 是基于 Cocos Creator 3.x 以插件形式使用的游戏框架，此版本框架代码与游戏具体业务逻辑代码分离，方便在项目开发过程随时更新框架最新版本代码。
 
 #### 技术文档
 - [oops-framework update](https://gitee.com/dgflash/oops-framework/tree/master/doc/using.md)
