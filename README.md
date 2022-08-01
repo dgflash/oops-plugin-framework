@@ -16,5 +16,13 @@ git clone -b master https://gitee.com/dgflash/oops-plugin-framework.git
 git pull
 ```
 
+###### mac
+```
+mkdir -p extensions
+cd extensions
+git clone -b master https://gitee.com/dgflash/oops-plugin-framework.git
+git pull
+```
+
 #### 学习交流 QQ 群：798575969
 ![](http://dgflash.gitee.io/oops-full-stack-web/doc/img/qq.png)
