@@ -98,8 +98,7 @@ export default class BhvButtonGroup extends Component {
             // comp.pressedColor = this.pressedColor;
             // comp.disabledColor = this.disabledColor;
 
-            //绑定回调事件
-
+            // 绑定回调事件
             this.touchEvents.forEach((event) => {
                 // 克隆数据，每个节点获取的都是不同的回调
                 let hd = new EventHandler();//copy对象

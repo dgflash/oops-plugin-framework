@@ -34,7 +34,9 @@ export module ecs {
 
     export interface CompCtor<T> {
         new(): T;
+        /** 组件编号 */
         tid: number;
+        /** 组件名 */
         compName: string;
     }
 
@@ -73,38 +75,59 @@ export module ecs {
 
     /**
      * 注册组件到ecs系统中
-     * @param compName 由于js打包会改变类名，所以这里必须手动传入组件的名称。
+     * @param name   由于js打包会改变类名，所以这里必须手动传入组件的名称
      * @param canNew 标识是否可以new对象。想继承自Cocos Creator的组件就不能去new，需要写成@ecs.register('name', false)
+     * @example 
+     * 实体注册 ecs.register('name')
+     * 组件注册 ecs.register('name')
+     * 组件注册之继承cc.Component特性 ecs.register('name', false)
      */
-    export function register<T>(compName: string, canNew: boolean = true) {
-        return function (ctor: CompCtor<T>) {
-            if (ctor.tid === -1) {
-                ctor.tid = ECSModel.compTid++;
-                ctor.compName = compName;
-                if (canNew) {
-                    ECSModel.compCtors.push(ctor);
-                    ECSModel.compPools.set(ctor.tid, []);
+    export function register<T>(name: string, canNew: boolean = true) {
+        return function (ctor: any) {
+            // 注册实体
+            if (ctor.tid == undefined) {
+                ECSModel.entityCtors.set(ctor as EntityCtor<T>, name);
+            }
+            // 注册组件
+            else {
+                if (ctor.tid === -1) {
+                    ctor.tid = ECSModel.compTid++;
+                    ctor.compName = name;
+                    if (canNew) {
+                        ECSModel.compCtors.push(ctor);
+                        ECSModel.compPools.set(ctor.tid, []);
+                    }
+                    else {
+                        ECSModel.compCtors.push(null!);
+                    }
+                    ECSModel.compAddOrRemove.set(ctor.tid, []);
                 }
                 else {
-                    ECSModel.compCtors.push(null!);
+                    throw new Error(`重复注册组件： ${name}.`);
                 }
-                ECSModel.compAddOrRemove.set(ctor.tid, []);
-            }
-            else {
-                throw new Error(`重复注册组件： ${compName}.`);
             }
         }
     }
 
     /** 扩展：获取带 eid 自增量的实体（继承Entity方式的编码风格，可减少一定代码量） */
     export function getEntity<T extends Entity>(ctor: EntityCtor<T>): T {
-        var entitys = ECSModel.entityPool.get(ctor.name) || [];
-        let entity: any = entitys.pop();
+        // 获取实体对象名
+        var entityName = ECSModel.entityCtors.get(ctor);
+        if (entityName == undefined)
+            console.error(`${ctor.name} 实体没有注册`);
+
+        // 获取实体对象池
+        var entitys = ECSModel.entityPool.get(entityName!) || [];
+        var entity: any = entitys.pop();
+
+        // 缓存中没有同类实体，则创建一个新的
         if (!entity) {
             entity = new ctor();
-            entity.eid = ECSModel.eid++; // 实体id也是有限的资源
+            entity.eid = ECSModel.eid++;        // 实体唯一编号
+            entity.name = entityName;
         }
 
+        // 触发实体初始化逻辑
         if (entity.init)
             entity.init();
         else

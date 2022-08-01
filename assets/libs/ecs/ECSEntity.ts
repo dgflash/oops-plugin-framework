@@ -42,10 +42,10 @@ function createComp<T extends ecs.IComp>(ctor: ecs.CompCtor<T>): T {
  */
 function destroyEntity(entity: ECSEntity) {
     if (ECSModel.eid2Entity.has(entity.eid)) {
-        var entitys = ECSModel.entityPool.get(entity.constructor.name);
+        var entitys = ECSModel.entityPool.get(entity.name);
         if (entitys == null) {
             entitys = [];
-            ECSModel.entityPool.set(entity.constructor.name, entitys);
+            ECSModel.entityPool.set(entity.name, entitys);
         }
         entitys.push(entity);
         ECSModel.eid2Entity.delete(entity.eid);
@@ -60,6 +60,8 @@ function destroyEntity(entity: ECSEntity) {
 export class ECSEntity {
     /** 实体唯一标识，不要手动修改 */
     eid: number = -1;
+    /** 实体对象名 */
+    name: string = "";
     /** 组件过滤数据 */
     private mask = new ECSMask();
     /** 当前实体身上附加的组件构造函数 */

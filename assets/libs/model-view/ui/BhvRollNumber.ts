@@ -1,4 +1,4 @@
-import { Component, Enum, Label, lerp, misc, _decorator } from "cc";
+import { Component, Enum, Label, lerp, _decorator } from "cc";
 
 const { ccclass, property, menu } = _decorator;
 
@@ -16,6 +16,8 @@ enum VALUE_TYPE {
     /** 自定义模式 (通过传入的函数,进行自定义) */
     CUSTOMER
 }
+
+type CustomCallback = (curValue: number, targetValue: number) => string;
 
 /**
  * [滚动数字] ver 0.5.0
@@ -82,7 +84,7 @@ export default class BhvRollNumber extends Component {
     private valueType: VALUE_TYPE = VALUE_TYPE.INTEGER;
 
     /** 自定义string 处理函数 */
-    private _custom_callback: (curValue: number, targetValue: number) => string = null;
+    private _custom_callback: CustomCallback | null = null;
 
     private isScrolling: boolean = false;
 
@@ -96,7 +98,6 @@ export default class BhvRollNumber extends Component {
             this.scroll();
         }
     }
-
 
     /** 开始滚动数字 */
     scroll() {
@@ -169,9 +170,9 @@ export default class BhvRollNumber extends Component {
                     string = Math.round(value).toString();
                 }
                 break;
-            case VALUE_TYPE.CUSTOMER: //自定义设置模式 (通过给定的自定义函数..处理)
+            case VALUE_TYPE.CUSTOMER: // 自定义设置模式 (通过给定的自定义函数..处理)
                 if (this._custom_callback) {
-                    string = this._custom_callback(this.value, this.targetValue)
+                    string = this._custom_callback(this.value, this.targetValue);
                 }
                 break;
             default:
