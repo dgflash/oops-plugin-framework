@@ -8,6 +8,8 @@
   ],
   "subMetas": {},
   "userData": {
-    "isPlugin": true
+    "isPlugin": true,
+    "loadPluginInWeb": true,
+    "loadPluginInNative": true
   }
 }
