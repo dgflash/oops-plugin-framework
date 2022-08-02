@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-05-12 12:00:29
+ * @LastEditTime: 2022-08-02 09:58:15
  */
 import { Component, director, game, Game, log, Node, view, _decorator } from "cc";
 import { AudioManager } from "./common/audio/AudioManager";
@@ -13,7 +13,7 @@ import { GameManager } from "./game/GameManager";
 import { GUI } from "./gui/GUI";
 import { LanguageManager } from "./gui/language/Language";
 import { LayerManager } from "./gui/layer/LayerManager";
-import { HttpRequest } from "../libs/network/HttpRequest"; 
+import { HttpRequest } from "../libs/network/HttpRequest";
 import { oops, version } from "./Oops";
 
 const { ccclass, property } = _decorator;
@@ -32,7 +32,7 @@ export class Root extends Component {
     gui: Node | null = null;
 
     onLoad() {
-        console.log(`oops-framework version:${version}`);
+        console.log(`Oops Framework v${version}`);
 
         this.init();
     }
