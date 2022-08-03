@@ -5,8 +5,8 @@
  * @LastEditTime: 2022-07-21 16:08:59
  */
 import { director, error, JsonAsset, warn } from "cc";
-import { resLoader } from "../../common/loader/ResLoader";
-import { Logger } from "../../common/log/Logger";
+import { resLoader } from "../../../core/common/loader/ResLoader";
+import { Logger } from "../../../core/common/log/Logger";
 import { LanguageData } from "./LanguageData";
 import { LanguageLabel } from "./LanguageLabel";
 import { LanguageSprite } from "./LanguageSprite";

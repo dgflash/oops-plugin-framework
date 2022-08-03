@@ -2,11 +2,11 @@
  * @Author: dgflash
  * @Date: 2021-11-24 15:51:01
  * @LastEditors: dgflash
- * @LastEditTime: 2022-07-21 16:08:10
+ * @LastEditTime: 2022-08-03 15:24:51
  */
 import { CCString, Component, Size, Sprite, SpriteFrame, UITransform, _decorator } from "cc";
 import { EDITOR } from "cc/env";
-import { resLoader } from "../../common/loader/ResLoader";
+import { resLoader } from "../../../core/common/loader/ResLoader";
 import { LanguageData } from "./LanguageData";
 
 const { ccclass, property, menu } = _decorator;

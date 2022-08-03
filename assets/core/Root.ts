@@ -11,7 +11,7 @@ import { Message } from "./common/event/MessageManager";
 import { TimerManager } from "./common/manager/TimerManager";
 import { GameManager } from "./game/GameManager";
 import { GUI } from "./gui/GUI";
-import { LanguageManager } from "./gui/language/Language";
+import { LanguageManager } from "../libs/gui/language/Language";
 import { LayerManager } from "./gui/layer/LayerManager";
 import { HttpRequest } from "../libs/network/HttpRequest";
 import { oops, version } from "./Oops";

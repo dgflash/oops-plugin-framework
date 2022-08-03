@@ -1,6 +1,6 @@
 import { Label, _decorator } from "cc";
 import { EDITOR } from "cc/env";
-import { oops } from "../../Oops";
+import { oops } from "../../../core/Oops";
 
 const { ccclass, property, menu } = _decorator;
 

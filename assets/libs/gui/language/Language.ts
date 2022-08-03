@@ -1,6 +1,6 @@
 import { error, warn } from "cc";
-import { EventDispatcher } from "../../common/event/EventDispatcher";
-import { Logger } from "../../common/log/Logger";
+import { EventDispatcher } from "../../../core/common/event/EventDispatcher";
+import { Logger } from "../../../core/common/log/Logger";
 import { LanguageData } from "./LanguageData";
 import { LanguagePack } from "./LanguagePack";
 

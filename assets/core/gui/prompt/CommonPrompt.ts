@@ -1,6 +1,6 @@
 import { Component, EventTouch, _decorator } from "cc";
 import { oops } from "../../Oops";
-import { LanguageLabel } from "../language/LanguageLabel";
+import { LanguageLabel } from "../../../libs/gui/language/LanguageLabel";
 
 const { ccclass, property, menu } = _decorator;
 

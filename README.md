@@ -1,3 +1,9 @@
+<!--
+ * @Author: dgflash
+ * @Date: 2022-07-26 15:29:57
+ * @LastEditors: dgflash
+ * @LastEditTime: 2022-08-03 15:44:42
+-->
 #### 介绍
 oops-plugin-framework 是基于 Cocos Creator 3.x 以插件形式使用的游戏框架，此版本框架代码与游戏具体业务逻辑代码分离，方便在项目开发过程随时更新框架最新版本代码。
 
@@ -31,14 +37,16 @@ git pull
 ```
 core - 框加核心技术库
     common  - 游戏公共模块
-    game    - 游戏世界类(三维)
-    gui     - 游戏界面类(二维)
-        badge    - 红点提示组件
-        button   - 按钮组件
-        label    - 标签组件
-        language - 多语言组件
+        audio    - 音频模块
+        event    - 全局事件
+        loader   - 加载模块
+        log      - 日志模块
+        manager  - 时间管理、随机管理
+        storage  - 本地存储
+    game    - 游戏世界类
+    gui     - 游戏界面类
         layer    - 多层界面、窗口管理
-        prompt   - 公共提示窗口组件
+        prompt   - 公共提示窗口
     utils   - 游戏各类工具库
     Oops.ts - 框架功能访问接口
     Root.ts - 框架视图层根节点管理组件
@@ -50,6 +58,11 @@ libs - 框架中可选技术库
     camera          - 三维摄像机控制组件
     collection      - 数据集合处理
     ecs             - ECS框架
+    gui             - 界面组件
+        badge          - 红点提示组件
+        button         - 按钮组件
+        label          - 标签组件
+        language       - 多语言组件
     model-view      - MVVM框架
     network         - 网络模块
     render-texture  - 渲染纹理组件
