@@ -1,9 +1,3 @@
-<!--
- * @Author: dgflash
- * @Date: 2022-07-26 15:29:57
- * @LastEditors: dgflash
- * @LastEditTime: 2022-08-03 15:44:42
--->
 #### 介绍
 oops-plugin-framework 是基于 Cocos Creator 3.x 以插件形式使用的游戏框架，此版本框架代码与游戏具体业务逻辑代码分离，方便在项目开发过程随时更新框架最新版本代码。
 
@@ -14,6 +8,7 @@ oops-plugin-framework 是基于 Cocos Creator 3.x 以插件形式使用的游戏
 - [mvvm](https://gitee.com/dgflash/oops-framework/tree/master/doc/mvvm)
 
 #### 使用说明
+#### 第一次安装框架插件
 ###### windows
 ```
 md extensions
@@ -28,6 +23,11 @@ mkdir -p extensions
 cd extensions
 git clone -b master https://gitee.com/dgflash/oops-plugin-framework.git
 git pull
+```
+
+#### 后续更新框架插件新版本
+```
+git pull        // 对插件目录执行下列命令
 ```
 
 #### 学习交流 QQ 群：798575969
