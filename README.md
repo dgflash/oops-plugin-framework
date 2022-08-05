@@ -35,36 +35,36 @@ git pull        // 对插件目录执行下列命令
 
 ### 框架目录结构
 ```
-core - 框加核心技术库
-    common  - 游戏公共模块
-        audio    - 音频模块
-        event    - 全局事件
-        loader   - 加载模块
-        log      - 日志模块
-        manager  - 时间管理、随机管理
-        storage  - 本地存储
-    game    - 游戏世界类
-    gui     - 游戏界面类
-        layer    - 多层界面、窗口管理
-        prompt   - 公共提示窗口
-    utils   - 游戏各类工具库
-    Oops.ts - 框架功能访问接口
-    Root.ts - 框架视图层根节点管理组件
-libs - 框架中可选技术库
-    animator        - 动画状态机
-    animator-effect - 动画特效组件
-    animator-move   - 动画移动组件
-    behavior-tree   - 行为树框架
-    camera          - 三维摄像机控制组件
-    collection      - 数据集合处理
-    ecs             - ECS框架
-    gui             - 界面组件
-        badge          - 红点提示组件
-        button         - 按钮组件
-        label          - 标签组件
-        language       - 多语言组件
-    model-view      - MVVM框架
-    network         - 网络模块
-    render-texture  - 渲染纹理组件
-    security        - 安全组件
+core               - 框加核心技术库
+    common             - 游戏公共模块
+        audio              - 音频模块
+        event              - 全局事件
+        loader             - 加载模块
+        log                - 日志模块
+        manager            - 时间管理、随机管理
+        storage            - 本地存储
+    game               - 游戏世界类
+    gui                - 游戏界面类
+        layer              - 多层界面、窗口管理
+        prompt             - 公共提示窗口
+    utils              - 游戏各类工具库
+    Oops.ts            - 框架功能访问接口
+    Root.ts            - 框架视图层根节点管理组件
+libs               - 框架中可选技术库
+    animator           - 动画状态机
+    animator-effect    - 动画特效组件
+    animator-move      - 动画移动组件
+    behavior-tree      - 行为树框架
+    camera             - 三维摄像机控制组件
+    collection         - 数据集合处理
+    ecs                - ECS框架
+    gui                - 界面组件
+        badge              - 红点提示组件
+        button             - 按钮组件
+        label              - 标签组件
+        language           - 多语言组件
+    model-view         - MVVM框架
+    network            - 网络模块
+    render-texture     - 渲染纹理组件
+    security           - 安全组件
 ```
