@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2021-08-11 16:41:12
  * @LastEditors: dgflash
- * @LastEditTime: 2022-07-25 11:51:15
+ * @LastEditTime: 2022-08-05 09:39:40
  */
 
 import { Component, _decorator } from 'cc';
@@ -19,7 +19,7 @@ export class EffectDelayRelease extends Component {
     @property
     public delay: number = 1;
 
-    start() {
+    protected onEnable() {
         this.scheduleOnce(this.onDelay, this.delay);
     }
 
