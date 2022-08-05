@@ -2,18 +2,20 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-02 09:58:15
+ * @LastEditTime: 2022-08-05 17:20:11
  */
 import { Component, director, game, Game, log, Node, view, _decorator } from "cc";
+import { ecs } from "../libs/ecs/ECS";
+import { LanguageManager } from "../libs/gui/language/Language";
+import { HttpRequest } from "../libs/network/HttpRequest";
+import { config } from "../module/config/Config";
 import { AudioManager } from "./common/audio/AudioManager";
 import { EventMessage } from "./common/event/EventMessage";
 import { Message } from "./common/event/MessageManager";
 import { TimerManager } from "./common/manager/TimerManager";
 import { GameManager } from "./game/GameManager";
 import { GUI } from "./gui/GUI";
-import { LanguageManager } from "../libs/gui/language/Language";
 import { LayerManager } from "./gui/layer/LayerManager";
-import { HttpRequest } from "../libs/network/HttpRequest";
 import { oops, version } from "./Oops";
 
 const { ccclass, property } = _decorator;
@@ -35,6 +37,26 @@ export class Root extends Component {
         console.log(`Oops Framework v${version}`);
 
         this.init();
+        config.init(this.run.bind(this));
+    }
+
+    update(dt: number) {
+        oops.ecs.execute(dt);
+    }
+
+    /** 初始化游戏界面 */
+    protected initGui() {
+
+    }
+
+    /** 初始化游戏业务模块 */
+    protected initEcsSystem() {
+
+    }
+
+    /** 加载完引擎配置文件后执行 */
+    protected run() {
+
     }
 
     protected init() {
@@ -42,8 +64,12 @@ export class Root extends Component {
         oops.timer = new TimerManager(this);
         oops.audio = AudioManager.instance;
         oops.http = new HttpRequest();
-        oops.gui = new LayerManager(this.gui!);
         oops.game = new GameManager(this.game!);
+        oops.gui = new LayerManager(this.gui!);
+        this.initGui();
+        oops.ecs = new ecs.RootSystem();
+        this.initEcsSystem();
+        oops.ecs.init();
 
         // 游戏显示事件
         game.on(Game.EVENT_SHOW, () => {

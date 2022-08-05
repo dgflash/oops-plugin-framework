@@ -62,7 +62,7 @@ export class LayerManager {
     private configs: { [key: number]: UIConfig } = {};
 
     /** 是否为竖屏显示 */
-    public get portrait() {
+    get portrait() {
         return this.root.getComponent(GUI)!.portrait;
     }
 
@@ -70,7 +70,7 @@ export class LayerManager {
      * 初始化所有UI的配置对象
      * @param configs 配置对象
      */
-    public init(configs: { [key: number]: UIConfig }): void {
+    init(configs: { [key: number]: UIConfig }): void {
         this.configs = configs;
     }
 
@@ -79,7 +79,7 @@ export class LayerManager {
      * @param content 文本表示
      * @param useI18n 是否使用多语言
      */
-    public toast(content: string, useI18n: boolean = false) {
+    toast(content: string, useI18n: boolean = false) {
         this.notify.show(content, useI18n)
     }
 
@@ -88,12 +88,12 @@ export class LayerManager {
      * @param uiId   要设置的界面id
      * @param config 要设置的配置
      */
-    public setConfig(uiId: number, config: UIConfig): void {
+    setConfig(uiId: number, config: UIConfig): void {
         this.configs[uiId] = config;
     }
 
     /** 设置界面地图配置 */
-    public setUIMap(data: any) {
+    setUIMap(data: any) {
         if (this.uiMap == null) {
             this.uiMap = new UIMap();
         }
@@ -107,7 +107,7 @@ export class LayerManager {
      * @param callbacks     回调对象
      * @returns 
      */
-    public open(uiId: number, uiArgs: any = null, callbacks?: UICallbacks): void {
+    open(uiId: number, uiArgs: any = null, callbacks?: UICallbacks): void {
         var config = this.configs[uiId];
         if (config == null) {
             warn(`打开编号为【${uiId}】的界面失败，配置信息不存在`);
@@ -136,7 +136,7 @@ export class LayerManager {
      * @param uiArgs        窗口参数
      * @returns 
      */
-    public async openAsync(uiId: number, uiArgs: any = null): Promise<Node | null> {
+    async openAsync(uiId: number, uiArgs: any = null): Promise<Node | null> {
         return new Promise<Node | null>((resolve, reject) => {
             var callbacks: UICallbacks = {
                 onAdded: (node: Node, params: any) => {
@@ -148,7 +148,7 @@ export class LayerManager {
     }
 
     /** 缓存中是否存在指定标识的窗口 */
-    public has(uiId: number) {
+    has(uiId: number) {
         var config = this.configs[uiId];
         if (config == null) {
             warn(`编号为【${uiId}】的界面失败，配置信息不存在`);
@@ -173,7 +173,7 @@ export class LayerManager {
         return result;
     }
 
-    public remove(uiId: number, isDestroy = true) {
+    remove(uiId: number, isDestroy = true) {
         var config = this.configs[uiId];
         if (config == null) {
             warn(`删除编号为【${uiId}】的界面失败，配置信息不存在`);
@@ -197,7 +197,7 @@ export class LayerManager {
     }
 
     /** 删除一个通过this框架添加进来的节点 */
-    public removeByNode(node: Node, isDestroy: boolean = false) {
+    removeByNode(node: Node, isDestroy: boolean = false) {
         if (node instanceof Node) {
             let comp = node.getComponent(DelegateComponent);
             if (comp && comp.viewParams) {
@@ -213,14 +213,14 @@ export class LayerManager {
     }
 
     /** 清除所有窗口 */
-    public clear(isDestroy: boolean = false) {
+    clear(isDestroy: boolean = false) {
         this.ui.clear(isDestroy);
         this.popup.clear(isDestroy);
         this.dialog.clear(isDestroy);
         this.alert.clear(isDestroy);
     }
 
-    public constructor(root: Node) {
+    constructor(root: Node) {
         this.root = root;
         this.camera = this.root.getComponentInChildren(Camera)!;
 
