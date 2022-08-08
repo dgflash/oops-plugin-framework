@@ -224,7 +224,7 @@ export class ECSEntity {
         if (this.mask.has(componentTypeId)) {
             hasComp = true;
             //@ts-ignore
-            let comp = this[ctor.compName] as IECSComp;
+            let comp = this[ctor.compName];
             //@ts-ignore
             comp.ent = null;
             if (isRecycle) {
