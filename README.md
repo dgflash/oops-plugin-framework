@@ -1,3 +1,9 @@
+<!--
+ * @Author: dgflash
+ * @Date: 2022-08-03 10:30:57
+ * @LastEditors: dgflash
+ * @LastEditTime: 2022-08-08 10:00:46
+-->
 #### 介绍
 oops-plugin-framework 是基于 Cocos Creator 3.x 以插件形式使用的游戏框架，此版本框架代码与游戏具体业务逻辑代码分离，方便在项目开发过程随时更新框架最新版本代码。
 
@@ -67,4 +73,7 @@ libs               - 框架中可选技术库
     network            - 网络模块
     render-texture     - 渲染纹理组件
     security           - 安全组件
+module             - 游戏通用模块
+    common             - 公共模块
+    config             - 配置模块
 ```
