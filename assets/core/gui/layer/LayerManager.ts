@@ -18,9 +18,9 @@ export enum LayerType {
     PopUp = "LayerPopUp",
     /** 模式窗口层 */
     Dialog = "LayerDialog",
-    /** 弹窗层 */
-    Alert = "LayerAlert",
-    /** 通知信息层 */
+    /** 系统触发模式窗口层 */
+    System = "LayerSystem",
+    /** 滚动消息提示层 */
     Notify = "LayerNotify",
     /** 新手引导层 */
     Guide = "LayerGuide"
@@ -54,8 +54,8 @@ export class LayerManager {
     private popup!: LayerPopUp;
     /** 只能弹出一个的弹窗 */
     private dialog!: LayerDialog;
-    /** 游戏系统提示弹窗（优先显示） */
-    private alert!: LayerDialog;
+    /** 游戏系统提示弹窗  */
+    private system!: LayerDialog;
     /** 消息提示控制器，请使用show方法来显示 */
     private notify!: LayerNotify;
     /** UI配置 */
@@ -124,8 +124,8 @@ export class LayerManager {
             case LayerType.Dialog:
                 this.dialog.add(config, uiArgs, callbacks);
                 break;
-            case LayerType.Alert:
-                this.alert.add(config, uiArgs, callbacks);
+            case LayerType.System:
+                this.system.add(config, uiArgs, callbacks);
                 break;
         }
     }
@@ -166,8 +166,8 @@ export class LayerManager {
             case LayerType.Dialog:
                 result = this.dialog.has(config.prefab);
                 break;
-            case LayerType.Alert:
-                result = this.alert.has(config.prefab);
+            case LayerType.System:
+                result = this.system.has(config.prefab);
                 break;
         }
         return result;
@@ -190,8 +190,8 @@ export class LayerManager {
             case LayerType.Dialog:
                 this.dialog.remove(config.prefab, isDestroy);
                 break;
-            case LayerType.Alert:
-                this.alert.remove(config.prefab, isDestroy);
+            case LayerType.System:
+                this.system.remove(config.prefab, isDestroy);
                 break;
         }
     }
@@ -217,7 +217,7 @@ export class LayerManager {
         this.ui.clear(isDestroy);
         this.popup.clear(isDestroy);
         this.dialog.clear(isDestroy);
-        this.alert.clear(isDestroy);
+        this.system.clear(isDestroy);
     }
 
     constructor(root: Node) {
@@ -229,7 +229,7 @@ export class LayerManager {
         this.ui = new LayerUI(LayerType.UI);
         this.popup = new LayerPopUp(LayerType.PopUp);
         this.dialog = new LayerDialog(LayerType.Dialog);
-        this.alert = new LayerDialog(LayerType.Alert);
+        this.system = new LayerDialog(LayerType.System);
         this.notify = new LayerNotify(LayerType.Notify);
 
         this.guide = this.create_node(LayerType.Guide);
@@ -238,7 +238,7 @@ export class LayerManager {
         root.addChild(this.ui);
         root.addChild(this.popup);
         root.addChild(this.dialog);
-        root.addChild(this.alert);
+        root.addChild(this.system);
         root.addChild(this.notify);
         root.addChild(this.guide);
     }

@@ -8,7 +8,7 @@ import { Notify } from "../prompt/Notify";
 const ToastPrefabPath: string = 'common/prefab/notify';
 
 /*
- * 消息提示层
+ * 滚动消息提示层
  * 1、直接调用 show 方法来显示提示
  */
 export class LayerNotify extends LayerUI {
