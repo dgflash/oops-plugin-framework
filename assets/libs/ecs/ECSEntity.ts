@@ -251,10 +251,14 @@ export class ECSEntity {
         this.remove(comp, false);
     }
 
-    /**
-     * 销毁实体，实体会被回收到实体缓存池中。
-     */
+    /** 销毁实体，实体会被回收到实体缓存池中 */
     destroy() {
+        if (this._children) {
+            this._children.forEach(e => {
+                e.destroy();
+            });
+        }
+
         this.compTid2Ctor.forEach(this._remove, this);
         destroyEntity(this);
         this.compTid2Obj.clear();
