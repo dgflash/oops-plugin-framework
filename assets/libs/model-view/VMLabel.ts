@@ -33,14 +33,20 @@ export default class VMLabel extends VMBase {
     private labelType: string = LABEL_TYPE.CC_LABEL;
 
     @property({
-        visible: function () { return this.templateMode === false; }
+        visible: function () {
+            // @ts-ignore
+            return this.templateMode === false;
+        }
     })
     watchPath: string = "";
 
     // 按照匹配参数顺序保存的 path 数组 （固定）
     @property({
         type: [CCString],
-        visible: function () { return this.templateMode === true }
+        visible: function () {
+            // @ts-ignore
+            return this.templateMode === true;
+        }
     })
     protected watchPathArr: string[] = [];
 

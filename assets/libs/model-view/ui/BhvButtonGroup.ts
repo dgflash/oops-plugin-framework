@@ -19,46 +19,88 @@ export default class BhvButtonGroup extends Component {
     })
     transition: number = Button.Transition.NONE;
 
-    @property({ visible: function () { return this.transition === Button.Transition.COLOR } })
+    @property({
+        visible: function () {
+            // @ts-ignore
+            return this.transition === Button.Transition.COLOR
+        }
+    })
     hoverColor: Color = color(255, 255, 255);
 
-    @property({ visible: function () { return this.transition === Button.Transition.COLOR } })
+    @property({
+        visible: function () {
+            // @ts-ignore
+            return this.transition === Button.Transition.COLOR
+        }
+    })
     normalColor: Color = color(214, 214, 214);
 
-    @property({ visible: function () { return this.transition === Button.Transition.COLOR } })
+    @property({
+        visible: function () {
+            // @ts-ignore
+            return this.transition === Button.Transition.COLOR;
+        }
+    })
     pressedColor: Color = color(211, 211, 211);
 
-    @property({ visible: function () { return this.transition === Button.Transition.COLOR } })
+    @property({
+        visible: function () {
+            // @ts-ignore
+            return this.transition === Button.Transition.COLOR;
+        }
+    })
     disabledColor: Color = color(124, 124, 124);
 
     @property({
         type: SpriteFrame,
-        visible: function () { return this.transition === Button.Transition.SPRITE }
+        visible: function () {
+            // @ts-ignore
+            return this.transition === Button.Transition.SPRITE;
+        }
     })
     normalSprite: SpriteFrame | null = null;
 
     @property({
         type: SpriteFrame,
-        visible: function () { return this.transition === Button.Transition.SPRITE }
+        visible: function () {
+            // @ts-ignore
+            return this.transition === Button.Transition.SPRITE;
+        }
     })
     pressedSprite: SpriteFrame | null = null;
 
     @property({
         type: SpriteFrame,
-        visible: function () { return this.transition === Button.Transition.SPRITE }
+        visible: function () {
+            // @ts-ignore
+            return this.transition === Button.Transition.SPRITE;
+        }
     })
     hoverSprite: SpriteFrame | null = null;
 
     @property({
         type: SpriteFrame,
-        visible: function () { return this.transition === Button.Transition.SPRITE }
+        visible: function () {
+            // @ts-ignore
+            return this.transition === Button.Transition.SPRITE;
+        }
     })
     disabledSprite: SpriteFrame | null = null;
 
-    @property({ visible: function () { return this.transition === Button.Transition.SCALE || this.transition === Button.Transition.COLOR } })
+    @property({
+        visible: function () {
+            // @ts-ignore
+            return this.transition === Button.Transition.SCALE || this.transition === Button.Transition.COLOR;
+        }
+    })
     duration: number = 1.0;
 
-    @property({ visible: function () { return this.transition === Button.Transition.SCALE } })
+    @property({
+        visible: function () {
+            // @ts-ignore
+            return this.transition === Button.Transition.SCALE;
+        }
+    })
     zoomScale: number = 1.1;
 
     @property({

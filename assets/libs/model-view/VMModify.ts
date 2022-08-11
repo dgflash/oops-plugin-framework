@@ -31,17 +31,26 @@ export default class VMModify extends VMBase {
 
     @property({
         type: Enum(CLAMP_MODE),
-        visible: function () { return this.valueClamp === true }
+        visible: function () {
+            // @ts-ignore
+            return this.valueClamp === true;
+        }
     })
     valueClampMode: CLAMP_MODE = CLAMP_MODE.MIN_MAX;
 
     @property({
-        visible: function () { return this.valueClamp === true && this.valueClampMode !== CLAMP_MODE.MAX }
+        visible: function () {
+            // @ts-ignore
+            return this.valueClamp === true && this.valueClampMode !== CLAMP_MODE.MAX;
+        }
     })
     valueMin: number = 0;
 
     @property({
-        visible: function () { return this.valueClamp === true && this.valueClampMode !== CLAMP_MODE.MIN }
+        visible: function () {
+            // @ts-ignore
+            return this.valueClamp === true && this.valueClampMode !== CLAMP_MODE.MIN;
+        }
     })
     valueMax: number = 1;
 

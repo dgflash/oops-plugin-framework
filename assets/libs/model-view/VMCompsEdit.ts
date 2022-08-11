@@ -10,7 +10,6 @@ enum ACTION_MODE {
     DELETE_COMPONENT
 }
 
-
 /**
  * 用于搜索的MV 组件列表，挂载在父节点后，
  * 会遍历搜索下面的所有MV组件, 并且显示其观察值的路径
@@ -32,7 +31,10 @@ export default class MVCompsEdit extends Component {
 
     @property({
         tooltip: '勾选后,会自动查找 find list 中填写的组件',
-        visible: function () { return this.actionType === ACTION_MODE.SEARCH_COMPONENT }
+        visible: function () {
+            // @ts-ignore
+            return this.actionType === ACTION_MODE.SEARCH_COMPONENT;
+        }
     })
     public get findTrigger() {
         return false;
@@ -43,7 +45,10 @@ export default class MVCompsEdit extends Component {
 
     @property({
         tooltip: '勾选后,会批量激活 find list 中填写的组件',
-        visible: function () { return this.actionType === ACTION_MODE.ENABLE_COMPONENT }
+        visible: function () {
+            // @ts-ignore
+            return this.actionType === ACTION_MODE.ENABLE_COMPONENT;
+        }
     })
     public get enableTrigger() {
         return false;
@@ -54,7 +59,10 @@ export default class MVCompsEdit extends Component {
 
     @property({
         tooltip: '勾选后,会批量关闭 find list 中填写的组件',
-        visible: function () { return this.actionType === ACTION_MODE.ENABLE_COMPONENT }
+        visible: function () {
+            // @ts-ignore
+            return this.actionType === ACTION_MODE.ENABLE_COMPONENT;
+        }
     })
     public get disableTrigger() {
         return false;
@@ -65,14 +73,20 @@ export default class MVCompsEdit extends Component {
 
     @property({
         tooltip: '允许删除节点的组件,确定需要移除请勾选,防止误操作',
-        visible: function () { return this.actionType === ACTION_MODE.DELETE_COMPONENT }
+        visible: function () {
+            // @ts-ignore
+            return this.actionType === ACTION_MODE.DELETE_COMPONENT;
+        }
     })
     allowDelete: boolean = false;
 
     @property({
         tooltip: '勾选后,会批量删除 find list 中填写的组件',
         displayName: '[ X DELETE X ]',
-        visible: function () { return this.allowDelete && this.actionType === ACTION_MODE.DELETE_COMPONENT }
+        visible: function () {
+            // @ts-ignore
+            return this.allowDelete && this.actionType === ACTION_MODE.DELETE_COMPONENT;
+        }
     })
     public get deleteTrigger() {
         return false;
@@ -83,7 +97,10 @@ export default class MVCompsEdit extends Component {
 
     @property({
         tooltip: '勾选后,会批量替换掉指定的路径',
-        visible: function () { return this.actionType === ACTION_MODE.REPLACE_WATCH_PATH }
+        visible: function () {
+            // @ts-ignore
+            return this.actionType === ACTION_MODE.REPLACE_WATCH_PATH;
+        }
     })
     public get replaceTrigger() {
         return false;
@@ -94,20 +111,29 @@ export default class MVCompsEdit extends Component {
 
     @property({
         tooltip: '匹配的路径,匹配规则: 搜索开头为 game的路径',
-        visible: function () { return this.actionType === ACTION_MODE.REPLACE_WATCH_PATH }
+        visible: function () {
+            // @ts-ignore
+            return this.actionType === ACTION_MODE.REPLACE_WATCH_PATH;
+        }
     })
     targetPath: string = 'game';
 
     @property({
         tooltip: '替换的路径,将匹配到的路径替换',
-        visible: function () { return this.actionType === ACTION_MODE.REPLACE_WATCH_PATH }
+        visible: function () {
+            // @ts-ignore
+            return this.actionType === ACTION_MODE.REPLACE_WATCH_PATH;
+        }
     })
     replacePath: string = '*';
 
 
     @property({
         tooltip: '是否搜集绑定VM组件的节点?',
-        visible: function () { return this.actionType === ACTION_MODE.SEARCH_COMPONENT }
+        visible: function () {
+            // @ts-ignore
+            return this.actionType === ACTION_MODE.SEARCH_COMPONENT;
+        }
     })
     canCollectNodes: boolean = false;
 
@@ -115,7 +141,10 @@ export default class MVCompsEdit extends Component {
         type: [Node],
         readonly: true,
         tooltip: '收集到绑定了VM组件相关的节点，可以自己跳转过去',
-        visible: function () { return this.canCollectNodes && this.actionType === ACTION_MODE.SEARCH_COMPONENT }
+        visible: function () {
+            // @ts-ignore
+            return this.canCollectNodes && this.actionType === ACTION_MODE.SEARCH_COMPONENT
+        }
     })
     collectNodes: Node[] = [];
 
@@ -162,14 +191,15 @@ export default class MVCompsEdit extends Component {
         let comps = this.node.getComponentsInChildren(className);
         if (comps == null || comps.length < 1) return;
         log('[' + className + ']:');
-        comps.forEach(v => {
+        comps.forEach((v: any) => {
             let ext = '';
 
             if (state <= 3) {
                 //区分模板模式路径
                 if (v.templateMode === true) {
                     ext = v.watchPathArr ? ':[Path:' + v.watchPathArr.join('|') + ']' : ''
-                } else {
+                }
+                else {
                     ext = v.watchPath ? ':[Path:' + v.watchPath + ']' : ''
                 }
             }

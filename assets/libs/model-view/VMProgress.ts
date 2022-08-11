@@ -1,3 +1,9 @@
+/*
+ * @Author: dgflash
+ * @Date: 2022-08-11 14:45:44
+ * @LastEditors: dgflash
+ * @LastEditTime: 2022-08-11 15:43:34
+ */
 import { CCString, _decorator } from "cc";
 import { EDITOR } from "cc/env";
 import { StringFormatFunction } from "./StringFormat";
@@ -24,7 +30,10 @@ export default class VMProgress extends VMCustom {
     public templateMode: boolean = true;
 
     @property({
-        visible: function () { return this.componentProperty === 'string' },
+        visible: function () {
+            // @ts-ignore
+            return this.componentProperty === 'string';
+        },
         tooltip: '字符串格式化，和 VMLabel 的字段一样，需要填入对应的格式化字符串'
     })
     stringFormat: string = '';

@@ -77,7 +77,7 @@ export default class VMBase extends Component {
 
         // 打印出所有绑定的路径，方便调试信息
         if (DEBUG_WATCH_PATH && DEBUG) {
-            log('所有路径', this.watchPath ? [this.watchPath] : this.watchPathArr, '<<', this.node.getParent().name + '.' + this.node.name)
+            log('所有路径', this.watchPath ? [this.watchPath] : this.watchPathArr, '<<', this.node.parent!.name + '.' + this.node.name)
         }
 
         if (this.watchPath == '' && this.watchPathArr.join('') == '') {

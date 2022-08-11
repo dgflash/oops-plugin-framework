@@ -39,7 +39,10 @@ export default class VMEvent extends VMBase {
 
     @property({
         tooltip: '监听获取值的路径',
-        visible: function () { return this.templateMode === false }
+        visible: function () {
+            // @ts-ignore
+            return this.templateMode === false;
+        }
     })
     watchPath: string = "";
 
@@ -51,7 +54,10 @@ export default class VMEvent extends VMBase {
     @property({
         tooltip: '监听获取值的多条路径,这些值的改变都会通过这个函数回调,请使用 pathArr 区分获取的值 ',
         type: [CCString],
-        visible: function () { return this.templateMode === true }
+        visible: function () {
+            // @ts-ignore
+            return this.templateMode === true;
+        }
     })
     protected watchPathArr: string[] = [];
 
@@ -62,7 +68,10 @@ export default class VMEvent extends VMBase {
     public filterMode: FILTER_MODE = FILTER_MODE.none;
 
     @property({
-        visible: function () { return this.filterMode !== FILTER_MODE.none }
+        visible: function () {
+            // @ts-ignore
+            return this.filterMode !== FILTER_MODE.none
+        }
     })
     public compareValue: string = '';
 

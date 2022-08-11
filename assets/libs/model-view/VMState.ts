@@ -54,19 +54,28 @@ export default class VMState extends VMBase {
     @property({
         type: Enum(CHILD_MODE_TYPE),
         tooltip: '遍历子节点,根据子节点的名字转换为值，判断值满足条件 来激活',
-        visible: function () { return this.foreachChildMode === true }
+        visible: function () {
+            // @ts-ignore
+            return this.foreachChildMode === true;
+        }
     })
     foreachChildType: CHILD_MODE_TYPE = CHILD_MODE_TYPE.NODE_INDEX;
 
     @property({
         displayName: 'Value: a',
-        visible: function () { return this.foreachChildMode === false }
+        visible: function () {
+            // @ts-ignore
+            return this.foreachChildMode === false;
+        }
     })
     valueA: number = 0;
 
     @property({
         displayName: 'Value: b',
-        visible: function () { return this.foreachChildMode === false && this.condition === CONDITION.range }
+        visible: function () {
+            // @ts-ignore
+            return this.foreachChildMode === false && this.condition === CONDITION.range;
+        }
     })
     valueB: number = 0;
 
@@ -77,7 +86,10 @@ export default class VMState extends VMBase {
     valueAction: ACTION = ACTION.NODE_ACTIVE;
 
     @property({
-        visible: function () { return this.valueAction === ACTION.NODE_OPACITY },
+        visible: function () {
+            // @ts-ignore
+            return this.valueAction === ACTION.NODE_OPACITY;
+        },
         range: [0, 255],
         type: CCInteger,
         displayName: 'Action Opacity'
@@ -85,31 +97,46 @@ export default class VMState extends VMBase {
     valueActionOpacity: number = 0;
 
     @property({
-        visible: function () { return this.valueAction === ACTION.NODE_COLOR },
+        visible: function () {
+            // @ts-ignore
+            return this.valueAction === ACTION.NODE_COLOR
+        },
         displayName: 'Action Color'
     })
     valueActionColor: Color = color(155, 155, 155);
 
     @property({
-        visible: function () { return this.valueAction === ACTION.COMPONENT_CUSTOM },
+        visible: function () {
+            // @ts-ignore
+            return this.valueAction === ACTION.COMPONENT_CUSTOM
+        },
         displayName: 'Component Name'
     })
     valueComponentName: string = '';
 
     @property({
-        visible: function () { return this.valueAction === ACTION.COMPONENT_CUSTOM },
+        visible: function () {
+            // @ts-ignore
+            return this.valueAction === ACTION.COMPONENT_CUSTOM
+        },
         displayName: 'Component Property'
     })
     valueComponentProperty: string = '';
 
     @property({
-        visible: function () { return this.valueAction === ACTION.COMPONENT_CUSTOM },
+        visible: function () {
+            // @ts-ignore
+            return this.valueAction === ACTION.COMPONENT_CUSTOM
+        },
         displayName: 'Default Value'
     })
     valueComponentDefaultValue: string = '';
 
     @property({
-        visible: function () { return this.valueAction === ACTION.COMPONENT_CUSTOM },
+        visible: function () {
+            // @ts-ignore
+            return this.valueAction === ACTION.COMPONENT_CUSTOM;
+        },
         displayName: 'Action Value'
     })
     valueComponentActionValue: string = '';

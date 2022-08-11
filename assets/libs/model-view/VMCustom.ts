@@ -52,7 +52,10 @@ export default class VMCustom extends VMBase {
         tooltip: '刷新间隔频率(只影响脏检查的频率)',
         step: 0.01,
         range: [0, 1],
-        visible: function () { return this.controller === true }
+        visible: function () {
+            // @ts-ignore
+            return this.controller === true;
+        }
     })
     refreshRate: number = 0.1;
 
