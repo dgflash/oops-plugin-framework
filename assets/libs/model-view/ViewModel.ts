@@ -185,6 +185,7 @@ class VMManager {
             console.error(path, '路径不合法,可能错误覆盖了 VMParent 的onLoad 方法, 或者父节点并未挂载 VMParent 相关的组件脚本');
             return;
         }
+        // @ts-ignore
         director.on(VM_EMIT_HEAD + path, callback, target, useCapture);
     }
 
@@ -195,6 +196,7 @@ class VMManager {
             console.error(path, '路径不合法,可能错误覆盖了 VMParent 的onLoad 方法, 或者父节点并未挂载 VMParent 相关的组件脚本');
             return;
         }
+        // @ts-ignore
         director.off(VM_EMIT_HEAD + path, callback, target);
     }
 
