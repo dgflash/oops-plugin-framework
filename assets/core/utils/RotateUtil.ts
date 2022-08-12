@@ -1,6 +1,13 @@
+/*
+ * @Author: dgflash
+ * @Date: 2022-07-26 15:29:57
+ * @LastEditors: dgflash
+ * @LastEditTime: 2022-08-12 16:50:07
+ */
 import { Node, Quat, toRadian, Vec3 } from "cc";
 import { Vec3Util } from "./Vec3Util";
 
+/** 旋转工具 */
 export class RotateUtil {
     /**
      * 自由旋转

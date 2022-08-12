@@ -1,27 +1,31 @@
 /*
  * @Date: 2021-08-14 16:17:03
- * @LastEditors: H.Joeson
- * @LastEditTime: 2021-11-25 15:52:12
+ * @LastEditors: dgflash
+ * @LastEditTime: 2022-08-12 16:50:15
  */
-import { sys } from "cc";
+import { native, sys } from "cc";
 
+/** 平台数据 */
 export class PlatformUtil {
+    /** 是否为安卓系统 */
     public static isNativeAndroid() {
-        if (typeof jsb == "undefined")
+        if (typeof native == "undefined")
             return false
         if (sys.isNative && sys.platform === sys.Platform.ANDROID)
             return true
         return false
     }
 
+    /** 是否为苹果系统 */
     public static isNativeIOS() {
-        if (typeof jsb == "undefined")
+        if (typeof native == "undefined")
             return false
         if (sys.isNative && sys.os === sys.OS.IOS)
             return true
         return false
     }
 
+    /** 获取平台名 */
     public static getPlateform() {
         if (this.isNativeAndroid())
             return 'android'
@@ -31,7 +35,7 @@ export class PlatformUtil {
             return 'h5'
     }
 
-    public static isIOSwebview = function () {
+    public static isIOSWebview() {
         //@ts-ignore
         if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.sdkLoginOut)
             return true

@@ -2,11 +2,10 @@
  * @Author: dgflash
  * @Date: 2021-08-11 16:41:12
  * @LastEditors: dgflash
- * @LastEditTime: 2022-01-24 15:00:52
+ * @LastEditTime: 2022-08-12 16:51:46
  */
-/**
- * 数组工具
- */
+
+/** 数组工具 */
 export default class ArrayUtil {
     /** 去重 */
     public static noRepeated(arr: any[]) {

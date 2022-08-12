@@ -1,5 +1,12 @@
+/*
+ * @Author: dgflash
+ * @Date: 2022-07-26 15:29:57
+ * @LastEditors: dgflash
+ * @LastEditTime: 2022-08-12 16:51:38
+ */
 import { Camera, Vec3, view } from "cc";
 
+/** 摄像机工具 */
 export class CameraUtil {
     /**
      * 当前世界坐标是否在摄像机显示范围内

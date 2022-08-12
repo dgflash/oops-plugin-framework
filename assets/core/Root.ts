@@ -67,6 +67,7 @@ export class Root extends Component {
         oops.game = new GameManager(this.game!);
         oops.gui = new LayerManager(this.gui!);
         this.initGui();
+
         oops.ecs = new ecs.RootSystem();
         this.initEcsSystem();
         oops.ecs.init();

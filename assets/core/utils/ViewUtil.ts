@@ -2,11 +2,12 @@
  * @Author: dgflash
  * @Date: 2021-08-16 09:34:56
  * @LastEditors: dgflash
- * @LastEditTime: 2022-07-25 11:51:27
+ * @LastEditTime: 2022-08-12 16:49:41
  */
 import { Animation, AnimationClip, EventTouch, instantiate, Node, Prefab, Size, UITransform, v3, Vec3 } from "cc";
 import { resLoader } from "../common/loader/ResLoader";
 
+/** 显示对象工具 */
 export class ViewUtil {
     /**
      * 把Node当前的节点树结构根据Node命名转成一个js对象,重名的组件会覆盖，

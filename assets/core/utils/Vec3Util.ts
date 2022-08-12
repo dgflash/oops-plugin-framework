@@ -2,6 +2,7 @@
 import { Mat4, Vec3 } from "cc";
 import { MathUtil } from "./MathUtil";
 
+/** 向量工具 */
 export class Vec3Util {
     /**
      * X轴

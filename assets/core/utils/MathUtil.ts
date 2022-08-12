@@ -1,3 +1,4 @@
+/** 数学工具 */
 export class MathUtil {
     /**
      * 角度转弧度

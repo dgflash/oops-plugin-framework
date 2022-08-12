@@ -1,6 +1,11 @@
-/**
- * 对象工具
+/*
+ * @Author: dgflash
+ * @Date: 2022-07-26 15:29:57
+ * @LastEditors: dgflash
+ * @LastEditTime: 2022-08-12 16:50:30
  */
+
+/** 对象工具 */
 export default class ObjectUtil {
     /**
      * 判断指定的值是否为对象

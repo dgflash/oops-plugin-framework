@@ -1,11 +1,4 @@
-import { Vec3 } from "cc";
-
-/*
- * @Author: dgflash
- * @Date: 2021-08-11 16:41:12
- * @LastEditors: H.Joeson
- * @LastEditTime: 2021-09-14 10:54:02
- */
+/** 字符串工具 */
 export class StringUtil {
     /** 123456789 = 123,456,789 */
     public static numberTotPermil(num: number): string {

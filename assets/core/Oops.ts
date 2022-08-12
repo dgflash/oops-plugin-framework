@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-02-11 09:32:47
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-03 15:48:31
+ * @LastEditTime: 2022-08-12 16:52:00
  */
 import { ECSRootSystem } from "../libs/ecs/ECSSystem";
 import { LanguageManager } from "../libs/gui/language/Language";
@@ -20,6 +20,7 @@ export var version: string = "1.0.8";
 
 export class oops {
     /** ----------核心模块---------- */
+
     /** 日志管理 */
     static log = Logger;
     /** 全局消息 */
