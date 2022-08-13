@@ -43,7 +43,7 @@ export class Logger {
      * @example
      * oops.log.setTag(LogType.View|LogType.Business)
      */
-    static setTag(tag: LogType = 0) {
+    static setTags(tag: LogType = 0) {
         this.tags = tag;
     }
 
