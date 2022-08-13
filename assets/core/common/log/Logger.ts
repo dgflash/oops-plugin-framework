@@ -41,7 +41,7 @@ export class Logger {
     /** 
      * 设置显示的日志类型，默认值为不显示任何类型日志
      * @example
-     * oops.log.setTag(LogType.View|LogType.Business)
+     * oops.log.setTags(LogType.View|LogType.Business)
      */
     static setTags(tag: LogType = 0) {
         this.tags = tag;
