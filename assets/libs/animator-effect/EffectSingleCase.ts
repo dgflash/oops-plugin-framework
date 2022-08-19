@@ -2,14 +2,25 @@
  * @Author: dgflash
  * @Date: 2021-10-12 14:00:43
  * @LastEditors: dgflash
- * @LastEditTime: 2022-07-25 11:51:21
+ * @LastEditTime: 2022-08-19 16:34:48
  */
 
-import { Component, Node, NodePool, Vec3 } from 'cc';
+import { Component, Node, NodePool, Prefab, Vec3 } from 'cc';
+import { resLoader } from '../../core/common/loader/ResLoader';
 import { ViewUtil } from '../../core/utils/ViewUtil';
+import { EffectFinishedRelease } from './EffectFinishedRelease';
 
+/** 效果数据 */
 class EffectData extends Component {
     type: string = null!;
+}
+
+/** 特效参数 */
+interface IEffectParams {
+    /** 初始位置 */
+    pos?: Vec3,
+    /** 是否播放完成后删除 */
+    isPlayFinishedRelease?: boolean
 }
 
 /** 全局单例特效 */
@@ -24,13 +35,35 @@ export class EffectSingleCase {
 
     private effects: Map<string, NodePool> = new Map();
 
+    /** 加载资源并现实特效 */
+    loadAndShow(name: string, parent: Node, params?: IEffectParams): Promise<Node> {
+        return new Promise((resolve, reject) => {
+            var np = this.effects.get(name);
+            if (np == undefined) {
+                resLoader.load(name, Prefab, (err: Error | null, prefab: Prefab) => {
+                    if (err) {
+                        console.error(`名为【${name}】的特效资源加载失败`);
+                        return;
+                    }
+
+                    var node = this.show(name, parent, params);
+                    resolve(node);
+                });
+            }
+            else {
+                var node = this.show(name, parent, params);
+                resolve(node);
+            }
+        });
+    }
+
     /** 
      * 显示预制对象 
      * @param name    预制对象名称
      * @param parent  父节点
      * @param pos     位置
      */
-    show(name: string, parent: Node, pos?: Vec3): Node {
+    show(name: string, parent: Node, params?: IEffectParams): Node {
         var np = this.effects.get(name);
         if (np == null) {
             np = new NodePool();
@@ -41,12 +74,16 @@ export class EffectSingleCase {
         if (np.size() == 0) {
             node = ViewUtil.createPrefabNode(name);
             node.addComponent(EffectData).type = name;
+            if (params && params.isPlayFinishedRelease) {
+                node.addComponent(EffectFinishedRelease);
+            }
         }
         else {
             node = np.get()!;
         }
         node.parent = parent;
-        if (pos) node.position = pos;
+
+        if (params && params.pos) node.position = params.pos;
 
         return node;
     }
