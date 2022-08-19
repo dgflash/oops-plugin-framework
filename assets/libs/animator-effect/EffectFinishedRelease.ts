@@ -15,12 +15,10 @@ export class EffectFinishedRelease extends Component {
     /** 动画最大播放时间 */
     private maxDuration: number = 0;
 
-    onLoad() {
+    protected onEnable() {
         let anims: Animation[] = this.node.getComponentsInChildren(Animation);
         anims.forEach(animator => {
-            animator.play();
-
-            let aniName = animator?.defaultClip?.name;
+            let aniName = animator.defaultClip.name;
             if (aniName) {
                 let aniState = animator.getState(aniName);
                 if (aniState) {
@@ -29,6 +27,7 @@ export class EffectFinishedRelease extends Component {
                     this.maxDuration = duration > this.maxDuration ? duration : this.maxDuration;
                 }
             }
+            animator.play();
         });
 
         let particles: ParticleSystem[] = this.node.getComponentsInChildren(ParticleSystem);
@@ -41,9 +40,6 @@ export class EffectFinishedRelease extends Component {
             let duration: number = particle.duration;
             this.maxDuration = duration > this.maxDuration ? duration : this.maxDuration;
         });
-    }
-
-    protected onEnable() {
         this.scheduleOnce(this.onRecovery.bind(this), this.maxDuration);
     }
 
