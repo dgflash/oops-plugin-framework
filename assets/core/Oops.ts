@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-02-11 09:32:47
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-12 16:52:00
+ * @LastEditTime: 2022-08-17 13:59:54
  */
 import { ECSRootSystem } from "../libs/ecs/ECSSystem";
 import { LanguageManager } from "../libs/gui/language/Language";
@@ -16,7 +16,7 @@ import { GameManager } from "./game/GameManager";
 import { LayerManager } from "./gui/layer/LayerManager";
 
 /** 框架版本 */
-export var version: string = "1.0.8";
+export var version: string = "1.1.0";
 
 export class oops {
     /** ----------核心模块---------- */
