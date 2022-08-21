@@ -16,20 +16,20 @@ const { ccclass, property } = _decorator;
  */
 @ccclass
 export default class VMBase extends Component {
+    /**VM管理 */
+    VM = VM;
+
     /** watch 单路径  */
-    public watchPath: string = '';
+    watchPath: string = '';
+
+    /** 是否启用模板多路径模式 */
+    templateMode: boolean = false;
 
     /** watch 多路径 */
     protected watchPathArr: string[] = [];
 
-    /** 是否启用模板多路径模式 */
-    public templateMode: boolean = false;
-
     /** 储存模板多路径的值 */
     protected templateValueArr: any[] = [];
-
-    /**VM管理 */
-    public VM = VM;
 
     /**
      * 如果需要重写onLoad 方法，请根据顺序调用 super.onLoad()，执行默认方法

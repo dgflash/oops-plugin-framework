@@ -25,7 +25,14 @@ export default class VMLabel extends VMBase {
     @property({
         tooltip: '是否启用模板代码,只能在运行时之前设置,\n将会动态解析模板语法 {{0}},并且自动设置监听的路径'
     })
-    public templateMode: boolean = false;
+    templateMode: boolean = false;
+
+    @property({
+        visible() {
+            return this.templateMode === false;
+        }
+    })
+    watchPath: string = '';
 
     @property({
         readonly: true
@@ -33,30 +40,21 @@ export default class VMLabel extends VMBase {
     private labelType: string = LABEL_TYPE.CC_LABEL;
 
     @property({
-        visible: function () {
-            // @ts-ignore
-            return this.templateMode === false;
-        }
-    })
-    watchPath: string = "";
-
-    // 按照匹配参数顺序保存的 path 数组 （固定）
-    @property({
         type: [CCString],
-        visible: function () {
-            // @ts-ignore
+        visible() {
             return this.templateMode === true;
         }
     })
+    /** 按照匹配参数顺序保存的 path 数组 （固定） */
     protected watchPathArr: string[] = [];
 
-    // 按照路径参数顺序保存的 值的数组（固定）
+    /** 按照路径参数顺序保存的 值的数组（固定）*/
     protected templateValueArr: any[] = [];
 
-    // 保存着字符模板格式的数组 (只会影响显示参数)
+    /** 保存着字符模板格式的数组 (只会影响显示参数) */
     private templateFormatArr: string[] = [];
 
-    // 源字符串
+    /** 源字符串 */
     private originText: string | null = null;
 
     onRestore() {

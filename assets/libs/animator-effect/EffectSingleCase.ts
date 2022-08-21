@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2021-10-12 14:00:43
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-19 17:51:37
+ * @LastEditTime: 2022-08-20 14:57:42
  */
 
 import { Component, Node, NodePool, Prefab, Vec3 } from 'cc';
@@ -36,7 +36,7 @@ export class EffectSingleCase {
     private effects: Map<string, NodePool> = new Map();
 
     /** 加载资源并现实特效 */
-    loadAndShow(name: string, parent: Node, params?: IEffectParams): Promise<Node> {
+    loadAndShow(name: string, parent?: Node, params?: IEffectParams): Promise<Node> {
         return new Promise((resolve, reject) => {
             var np = this.effects.get(name);
             if (np == undefined) {
@@ -63,7 +63,7 @@ export class EffectSingleCase {
      * @param parent  父节点
      * @param pos     位置
      */
-    show(name: string, parent: Node, params?: IEffectParams): Node {
+    show(name: string, parent?: Node, params?: IEffectParams): Node {
         var np = this.effects.get(name);
         if (np == null) {
             np = new NodePool();
@@ -81,9 +81,10 @@ export class EffectSingleCase {
         else {
             node = np.get()!;
         }
-        node.parent = parent;
 
         if (params && params.pos) node.position = params.pos;
+
+        if (parent) node.parent = parent;
 
         return node;
     }
