@@ -7,7 +7,9 @@
 
 import { Component, Node, NodePool, Prefab, Vec3 } from 'cc';
 import { resLoader } from '../../core/common/loader/ResLoader';
+import { oops } from '../../core/Oops';
 import { ViewUtil } from '../../core/utils/ViewUtil';
+import { EffectEvent } from './EffectEvent';
 import { EffectFinishedRelease } from './EffectFinishedRelease';
 
 /** 效果数据 */
@@ -34,6 +36,16 @@ export class EffectSingleCase {
     }
 
     private effects: Map<string, NodePool> = new Map();
+
+    constructor() {
+        oops.message.on(EffectEvent.Put, this.onHandler, this);
+    }
+
+    private onHandler(event: string, args: any) {
+        if (event == EffectEvent.Put) {
+            this.put(args as Node);
+        }
+    }
 
     /** 加载资源并现实特效 */
     loadAndShow(name: string, parent?: Node, params?: IEffectParams): Promise<Node> {

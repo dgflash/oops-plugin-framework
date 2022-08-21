@@ -6,7 +6,9 @@
  */
 
 import { Animation, Component, ParticleSystem, _decorator } from 'cc';
-import { EffectSingleCase } from './EffectSingleCase';
+import { oops } from '../../core/Oops';
+import { EffectEvent } from './EffectEvent';
+
 const { ccclass, property } = _decorator;
 
 /** 动画播放完释放特效 */
@@ -44,6 +46,6 @@ export class EffectFinishedRelease extends Component {
     }
 
     private onRecovery() {
-        if (this.node.parent) EffectSingleCase.instance.put(this.node);
+        if (this.node.parent) oops.message.dispatchEvent(EffectEvent.Put, this.node);
     }
 }
