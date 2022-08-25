@@ -83,7 +83,7 @@ export class LayerUI extends Node {
     protected load(viewParams: ViewParams, bundle?: string) {
         var vp: ViewParams = this.ui_nodes.get(viewParams.uuid)!;
         if (vp && vp.node) {
-            this.createNode(null, vp);
+            this.createNode(vp);
         }
         else {
             // 获取预制件资源
@@ -99,7 +99,7 @@ export class LayerUI extends Node {
                 let comp: DelegateComponent = childNode.addComponent(DelegateComponent);
                 comp.viewParams = viewParams;
 
-                this.createNode(res, viewParams);
+                this.createNode(viewParams);
             });
         }
     }
@@ -109,7 +109,7 @@ export class LayerUI extends Node {
      * @param prefab 
      * @param viewParams 
      */
-    protected createNode(prefab: Prefab | null, viewParams: ViewParams) {
+    protected createNode(viewParams: ViewParams) {
         viewParams.valid = true;
         let childNode: Node | null = viewParams!.node!;
         let comp: DelegateComponent | null = childNode.getComponent(DelegateComponent);

@@ -1,3 +1,9 @@
+/*
+ * @Author: dgflash
+ * @Date: 2022-08-15 10:06:47
+ * @LastEditors: dgflash
+ * @LastEditTime: 2022-08-25 10:04:19
+ */
 import { error, instantiate, Node, Prefab } from "cc";
 import { resLoader } from "../../common/loader/ResLoader";
 import { ViewParams } from "./Defines";
@@ -42,12 +48,12 @@ export class LayerNotify extends LayerUI {
             let comp: DelegateComponent = childNode.addComponent(DelegateComponent);
             comp.viewParams = viewParams;
 
-            this.createNode(res, viewParams);
+            this.createNode(viewParams);
         });
     }
 
-    protected createNode(prefab: Prefab, viewParams: ViewParams) {
-        let childNode: Node = super.createNode(prefab, viewParams);
+    protected createNode(viewParams: ViewParams) {
+        let childNode: Node = super.createNode(viewParams);
         let toastCom = childNode.getComponent(Notify)!;
         childNode.active = true;
         toastCom.toast(viewParams.params.content, viewParams.params.useI18n);

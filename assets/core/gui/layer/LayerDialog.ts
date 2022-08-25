@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-06-16 10:03:47
+ * @LastEditTime: 2022-08-25 10:04:32
  */
 
 import { Node } from "cc";
@@ -63,7 +63,7 @@ export class LayerDialog extends LayerPopUp {
         if (this.queue.length > 0) {
             this.current = this.queue.shift()!;
             if (this.current.node) {
-                this.createNode(null, this.current);
+                this.createNode(this.current);
             }
             else {
                 this.load(this.current);
