@@ -3,6 +3,7 @@ import { PREVIEW } from "cc/env";
 import { md5 } from "../../../libs/security/Md5";
 import { EncryptUtil } from "./EncryptUtil";
 
+/** 本地存储 */
 export module storage {
     let _key: string | null = null;
     let _iv: string | null = null;
@@ -63,9 +64,10 @@ export module storage {
         else if (typeof value === 'number') {
             value = value + "";
         }
+
         if (!PREVIEW && null != _key && null != _iv) {
             try {
-                value = EncryptUtil.aesEncrypt(value, _key, _iv);
+                value = EncryptUtil.aesEncrypt(`${value}`, _key, _iv);
             }
             catch (e) {
                 value = null;
@@ -99,8 +101,8 @@ export module storage {
             catch (e) {
                 str = null;
             }
-
         }
+
         if (null == defaultValue || typeof defaultValue === 'string') {
             return str;
         }
