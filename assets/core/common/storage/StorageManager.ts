@@ -82,10 +82,10 @@ export module storage {
      * @param defaultValue 获取的默认值
      * @returns 
      */
-    export function get(key: string, defaultValue?: any) {
+    export function get(key: string, defaultValue?: any): string {
         if (null == key) {
             console.error("存储的key不能为空");
-            return;
+            return null!;
         }
 
         key = `${key}_${_id}`;
@@ -103,29 +103,25 @@ export module storage {
             }
         }
 
-        if (null == defaultValue || typeof defaultValue === 'string') {
-            return str;
-        }
         if (null === str) {
             return defaultValue;
         }
-        if (typeof defaultValue === 'number') {
-            return Number(str) || 0;
-        }
-        if (typeof defaultValue === 'boolean') {
-            return "true" == str; // 不要使用Boolean("false");
-        }
-        if (typeof defaultValue === 'object') {
-            try {
-                return JSON.parse(str);
-            }
-            catch (e) {
-                console.error("解析数据失败,str=" + str);
-                return defaultValue;
-            }
-
-        }
         return str;
+    }
+
+    export function getNumber(key: string, defaultValue: number = 0): number {
+        var r = get(key);
+        return Number(r) || defaultValue;
+    }
+
+    export function getBoolean(key: string): boolean {
+        var r = get(key);
+        return Boolean(r) || false;
+    }
+
+    export function getJson(key: string, defaultValue?: any): any {
+        var r = get(key);
+        return (r && JSON.parse(r)) || defaultValue;
     }
 
     /**
