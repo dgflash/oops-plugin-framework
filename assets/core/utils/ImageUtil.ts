@@ -38,6 +38,7 @@ export default class ImageUtil {
     public static imageToBase64(url: string, callback?: (dataURL: string) => void): Promise<string> {
         return new Promise(res => {
             let extname = /\.png|\.jpg|\.jpeg/.exec(url)?.[0];
+            //@ts-ignore
             if (['.png', '.jpg', '.jpeg'].includes(extname)) {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d')!;
@@ -71,6 +72,7 @@ export default class ImageUtil {
         const image = document.createElement('img');
         image.src = base64;
         const texture = new Texture2D();
+        //@ts-ignore
         texture.initWithElement(image);
         image.remove();
         return texture;
@@ -82,6 +84,7 @@ export default class ImageUtil {
      */
     public static base64ToBlob(base64: string): Blob {
         const strings = base64.split(',');
+        //@ts-ignore
         const type = /image\/\w+|;/.exec(strings[0])[0];
         const data = window.atob(strings[1]);
         const arrayBuffer = new ArrayBuffer(data.length);
