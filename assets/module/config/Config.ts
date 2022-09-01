@@ -2,12 +2,12 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-05 17:20:01
+ * @LastEditTime: 2022-09-01 18:43:43
  */
 
 import { game, JsonAsset } from "cc";
-import { resLoader } from "../../../../../extensions/oops-plugin-framework/assets/core/common/loader/ResLoader";
-import { oops } from "../../../../../extensions/oops-plugin-framework/assets/core/Oops";
+import { resLoader } from "../../core/common/loader/ResLoader";
+import { oops } from "../../core/Oops";
 import { BuildTimeConstants } from "./BuildTimeConstants";
 import { GameConfig } from "./GameConfig";
 import { GameQueryConfig } from "./GameQueryConfig";
