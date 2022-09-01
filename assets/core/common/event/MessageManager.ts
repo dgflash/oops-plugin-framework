@@ -49,7 +49,7 @@ export class MessageEventData {
     }
 }
 
-class MessageManager {
+export class MessageManager {
     public static readonly Instance: MessageManager = new MessageManager();
 
     private events: any = {};
@@ -150,4 +150,4 @@ class MessageManager {
     }
 }
 
-export const Message = MessageManager.Instance;
+const Message = MessageManager.Instance;

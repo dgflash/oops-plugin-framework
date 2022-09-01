@@ -6,7 +6,7 @@
  */
 
 /** 正则工具 */
-export default class RegexUtil {
+export class RegexUtil {
     /**
      * 判断字符是否为双字节字符（如中文字符）
      * @param string 原字符串

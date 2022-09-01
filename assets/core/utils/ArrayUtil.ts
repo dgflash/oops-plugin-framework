@@ -6,7 +6,7 @@
  */
 
 /** 数组工具 */
-export default class ArrayUtil {
+export class ArrayUtil {
     /** 去重 */
     public static noRepeated(arr: any[]) {
         var res = [arr[0]];

@@ -11,8 +11,9 @@ import { HttpRequest } from "../libs/network/HttpRequest";
 import { config } from "../module/config/Config";
 import { AudioManager } from "./common/audio/AudioManager";
 import { EventMessage } from "./common/event/EventMessage";
-import { Message } from "./common/event/MessageManager";
+import { MessageManager } from "./common/event/MessageManager";
 import { TimerManager } from "./common/manager/TimerManager";
+import { StorageManager } from "./common/storage/StorageManager";
 import { GameManager } from "./game/GameManager";
 import { GUI } from "./gui/GUI";
 import { LayerManager } from "./gui/layer/LayerManager";
@@ -60,6 +61,8 @@ export class Root extends Component {
     }
 
     protected init() {
+        oops.message = MessageManager.Instance;
+        oops.storage = new StorageManager();
         oops.language = new LanguageManager();
         oops.timer = new TimerManager(this);
         oops.audio = AudioManager.instance;
@@ -79,7 +82,7 @@ export class Root extends Component {
             oops.audio.resumeAll();
             director.resume();
             game.resume();
-            Message.dispatchEvent(EventMessage.GAME_ENTER);
+            oops.message.dispatchEvent(EventMessage.GAME_ENTER);
         });
 
         // 游戏隐藏事件
@@ -89,14 +92,14 @@ export class Root extends Component {
             oops.audio.pauseAll();
             director.pause();
             game.pause();
-            Message.dispatchEvent(EventMessage.GAME_EXIT);
+            oops.message.dispatchEvent(EventMessage.GAME_EXIT);
         });
 
         // 游戏尺寸修改事件
         var c_gui = this.gui?.addComponent(GUI)!;
         view.setResizeCallback(() => {
             c_gui.resize();
-            Message.dispatchEvent(EventMessage.GAME_RESIZE);
+            oops.message.dispatchEvent(EventMessage.GAME_RESIZE);
         });
     }
 }

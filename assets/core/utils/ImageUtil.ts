@@ -3,7 +3,7 @@ import { Color, Texture2D } from "cc";
 /**
  * 图像工具
  */
-export default class ImageUtil {
+export class ImageUtil {
     /**
      * 获取纹理中指定像素的颜色，原点为左上角，从像素 (1, 1) 开始。
      * @param texture 纹理

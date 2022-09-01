@@ -17,7 +17,7 @@ export class LanguageManager extends EventDispatcher {
     private _languagePack: LanguagePack = new LanguagePack();    // 语言包  
 
     /** 设置多语言系统支持哪些语种 */
-    public set supportLanguages(supportLanguages: Array<string>) {
+    public set supportLanguages(supportLanguages: Array<string>) { 
         this._support = supportLanguages;
     }
 

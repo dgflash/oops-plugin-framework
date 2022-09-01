@@ -1,5 +1,5 @@
 import { Component, director, Node } from "cc";
-import { storage } from "../storage/StorageManager";
+import { oops } from "../../Oops";
 import { AudioEffect } from "./AudioEffect";
 import { AudioMusic } from "./AudioMusic";
 
@@ -141,13 +141,13 @@ export class AudioManager extends Component {
         this.local_data.switch_effect = this._switch_effect;
 
         let data = JSON.stringify(this.local_data);
-        storage.set(LOCAL_STORE_KEY, data);
+        oops.storage.set(LOCAL_STORE_KEY, data);
     }
 
 
     /** 本地加载音乐音效的音量、开关配置数据并设置到游戏中 */
     load() {
-        let data = storage.get(LOCAL_STORE_KEY);
+        let data = oops.storage.get(LOCAL_STORE_KEY);
         if (data) {
             try {
                 this.local_data = JSON.parse(data);

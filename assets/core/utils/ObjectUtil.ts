@@ -6,7 +6,7 @@
  */
 
 /** 对象工具 */
-export default class ObjectUtil {
+export class ObjectUtil {
     /**
      * 判断指定的值是否为对象
      * @param value 值
