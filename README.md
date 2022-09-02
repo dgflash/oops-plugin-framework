@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-09-01 18:00:28
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 15:18:20
+ * @LastEditTime: 2022-09-02 15:23:20
 -->
 #### 介绍
 Oops Framework 基于 Cocos Creato 3.x 开发的一款游戏框架。
@@ -18,7 +18,7 @@ Oops Framework 基于 Cocos Creato 3.x 开发的一款游戏框架。
 - [ecs](https://gitee.com/dgflash/oops-framework/tree/master/doc/ecs/ecs.md)
 - [mvvm](https://gitee.com/dgflash/oops-framework/tree/master/doc/mvvm)
 
-#### 使用说明
+#### 学习部署说明
 1. 下载教程项目
 ```
 git clone https://gitee.com/dgflash/oops-framework.git
@@ -30,6 +30,20 @@ git clone https://gitee.com/dgflash/oops-framework.git
     
     ##### mac
     项目下载后执行 update-oops-plugin-framework.sh 下载最新版本框架插件
+
+#### 开发部署说明
+1. 下载游戏项目模板
+```
+git clone https://gitee.com/dgflash/oops-game-kit.git
+```
+
+2. 下载框架插件
+    ##### windows
+    执行根目录下的 update-oops-plugin-framework.bat 下载最新版本框架插件
+    
+    ##### mac
+    项目下载后执行 update-oops-plugin-framework.sh 下载最新版本框架插件
+
 
 #### 在线演示
 - [框架部分功能演示](https://oops-1255342636.cos-website.ap-shanghai.myqcloud.com/oops-framework/)
@@ -81,4 +95,4 @@ module             - 游戏通用模块
 
 #### 学习交流 QQ 群：798575969
 
-    ![](http://dgflash.gitee.io/oops-full-stack-web/doc/img/qq.png)
+![image](http://dgflash.gitee.io/oops-full-stack-web/doc/img/qq.png)
