@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-09-01 18:00:28
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 15:13:41
+ * @LastEditTime: 2022-09-02 15:18:20
 -->
 #### 介绍
 Oops Framework 基于 Cocos Creato 3.x 开发的一款游戏框架。
@@ -79,6 +79,6 @@ module             - 游戏通用模块
     config             - 配置模块
 ```
 
-1. 学习交流 QQ 群：798575969
+#### 学习交流 QQ 群：798575969
 
     ![](http://dgflash.gitee.io/oops-full-stack-web/doc/img/qq.png)
