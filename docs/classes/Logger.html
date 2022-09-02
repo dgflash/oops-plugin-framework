@@ -16,7 +16,7 @@
 <section class="tsd-panel tsd-comment">
 <div class="tsd-comment tsd-typography"><p>日志管理</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-5">trace</span><span class="hl-1">(</span><span class="hl-4">&quot;默认标准日志&quot;</span><span class="hl-1">);</span><br/><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-5">logConfig</span><span class="hl-1">(</span><span class="hl-4">&quot;灰色配置日志&quot;</span><span class="hl-1">);</span><br/><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-5">logNet</span><span class="hl-1">(</span><span class="hl-4">&quot;橙色网络日志&quot;</span><span class="hl-1">);</span><br/><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-5">logModel</span><span class="hl-1">(</span><span class="hl-4">&quot;紫色数据日志&quot;</span><span class="hl-1">);</span><br/><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-5">logBusiness</span><span class="hl-1">(</span><span class="hl-4">&quot;蓝色业务日志&quot;</span><span class="hl-1">);</span><br/><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-5">logView</span><span class="hl-1">(</span><span class="hl-4">&quot;绿色视图日志&quot;</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-7">trace</span><span class="hl-1">(</span><span class="hl-6">&quot;默认标准日志&quot;</span><span class="hl-1">);</span><br/><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-7">logConfig</span><span class="hl-1">(</span><span class="hl-6">&quot;灰色配置日志&quot;</span><span class="hl-1">);</span><br/><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-7">logNet</span><span class="hl-1">(</span><span class="hl-6">&quot;橙色网络日志&quot;</span><span class="hl-1">);</span><br/><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-7">logModel</span><span class="hl-1">(</span><span class="hl-6">&quot;紫色数据日志&quot;</span><span class="hl-1">);</span><br/><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-7">logBusiness</span><span class="hl-1">(</span><span class="hl-6">&quot;蓝色业务日志&quot;</span><span class="hl-1">);</span><br/><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-7">logView</span><span class="hl-1">(</span><span class="hl-6">&quot;绿色视图日志&quot;</span><span class="hl-1">);</span>
 </code></pre>
 </div></section>
 <section class="tsd-panel tsd-hierarchy">
@@ -102,7 +102,7 @@
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>打印范围内时间消耗</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-5">start</span><span class="hl-1">();</span><br/><span class="hl-1">...</span><br/><span class="hl-0">省略N行代码</span><br/><span class="hl-1">...</span><br/><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-5">end</span><span class="hl-1">();</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-7">start</span><span class="hl-1">();</span><br/><span class="hl-1">...</span><br/><span class="hl-0">省略N行代码</span><br/><span class="hl-1">...</span><br/><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-7">end</span><span class="hl-1">();</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -332,7 +332,7 @@
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>设置显示的日志类型，默认值为不显示任何类型日志</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-5">setTags</span><span class="hl-1">(</span><span class="hl-0">LogType</span><span class="hl-1">.</span><span class="hl-0">View</span><span class="hl-1">|</span><span class="hl-0">LogType</span><span class="hl-1">.</span><span class="hl-0">Business</span><span class="hl-1">)</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-7">setTags</span><span class="hl-1">(</span><span class="hl-0">LogType</span><span class="hl-1">.</span><span class="hl-0">View</span><span class="hl-1">|</span><span class="hl-0">LogType</span><span class="hl-1">.</span><span class="hl-0">Business</span><span class="hl-1">)</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -363,7 +363,7 @@
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>记录开始计时</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-5">start</span><span class="hl-1">();</span><br/><span class="hl-1">...</span><br/><span class="hl-0">省略N行代码</span><br/><span class="hl-1">...</span><br/><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-5">end</span><span class="hl-1">();</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-7">start</span><span class="hl-1">();</span><br/><span class="hl-1">...</span><br/><span class="hl-0">省略N行代码</span><br/><span class="hl-1">...</span><br/><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-7">end</span><span class="hl-1">();</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -383,7 +383,7 @@
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>打印表格</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">object</span><span class="hl-1">:</span><span class="hl-2">any</span><span class="hl-1"> = {</span><span class="hl-0">uid:</span><span class="hl-7">1000</span><span class="hl-1">, </span><span class="hl-0">name:</span><span class="hl-4">&quot;oops&quot;</span><span class="hl-1">};</span><br/><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-5">table</span><span class="hl-1">(</span><span class="hl-0">object</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-0">object</span><span class="hl-1">:</span><span class="hl-4">any</span><span class="hl-1"> = {</span><span class="hl-0">uid:</span><span class="hl-9">1000</span><span class="hl-1">, </span><span class="hl-0">name:</span><span class="hl-6">&quot;oops&quot;</span><span class="hl-1">};</span><br/><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">.</span><span class="hl-7">table</span><span class="hl-1">(</span><span class="hl-0">object</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">

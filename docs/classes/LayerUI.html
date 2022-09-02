@@ -780,7 +780,7 @@ but this is often caused by a particular logical requirements, which is not norm
 <h3>Default</h3><p>true</p>
 
 <h3>Read Only</h3>
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">Node</span><span class="hl-1">, </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-4">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-8">node</span><span class="hl-1"> = </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-5">Node</span><span class="hl-1">();</span><br/><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-0">isValid</span><span class="hl-1">);    </span><span class="hl-9">// true</span><br/><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">destroy</span><span class="hl-1">();</span><br/><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-0">isValid</span><span class="hl-1">);    </span><span class="hl-9">// true, still valid in this frame</span><br/><span class="hl-9">// after a frame...</span><br/><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-0">isValid</span><span class="hl-1">);    </span><span class="hl-9">// false, destroyed in the end of last frame</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">Node</span><span class="hl-1">, </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-6">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-8">const</span><span class="hl-1"> </span><span class="hl-10">node</span><span class="hl-1"> = </span><span class="hl-8">new</span><span class="hl-1"> </span><span class="hl-7">Node</span><span class="hl-1">();</span><br/><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-0">isValid</span><span class="hl-1">);    </span><span class="hl-3">// true</span><br/><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">destroy</span><span class="hl-1">();</span><br/><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-0">isValid</span><span class="hl-1">);    </span><span class="hl-3">// true, still valid in this frame</span><br/><span class="hl-3">// after a frame...</span><br/><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-0">isValid</span><span class="hl-1">);    </span><span class="hl-3">// false, destroyed in the end of last frame</span>
 </code></pre>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
@@ -1206,7 +1206,7 @@ but this is often caused by a particular logical requirements, which is not norm
 
 <h3>Deprecated</h3><p>since v3.5.0, this is an engine private interface that will be removed in the future.</p>
 
-<h3>Example</h3><pre><code><span class="hl-9">// You can override the _destruct method if you need, for example:</span><br/><span class="hl-1">      </span><span class="hl-10">_destruct</span><span class="hl-1">: </span><span class="hl-6">function</span><span class="hl-1"> () {</span><br/><span class="hl-1">          </span><span class="hl-3">for</span><span class="hl-1"> (</span><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">key</span><span class="hl-1"> </span><span class="hl-6">in</span><span class="hl-1"> </span><span class="hl-6">this</span><span class="hl-1">) {</span><br/><span class="hl-1">              </span><span class="hl-3">if</span><span class="hl-1"> (</span><span class="hl-6">this</span><span class="hl-1">.</span><span class="hl-5">hasOwnProperty</span><span class="hl-1">(</span><span class="hl-0">key</span><span class="hl-1">)) {</span><br/><span class="hl-1">                  </span><span class="hl-3">switch</span><span class="hl-1"> (</span><span class="hl-6">typeof</span><span class="hl-1"> </span><span class="hl-6">this</span><span class="hl-1">[</span><span class="hl-0">key</span><span class="hl-1">]) {</span><br/><span class="hl-1">                      </span><span class="hl-3">case</span><span class="hl-1"> </span><span class="hl-4">&#39;string&#39;</span><span class="hl-1">:</span><br/><span class="hl-1">                          </span><span class="hl-6">this</span><span class="hl-1">[</span><span class="hl-0">key</span><span class="hl-1">] = </span><span class="hl-4">&#39;&#39;</span><span class="hl-1">;</span><br/><span class="hl-1">                          </span><span class="hl-3">break</span><span class="hl-1">;</span><br/><span class="hl-1">                      </span><span class="hl-3">case</span><span class="hl-1"> </span><span class="hl-4">&#39;object&#39;</span><span class="hl-1">:</span><br/><span class="hl-1">                      </span><span class="hl-3">case</span><span class="hl-1"> </span><span class="hl-4">&#39;function&#39;</span><span class="hl-1">:</span><br/><span class="hl-1">                          </span><span class="hl-6">this</span><span class="hl-1">[</span><span class="hl-0">key</span><span class="hl-1">] = </span><span class="hl-6">null</span><span class="hl-1">;</span><br/><span class="hl-1">                          </span><span class="hl-3">break</span><span class="hl-1">;</span><br/><span class="hl-1">              }</span><br/><span class="hl-1">          }</span><br/><span class="hl-1">      }</span>
+<h3>Example</h3><pre><code><span class="hl-3">// You can override the _destruct method if you need, for example:</span><br/><span class="hl-1">      </span><span class="hl-2">_destruct</span><span class="hl-1">: </span><span class="hl-8">function</span><span class="hl-1"> () {</span><br/><span class="hl-1">          </span><span class="hl-5">for</span><span class="hl-1"> (</span><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-0">key</span><span class="hl-1"> </span><span class="hl-8">in</span><span class="hl-1"> </span><span class="hl-8">this</span><span class="hl-1">) {</span><br/><span class="hl-1">              </span><span class="hl-5">if</span><span class="hl-1"> (</span><span class="hl-8">this</span><span class="hl-1">.</span><span class="hl-7">hasOwnProperty</span><span class="hl-1">(</span><span class="hl-0">key</span><span class="hl-1">)) {</span><br/><span class="hl-1">                  </span><span class="hl-5">switch</span><span class="hl-1"> (</span><span class="hl-8">typeof</span><span class="hl-1"> </span><span class="hl-8">this</span><span class="hl-1">[</span><span class="hl-0">key</span><span class="hl-1">]) {</span><br/><span class="hl-1">                      </span><span class="hl-5">case</span><span class="hl-1"> </span><span class="hl-6">&#39;string&#39;</span><span class="hl-1">:</span><br/><span class="hl-1">                          </span><span class="hl-8">this</span><span class="hl-1">[</span><span class="hl-0">key</span><span class="hl-1">] = </span><span class="hl-6">&#39;&#39;</span><span class="hl-1">;</span><br/><span class="hl-1">                          </span><span class="hl-5">break</span><span class="hl-1">;</span><br/><span class="hl-1">                      </span><span class="hl-5">case</span><span class="hl-1"> </span><span class="hl-6">&#39;object&#39;</span><span class="hl-1">:</span><br/><span class="hl-1">                      </span><span class="hl-5">case</span><span class="hl-1"> </span><span class="hl-6">&#39;function&#39;</span><span class="hl-1">:</span><br/><span class="hl-1">                          </span><span class="hl-8">this</span><span class="hl-1">[</span><span class="hl-0">key</span><span class="hl-1">] = </span><span class="hl-8">null</span><span class="hl-1">;</span><br/><span class="hl-1">                          </span><span class="hl-5">break</span><span class="hl-1">;</span><br/><span class="hl-1">              }</span><br/><span class="hl-1">          }</span><br/><span class="hl-1">      }</span>
 </code></pre>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
@@ -1454,7 +1454,7 @@ The derived <code>Scene</code> overrides this method to behavior differently.</p
 
 <h3>Throws</h3><p><code>TypeError</code> if the <code>classConstructor</code> does not specify a cc-class constructor extending the <code>Component</code>.</p>
 
-<h3>Example</h3><pre><code><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">sprite</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">addComponent</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-0">sprite</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">addComponent</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-type-parameters">
@@ -1484,7 +1484,7 @@ The derived <code>Scene</code> overrides this method to behavior differently.</p
 
 <h3>Throws</h3><p><code>TypeError</code> if the <code>className</code> does not specify a cc-class constructor extending the <code>Component</code>.</p>
 
-<h3>Example</h3><pre><code><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">test</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">addComponent</span><span class="hl-1">(</span><span class="hl-4">&quot;Test&quot;</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-0">test</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">addComponent</span><span class="hl-1">(</span><span class="hl-6">&quot;Test&quot;</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -1511,7 +1511,7 @@ the property will be set via setter function.</p>
 
 <h3>Zh</h3><p>属性配置函数。在 attrs 的所有属性将被设置为节点属性。</p>
 
-<h3>Example</h3><pre><code><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">attrs</span><span class="hl-1"> = { </span><span class="hl-0">name:</span><span class="hl-1"> </span><span class="hl-4">&#39;New Name&#39;</span><span class="hl-1">, </span><span class="hl-0">active:</span><span class="hl-1"> </span><span class="hl-6">false</span><span class="hl-1"> };</span><br/><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">attr</span><span class="hl-1">(</span><span class="hl-0">attrs</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-0">attrs</span><span class="hl-1"> = { </span><span class="hl-0">name:</span><span class="hl-1"> </span><span class="hl-6">&#39;New Name&#39;</span><span class="hl-1">, </span><span class="hl-0">active:</span><span class="hl-1"> </span><span class="hl-8">false</span><span class="hl-1"> };</span><br/><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">attr</span><span class="hl-1">(</span><span class="hl-0">attrs</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -1616,7 +1616,7 @@ The event target is the EventTarget object upon which the dispatchEvent() method
 
 <h3>Zh</h3><p>通过事件名发送自定义事件</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-0">eventTarget</span><span class="hl-1">.</span><span class="hl-5">emit</span><span class="hl-1">(</span><span class="hl-4">&#39;fire&#39;</span><span class="hl-1">, </span><span class="hl-0">event</span><span class="hl-1">);</span><br/><span class="hl-0">eventTarget</span><span class="hl-1">.</span><span class="hl-5">emit</span><span class="hl-1">(</span><span class="hl-4">&#39;fire&#39;</span><span class="hl-1">, </span><span class="hl-0">message</span><span class="hl-1">, </span><span class="hl-0">emitter</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-0">eventTarget</span><span class="hl-1">.</span><span class="hl-7">emit</span><span class="hl-1">(</span><span class="hl-6">&#39;fire&#39;</span><span class="hl-1">, </span><span class="hl-0">event</span><span class="hl-1">);</span><br/><span class="hl-0">eventTarget</span><span class="hl-1">.</span><span class="hl-7">emit</span><span class="hl-1">(</span><span class="hl-6">&#39;fire&#39;</span><span class="hl-1">, </span><span class="hl-0">message</span><span class="hl-1">, </span><span class="hl-0">emitter</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -1709,7 +1709,7 @@ The event target is the EventTarget object upon which the dispatchEvent() method
 
 <h3>Returns</h3><p>a CCNode object whose name equals to the input parameter</p>
 
-<h3>Example</h3><pre><code><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">child</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">getChildByName</span><span class="hl-1">(</span><span class="hl-4">&quot;Test Node&quot;</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-0">child</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">getChildByName</span><span class="hl-1">(</span><span class="hl-6">&quot;Test Node&quot;</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -1735,7 +1735,7 @@ The event target is the EventTarget object upon which the dispatchEvent() method
 
 <h3>Returns</h3><p>a Node object whose path equals to the input parameter</p>
 
-<h3>Example</h3><pre><code><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">child</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">getChildByPath</span><span class="hl-1">(</span><span class="hl-4">&quot;subNode/Test Node&quot;</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-0">child</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">getChildByPath</span><span class="hl-1">(</span><span class="hl-6">&quot;subNode/Test Node&quot;</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -1784,7 +1784,7 @@ You can also get component in the node by passing in the name of the script.</p>
 <h3>Zh</h3><p>获取节点上指定类型的组件，如果节点有附加指定类型的组件，则返回，如果没有则为空。
 传入参数也可以是脚本的名称。</p>
 
-<h3>Example</h3><pre><code><span class="hl-9">// get sprite component.</span><br/><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">sprite</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">getComponent</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code><span class="hl-3">// get sprite component.</span><br/><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-0">sprite</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">getComponent</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-type-parameters">
@@ -1814,7 +1814,7 @@ You can also get component in the node by passing in the name of the script.</p>
 <h3>Zh</h3><p>获取节点上指定类型的组件，如果节点有附加指定类型的组件，则返回，如果没有则为空。
 传入参数也可以是脚本的名称。</p>
 
-<h3>Example</h3><pre><code><span class="hl-9">// get custom test class.</span><br/><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">test</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">getComponent</span><span class="hl-1">(</span><span class="hl-4">&quot;Test&quot;</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code><span class="hl-3">// get custom test class.</span><br/><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-0">test</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">getComponent</span><span class="hl-1">(</span><span class="hl-6">&quot;Test&quot;</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -1838,7 +1838,7 @@ You can also get component in the node by passing in the name of the script.</p>
 
 <h3>Zh</h3><p>递归查找所有子节点中第一个匹配指定类型的组件。</p>
 
-<h3>Example</h3><pre><code><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">sprite</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">getComponentInChildren</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-0">sprite</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">getComponentInChildren</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-type-parameters">
@@ -1866,7 +1866,7 @@ You can also get component in the node by passing in the name of the script.</p>
 
 <h3>Zh</h3><p>递归查找所有子节点中第一个匹配指定类型的组件。</p>
 
-<h3>Example</h3><pre><code><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">Test</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">getComponentInChildren</span><span class="hl-1">(</span><span class="hl-4">&quot;Test&quot;</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-0">Test</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">getComponentInChildren</span><span class="hl-1">(</span><span class="hl-6">&quot;Test&quot;</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -1936,7 +1936,7 @@ You can also get component in the node by passing in the name of the script.</p>
 
 <h3>Zh</h3><p>递归查找自身或所有子节点中指定类型的组件</p>
 
-<h3>Example</h3><pre><code><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">sprites</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">getComponentsInChildren</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-0">sprites</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">getComponentsInChildren</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-type-parameters">
@@ -1964,7 +1964,7 @@ You can also get component in the node by passing in the name of the script.</p>
 
 <h3>Zh</h3><p>递归查找自身或所有子节点中指定类型的组件</p>
 
-<h3>Example</h3><pre><code><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">tests</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">getComponentsInChildren</span><span class="hl-1">(</span><span class="hl-4">&quot;Test&quot;</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-0">tests</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">getComponentsInChildren</span><span class="hl-1">(</span><span class="hl-6">&quot;Test&quot;</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -2300,7 +2300,7 @@ You can also get component in the node by passing in the name of the script.</p>
 
 <h3>Zh</h3><p>插入子节点到指定位置</p>
 
-<h3>Example</h3><pre><code><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">insertChild</span><span class="hl-1">(</span><span class="hl-0">child</span><span class="hl-1">, </span><span class="hl-7">2</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">insertChild</span><span class="hl-1">(</span><span class="hl-0">child</span><span class="hl-1">, </span><span class="hl-9">2</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -2443,7 +2443,7 @@ This method is merely an alias to removeEventListener.</p>
 
 <h3>Zh</h3><p>删除之前与同类型，回调，目标或 useCapture 注册的回调。</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-6">this</span><span class="hl-1">.</span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">off</span><span class="hl-1">(</span><span class="hl-0">NodeEventType</span><span class="hl-1">.</span><span class="hl-8">TOUCH_START</span><span class="hl-1">, </span><span class="hl-6">this</span><span class="hl-1">.</span><span class="hl-0">memberFunction</span><span class="hl-1">, </span><span class="hl-6">this</span><span class="hl-1">);</span><br/><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">off</span><span class="hl-1">(</span><span class="hl-0">NodeEventType</span><span class="hl-1">.</span><span class="hl-8">TOUCH_START</span><span class="hl-1">, </span><span class="hl-0">callback</span><span class="hl-1">, </span><span class="hl-6">this</span><span class="hl-1">.</span><span class="hl-0">node</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-8">this</span><span class="hl-1">.</span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">off</span><span class="hl-1">(</span><span class="hl-0">NodeEventType</span><span class="hl-1">.</span><span class="hl-10">TOUCH_START</span><span class="hl-1">, </span><span class="hl-8">this</span><span class="hl-1">.</span><span class="hl-0">memberFunction</span><span class="hl-1">, </span><span class="hl-8">this</span><span class="hl-1">);</span><br/><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">off</span><span class="hl-1">(</span><span class="hl-0">NodeEventType</span><span class="hl-1">.</span><span class="hl-10">TOUCH_START</span><span class="hl-1">, </span><span class="hl-0">callback</span><span class="hl-1">, </span><span class="hl-8">this</span><span class="hl-1">.</span><span class="hl-0">node</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -2503,7 +2503,7 @@ You can also pass event callback parameters with <code>emit</code> by passing pa
 <li>Just returns the incoming callback so you can save the anonymous function easier.</li>
 </ul>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-6">this</span><span class="hl-1">.</span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">on</span><span class="hl-1">(</span><span class="hl-0">NodeEventType</span><span class="hl-1">.</span><span class="hl-8">TOUCH_START</span><span class="hl-1">, </span><span class="hl-6">this</span><span class="hl-1">.</span><span class="hl-0">memberFunction</span><span class="hl-1">, </span><span class="hl-6">this</span><span class="hl-1">);  </span><span class="hl-9">// if &quot;this&quot; is component and the &quot;memberFunction&quot; declared in CCClass.</span><br/><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">on</span><span class="hl-1">(</span><span class="hl-0">NodeEventType</span><span class="hl-1">.</span><span class="hl-8">TOUCH_START</span><span class="hl-1">, </span><span class="hl-0">callback</span><span class="hl-1">, </span><span class="hl-6">this</span><span class="hl-1">);</span><br/><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">on</span><span class="hl-1">(</span><span class="hl-0">NodeEventType</span><span class="hl-1">.</span><span class="hl-8">TOUCH_MOVE</span><span class="hl-1">, </span><span class="hl-0">callback</span><span class="hl-1">, </span><span class="hl-6">this</span><span class="hl-1">);</span><br/><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">on</span><span class="hl-1">(</span><span class="hl-0">NodeEventType</span><span class="hl-1">.</span><span class="hl-8">TOUCH_END</span><span class="hl-1">, </span><span class="hl-0">callback</span><span class="hl-1">, </span><span class="hl-6">this</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-8">this</span><span class="hl-1">.</span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">on</span><span class="hl-1">(</span><span class="hl-0">NodeEventType</span><span class="hl-1">.</span><span class="hl-10">TOUCH_START</span><span class="hl-1">, </span><span class="hl-8">this</span><span class="hl-1">.</span><span class="hl-0">memberFunction</span><span class="hl-1">, </span><span class="hl-8">this</span><span class="hl-1">);  </span><span class="hl-3">// if &quot;this&quot; is component and the &quot;memberFunction&quot; declared in CCClass.</span><br/><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">on</span><span class="hl-1">(</span><span class="hl-0">NodeEventType</span><span class="hl-1">.</span><span class="hl-10">TOUCH_START</span><span class="hl-1">, </span><span class="hl-0">callback</span><span class="hl-1">, </span><span class="hl-8">this</span><span class="hl-1">);</span><br/><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">on</span><span class="hl-1">(</span><span class="hl-0">NodeEventType</span><span class="hl-1">.</span><span class="hl-10">TOUCH_MOVE</span><span class="hl-1">, </span><span class="hl-0">callback</span><span class="hl-1">, </span><span class="hl-8">this</span><span class="hl-1">);</span><br/><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">on</span><span class="hl-1">(</span><span class="hl-0">NodeEventType</span><span class="hl-1">.</span><span class="hl-10">TOUCH_END</span><span class="hl-1">, </span><span class="hl-0">callback</span><span class="hl-1">, </span><span class="hl-8">this</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -2689,7 +2689,7 @@ You can also use component.destroy() if you already have the reference.</p>
 
 <h3>Deprecated</h3><p>please destroy the component to remove it.</p>
 
-<h3>Example</h3><pre><code><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">removeComponent</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">removeComponent</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-type-parameters">
@@ -2721,7 +2721,7 @@ You can also use component.destroy() if you already have the reference.</p>
 
 <h3>Deprecated</h3><p>please destroy the component to remove it.</p>
 
-<h3>Example</h3><pre><code><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">Sprite</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-4">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-8">sprite</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">getComponent</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span><br/><span class="hl-3">if</span><span class="hl-1"> (</span><span class="hl-0">sprite</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">removeComponent</span><span class="hl-1">(</span><span class="hl-0">sprite</span><span class="hl-1">);</span><br/><span class="hl-1">}</span><br/><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">removeComponent</span><span class="hl-1">(</span><span class="hl-4">&#39;Sprite&#39;</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">Sprite</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-6">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-8">const</span><span class="hl-1"> </span><span class="hl-10">sprite</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">getComponent</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span><br/><span class="hl-5">if</span><span class="hl-1"> (</span><span class="hl-0">sprite</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">removeComponent</span><span class="hl-1">(</span><span class="hl-0">sprite</span><span class="hl-1">);</span><br/><span class="hl-1">}</span><br/><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">removeComponent</span><span class="hl-1">(</span><span class="hl-6">&#39;Sprite&#39;</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -3325,7 +3325,7 @@ Please don&#39;t walk any other node inside the walk process.</p>
 这个函数的实现不是基于递归的，而是基于栈展开递归的方式。
 请不要在 walk 过程中对任何其他的节点嵌套执行 walk。</p>
 
-<h3>Example</h3><pre><code><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">walk</span><span class="hl-1">(</span><span class="hl-6">function</span><span class="hl-1"> (</span><span class="hl-0">target</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-4">&#39;Walked through node &#39;</span><span class="hl-1"> + </span><span class="hl-0">target</span><span class="hl-1">.</span><span class="hl-0">name</span><span class="hl-1"> + </span><span class="hl-4">&#39; for the first time&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">}, </span><span class="hl-6">function</span><span class="hl-1"> (</span><span class="hl-0">target</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-4">&#39;Walked through node &#39;</span><span class="hl-1"> + </span><span class="hl-0">target</span><span class="hl-1">.</span><span class="hl-0">name</span><span class="hl-1"> + </span><span class="hl-4">&#39; after walked all children in its sub tree&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">});</span>
+<h3>Example</h3><pre><code><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">walk</span><span class="hl-1">(</span><span class="hl-8">function</span><span class="hl-1"> (</span><span class="hl-0">target</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-6">&#39;Walked through node &#39;</span><span class="hl-1"> + </span><span class="hl-0">target</span><span class="hl-1">.</span><span class="hl-0">name</span><span class="hl-1"> + </span><span class="hl-6">&#39; for the first time&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">}, </span><span class="hl-8">function</span><span class="hl-1"> (</span><span class="hl-0">target</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-6">&#39;Walked through node &#39;</span><span class="hl-1"> + </span><span class="hl-0">target</span><span class="hl-1">.</span><span class="hl-0">name</span><span class="hl-1"> + </span><span class="hl-6">&#39; after walked all children in its sub tree&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">});</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">

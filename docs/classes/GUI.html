@@ -188,7 +188,7 @@
 
 <h3>Zh</h3><p>该组件被附加到的节点。组件总会附加到一个节点。</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-4">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-0">comp</span><span class="hl-1">.</span><span class="hl-0">node</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-6">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-0">comp</span><span class="hl-1">.</span><span class="hl-0">node</span><span class="hl-1">);</span>
 </code></pre>
 </div><aside class="tsd-sources">
 <p>Inherited from Component.node</p>
@@ -252,7 +252,7 @@
 <h3>Zh</h3><p>返回一个值用来判断 onLoad 是否被调用过，不等于 0 时调用过，等于 0 时未调用。</p>
 
 <h3>Read Only</h3>
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-4">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-6">this</span><span class="hl-1">.</span><span class="hl-0">_isOnLoadCalled</span><span class="hl-1"> &gt; </span><span class="hl-7">0</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-6">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-8">this</span><span class="hl-1">.</span><span class="hl-0">_isOnLoadCalled</span><span class="hl-1"> &gt; </span><span class="hl-9">0</span><span class="hl-1">);</span>
 </code></pre>
 
 <h3>Deprecated</h3><p>since v3.5.0, this is an engine private interface that will be removed in the future.</p>
@@ -273,7 +273,7 @@
 
 <h3>Default</h3><p>true</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-4">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-0">comp</span><span class="hl-1">.</span><span class="hl-0">enabled</span><span class="hl-1"> = </span><span class="hl-6">true</span><span class="hl-1">;</span><br/><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-0">comp</span><span class="hl-1">.</span><span class="hl-0">enabled</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-6">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-0">comp</span><span class="hl-1">.</span><span class="hl-0">enabled</span><span class="hl-1"> = </span><span class="hl-8">true</span><span class="hl-1">;</span><br/><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-0">comp</span><span class="hl-1">.</span><span class="hl-0">enabled</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
@@ -302,7 +302,7 @@
 <h3>Zh</h3><p>表示该组件是否被启用并且所在的节点也处于激活状态。</p>
 
 <h3>Read Only</h3>
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-4">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-0">comp</span><span class="hl-1">.</span><span class="hl-0">enabledInHierarchy</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-6">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-0">comp</span><span class="hl-1">.</span><span class="hl-0">enabledInHierarchy</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
@@ -354,7 +354,7 @@ but this is often caused by a particular logical requirements, which is not norm
 <h3>Default</h3><p>true</p>
 
 <h3>Read Only</h3>
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">Node</span><span class="hl-1">, </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-4">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-8">node</span><span class="hl-1"> = </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-5">Node</span><span class="hl-1">();</span><br/><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-0">isValid</span><span class="hl-1">);    </span><span class="hl-9">// true</span><br/><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">destroy</span><span class="hl-1">();</span><br/><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-0">isValid</span><span class="hl-1">);    </span><span class="hl-9">// true, still valid in this frame</span><br/><span class="hl-9">// after a frame...</span><br/><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-0">isValid</span><span class="hl-1">);    </span><span class="hl-9">// false, destroyed in the end of last frame</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">Node</span><span class="hl-1">, </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-6">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-8">const</span><span class="hl-1"> </span><span class="hl-10">node</span><span class="hl-1"> = </span><span class="hl-8">new</span><span class="hl-1"> </span><span class="hl-7">Node</span><span class="hl-1">();</span><br/><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-0">isValid</span><span class="hl-1">);    </span><span class="hl-3">// true</span><br/><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">destroy</span><span class="hl-1">();</span><br/><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-0">isValid</span><span class="hl-1">);    </span><span class="hl-3">// true, still valid in this frame</span><br/><span class="hl-3">// after a frame...</span><br/><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-0">isValid</span><span class="hl-1">);    </span><span class="hl-3">// false, destroyed in the end of last frame</span>
 </code></pre>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
@@ -412,7 +412,7 @@ but this is often caused by a particular logical requirements, which is not norm
 <h3>Zh</h3><p>组件的 uuid，用于编辑器。</p>
 
 <h3>Read Only</h3>
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-4">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-0">comp</span><span class="hl-1">.</span><span class="hl-0">uuid</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-6">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-0">comp</span><span class="hl-1">.</span><span class="hl-0">uuid</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
@@ -467,7 +467,7 @@ This method should be removed if script priority is supported.</p>
 
 <h3>Deprecated</h3><p>since v3.5.0, this is an engine private interface that will be removed in the future.</p>
 
-<h3>Example</h3><pre><code><span class="hl-9">// You can override the _destruct method if you need, for example:</span><br/><span class="hl-1">      </span><span class="hl-10">_destruct</span><span class="hl-1">: </span><span class="hl-6">function</span><span class="hl-1"> () {</span><br/><span class="hl-1">          </span><span class="hl-3">for</span><span class="hl-1"> (</span><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">key</span><span class="hl-1"> </span><span class="hl-6">in</span><span class="hl-1"> </span><span class="hl-6">this</span><span class="hl-1">) {</span><br/><span class="hl-1">              </span><span class="hl-3">if</span><span class="hl-1"> (</span><span class="hl-6">this</span><span class="hl-1">.</span><span class="hl-5">hasOwnProperty</span><span class="hl-1">(</span><span class="hl-0">key</span><span class="hl-1">)) {</span><br/><span class="hl-1">                  </span><span class="hl-3">switch</span><span class="hl-1"> (</span><span class="hl-6">typeof</span><span class="hl-1"> </span><span class="hl-6">this</span><span class="hl-1">[</span><span class="hl-0">key</span><span class="hl-1">]) {</span><br/><span class="hl-1">                      </span><span class="hl-3">case</span><span class="hl-1"> </span><span class="hl-4">&#39;string&#39;</span><span class="hl-1">:</span><br/><span class="hl-1">                          </span><span class="hl-6">this</span><span class="hl-1">[</span><span class="hl-0">key</span><span class="hl-1">] = </span><span class="hl-4">&#39;&#39;</span><span class="hl-1">;</span><br/><span class="hl-1">                          </span><span class="hl-3">break</span><span class="hl-1">;</span><br/><span class="hl-1">                      </span><span class="hl-3">case</span><span class="hl-1"> </span><span class="hl-4">&#39;object&#39;</span><span class="hl-1">:</span><br/><span class="hl-1">                      </span><span class="hl-3">case</span><span class="hl-1"> </span><span class="hl-4">&#39;function&#39;</span><span class="hl-1">:</span><br/><span class="hl-1">                          </span><span class="hl-6">this</span><span class="hl-1">[</span><span class="hl-0">key</span><span class="hl-1">] = </span><span class="hl-6">null</span><span class="hl-1">;</span><br/><span class="hl-1">                          </span><span class="hl-3">break</span><span class="hl-1">;</span><br/><span class="hl-1">              }</span><br/><span class="hl-1">          }</span><br/><span class="hl-1">      }</span>
+<h3>Example</h3><pre><code><span class="hl-3">// You can override the _destruct method if you need, for example:</span><br/><span class="hl-1">      </span><span class="hl-2">_destruct</span><span class="hl-1">: </span><span class="hl-8">function</span><span class="hl-1"> () {</span><br/><span class="hl-1">          </span><span class="hl-5">for</span><span class="hl-1"> (</span><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-0">key</span><span class="hl-1"> </span><span class="hl-8">in</span><span class="hl-1"> </span><span class="hl-8">this</span><span class="hl-1">) {</span><br/><span class="hl-1">              </span><span class="hl-5">if</span><span class="hl-1"> (</span><span class="hl-8">this</span><span class="hl-1">.</span><span class="hl-7">hasOwnProperty</span><span class="hl-1">(</span><span class="hl-0">key</span><span class="hl-1">)) {</span><br/><span class="hl-1">                  </span><span class="hl-5">switch</span><span class="hl-1"> (</span><span class="hl-8">typeof</span><span class="hl-1"> </span><span class="hl-8">this</span><span class="hl-1">[</span><span class="hl-0">key</span><span class="hl-1">]) {</span><br/><span class="hl-1">                      </span><span class="hl-5">case</span><span class="hl-1"> </span><span class="hl-6">&#39;string&#39;</span><span class="hl-1">:</span><br/><span class="hl-1">                          </span><span class="hl-8">this</span><span class="hl-1">[</span><span class="hl-0">key</span><span class="hl-1">] = </span><span class="hl-6">&#39;&#39;</span><span class="hl-1">;</span><br/><span class="hl-1">                          </span><span class="hl-5">break</span><span class="hl-1">;</span><br/><span class="hl-1">                      </span><span class="hl-5">case</span><span class="hl-1"> </span><span class="hl-6">&#39;object&#39;</span><span class="hl-1">:</span><br/><span class="hl-1">                      </span><span class="hl-5">case</span><span class="hl-1"> </span><span class="hl-6">&#39;function&#39;</span><span class="hl-1">:</span><br/><span class="hl-1">                          </span><span class="hl-8">this</span><span class="hl-1">[</span><span class="hl-0">key</span><span class="hl-1">] = </span><span class="hl-8">null</span><span class="hl-1">;</span><br/><span class="hl-1">                          </span><span class="hl-5">break</span><span class="hl-1">;</span><br/><span class="hl-1">              }</span><br/><span class="hl-1">          }</span><br/><span class="hl-1">      }</span>
 </code></pre>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
@@ -548,7 +548,7 @@ a custom axis aligned bounding box (AABB), so the editor&#39;s scene view can pe
 
 <h3>Zh</h3><p>向节点添加一个指定类型的组件类，你还可以通过传入脚本的名称来添加组件。</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">Sprite</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-4">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-8">sprite</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">addComponent</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">Sprite</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-6">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-8">const</span><span class="hl-1"> </span><span class="hl-10">sprite</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">addComponent</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-type-parameters">
@@ -576,7 +576,7 @@ a custom axis aligned bounding box (AABB), so the editor&#39;s scene view can pe
 
 <h3>Zh</h3><p>向节点添加一个指定类型的组件类，你还可以通过传入脚本的名称来添加组件。</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-8">test</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">addComponent</span><span class="hl-1">(</span><span class="hl-4">&quot;Test&quot;</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-8">const</span><span class="hl-1"> </span><span class="hl-10">test</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">addComponent</span><span class="hl-1">(</span><span class="hl-6">&quot;Test&quot;</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -611,7 +611,7 @@ You can also get component in the node by passing in the name of the script.</p>
 <h3>Zh</h3><p>获取节点上指定类型的组件，如果节点有附加指定类型的组件，则返回，如果没有则为空。<br/>
 传入参数也可以是脚本的名称。</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">Sprite</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-4">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-9">// get sprite component.</span><br/><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">sprite</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">getComponent</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">Sprite</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-6">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-3">// get sprite component.</span><br/><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-0">sprite</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">getComponent</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-type-parameters">
@@ -641,7 +641,7 @@ You can also get component in the node by passing in the name of the script.</p>
 <h3>Zh</h3><p>获取节点上指定类型的组件，如果节点有附加指定类型的组件，则返回，如果没有则为空。<br/>
 传入参数也可以是脚本的名称。</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-9">// get custom test calss.</span><br/><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">test</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">getComponent</span><span class="hl-1">(</span><span class="hl-4">&quot;Test&quot;</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-3">// get custom test calss.</span><br/><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-0">test</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">getComponent</span><span class="hl-1">(</span><span class="hl-6">&quot;Test&quot;</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -665,7 +665,7 @@ You can also get component in the node by passing in the name of the script.</p>
 
 <h3>Zh</h3><p>递归查找所有子节点中第一个匹配指定类型的组件。</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">Sprite</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-4">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-8">sprite</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">getComponentInChildren</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">Sprite</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-6">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-8">const</span><span class="hl-1"> </span><span class="hl-10">sprite</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">getComponentInChildren</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-type-parameters">
@@ -693,7 +693,7 @@ You can also get component in the node by passing in the name of the script.</p>
 
 <h3>Zh</h3><p>递归查找所有子节点中第一个匹配指定类型的组件。</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">Test</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">getComponentInChildren</span><span class="hl-1">(</span><span class="hl-4">&quot;Test&quot;</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-8">var</span><span class="hl-1"> </span><span class="hl-0">Test</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">getComponentInChildren</span><span class="hl-1">(</span><span class="hl-6">&quot;Test&quot;</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -717,7 +717,7 @@ You can also get component in the node by passing in the name of the script.</p>
 
 <h3>Zh</h3><p>返回节点上指定类型的所有组件。</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">Sprite</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-4">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-8">sprites</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">getComponents</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">Sprite</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-6">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-8">const</span><span class="hl-1"> </span><span class="hl-10">sprites</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">getComponents</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-type-parameters">
@@ -745,7 +745,7 @@ You can also get component in the node by passing in the name of the script.</p>
 
 <h3>Zh</h3><p>返回节点上指定类型的所有组件。</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-8">tests</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">getComponents</span><span class="hl-1">(</span><span class="hl-4">&quot;Test&quot;</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-8">const</span><span class="hl-1"> </span><span class="hl-10">tests</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">getComponents</span><span class="hl-1">(</span><span class="hl-6">&quot;Test&quot;</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -769,7 +769,7 @@ You can also get component in the node by passing in the name of the script.</p>
 
 <h3>Zh</h3><p>递归查找自身或所有子节点中指定类型的组件。</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">Sprite</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-4">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-8">sprites</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">getComponentsInChildren</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">Sprite</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-6">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-8">const</span><span class="hl-1"> </span><span class="hl-10">sprites</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">getComponentsInChildren</span><span class="hl-1">(</span><span class="hl-0">Sprite</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-type-parameters">
@@ -797,7 +797,7 @@ You can also get component in the node by passing in the name of the script.</p>
 
 <h3>Zh</h3><p>递归查找自身或所有子节点中指定类型的组件。</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-8">tests</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-5">getComponentsInChildren</span><span class="hl-1">(</span><span class="hl-4">&quot;Test&quot;</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-8">const</span><span class="hl-1"> </span><span class="hl-10">tests</span><span class="hl-1"> = </span><span class="hl-0">node</span><span class="hl-1">.</span><span class="hl-7">getComponentsInChildren</span><span class="hl-1">(</span><span class="hl-6">&quot;Test&quot;</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -1007,7 +1007,7 @@ If the task is already scheduled, then the interval parameter will be updated wi
 <h3>Zh</h3><p>使用定时器系统调度一个自定义的回调任务。<br/>
 如果回调任务已调度，那么将不会重复调度它，只会更新时间间隔参数。</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-4">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-6">this</span><span class="hl-1">.</span><span class="hl-5">schedule</span><span class="hl-1">((</span><span class="hl-0">dt</span><span class="hl-1">) </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-6">void</span><span class="hl-1"> </span><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-4">`time: </span><span class="hl-6">${</span><span class="hl-0">dt</span><span class="hl-6">}</span><span class="hl-4">`</span><span class="hl-1">), </span><span class="hl-7">1</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-6">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-8">this</span><span class="hl-1">.</span><span class="hl-7">schedule</span><span class="hl-1">((</span><span class="hl-0">dt</span><span class="hl-1">) </span><span class="hl-8">=&gt;</span><span class="hl-1"> </span><span class="hl-8">void</span><span class="hl-1"> </span><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-6">`time: </span><span class="hl-8">${</span><span class="hl-0">dt</span><span class="hl-8">}</span><span class="hl-6">`</span><span class="hl-1">), </span><span class="hl-9">1</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -1047,7 +1047,7 @@ If the task is already scheduled, then the interval parameter will be updated wi
 
 <h3>See</h3><p><a href="GUI.html#schedule">schedule</a></p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-4">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-6">this</span><span class="hl-1">.</span><span class="hl-5">scheduleOnce</span><span class="hl-1">((</span><span class="hl-0">dt</span><span class="hl-1">) </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-6">void</span><span class="hl-1"> </span><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-4">`time: </span><span class="hl-6">${</span><span class="hl-0">dt</span><span class="hl-6">}</span><span class="hl-4">`</span><span class="hl-1">), </span><span class="hl-7">2</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-6">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-8">this</span><span class="hl-1">.</span><span class="hl-7">scheduleOnce</span><span class="hl-1">((</span><span class="hl-0">dt</span><span class="hl-1">) </span><span class="hl-8">=&gt;</span><span class="hl-1"> </span><span class="hl-8">void</span><span class="hl-1"> </span><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-6">`time: </span><span class="hl-8">${</span><span class="hl-0">dt</span><span class="hl-8">}</span><span class="hl-6">`</span><span class="hl-1">), </span><span class="hl-9">2</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -1093,7 +1093,7 @@ You can only call its super class method inside it. It should not be called manu
 
 <h3>Zh</h3><p>取消调度一个自定义的回调任务。</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-6">this</span><span class="hl-1">.</span><span class="hl-5">unschedule</span><span class="hl-1">(</span><span class="hl-0">_callback</span><span class="hl-1">);</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-8">this</span><span class="hl-1">.</span><span class="hl-7">unschedule</span><span class="hl-1">(</span><span class="hl-0">_callback</span><span class="hl-1">);</span>
 </code></pre>
 </div>
 <div class="tsd-parameters">
@@ -1117,7 +1117,7 @@ You can only call its super class method inside it. It should not be called manu
 
 <h3>Zh</h3><p>取消调度所有已调度的回调函数。</p>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-6">this</span><span class="hl-1">.</span><span class="hl-5">unscheduleAllCallbacks</span><span class="hl-1">();</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-8">this</span><span class="hl-1">.</span><span class="hl-7">unscheduleAllCallbacks</span><span class="hl-1">();</span>
 </code></pre>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">

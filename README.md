@@ -1,11 +1,44 @@
+<!--
+ * @Author: dgflash
+ * @Date: 2022-09-01 18:00:28
+ * @LastEditors: dgflash
+ * @LastEditTime: 2022-09-02 15:13:41
+-->
 #### 介绍
-oops-plugin-framework 是基于 Cocos Creator 3.x 以插件形式使用的游戏框架，此版本框架代码与游戏具体业务逻辑代码分离，方便在项目开发过程随时更新框架最新版本代码。
+Oops Framework 基于 Cocos Creato 3.x 开发的一款游戏框架。
+1. 提供游戏常用功能库，提高开发效率
+2. 提供业务模块代码模板，降低程序设计难度
+3. 框架内置模块低耦合，可自行删减不需要的模块，适应不同类型的游
+4. 框架提供游戏常用插件工具
+    - 热更新配置生成插件
+    - 策划Excel配置表生成Json格式与配套ts代码插件
 
 #### 技术文档
-- [oops-framework update](https://gitee.com/dgflash/oops-framework/tree/master/doc/using.md)
-- [oops-framework](https://gitee.com/dgflash/oops-framework/tree/master/doc/core)
+- [oops-framework](https://dgflash.gitee.io/oops-plugin-framework/)
 - [ecs](https://gitee.com/dgflash/oops-framework/tree/master/doc/ecs/ecs.md)
 - [mvvm](https://gitee.com/dgflash/oops-framework/tree/master/doc/mvvm)
+
+#### 使用说明
+1. 下载教程项目
+```
+git clone https://gitee.com/dgflash/oops-framework.git
+```
+
+2. 下载框架插件
+    ##### windows
+    执行根目录下的 update-oops-plugin-framework.bat 下载最新版本框架插件
+    
+    ##### mac
+    项目下载后执行 update-oops-plugin-framework.sh 下载最新版本框架插件
+
+#### 在线演示
+- [框架部分功能演示](https://oops-1255342636.cos-website.ap-shanghai.myqcloud.com/oops-framework/)
+- [全栈解决方案 oops-moba](https://store.cocos.com/app/detail/3814)
+- [游戏地图模块 oops-rpg-2d](https://store.cocos.com/app/detail/3675)
+- [游戏地图模块 oops-rpg-3d](https://oops-1255342636.cos-website.ap-shanghai.myqcloud.com/oops-solution/?type=2)
+- [新手引导模块 oops-guide](https://store.cocos.com/app/detail/3653)
+- [开源框架 oops-framework gitee](https://gitee.com/dgflash/oops-framework)
+- [开源框架 oops-framework github](https://github.com/dgflash/oops-framework)
 
 ### 框架目录结构
 ```
@@ -46,5 +79,6 @@ module             - 游戏通用模块
     config             - 配置模块
 ```
 
-#### 学习交流 QQ 群：798575969
-![](http://dgflash.gitee.io/oops-full-stack-web/doc/img/qq.png)
+1. 学习交流 QQ 群：798575969
+
+    ![](http://dgflash.gitee.io/oops-full-stack-web/doc/img/qq.png)
