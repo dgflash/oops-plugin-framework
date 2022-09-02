@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2021-08-18 17:00:59
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 10:03:56
+ * @LastEditTime: 2022-09-02 14:48:29
  */
 
 import { error, JsonAsset } from "cc";
@@ -16,11 +16,20 @@ var data: Map<string, any> = new Map();
 
 /** JSON数据表工具 */
 export class JsonUtil {
+    /**
+     * 通知资源名从缓存中获取一个Json数据表
+     * @param name  资源名
+     */
     static get(name: string): any {
         if (data.has(name))
             return data.get(name);
     }
 
+    /**
+     * 通知资源名加载Json数据表
+     * @param name      资源名
+     * @param callback  资源加载完成回调
+     */
     static load(name: string, callback: Function): void {
         if (data.has(name))
             callback(data.get(name));
@@ -36,6 +45,10 @@ export class JsonUtil {
         }
     }
 
+    /**
+     * 异步加载Json数据表
+     * @param name 资源名
+     */
     static loadAsync(name: string) {
         return new Promise((resolve, reject) => {
             if (data.has(name)) {
@@ -54,6 +67,10 @@ export class JsonUtil {
         });
     }
 
+    /**
+     * 通过指定资源名释放资源
+     * @param name 资源名
+     */
     static release(name: string) {
         var url = path + name;
         data.delete(name);

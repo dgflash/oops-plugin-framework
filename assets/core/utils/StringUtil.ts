@@ -12,13 +12,24 @@ export class StringUtil {
         return guid;
     }
 
-    /** 123456789 = 123,456,789 */
-    public static numberTotPermil(num: number): string {
-        return num.toLocaleString();
+    /**
+     * 转美式计数字符串
+     * @param value 数字
+     * @example
+     * 123456789 = 123,456,789
+     */
+    static numberTotPermil(value: number): string {
+        return value.toLocaleString();
     }
 
-    /** 12345 = 12.35K */
-    public static numberToThousand(value: number, fixed: number = 2): string {
+    /** 
+     * 转英文单位计数
+     * @param value 数字
+     * @param fixed 保留小数位数
+     * @example
+     * 12345 = 12.35K
+     */
+    static numberToThousand(value: number, fixed: number = 2): string {
         var k = 1000;
         var sizes = ['', 'K', 'M', 'G'];
         if (value < k) {
@@ -31,8 +42,14 @@ export class StringUtil {
         }
     }
 
-    /** 12345 = 1.23万 */
-    public static numberToTenThousand(value: number, fixed: number = 2): string {
+    /** 
+     * 转中文单位计数
+     * @param value 数字
+     * @param fixed 保留小数位数
+     * @example
+     * 12345 = 1.23万
+     */
+    static numberToTenThousand(value: number, fixed: number = 2): string {
         var k = 10000;
         var sizes = ['', '万', '亿', '万亿'];
         if (value < k) {
@@ -44,8 +61,12 @@ export class StringUtil {
         }
     }
 
-    /** yyyy-MM-dd hh:mm:ss S */
-    public static format(date: Date, fmt: string) {
+    /**
+     * 时间格式化
+     * @param date  时间对象
+     * @param fmt   格式化字符(yyyy-MM-dd hh:mm:ss S)
+     */
+    static format(date: Date, fmt: string) {
         var o: any = {
             "M+": date.getMonth() + 1,                   // 月份 
             "d+": date.getDate(),                        // 日 
@@ -66,40 +87,57 @@ export class StringUtil {
         return fmt;
     }
 
-    /** "," 分割字符串成数组 */
-    public static stringToArray1(str: string) {
+    /**
+     * "," 分割字符串成数组
+     * @param str 字符串
+     */
+    static stringToArray1(str: string) {
         if (str == "") {
             return [];
         }
         return str.split(",");
     }
 
-    /** "|" 分割字符串成数组 */
-    public static stringToArray2(str: string) {
+    /** 
+     * "|" 分割字符串成数组 
+     * @param str 字符串
+     */
+    static stringToArray2(str: string) {
         if (str == "") {
             return [];
         }
         return str.split("|");
     }
 
-    /** ":" 分割字符串成数组 */
-    public static stringToArray3(str: string) {
+    /** 
+     * ":" 分割字符串成数组
+     * @param str 字符串
+     */
+    static stringToArray3(str: string) {
         if (str == "") {
             return [];
         }
         return str.split(":");
     }
 
-    /** ";" 分割字符串成数组 */
-    public static stringToArray4(str: string) {
+    /** 
+     * ";" 分割字符串成数组 
+     * @param str 字符串
+     */
+    static stringToArray4(str: string) {
         if (str == "") {
             return [];
         }
         return str.split(";");
     }
 
-    // 字符串截取
-    public static sub(str: string, n: number, showdot: boolean = false) {
+    /**
+     * 字符串截取
+     * @param str     字符串
+     * @param n       截取长度
+     * @param showdot 是否把截取的部分用省略号代替
+     */
+    static sub(str: string, n: number, showdot: boolean = false) {
         var r = /[^\x00-\xff]/g;
         if (str.replace(r, "mm").length <= n) { return str; }
         var m = Math.floor(n / 2);
@@ -115,10 +153,11 @@ export class StringUtil {
         return str;
     }
 
-    // 计算字符串长度
-    public static stringLen(str: string) {
-        ///<summary>获得字符串实际长度，中文2，英文1</summary>
-        ///<param name="str">要获得长度的字符串</param>
+    /**
+     * 计算字符串长度，中文算两个字节
+     * @param str 字符串
+     */
+    static stringLen(str: string) {
         var realLength = 0, len = str.length, charCode = -1;
         for (var i = 0; i < len; i++) {
             charCode = str.charCodeAt(i);

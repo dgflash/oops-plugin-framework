@@ -56,7 +56,7 @@
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="addNodeAnimation" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>add<wbr/>Node<wbr/>Animation</span><a href="#addNodeAnimation" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-<li class="tsd-signature tsd-anchor-link" id="addNodeAnimation.addNodeAnimation-1">add<wbr/>Node<wbr/>Animation<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, node<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Node</span>, onlyOne<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, isDefaultClip<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#addNodeAnimation.addNodeAnimation-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="addNodeAnimation.addNodeAnimation-1">add<wbr/>Node<wbr/>Animation<span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, node<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Node</span>, onlyOne<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, isDefaultClip<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#addNodeAnimation.addNodeAnimation-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>添加节点动画</p>
 </div>
@@ -64,16 +64,24 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>name: <span class="tsd-signature-type">string</span></h5></li>
+<h5>path: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>资源路径</p>
+</div></li>
 <li>
-<h5>node: <span class="tsd-signature-type">Node</span></h5></li>
+<h5>node: <span class="tsd-signature-type">Node</span></h5>
+<div class="tsd-comment tsd-typography"><p>目标节点</p>
+</div></li>
 <li>
-<h5>onlyOne: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5></li>
+<h5>onlyOne: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+<div class="tsd-comment tsd-typography"><p>是否唯一</p>
+</div></li>
 <li>
-<h5>isDefaultClip: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5></li></ul></div>
+<h5>isDefaultClip: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+<div class="tsd-comment tsd-typography"><p>是否播放默认动画剪辑</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/ViewUtil.ts:112</li></ul></aside></li></ul></section>
+<li>Defined in assets/core/utils/ViewUtil.ts:142</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="calculateASpaceToBSpacePos" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>calculateASpace<wbr/>ToBSpace<wbr/>Pos</span><a href="#calculateASpaceToBSpacePos" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -85,14 +93,20 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>a: <span class="tsd-signature-type">Node</span></h5></li>
+<h5>a: <span class="tsd-signature-type">Node</span></h5>
+<div class="tsd-comment tsd-typography"><p>A节点</p>
+</div></li>
 <li>
-<h5>b: <span class="tsd-signature-type">Node</span></h5></li>
+<h5>b: <span class="tsd-signature-type">Node</span></h5>
+<div class="tsd-comment tsd-typography"><p>B节点</p>
+</div></li>
 <li>
-<h5>aPos: <span class="tsd-signature-type">Vec3</span></h5></li></ul></div>
+<h5>aPos: <span class="tsd-signature-type">Vec3</span></h5>
+<div class="tsd-comment tsd-typography"><p>A节点空间中的相对位置</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Vec3</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/ViewUtil.ts:52</li></ul></aside></li></ul></section>
+<li>Defined in assets/core/utils/ViewUtil.ts:56</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="calculateScreenPosToSpacePos" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>calculate<wbr/>Screen<wbr/>Pos<wbr/>To<wbr/>Space<wbr/>Pos</span><a href="#calculateScreenPosToSpacePos" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -104,27 +118,33 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>event: <span class="tsd-signature-type">EventTouch</span></h5></li>
+<h5>event: <span class="tsd-signature-type">EventTouch</span></h5>
+<div class="tsd-comment tsd-typography"><p>触摸事件</p>
+</div></li>
 <li>
-<h5>space: <span class="tsd-signature-type">Node</span></h5></li></ul></div>
+<h5>space: <span class="tsd-signature-type">Node</span></h5>
+<div class="tsd-comment tsd-typography"><p>转到此节点的坐标空间</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Vec3</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/ViewUtil.ts:59</li></ul></aside></li></ul></section>
+<li>Defined in assets/core/utils/ViewUtil.ts:67</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="createPrefabNode" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>create<wbr/>Prefab<wbr/>Node</span><a href="#createPrefabNode" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-<li class="tsd-signature tsd-anchor-link" id="createPrefabNode.createPrefabNode-1">create<wbr/>Prefab<wbr/>Node<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Node</span><a href="#createPrefabNode.createPrefabNode-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="createPrefabNode.createPrefabNode-1">create<wbr/>Prefab<wbr/>Node<span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Node</span><a href="#createPrefabNode.createPrefabNode-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>创建预制节点</p>
+<div class="tsd-comment tsd-typography"><p>从资源缓存中找到预制资源名并创建一个显示对象</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>name: <span class="tsd-signature-type">string</span></h5></li></ul></div>
+<h5>path: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>资源路径</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Node</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/ViewUtil.ts:77</li></ul></aside></li></ul></section>
+<li>Defined in assets/core/utils/ViewUtil.ts:94</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="createPrefabNodeAsync" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>create<wbr/>Prefab<wbr/>Node<wbr/>Async</span><a href="#createPrefabNodeAsync" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -136,14 +156,16 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>path: <span class="tsd-signature-type">string</span></h5></li></ul></div>
+<h5>path: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>资源路径</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Node</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/ViewUtil.ts:84</li></ul></aside></li></ul></section>
+<li>Defined in assets/core/utils/ViewUtil.ts:104</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="findNodes" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>find<wbr/>Nodes</span><a href="#findNodes" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-<li class="tsd-signature tsd-anchor-link" id="findNodes.findNodes-1">find<wbr/>Nodes<span class="tsd-signature-symbol">(</span>reg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RegExp</span>, parent<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Node</span>, _nodes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Node</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Node</span><span class="tsd-signature-symbol">[]</span><a href="#findNodes.findNodes-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="findNodes.findNodes-1">find<wbr/>Nodes<span class="tsd-signature-symbol">(</span>reg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RegExp</span>, parent<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Node</span>, nodes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Node</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Node</span><span class="tsd-signature-symbol">[]</span><a href="#findNodes.findNodes-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>正则搜索节点名字,符合条件的节点将会返回</p>
 </div>
@@ -159,12 +181,12 @@
 <div class="tsd-comment tsd-typography"><p>要搜索的父节点</p>
 </div></li>
 <li>
-<h5><code class="tsd-tag ts-flagOptional">Optional</code> _nodes: <span class="tsd-signature-type">Node</span><span class="tsd-signature-symbol">[]</span></h5>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> nodes: <span class="tsd-signature-type">Node</span><span class="tsd-signature-symbol">[]</span></h5>
 <div class="tsd-comment tsd-typography"><p>返回的数组（可选）</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Node</span><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/ViewUtil.ts:38</li></ul></aside></li></ul></section>
+<li>Defined in assets/core/utils/ViewUtil.ts:37</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="loadPrefabNode" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>load<wbr/>Prefab<wbr/>Node</span><a href="#loadPrefabNode" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -176,12 +198,16 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>path: <span class="tsd-signature-type">string</span></h5></li>
+<h5>path: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>资源路径</p>
+</div></li>
 <li>
-<h5>callback: <span class="tsd-signature-type">Function</span></h5></li></ul></div>
+<h5>callback: <span class="tsd-signature-type">Function</span></h5>
+<div class="tsd-comment tsd-typography"><p>资源加载完成回调</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/ViewUtil.ts:99</li></ul></aside></li></ul></section>
+<li>Defined in assets/core/utils/ViewUtil.ts:123</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="nodeTreeInfoLite" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>node<wbr/>Tree<wbr/>Info<wbr/>Lite</span><a href="#nodeTreeInfoLite" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -203,7 +229,7 @@ Node的name不应该包含空格键，否则将跳过</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Node</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/ViewUtil.ts:19</li></ul></aside></li></ul></section>
+<li>Defined in assets/core/utils/ViewUtil.ts:18</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="uniformScale" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>uniform<wbr/>Scale</span><a href="#uniformScale" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -215,16 +241,24 @@ Node的name不应该包含空格键，否则将跳过</p>
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>targetWidth: <span class="tsd-signature-type">number</span></h5></li>
+<h5>targetWidth: <span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>目标宽</p>
+</div></li>
 <li>
-<h5>targetHeight: <span class="tsd-signature-type">number</span></h5></li>
+<h5>targetHeight: <span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>目标高</p>
+</div></li>
 <li>
-<h5>defaultWidth: <span class="tsd-signature-type">number</span></h5></li>
+<h5>defaultWidth: <span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>默认宽</p>
+</div></li>
 <li>
-<h5>defaultHeight: <span class="tsd-signature-type">number</span></h5></li></ul></div>
+<h5>defaultHeight: <span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>默认高</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Size</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/ViewUtil.ts:67</li></ul></aside></li></ul></section></section></div>
+<li>Defined in assets/core/utils/ViewUtil.ts:81</li></ul></aside></li></ul></section></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">

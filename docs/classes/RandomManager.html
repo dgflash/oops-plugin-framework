@@ -63,7 +63,7 @@
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>seedrandom</span><a href="#seedrandom" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">seedrandom<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/common/manager/RandomManager.ts:32</li></ul></aside></section>
+<li>Defined in assets/core/common/manager/RandomManager.ts:15</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private"><a id="_instance" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <code class="tsd-tag ts-flagPrivate">Private</code> <span>_instance</span><a href="#_instance" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">_instance<span class="tsd-signature-symbol">:</span> <a href="RandomManager.html" class="tsd-signature-type" data-tsd-kind="Class">RandomManager</a></div><aside class="tsd-sources">
@@ -76,9 +76,11 @@
 <ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
 <li class="tsd-signature" id="instance.instance-1"><span class="tsd-signature-symbol">get</span> instance<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="RandomManager.html" class="tsd-signature-type" data-tsd-kind="Class">RandomManager</a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>随机数管理单例对象</p>
+</div>
 <h4 class="tsd-returns-title">Returns <a href="RandomManager.html" class="tsd-signature-type" data-tsd-kind="Class">RandomManager</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/common/manager/RandomManager.ts:6</li></ul></aside></li></ul></section></section>
+<li>Defined in assets/core/common/manager/RandomManager.ts:8</li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private"><a id="getRandom" class="tsd-anchor"></a>
@@ -88,7 +90,7 @@
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/common/manager/RandomManager.ts:33</li></ul></aside></li></ul></section>
+<li>Defined in assets/core/common/manager/RandomManager.ts:16</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="getRandomByMinMaxList" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Random<wbr/>By<wbr/>Min<wbr/>Max<wbr/>List</span><a href="#getRandomByMinMaxList" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -96,7 +98,8 @@
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>根据最大值，最小值范围生成随机数数组</p>
 
-<h3>Returns</h3><p>Array<number></p>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">a</span><span class="hl-1"> = </span><span class="hl-0">RandomManager</span><span class="hl-1">.</span><span class="hl-0">instance</span><span class="hl-1">.</span><span class="hl-5">getRandomByMinMaxList</span><span class="hl-1">(</span><span class="hl-7">50</span><span class="hl-1">, </span><span class="hl-7">100</span><span class="hl-1">, </span><span class="hl-7">5</span><span class="hl-1">)</span><br/><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-4">&quot;随机的数字&quot;</span><span class="hl-1">, </span><span class="hl-0">a</span><span class="hl-1">);</span>
+</code></pre>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -115,7 +118,7 @@
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/common/manager/RandomManager.ts:74</li></ul></aside></li></ul></section>
+<li>Defined in assets/core/common/manager/RandomManager.ts:70</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="getRandomByObjectList" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Random<wbr/>By<wbr/>Object<wbr/>List</span><a href="#getRandomByObjectList" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -123,7 +126,8 @@
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>获取数组中随机对象</p>
 
-<h3>Returns</h3><p>Array<T></p>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">b</span><span class="hl-1"> = [</span><span class="hl-7">1</span><span class="hl-1">, </span><span class="hl-7">2</span><span class="hl-1">, </span><span class="hl-7">3</span><span class="hl-1">, </span><span class="hl-7">4</span><span class="hl-1">, </span><span class="hl-7">5</span><span class="hl-1">, </span><span class="hl-7">6</span><span class="hl-1">, </span><span class="hl-7">7</span><span class="hl-1">, </span><span class="hl-7">8</span><span class="hl-1">, </span><span class="hl-7">9</span><span class="hl-1">, </span><span class="hl-7">10</span><span class="hl-1">];</span><br/><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">r</span><span class="hl-1"> = </span><span class="hl-0">RandomManager</span><span class="hl-1">.</span><span class="hl-0">instance</span><span class="hl-1">.</span><span class="hl-5">getRandomByObjectList</span><span class="hl-1">(</span><span class="hl-0">b</span><span class="hl-1">, </span><span class="hl-7">5</span><span class="hl-1">);</span><br/><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-4">&quot;原始的对象&quot;</span><span class="hl-1">, </span><span class="hl-0">b</span><span class="hl-1">);</span><br/><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-4">&quot;随机的对象&quot;</span><span class="hl-1">, </span><span class="hl-0">r</span><span class="hl-1">);</span>
+</code></pre>
 </div>
 <div class="tsd-type-parameters">
 <h4 class="tsd-type-parameters-title">Type Parameters</h4>
@@ -153,7 +157,8 @@
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>定和随机分配</p>
 
-<h3>Returns</h3><p>number[]</p>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">c</span><span class="hl-1"> = </span><span class="hl-0">RandomManager</span><span class="hl-1">.</span><span class="hl-0">instance</span><span class="hl-1">.</span><span class="hl-5">getRandomBySumList</span><span class="hl-1">(</span><span class="hl-7">5</span><span class="hl-1">, -</span><span class="hl-7">100</span><span class="hl-1">,);</span><br/><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-4">&quot;定和随机分配&quot;</span><span class="hl-1">, </span><span class="hl-0">c</span><span class="hl-1">);</span>
+</code></pre>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -168,13 +173,16 @@
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/common/manager/RandomManager.ts:104</li></ul></aside></li></ul></section>
+<li>Defined in assets/core/common/manager/RandomManager.ts:106</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="getRandomInt" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Random<wbr/>Int</span><a href="#getRandomInt" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 <li class="tsd-signature tsd-anchor-link" id="getRandomInt.getRandomInt-1">get<wbr/>Random<wbr/>Int<span class="tsd-signature-symbol">(</span>min<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, max<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, type<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><a href="#getRandomInt.getRandomInt-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>生成指定范围的随机整数</p>
+
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">min</span><span class="hl-1"> = </span><span class="hl-7">1</span><span class="hl-1">;</span><br/><span class="hl-6">var</span><span class="hl-1"> </span><span class="hl-0">max</span><span class="hl-1"> = </span><span class="hl-7">10</span><span class="hl-1">;</span><br/><span class="hl-9">// [min,max) 得到一个两数之间的随机整数,这个值不小于min（如果min不是整数的话，得到一个向上取整的 min），并且小于（但不等于）max  </span><br/><span class="hl-0">RandomManager</span><span class="hl-1">.</span><span class="hl-0">instance</span><span class="hl-1">.</span><span class="hl-5">getRandomInt</span><span class="hl-1">(</span><span class="hl-0">min</span><span class="hl-1">, </span><span class="hl-0">max</span><span class="hl-1">, </span><span class="hl-7">1</span><span class="hl-1">);</span><br/><br/><span class="hl-9">// [min,max] 得到一个两数之间的随机整数，包括两个数在内,这个值比min大（如果min不是整数，那就不小于比min大的整数），但小于（但不等于）max</span><br/><span class="hl-0">RandomManager</span><span class="hl-1">.</span><span class="hl-0">instance</span><span class="hl-1">.</span><span class="hl-5">getRandomInt</span><span class="hl-1">(</span><span class="hl-0">min</span><span class="hl-1">, </span><span class="hl-0">max</span><span class="hl-1">, </span><span class="hl-7">2</span><span class="hl-1">);</span><br/><br/><span class="hl-9">// (min,max) 得到一个两数之间的随机整数</span><br/><span class="hl-0">RandomManager</span><span class="hl-1">.</span><span class="hl-0">instance</span><span class="hl-1">.</span><span class="hl-5">getRandomInt</span><span class="hl-1">(</span><span class="hl-0">min</span><span class="hl-1">, </span><span class="hl-0">max</span><span class="hl-1">, </span><span class="hl-7">3</span><span class="hl-1">);</span>
+</code></pre>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -193,7 +201,7 @@
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/common/manager/RandomManager.ts:52</li></ul></aside></li></ul></section>
+<li>Defined in assets/core/common/manager/RandomManager.ts:46</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="setSeed" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set<wbr/>Seed</span><a href="#setSeed" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -208,7 +216,7 @@
 <h5>seed: <span class="tsd-signature-type">number</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/common/manager/RandomManager.ts:41</li></ul></aside></li></ul></section></section></div>
+<li>Defined in assets/core/common/manager/RandomManager.ts:24</li></ul></aside></li></ul></section></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">

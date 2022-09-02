@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-05 17:20:11
+ * @LastEditTime: 2022-09-02 12:00:16
  */
 import { Component, director, game, Game, log, Node, view, _decorator } from "cc";
 import { ecs } from "../libs/ecs/ECS";
@@ -21,13 +21,16 @@ import { oops, version } from "./Oops";
 
 const { ccclass, property } = _decorator;
 
+/** 框架显示层根节点 */
 export class Root extends Component {
+    /** 游戏层节点 */
     @property({
         type: Node,
         tooltip: "游戏层"
     })
     game: Node | null = null;
 
+    /** 界面层节点 */
     @property({
         type: Node,
         tooltip: "界面层"

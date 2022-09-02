@@ -2,23 +2,23 @@
  * @Author: dgflash
  * @Date: 2022-06-14 19:35:16
  * @LastEditors: dgflash
- * @LastEditTime: 2022-06-16 09:58:01
+ * @LastEditTime: 2022-09-02 13:27:20
  */
 import { LayerManager } from "./LayerManager";
 
 /** 界面关系树节点 */
 class TreeNode {
-    public id!: number;
+    id!: number;
     /** 父节点编号 */
-    public pid!: number;
+    pid!: number;
     /** 父节点 */
-    public parent: TreeNode | null = null;
+    parent: TreeNode | null = null;
     /** 子节点 */
-    public child: Array<TreeNode> = [];
+    child: Array<TreeNode> = [];
     /** 界面名 */
-    public name!: string;
+    name!: string;
     /** 界面代号（用于同一界面有多条路径时） */
-    public panel!: string;
+    panel!: string;
 }
 
 /** 用于树形结构两节点之间的寻路功能 */
@@ -51,8 +51,13 @@ export class UIMap {
         });
     }
 
-    /** 树节点寻路 */
-    pathFinding(startId: number, endId: number) {
+    /**
+     * 树节点寻路
+     * @param startId 起始节点编号
+     * @param endId   结束节点编号
+     * @returns 
+     */
+    pathFinding(startId: number, endId: number): any {
         var start: TreeNode = this.nodes.get(startId)!;
         var end: TreeNode = this.nodes.get(endId)!;
 
@@ -81,6 +86,7 @@ export class UIMap {
         return paths;
     }
 
+    /** 释放所有节点 */
     release() {
         this.nodes.clear();
     }

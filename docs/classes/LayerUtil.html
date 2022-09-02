@@ -14,14 +14,14 @@
 <li><a href="LayerUtil.html">LayerUtil</a></li></ul>
 <h1>Class LayerUtil</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>为了方便使用，将编辑器中的层级定义到代码。如果编辑器中有修改，确保同步到这里。</p>
+<div class="tsd-comment tsd-typography"><p>游戏摄像机层管理工具</p>
 </div></section>
 <section class="tsd-panel tsd-hierarchy">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
 <li><span class="target">LayerUtil</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/LayerUtil.ts:27</li></ul></aside>
+<li>Defined in assets/core/utils/LayerUtil.ts:34</li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -60,54 +60,68 @@
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="AVATAR" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>AVATAR</span><a href="#AVATAR" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">AVATAR<span class="tsd-signature-symbol">:</span> <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in assets/core/utils/LayerUtil.ts:29</li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="DEFAULT" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>DEFAULT</span><a href="#DEFAULT" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">DEFAULT<span class="tsd-signature-symbol">:</span> <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
+<div class="tsd-signature">AVATAR<span class="tsd-signature-symbol">:</span> <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a><span class="tsd-signature-symbol"> = ...</span></div>
+<div class="tsd-comment tsd-typography"><p>替身对象层</p>
+</div><aside class="tsd-sources">
 <ul>
 <li>Defined in assets/core/utils/LayerUtil.ts:38</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="DEFAULT" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>DEFAULT</span><a href="#DEFAULT" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">DEFAULT<span class="tsd-signature-symbol">:</span> <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a><span class="tsd-signature-symbol"> = ...</span></div>
+<div class="tsd-comment tsd-typography"><p>默认对象层</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in assets/core/utils/LayerUtil.ts:52</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="EDITOR" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>EDITOR</span><a href="#EDITOR" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">EDITOR<span class="tsd-signature-symbol">:</span> <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
+<div class="tsd-signature">EDITOR<span class="tsd-signature-symbol">:</span> <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a><span class="tsd-signature-symbol"> = ...</span></div>
+<div class="tsd-comment tsd-typography"><p>编辑器对象层</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/LayerUtil.ts:33</li></ul></aside></section>
+<li>Defined in assets/core/utils/LayerUtil.ts:43</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="GIZMOS" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>GIZMOS</span><a href="#GIZMOS" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">GIZMOS<span class="tsd-signature-symbol">:</span> <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/LayerUtil.ts:32</li></ul></aside></section>
+<li>Defined in assets/core/utils/LayerUtil.ts:41</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="IGNORE_RAYCAST" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>IGNORE_<wbr/>RAYCAST</span><a href="#IGNORE_RAYCAST" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">IGNORE_<wbr/>RAYCAST<span class="tsd-signature-symbol">:</span> <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/LayerUtil.ts:31</li></ul></aside></section>
+<li>Defined in assets/core/utils/LayerUtil.ts:40</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="MAP" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>MAP</span><a href="#MAP" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">MAP<span class="tsd-signature-symbol">:</span> <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
+<div class="tsd-signature">MAP<span class="tsd-signature-symbol">:</span> <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a><span class="tsd-signature-symbol"> = ...</span></div>
+<div class="tsd-comment tsd-typography"><p>地图对象层</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/LayerUtil.ts:28</li></ul></aside></section>
+<li>Defined in assets/core/utils/LayerUtil.ts:36</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="PROFILTER" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>PROFILTER</span><a href="#PROFILTER" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">PROFILTER<span class="tsd-signature-symbol">:</span> <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
+<div class="tsd-signature">PROFILTER<span class="tsd-signature-symbol">:</span> <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a><span class="tsd-signature-symbol"> = ...</span></div>
+<div class="tsd-comment tsd-typography"><p>引擎分析工具层</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/LayerUtil.ts:37</li></ul></aside></section>
+<li>Defined in assets/core/utils/LayerUtil.ts:50</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="SCENE_GIZMO" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>SCENE_<wbr/>GIZMO</span><a href="#SCENE_GIZMO" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">SCENE_<wbr/>GIZMO<span class="tsd-signature-symbol">:</span> <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/LayerUtil.ts:35</li></ul></aside></section>
+<li>Defined in assets/core/utils/LayerUtil.ts:46</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="UI_2D" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>UI_<wbr/>2D</span><a href="#UI_2D" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">UI_<wbr/>2D<span class="tsd-signature-symbol">:</span> <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
+<div class="tsd-signature">UI_<wbr/>2D<span class="tsd-signature-symbol">:</span> <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a><span class="tsd-signature-symbol"> = ...</span></div>
+<div class="tsd-comment tsd-typography"><p>二维对象层</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/LayerUtil.ts:36</li></ul></aside></section>
+<li>Defined in assets/core/utils/LayerUtil.ts:48</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="UI_3D" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>UI_<wbr/>3D</span><a href="#UI_3D" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">UI_<wbr/>3D<span class="tsd-signature-symbol">:</span> <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
+<div class="tsd-signature">UI_<wbr/>3D<span class="tsd-signature-symbol">:</span> <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a><span class="tsd-signature-symbol"> = ...</span></div>
+<div class="tsd-comment tsd-typography"><p>三维对象层</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/LayerUtil.ts:34</li></ul></aside></section></section>
+<li>Defined in assets/core/utils/LayerUtil.ts:45</li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="setNodeLayer" class="tsd-anchor"></a>
@@ -115,16 +129,22 @@
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 <li class="tsd-signature tsd-anchor-link" id="setNodeLayer.setNodeLayer-1">set<wbr/>Node<wbr/>Layer<span class="tsd-signature-symbol">(</span>item<span class="tsd-signature-symbol">: </span><a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a>, node<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Node</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#setNodeLayer.setNodeLayer-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>设置节点层</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>item: <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a></h5></li>
+<h5>item: <a href="LayerItem.html" class="tsd-signature-type" data-tsd-kind="Class">LayerItem</a></h5>
+<div class="tsd-comment tsd-typography"><p>层数据</p>
+</div></li>
 <li>
-<h5>node: <span class="tsd-signature-type">Node</span></h5></li></ul></div>
+<h5>node: <span class="tsd-signature-type">Node</span></h5>
+<div class="tsd-comment tsd-typography"><p>节点</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/utils/LayerUtil.ts:40</li></ul></aside></li></ul></section></section></div>
+<li>Defined in assets/core/utils/LayerUtil.ts:59</li></ul></aside></li></ul></section></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">

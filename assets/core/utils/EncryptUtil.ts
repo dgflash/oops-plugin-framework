@@ -1,3 +1,9 @@
+/*
+ * @Author: dgflash
+ * @Date: 2022-09-02 09:28:00
+ * @LastEditors: dgflash
+ * @LastEditTime: 2022-09-02 14:50:10
+ */
 /** Crypto加密 */
 export class EncryptUtil {
     /**
@@ -5,7 +11,6 @@ export class EncryptUtil {
      * @param msg 加密信息
      * @param key aes加密的key 
      * @param iv  aes加密的iv
-     * @returns 
      */
     static aesEncrypt(msg: string, key: string, iv: string): string {
         //@ts-ignore
@@ -24,7 +29,6 @@ export class EncryptUtil {
      * @param str 解密字符串
      * @param key aes加密的key 
      * @param iv  aes加密的iv
-     * @returns 
      */
     static aesDecrypt(str: string, key: string, iv: string): string {
         //@ts-ignore

@@ -26,7 +26,23 @@ export enum LayerType {
     Guide = "LayerGuide"
 }
 
-/** UI配置结构体 */
+/** 
+ * 界面配置结构体
+ * @example
+// 界面唯一标识
+export enum UIID {
+    Loading = 1,
+    Window,
+    Netinstable
+}
+
+// 打开界面方式的配置数据
+export var UIConfigData: { [key: number]: UIConfig } = {
+    [UIID.Loading]: { layer: LayerType.UI, prefab: "loading/prefab/loading", bundle: "resources" },
+    [UIID.Netinstable]: { layer: LayerType.PopUp, prefab: "common/prefab/netinstable" },
+    [UIID.Window]: { layer: LayerType.Dialog, prefab: "common/prefab/window" }
+}
+ */
 export interface UIConfig {
     /** 远程包名 */
     bundle?: string;
@@ -38,15 +54,15 @@ export interface UIConfig {
 
 export class LayerManager {
     /** 界面根节点 */
-    public root!: Node;
+    root!: Node;
     /** 界面摄像机 */
-    public camera!: Camera;
+    camera!: Camera;
     /** 游戏界面特效层 */
-    public game!: Node;
+    game!: Node;
     /** 新手引导层 */
-    public guide!: Node;
+    guide!: Node;
     /** 界面地图 */
-    public uiMap!: UIMap;
+    uiMap!: UIMap;
 
     /** 界面层 */
     private ui!: LayerUI;
@@ -78,6 +94,8 @@ export class LayerManager {
      * 渐隐飘过提示
      * @param content 文本表示
      * @param useI18n 是否使用多语言
+     * @example 
+     * oops.gui.toast("提示内容");
      */
     toast(content: string, useI18n: boolean = false) {
         this.notify.show(content, useI18n)
@@ -92,7 +110,10 @@ export class LayerManager {
         this.configs[uiId] = config;
     }
 
-    /** 设置界面地图配置 */
+    /**
+     * 设置界面地图配置
+     * @param data 界面地图数据
+     */
     setUIMap(data: any) {
         if (this.uiMap == null) {
             this.uiMap = new UIMap();
@@ -105,7 +126,16 @@ export class LayerManager {
      * @param uiId          窗口唯一编号
      * @param uiArgs        窗口参数
      * @param callbacks     回调对象
-     * @returns 
+     * @example
+    var uic: UICallbacks = {
+        onAdded: (node: Node, params: any) => {
+            var comp = node.getComponent(LoadingViewComp) as ecs.Comp;
+        }
+        onRemoved:(node: Node | null, params: any) => {
+                    
+        }
+    };
+    oops.gui.open(UIID.Loading, null, uic);
      */
     open(uiId: number, uiArgs: any = null, callbacks?: UICallbacks): void {
         var config = this.configs[uiId];
@@ -134,7 +164,8 @@ export class LayerManager {
      * 异步打开一个窗口
      * @param uiId          窗口唯一编号
      * @param uiArgs        窗口参数
-     * @returns 
+     * @example 
+     * var node = await oops.gui.openAsync(UIID.Loading);
      */
     async openAsync(uiId: number, uiArgs: any = null): Promise<Node | null> {
         return new Promise<Node | null>((resolve, reject) => {
@@ -147,12 +178,17 @@ export class LayerManager {
         });
     }
 
-    /** 缓存中是否存在指定标识的窗口 */
-    has(uiId: number) {
+    /**
+     * 缓存中是否存在指定标识的窗口
+     * @param uiId 窗口唯一标识
+     * @example
+     * oops.gui.has(UIID.Loading);
+     */
+    has(uiId: number): boolean {
         var config = this.configs[uiId];
         if (config == null) {
             warn(`编号为【${uiId}】的界面失败，配置信息不存在`);
-            return;
+            return false;
         }
 
         var result = false;
@@ -173,7 +209,14 @@ export class LayerManager {
         return result;
     }
 
-    remove(uiId: number, isDestroy = true) {
+    /**
+     * 移除指定标识的窗口
+     * @param uiId         窗口唯一标识
+     * @param isDestroy    移除后是否释放
+     * @example
+     * oops.gui.remove(UIID.Loading);
+     */
+    remove(uiId: number, isDestroy: boolean = true) {
         var config = this.configs[uiId];
         if (config == null) {
             warn(`删除编号为【${uiId}】的界面失败，配置信息不存在`);
@@ -196,7 +239,13 @@ export class LayerManager {
         }
     }
 
-    /** 删除一个通过this框架添加进来的节点 */
+    /**
+     * 删除一个通过this框架添加进来的节点
+     * @param node          窗口节点
+     * @param isDestroy     移除后是否释放
+     * @example
+     * oops.gui.removeByNode(cc.Node);
+     */
     removeByNode(node: Node, isDestroy: boolean = false) {
         if (node instanceof Node) {
             let comp = node.getComponent(DelegateComponent);
@@ -208,11 +257,15 @@ export class LayerManager {
                 warn(`当前删除的node不是通过界面管理器添加到舞台上`);
                 node.destroy();
             }
-            return;
         }
     }
 
-    /** 清除所有窗口 */
+    /**
+     * 清除所有窗口
+     * @param isDestroy 移除后是否释放
+     * @example
+     * oops.gui.clear();
+     */
     clear(isDestroy: boolean = false) {
         this.ui.clear(isDestroy);
         this.popup.clear(isDestroy);
@@ -220,6 +273,10 @@ export class LayerManager {
         this.system.clear(isDestroy);
     }
 
+    /**
+     * 构造函数
+     * @param root  界面根节点
+     */
     constructor(root: Node) {
         this.root = root;
         this.camera = this.root.getComponentInChildren(Camera)!;

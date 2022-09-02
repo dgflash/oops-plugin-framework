@@ -24,7 +24,16 @@ var names = {
     "32": "标准日志",
 }
 
-/** 日志管理 */
+/** 
+ * 日志管理 
+ * @example
+oops.log.trace("默认标准日志");
+oops.log.logConfig("灰色配置日志");
+oops.log.logNet("橙色网络日志");
+oops.log.logModel("紫色数据日志");
+oops.log.logBusiness("蓝色业务日志");
+oops.log.logView("绿色视图日志");
+ */
 export class Logger {
     private static tags: number = 0;
 
@@ -41,7 +50,7 @@ export class Logger {
     /** 
      * 设置显示的日志类型，默认值为不显示任何类型日志
      * @example
-     * oops.log.setTags(LogType.View|LogType.Business)
+oops.log.setTags(LogType.View|LogType.Business)
      */
     static setTags(tag: LogType = 0) {
         this.tags = tag;
@@ -50,6 +59,12 @@ export class Logger {
     /**
      * 记录开始计时
      * @param describe  标题描述
+     * @example
+oops.log.start();
+...
+省略N行代码
+...
+oops.log.end();
      */
     static start(describe: string = "Time"): void {
         console.time(describe);
@@ -58,40 +73,73 @@ export class Logger {
     /**
      * 打印范围内时间消耗
      * @param describe  标题描述
+     * @example
+oops.log.start();
+...
+省略N行代码
+...
+oops.log.end();
      */
     static end(describe: string = "Time"): void {
         console.timeEnd(describe);
     }
 
-    /** 打印表格 */
-    static table(msg: any, describe?: string): void {
+    /**
+     * 打印表格
+     * @param msg       日志消息
+     * @param describe  标题描述
+     * @example
+var object:any = {uid:1000, name:"oops"};
+oops.log.table(object);
+     */
+    static table(msg: any, describe?: string) {
         if (!this.isOpen(LogType.Trace)) {
             return;
         }
         console.table(msg);
     }
 
-    /** 打印标准日志 */
+    /**
+     * 打印标准日志
+     * @param msg       日志消息
+     * @param describe  标题描述
+     */
     static trace(msg: any, describe?: string) {
         this.print(LogType.Trace, msg, "", describe)
     }
 
-    /** 打印网络层日志 */
+    /**
+     * 打印网络层日志
+     * @param msg       日志消息
+     * @param describe  标题描述
+     */
     static logNet(msg: any, describe?: string) {
         this.orange(LogType.Net, msg, describe);
     }
 
-    /** 打印数据层日志 */
+    /**
+     * 打印数据层日志
+     * @param msg       日志消息
+     * @param describe  标题描述
+     */
     static logModel(msg: any, describe?: string) {
         this.violet(LogType.Model, msg, describe);
     }
 
-    /** 打印业务层日志 */
+    /**
+     * 打印业务层日志
+     * @param msg       日志消息
+     * @param describe  标题描述
+     */
     static logBusiness(msg: any, describe?: string) {
         this.blue(LogType.Business, msg, describe);
     }
 
-    /** 打印视图日志 */
+    /**
+     * 打印视图日志
+     * @param msg       日志消息
+     * @param describe  标题描述
+     */
     static logView(msg: any, describe?: string) {
         this.green(LogType.View, msg, describe);
     }
@@ -136,7 +184,6 @@ export class Logger {
      * @param msg       日志内容
      * @param color     日志文本颜色
      * @param describe  日志标题描述
-     * @returns 
      */
     private static print(tag: LogType, msg: any, color: string, describe?: string) {
         // 标记没有打开，不打印该日志

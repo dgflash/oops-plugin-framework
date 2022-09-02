@@ -13,12 +13,18 @@
 <li><a href="../modules.html">oops-framework</a></li>
 <li><a href="MessageManager.html">MessageManager</a></li></ul>
 <h1>Class MessageManager</h1></div>
+<section class="tsd-panel tsd-comment">
+<div class="tsd-comment tsd-typography"><p>全局消息管理</p>
+
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-9">// 注册持续监听的全局事件</span><br/><span class="hl-3">export</span><span class="hl-1"> </span><span class="hl-6">class</span><span class="hl-1"> </span><span class="hl-2">RoleViewComp</span><span class="hl-1"> </span><span class="hl-6">extends</span><span class="hl-1"> </span><span class="hl-2">Component</span><span class="hl-1">{</span><br/><span class="hl-1">   </span><span class="hl-5">onLoad</span><span class="hl-1">(){</span><br/><span class="hl-1">       </span><span class="hl-9">// 监听全局事件</span><br/><span class="hl-1">       </span><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">message</span><span class="hl-1">.</span><span class="hl-5">on</span><span class="hl-1">(</span><span class="hl-0">GameEvent</span><span class="hl-1">.</span><span class="hl-0">GameServerConnected</span><span class="hl-1">, </span><span class="hl-6">this</span><span class="hl-1">.</span><span class="hl-0">onHandler</span><span class="hl-1">, </span><span class="hl-6">this</span><span class="hl-1">);</span><br/><span class="hl-1">   }</span><br/><span class="hl-1">   </span><br/><span class="hl-1">   </span><span class="hl-6">protected</span><span class="hl-1"> </span><span class="hl-5">onDestroy</span><span class="hl-1">() {</span><br/><span class="hl-1">       </span><span class="hl-9">// 对象释放时取消注册的全局事件</span><br/><span class="hl-1">       </span><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">message</span><span class="hl-1">.</span><span class="hl-5">off</span><span class="hl-1">(</span><span class="hl-0">GameEvent</span><span class="hl-1">.</span><span class="hl-0">GameServerConnected</span><span class="hl-1">, </span><span class="hl-6">this</span><span class="hl-1">.</span><span class="hl-0">onHandler</span><span class="hl-1">, </span><span class="hl-6">this</span><span class="hl-1">);</span><br/><span class="hl-1">   }</span><br/><span class="hl-1">   </span><br/><span class="hl-1">   </span><span class="hl-6">private</span><span class="hl-1"> </span><span class="hl-5">onHandler</span><span class="hl-1">(</span><span class="hl-0">event</span><span class="hl-1">: </span><span class="hl-2">string</span><span class="hl-1">, </span><span class="hl-0">args</span><span class="hl-1">: </span><span class="hl-2">any</span><span class="hl-1">) {</span><br/><span class="hl-1">       </span><span class="hl-3">switch</span><span class="hl-1"> (</span><span class="hl-0">event</span><span class="hl-1">) {</span><br/><span class="hl-1">           </span><span class="hl-3">case</span><span class="hl-1"> </span><span class="hl-0">GameEvent</span><span class="hl-1">.</span><span class="hl-0">GameServerConnected</span><span class="hl-1">:</span><br/><span class="hl-1">               </span><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-4">&quot;处理游戏服务器连接成功后的逻辑&quot;</span><span class="hl-1">);</span><br/><span class="hl-1">               </span><span class="hl-3">break</span><span class="hl-1">;</span><br/><span class="hl-1">       }</span><br/><span class="hl-1">   }</span><br/><span class="hl-1">}</span><br/><br/><span class="hl-9">// 注册只触发一次的全局事件</span><br/><span class="hl-3">export</span><span class="hl-1"> </span><span class="hl-6">class</span><span class="hl-1"> </span><span class="hl-2">RoleViewComp</span><span class="hl-1"> </span><span class="hl-6">extends</span><span class="hl-1"> </span><span class="hl-2">Component</span><span class="hl-1">{</span><br/><span class="hl-1">   </span><span class="hl-5">onLoad</span><span class="hl-1">(){</span><br/><span class="hl-1">       </span><span class="hl-9">// 监听一次事件，事件响应后，该监听自动移除</span><br/><span class="hl-1">       </span><span class="hl-0">oops</span><span class="hl-1">.</span><span class="hl-0">message</span><span class="hl-1">.</span><span class="hl-5">once</span><span class="hl-1">(</span><span class="hl-0">GameEvent</span><span class="hl-1">.</span><span class="hl-0">GameServerConnected</span><span class="hl-1">, </span><span class="hl-6">this</span><span class="hl-1">.</span><span class="hl-0">onHandler</span><span class="hl-1">, </span><span class="hl-6">this</span><span class="hl-1">);</span><br/><span class="hl-1">   }</span><br/><span class="hl-1">   </span><br/><span class="hl-1">   </span><span class="hl-6">private</span><span class="hl-1"> </span><span class="hl-5">onHandler</span><span class="hl-1">(</span><span class="hl-0">event</span><span class="hl-1">: </span><span class="hl-2">string</span><span class="hl-1">, </span><span class="hl-0">args</span><span class="hl-1">: </span><span class="hl-2">any</span><span class="hl-1">) {</span><br/><span class="hl-1">       </span><span class="hl-3">switch</span><span class="hl-1"> (</span><span class="hl-0">event</span><span class="hl-1">) {</span><br/><span class="hl-1">           </span><span class="hl-3">case</span><span class="hl-1"> </span><span class="hl-0">GameEvent</span><span class="hl-1">.</span><span class="hl-0">GameServerConnected</span><span class="hl-1">:</span><br/><span class="hl-1">               </span><span class="hl-0">console</span><span class="hl-1">.</span><span class="hl-5">log</span><span class="hl-1">(</span><span class="hl-4">&quot;处理游戏服务器连接成功后的逻辑&quot;</span><span class="hl-1">);</span><br/><span class="hl-1">               </span><span class="hl-3">break</span><span class="hl-1">;</span><br/><span class="hl-1">       }</span><br/><span class="hl-1">   }</span><br/><span class="hl-1">}</span>
+</code></pre>
+</div></section>
 <section class="tsd-panel tsd-hierarchy">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
 <li><span class="target">MessageManager</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/common/event/MessageManager.ts:52</li></ul></aside>
+<li>Defined in assets/core/common/event/MessageManager.ts:109</li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -54,18 +60,18 @@
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>events</span><a href="#events" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">events<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = {}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/common/event/MessageManager.ts:55</li></ul></aside></section>
+<li>Defined in assets/core/common/event/MessageManager.ts:112</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="Instance" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>Instance</span><a href="#Instance" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">Instance<span class="tsd-signature-symbol">:</span> <a href="MessageManager.html" class="tsd-signature-type" data-tsd-kind="Class">MessageManager</a><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/common/event/MessageManager.ts:53</li></ul></aside></section></section>
+<li>Defined in assets/core/common/event/MessageManager.ts:110</li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="dispatchEvent" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>dispatch<wbr/>Event</span><a href="#dispatchEvent" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-<li class="tsd-signature tsd-anchor-link" id="dispatchEvent.dispatchEvent-1">dispatch<wbr/>Event<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, arg<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#dispatchEvent.dispatchEvent-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="dispatchEvent.dispatchEvent-1">dispatch<wbr/>Event<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, args<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#dispatchEvent.dispatchEvent-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>触发全局事件</p>
 </div>
@@ -75,14 +81,14 @@
 <li>
 <h5>event: <span class="tsd-signature-type">string</span></h5></li>
 <li>
-<h5>arg: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = null</span></h5></li></ul></div>
+<h5>args: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = null</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/common/event/MessageManager.ts:139</li></ul></aside></li></ul></section>
+<li>Defined in assets/core/common/event/MessageManager.ts:196</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="off" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>off</span><a href="#off" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-<li class="tsd-signature tsd-anchor-link" id="off.off-1">off<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Function</span>, thisObj<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#off.off-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="off.off-1">off<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Function</span>, object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#off.off-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>移除全局事件</p>
 </div>
@@ -90,18 +96,24 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>event: <span class="tsd-signature-type">string</span></h5></li>
+<h5>event: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>事件名</p>
+</div></li>
 <li>
-<h5>listener: <span class="tsd-signature-type">Function</span></h5></li>
+<h5>listener: <span class="tsd-signature-type">Function</span></h5>
+<div class="tsd-comment tsd-typography"><p>处理事件的侦听器函数</p>
+</div></li>
 <li>
-<h5>thisObj: <span class="tsd-signature-type">object</span></h5></li></ul></div>
+<h5>object: <span class="tsd-signature-type">object</span></h5>
+<div class="tsd-comment tsd-typography"><p>侦听函数绑定的作用域对象</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/common/event/MessageManager.ts:112</li></ul></aside></li></ul></section>
+<li>Defined in assets/core/common/event/MessageManager.ts:169</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="on" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>on</span><a href="#on" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-<li class="tsd-signature tsd-anchor-link" id="on.on-1">on<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span>, thisObj<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#on.on-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="on.on-1">on<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, listener<span class="tsd-signature-symbol">: </span><a href="../types/ListenerFunc.html" class="tsd-signature-type" data-tsd-kind="Type alias">ListenerFunc</a>, object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#on.on-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>注册全局事件</p>
 </div>
@@ -109,31 +121,24 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>event: <span class="tsd-signature-type">string</span></h5></li>
+<h5>event: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>事件名</p>
+</div></li>
 <li>
-<h5>listener: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
-<ul class="tsd-parameters">
-<li class="tsd-parameter-signature">
-<ul class="tsd-signatures tsd-kind-type-literal">
-<li class="tsd-signature"><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-<li class="tsd-description">
-<div class="tsd-parameters">
-<h4 class="tsd-parameters-title">Parameters</h4>
-<ul class="tsd-parameter-list">
+<h5>listener: <a href="../types/ListenerFunc.html" class="tsd-signature-type" data-tsd-kind="Type alias">ListenerFunc</a></h5>
+<div class="tsd-comment tsd-typography"><p>处理事件的侦听器函数</p>
+</div></li>
 <li>
-<h5>event: <span class="tsd-signature-type">string</span></h5></li>
-<li>
-<h5>args: <span class="tsd-signature-type">any</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li>
-<li>
-<h5>thisObj: <span class="tsd-signature-type">object</span></h5></li></ul></div>
+<h5>object: <span class="tsd-signature-type">object</span></h5>
+<div class="tsd-comment tsd-typography"><p>侦听函数绑定的作用域对象</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/common/event/MessageManager.ts:63</li></ul></aside></li></ul></section>
+<li>Defined in assets/core/common/event/MessageManager.ts:120</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="once" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>once</span><a href="#once" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-<li class="tsd-signature tsd-anchor-link" id="once.once-1">once<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span>, thisObj<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#once.once-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="once.once-1">once<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, listener<span class="tsd-signature-symbol">: </span><a href="../types/ListenerFunc.html" class="tsd-signature-type" data-tsd-kind="Type alias">ListenerFunc</a>, object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#once.once-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>监听一次事件，事件响应后，该监听自动移除</p>
 </div>
@@ -141,27 +146,20 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>event: <span class="tsd-signature-type">string</span></h5></li>
+<h5>event: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>事件名</p>
+</div></li>
 <li>
-<h5>listener: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
-<ul class="tsd-parameters">
-<li class="tsd-parameter-signature">
-<ul class="tsd-signatures tsd-kind-type-literal">
-<li class="tsd-signature"><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-<li class="tsd-description">
-<div class="tsd-parameters">
-<h4 class="tsd-parameters-title">Parameters</h4>
-<ul class="tsd-parameter-list">
+<h5>listener: <a href="../types/ListenerFunc.html" class="tsd-signature-type" data-tsd-kind="Type alias">ListenerFunc</a></h5>
+<div class="tsd-comment tsd-typography"><p>事件触发回调方法</p>
+</div></li>
 <li>
-<h5>event: <span class="tsd-signature-type">string</span></h5></li>
-<li>
-<h5>args: <span class="tsd-signature-type">any</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></li></ul></li></ul></li>
-<li>
-<h5>thisObj: <span class="tsd-signature-type">object</span></h5></li></ul></div>
+<h5>object: <span class="tsd-signature-type">object</span></h5>
+<div class="tsd-comment tsd-typography"><p>侦听函数绑定的作用域对象</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/common/event/MessageManager.ts:97</li></ul></aside></li></ul></section></section></div>
+<li>Defined in assets/core/common/event/MessageManager.ts:154</li></ul></aside></li></ul></section></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">

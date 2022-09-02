@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-04-14 17:08:01
  * @LastEditors: dgflash
- * @LastEditTime: 2022-06-21 15:30:04
+ * @LastEditTime: 2022-09-02 13:28:16
  */
 import { Asset, Component, isValid, Node, _decorator } from "cc";
 import { EventDispatcher } from "../common/event/EventDispatcher";
@@ -15,7 +15,7 @@ const { ccclass } = _decorator;
 export class GameComponent extends Component {
     private _eventDispatcher: EventDispatcher | null = null;
 
-    public get eventDispatcher(): EventDispatcher {
+    get eventDispatcher(): EventDispatcher {
         if (!this._eventDispatcher) {
             this._eventDispatcher = new EventDispatcher();
         }
@@ -26,12 +26,12 @@ export class GameComponent extends Component {
     private _isBindMessageActive: boolean = false;
 
     /** 绑定node active属性，即只有active为true才会响应事件 */
-    public bindMessageActive() {
+    bindMessageActive() {
         this._isBindMessageActive = true;
     }
 
     /** 解绑node active属性，无论node是否可见都会响应事件 */
-    public unbindMessageActive() {
+    unbindMessageActive() {
         this._isBindMessageActive = false;
     }
 
@@ -66,11 +66,11 @@ export class GameComponent extends Component {
 
     /**
      * 注册全局事件
-     * @param event(string)      事件名
-     * @param listener(function) 处理事件的侦听器函数
-     * @param thisObj(object)    侦听函数绑定的this对象
+     * @param event       事件名
+     * @param listener   处理事件的侦听器函数
+     * @param object    侦听函数绑定的this对象
      */
-    on(event: string, listener: Function, thisObj: any) {
+    on(event: string, listener: Function, object: any) {
         this.eventDispatcher.on(event, (event, args) => {
             if (!this.isValid) {
                 if (this._eventDispatcher) {
@@ -82,18 +82,18 @@ export class GameComponent extends Component {
 
             if (this._isBindMessageActive) {
                 if (this.node.active) {
-                    listener.call(thisObj, event, args);
+                    listener.call(object, event, args);
                 }
             }
             else {
-                listener.call(thisObj, event, args);
+                listener.call(object, event, args);
             }
-        }, thisObj);
+        }, object);
     }
 
     /**
      * 移除全局事件
-     * @param event(string)      事件名
+     * @param event      事件名
      */
     off(event: string) {
         if (this._eventDispatcher) {
@@ -103,11 +103,11 @@ export class GameComponent extends Component {
 
     /** 
      * 触发全局事件 
-     * @param event(string)      事件名
-     * @param arg(Array)         事件参数
+     * @param event      事件名
+     * @param args       事件参数
      */
-    dispatchEvent(event: string, arg = null) {
-        this.eventDispatcher.dispatchEvent(event, arg);
+    dispatchEvent(event: string, args = null) {
+        this.eventDispatcher.dispatchEvent(event, args);
     }
 
     protected onDestroy() {

@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-07-26 15:29:57
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-12 16:50:30
+ * @LastEditTime: 2022-09-02 12:07:54
  */
 
 /** 对象工具 */
@@ -11,7 +11,7 @@ export class ObjectUtil {
      * 判断指定的值是否为对象
      * @param value 值
      */
-    public static isObject(value: any): boolean {
+    static isObject(value: any): boolean {
         return Object.prototype.toString.call(value) === '[object Object]';
     }
 
@@ -19,7 +19,7 @@ export class ObjectUtil {
      * 深拷贝
      * @param target 目标
      */
-    public static deepCopy(target: any): any {
+    static deepCopy(target: any): any {
         if (target == null || typeof target !== 'object') {
             return target;
         }
@@ -57,7 +57,7 @@ export class ObjectUtil {
      * 拷贝对象
      * @param target 目标
      */
-    public static copy(target: object): object {
+    static copy(target: object): object {
         return JSON.parse(JSON.stringify(target));
     }
 }

@@ -5,10 +5,17 @@ import { AudioMusic } from "./AudioMusic";
 
 const LOCAL_STORE_KEY = "game_audio";
 
-/** 音频管理 */
+/** 
+ * 音频管理
+ * @example 
+// 模块功能通过 oops.audio 调用
+oops.audio.playMusic("audios/nocturne");
+ */
 export class AudioManager extends Component {
-    private static _instance: AudioManager;
-    public static get instance(): AudioManager {
+    static _instance: AudioManager;
+
+    /** 音频管理单例对象 */
+    static get instance(): AudioManager {
         if (this._instance == null) {
             var node = new Node("UIAudioManager");
             director.addPersistRootNode(node);
@@ -36,13 +43,16 @@ export class AudioManager extends Component {
     private _switch_music: boolean = true;
     private _switch_effect: boolean = true;
 
-    /** 音乐播放完成回调 */
+    /**
+     * 设置背景音乐播放完成回调
+     * @param callback 背景音乐播放完成回调
+     */
     setMusicComplete(callback: Function | null = null) {
         this.music.onComplete = callback;
     }
 
     /**
-     *  播放背景音乐
+     * 播放背景音乐
      * @param url        资源地址
      * @param callback   音乐播放完成事件
      */
@@ -52,27 +62,45 @@ export class AudioManager extends Component {
         }
     }
 
-    /** 获取音乐播放进度 */
+    /**
+     * 获取背景音乐播放进度
+     */
     get progressMusic(): number {
         return this.music.progress;
     }
+    /**
+     * 设置背景乐播放进度
+     * @param value     播放进度值
+     */
     set progressMusic(value: number) {
         this.music.progress = value;
     }
 
-    /** 背景音乐音量 */
+    /**
+     * 获取背景音乐音量
+     */
     get volumeMusic(): number {
         return this._volume_music;
     }
+    /** 
+     * 设置背景音乐音量
+     * @param value     音乐音量值
+     */
     set volumeMusic(value: number) {
         this._volume_music = value;
         this.music.volume = value;
     }
 
-    /** 音乐开关 */
+    /** 
+     * 获取背景音乐开关值 
+     */
     get switchMusic(): boolean {
         return this._switch_music;
     }
+    /** 
+     * 设置背景音乐开关值
+     * @param value     开关值
+     */
     set switchMusic(value: boolean) {
         this._switch_music = value;
 
@@ -90,19 +118,31 @@ export class AudioManager extends Component {
         }
     }
 
-    /** 音效音量 */
+    /** 
+     * 获取音效音量 
+     */
     get volumeEffect(): number {
         return this._volume_effect;
     }
+    /**
+     * 设置获取音效音量
+     * @param value     音效音量值
+     */
     set volumeEffect(value: number) {
         this._volume_effect = value;
         this.effect.volume = value;
     }
 
-    /** 音效开关 */
+    /** 
+     * 获取音效开关值 
+     */
     get switchEffect(): boolean {
         return this._switch_effect;
     }
+    /**
+     * 设置音效开关值
+     * @param value     音效开关值
+     */
     set switchEffect(value: boolean) {
         this._switch_effect = value;
         if (value == false)

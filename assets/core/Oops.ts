@@ -2,14 +2,14 @@
  * @Author: dgflash
  * @Date: 2022-02-11 09:32:47
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 10:01:26
+ * @LastEditTime: 2022-09-02 11:08:12
  */
 import { ECSRootSystem } from "../libs/ecs/ECSSystem";
 import { LanguageManager } from "../libs/gui/language/Language";
 import { HttpRequest } from "../libs/network/HttpRequest";
 import { AudioManager } from "./common/audio/AudioManager";
 import { MessageManager } from "./common/event/MessageManager";
-import ResLoader from "./common/loader/ResLoader";
+import { ResLoader } from "./common/loader/ResLoader";
 import { Logger } from "./common/log/Logger";
 import { TimerManager } from "./common/manager/TimerManager";
 import { StorageManager } from "./common/storage/StorageManager";

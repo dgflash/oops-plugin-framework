@@ -2,13 +2,14 @@
  * @Author: dgflash
  * @Date: 2022-04-14 17:08:01
  * @LastEditors: dgflash
- * @LastEditTime: 2022-06-16 10:05:54
+ * @LastEditTime: 2022-09-02 14:07:13
  */
 import { Animation, Component, Label, _decorator } from "cc";
 import { LanguageLabel } from "../../../libs/gui/language/LanguageLabel";
 
 const { ccclass, property } = _decorator;
 
+/** 滚动消息提示组件  */
 @ccclass('Notify')
 export class Notify extends Component {
     @property(Label)

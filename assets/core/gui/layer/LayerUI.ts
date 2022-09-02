@@ -16,6 +16,7 @@ import { UICallbacks, ViewParams } from "./Defines";
 import { DelegateComponent } from "./DelegateComponent";
 import { UIConfig } from "./LayerManager";
 
+/** 界面层对象 */
 export class LayerUI extends Node {
     /** 界面节点集合 */
     protected ui_nodes = new Map<string, ViewParams>();
@@ -105,9 +106,8 @@ export class LayerUI extends Node {
     }
 
     /**
-     * 创建节点界面，可覆盖重写
-     * @param prefab 
-     * @param viewParams 
+     * 创建界面节点
+     * @param viewParams  视图参数
      */
     protected createNode(viewParams: ViewParams) {
         viewParams.valid = true;
@@ -120,8 +120,9 @@ export class LayerUI extends Node {
     }
 
     /**
-     * 根据预制件路径删除，预制件如在队列中也会被删除，如果该预制件存在多个也会一起删除。
-     * @param prefabPath 
+     * 根据预制件路径删除，预制件如在队列中也会被删除，如果该预制件存在多个也会一起删除
+     * @param prefabPath   预制路径
+     * @param isDestroy    移除后是否释放
      */
     remove(prefabPath: string, isDestroy: boolean): void {
         // 验证是否删除后台缓存界面
@@ -148,9 +149,8 @@ export class LayerUI extends Node {
     }
 
     /**
-     * 根据uuid删除节点，如果节点还在队列中也会被删除
-     * 注意。删除节点请直接调用 `this.node.destroy()`或 `gui.delete(node)`;
-     * @param uuid 
+     * 根据唯一标识删除节点，如果节点还在队列中也会被删除
+     * @param uuid  唯一标识
      */
     protected removeByUuid(uuid: string, isDestroy: boolean): void {
         var viewParams = this.ui_nodes.get(uuid);
@@ -165,8 +165,7 @@ export class LayerUI extends Node {
     }
 
     /** 
-     * 删除缓存的界面
-     * 注：当缓存界面被移除舞台时，可通过此方法删除缓存界面
+     * 删除缓存的界面，当缓存界面被移除舞台时，可通过此方法删除缓存界面
      */
     private removeCache(prefabPath: string) {
         let viewParams = this.ui_cache.get(prefabPath);
@@ -179,8 +178,8 @@ export class LayerUI extends Node {
     }
 
     /**
-     * 根据uuid获取节点，如果节点不存在或者还在队列中，则返回null 
-     * @param uuid 
+     * 根据唯一标识获取节点，如果节点不存在或者还在队列中，则返回null 
+     * @param uuid  唯一标识
      */
     getByUuid(uuid: string): Node | null {
         let children = this.__nodes();
@@ -193,7 +192,7 @@ export class LayerUI extends Node {
     }
 
     /**
-     * 根据预制件路径获取当前显示的该预制件的所有Node节点数组。
+     * 根据预制件路径获取当前显示的该预制件的所有Node节点数组
      * @param prefabPath 
      */
     get(prefabPath: string): Array<Node> {
@@ -208,7 +207,7 @@ export class LayerUI extends Node {
     }
 
     /**
-     * 判断当前层是否包含 uuid或预制件路径对应的Node节点。
+     * 判断当前层是否包含 uuid或预制件路径对应的Node节点
      * @param prefabPathOrUUID 预制件路径或者UUID
      */
     has(prefabPathOrUUID: string): boolean {
@@ -254,7 +253,10 @@ export class LayerUI extends Node {
         return this.children.length;
     }
 
-    /** 清除所有节点，队列当中的也删除 */
+    /**
+     * 清除所有节点，队列当中的也删除
+     * @param isDestroy  移除后是否释放
+     */
     clear(isDestroy: boolean): void {
         // 清除所有显示的界面
         this.ui_nodes.forEach((value: ViewParams, key: string) => {

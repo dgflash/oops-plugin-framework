@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-06-21 12:05:13
  * @LastEditors: dgflash
- * @LastEditTime: 2022-07-14 15:35:38
+ * @LastEditTime: 2022-09-02 10:29:01
  */
 import { AudioClip, AudioSource, error, _decorator } from 'cc';
 import { oops } from '../../Oops';
@@ -11,22 +11,25 @@ const { ccclass, menu } = _decorator;
 /** 背景音乐 */
 @ccclass('AudioMusic')
 export class AudioMusic extends AudioSource {
-    public onComplete: Function | null = null;
+    /** 背景音乐播放完成回调 */
+    onComplete: Function | null = null;
 
     private _progress: number = 0;
     private _url: string = null!;
     private _isPlay: boolean = false;
 
-    /**
-     * 设置音乐当前播放进度
-     * @param progress 进度百分比(0~1)
-     */
-    public get progress() {
+
+    /** 获取音乐播放进度 */
+    get progress(): number {
         if (this.duration > 0)
             this._progress = this.currentTime / this.duration;
         return this._progress;
     }
-    public set progress(value: number) {
+    /**
+     * 设置音乐当前播放进度
+     * @param value     进度百分比0到1之间
+     */
+    set progress(value: number) {
         this._progress = value;
         this.currentTime = value * this.duration;
     }
@@ -60,6 +63,7 @@ export class AudioMusic extends AudioSource {
         });
     }
 
+    /** cc.Component 生命周期方法，验证背景音乐播放完成逻辑，建议不要主动调用 */
     update(dt: number) {
         if (this.currentTime > 0) {
             this._isPlay = true;
@@ -72,6 +76,7 @@ export class AudioMusic extends AudioSource {
         }
     }
 
+    /** 释放当前背景音乐资源 */
     release() {
         if (this._url) {
             oops.res.release(this._url);

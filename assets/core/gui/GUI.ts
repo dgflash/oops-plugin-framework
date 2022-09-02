@@ -2,14 +2,14 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-05-09 19:34:22
+ * @LastEditTime: 2022-09-02 11:59:18
  */
 import { Camera, Component, math, ResolutionPolicy, screen, UITransform, view, _decorator } from "cc";
 import { Logger } from "../common/log/Logger";
 
 const { ccclass, menu } = _decorator;
 
-/** 引擎对外接口 */
+/** 游戏界面屏幕自适应管理 */
 @ccclass('GUI')
 export class GUI extends Component {
     /** 界面层矩形信息组件 */
@@ -45,6 +45,7 @@ export class GUI extends Component {
         this.resize();
     }
 
+    /** 游戏画布尺寸变化 */
     resize() {
         let dr;
         if (view.getDesignResolutionSize().width > view.getDesignResolutionSize().height) {

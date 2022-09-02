@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-07-26 15:29:57
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-12 16:50:07
+ * @LastEditTime: 2022-09-02 12:08:28
  */
 import { Node, Quat, toRadian, Vec3 } from "cc";
 import { Vec3Util } from "./Vec3Util";
@@ -15,7 +15,7 @@ export class RotateUtil {
      * @param axis       围绕旋转的轴
      * @param rad        旋转弧度
      */
-    public static rotateAround(target: Node, axis: Vec3, rad: number) {
+    static rotateAround(target: Node, axis: Vec3, rad: number) {
         var quat = new Quat();
         Quat.rotateAround(quat, target.getRotation(), axis.normalize(), rad);
         target.setRotation(quat);
@@ -32,7 +32,7 @@ export class RotateUtil {
      * @param axis          围绕旋转的轴(例：Vec3.UP为Y轴)
      * @param rad           旋转弧度(例：delta.x * 1e-2)
      */
-    public static rotateAroundTarget(lookAt: Node, target: Node, axis: Vec3, rad: number) {
+    static rotateAroundTarget(lookAt: Node, target: Node, axis: Vec3, rad: number) {
         // 计算坐标
         var point_lookAt = lookAt.worldPosition;               // 锚点坐标
         var point_target = target.worldPosition;               // 目标坐标
@@ -60,9 +60,8 @@ export class RotateUtil {
      * @param center    圆心
      * @param radius    半径
      * @param angle     角度
-     * @returns         位置
      */
-    public static circularEdgePosition(center: Vec3, radius: number, angle: number): Vec3 {
+    static circularEdgePosition(center: Vec3, radius: number, angle: number): Vec3 {
         let edge = Vec3Util.z.multiplyScalar(radius);                  // 距离圆心Z抽的距离
         let dir = Vec3Util.sub(edge, center);                          // 初始圆心与目标位置的方向
         let vec3 = new Vec3();

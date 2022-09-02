@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-07-26 15:29:57
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-12 16:48:08
+ * @LastEditTime: 2022-09-02 12:08:25
  */
 
 /** 正则工具 */
@@ -11,7 +11,7 @@ export class RegexUtil {
      * 判断字符是否为双字节字符（如中文字符）
      * @param string 原字符串
      */
-    public static isDoubleWord(string: string): boolean {
+    static isDoubleWord(string: string): boolean {
         return /[^\x00-\xff]/.test(string);
     }
 }

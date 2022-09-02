@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-09-01 18:00:28
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 10:03:09
+ * @LastEditTime: 2022-09-02 13:38:43
  */
 import { Component, Node, _decorator } from "cc";
 import { oops } from "../../Oops";
@@ -13,8 +13,10 @@ const { ccclass } = _decorator;
 /** 窗口事件触发组件 */
 @ccclass('DelegateComponent')
 export class DelegateComponent extends Component {
+    /** 视图参数 */
     viewParams: ViewParams | null = null;
 
+    /** 窗口添加 */
     add() {
         let viewParams = this.viewParams!;
 

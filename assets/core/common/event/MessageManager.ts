@@ -1,9 +1,10 @@
 import { log, warn } from "cc";
+import { ListenerFunc } from "./EventMessage";
 
 class EventData {
     public event!: string;
-    public listener!: (event: string, args: any) => void;
-    public obj: any;
+    public listener!: ListenerFunc;
+    public object: any;
 }
 
 /**
@@ -12,7 +13,13 @@ class EventData {
 export class MessageEventData {
     private events: any = {};
 
-    on(event: string, listener: (event: string, args: any) => void, thisObj: object) {
+    /**
+     * 注册全局事件
+     * @param event      事件名
+     * @param listener   处理事件的侦听器函数
+     * @param object     侦听函数绑定的作用域对象
+     */
+    on(event: string, listener: ListenerFunc, object: object) {
         let list: Array<EventData> = this.events[event];
         if (list == null) {
             list = [];
@@ -21,46 +28,96 @@ export class MessageEventData {
         let data: EventData = new EventData();
         data.event = event;
         data.listener = listener;
-        data.obj = thisObj;
+        data.object = object;
         list.push(data);
 
-        Message.on(event, listener, thisObj);
+        MessageManager.Instance.on(event, listener, object);
     }
 
+    /**
+    * 移除全局事件
+     * @param event     事件名
+     */
     off(event: string) {
         let ebs: Array<EventData> = this.events[event];
         if (!ebs) {
             return;
         }
         for (let eb of ebs) {
-            Message.off(event, eb.listener, eb.obj);
+            MessageManager.Instance.off(event, eb.listener, eb.object);
         }
         delete this.events[event];
     }
 
+    /** 
+     * 触发全局事件 
+     * @param event(string)      事件名
+     * @param args(any)          事件参数
+     */
     dispatchEvent(event: string, arg: any = null) {
-        Message.dispatchEvent(event, arg);
+        MessageManager.Instance.dispatchEvent(event, arg);
     }
 
-    removes() {
+    /** 清除所有的全局事件监听 */
+    clear() {
         for (let event in this.events) {
             this.off(event);
         }
     }
 }
 
+/** 
+ * 全局消息管理
+ * @example 
+// 注册持续监听的全局事件
+export class RoleViewComp extends Component{
+    onLoad(){
+        // 监听全局事件
+        oops.message.on(GameEvent.GameServerConnected, this.onHandler, this);
+    }
+    
+    protected onDestroy() {
+        // 对象释放时取消注册的全局事件
+        oops.message.off(GameEvent.GameServerConnected, this.onHandler, this);
+    }
+    
+    private onHandler(event: string, args: any) {
+        switch (event) {
+            case GameEvent.GameServerConnected:
+                console.log("处理游戏服务器连接成功后的逻辑");
+                break;
+        }
+    }
+}
+
+// 注册只触发一次的全局事件
+export class RoleViewComp extends Component{
+    onLoad(){
+        // 监听一次事件，事件响应后，该监听自动移除
+        oops.message.once(GameEvent.GameServerConnected, this.onHandler, this);
+    }
+    
+    private onHandler(event: string, args: any) {
+        switch (event) {
+            case GameEvent.GameServerConnected:
+                console.log("处理游戏服务器连接成功后的逻辑");
+                break;
+        }
+    }
+}
+ */
 export class MessageManager {
-    public static readonly Instance: MessageManager = new MessageManager();
+    static readonly Instance: MessageManager = new MessageManager();
 
     private events: any = {};
 
     /**
      * 注册全局事件
-     * @param event(string)      事件名
-     * @param listener(function) 处理事件的侦听器函数
-     * @param thisObj(object)    侦听函数绑定的this对象
+     * @param event      事件名
+     * @param listener   处理事件的侦听器函数
+     * @param object     侦听函数绑定的作用域对象
      */
-    on(event: string, listener: (event: string, args: any) => void, thisObj: object) {
+    on(event: string, listener: ListenerFunc, object: object) {
         if (!event || !listener) {
             warn(`注册【${event}】事件的侦听器函数为空`);
             return;
@@ -75,7 +132,7 @@ export class MessageManager {
         let length = list.length;
         for (let i = 0; i < length; i++) {
             let bin = list[i];
-            if (bin.listener == listener && bin.obj == thisObj) {
+            if (bin.listener == listener && bin.object == object) {
                 warn(`名为【${event}】的事件重复注册侦听器`);
             }
         }
@@ -84,32 +141,32 @@ export class MessageManager {
         let data: EventData = new EventData();
         data.event = event;
         data.listener = listener;
-        data.obj = thisObj;
+        data.object = object;
         list.push(data);
     }
 
     /**
      * 监听一次事件，事件响应后，该监听自动移除
-     * @param event 
-     * @param listener 
-     * @param thisObj 
+     * @param event     事件名
+     * @param listener  事件触发回调方法
+     * @param object    侦听函数绑定的作用域对象
      */
-    once(event: string, listener: (event: string, args: any) => void, thisObj: object) {
+    once(event: string, listener: ListenerFunc, object: object) {
         let _listener: any = ($event: string, $args: any) => {
-            this.off(event, _listener, thisObj);
+            this.off(event, _listener, object);
             _listener = null;
-            listener.call(thisObj, $event, $args);
+            listener.call(object, $event, $args);
         }
-        this.on(event, _listener, thisObj);
+        this.on(event, _listener, object);
     }
 
     /**
      * 移除全局事件
-     * @param event(string)      事件名
-     * @param listener(function) 处理事件的侦听器函数
-     * @param thisObj(object)    侦听函数绑定的this对象
+     * @param event     事件名
+     * @param listener  处理事件的侦听器函数
+     * @param object    侦听函数绑定的作用域对象
      */
-    off(event: string, listener: Function, thisObj: object) {
+    off(event: string, listener: Function, object: object) {
         let list: Array<EventData> = this.events[event];
 
         if (!list) {
@@ -120,7 +177,7 @@ export class MessageManager {
         let length = list.length;
         for (let i = 0; i < length; i++) {
             let bin: EventData = list[i];
-            if (bin.listener == listener && bin.obj == thisObj) {
+            if (bin.listener == listener && bin.object == object) {
                 list.splice(i, 1);
                 break;
             }
@@ -134,9 +191,9 @@ export class MessageManager {
     /** 
      * 触发全局事件 
      * @param event(string)      事件名
-     * @param arg(any)           事件参数
+     * @param args(any)          事件参数
      */
-    dispatchEvent(event: string, arg: any = null) {
+    dispatchEvent(event: string, args: any = null) {
         let list: Array<EventData> = this.events[event];
 
         if (list != null) {
@@ -144,10 +201,8 @@ export class MessageManager {
             let length = temp.length;
             for (let i = 0; i < length; i++) {
                 let eventBin = temp[i];
-                eventBin.listener.call(eventBin.obj, event, arg);
+                eventBin.listener.call(eventBin.object, event, args);
             }
         }
     }
 }
-
-const Message = MessageManager.Instance;

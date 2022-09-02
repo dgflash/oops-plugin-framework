@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-09-01 18:00:28
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 10:02:22
+ * @LastEditTime: 2022-09-02 10:22:36
  */
 import { AudioClip, AudioSource, error, _decorator } from 'cc';
 import { oops } from '../../Oops';
@@ -17,7 +17,12 @@ const { ccclass, menu } = _decorator;
 export class AudioEffect extends AudioSource {
     private effects: Map<string, AudioClip> = new Map<string, AudioClip>();
 
-    public load(url: string, callback?: Function) {
+    /**
+     * 加载音效并播放
+     * @param url           音效资源地址
+     * @param callback      资源加载完成并开始播放回调
+     */
+    load(url: string, callback?: Function) {
         oops.res.load(url, AudioClip, (err: Error | null, data: AudioClip) => {
             if (err) {
                 error(err);
@@ -29,6 +34,7 @@ export class AudioEffect extends AudioSource {
         });
     }
 
+    /** 释放所有已使用过的音效资源 */
     release() {
         for (let key in this.effects) {
             oops.res.release(key);

@@ -3,17 +3,19 @@ export class MathUtil {
     /**
      * 角度转弧度
      */
-    public static deg2Rad: number = Math.PI / 180;
+    static deg2Rad: number = Math.PI / 180;
 
     /**
      * 弧度转角度
      */
-    public static rad2Deg: number = 180 / Math.PI;
+    static rad2Deg: number = 180 / Math.PI;
 
     /**
      * 获得随机方向
+     * @param x -1为左，1为右
+     * @returns 
      */
-    public static sign(x: number) {
+    static sign(x: number) {
         if (x > 0) {
             return 1;
         }
@@ -23,18 +25,23 @@ export class MathUtil {
         return 0;
     }
 
-    /** 随时间变化进度值 */
-    public static progress(start: number, end: number, t: number) {
+    /**
+     * 随时间变化进度值
+     * @param start 初始值
+     * @param end   结束值
+     * @param t     时间
+     */
+    static progress(start: number, end: number, t: number) {
         return start + (end - start) * t;
     }
 
     /**
      * 插值
-     * @param numStart 
-     * @param numEnd 
-     * @param t 
+     * @param numStart 开始数值
+     * @param numEnd   结束数值
+     * @param t        时间
      */
-    public static lerp(numStart: number, numEnd: number, t: number): number {
+    static lerp(numStart: number, numEnd: number, t: number): number {
         if (t > 1) {
             t = 1;
         }
@@ -46,12 +53,12 @@ export class MathUtil {
     }
 
     /**
-     * 
-     * @param angle1 角度插值
-     * @param angle2 
-     * @param t 
+     * 角度插值
+     * @param angle1 角度1
+     * @param angle2 角度2
+     * @param t      时间
      */
-    public static lerpAngle(current: number, target: number, t: number): number {
+    static lerpAngle(current: number, target: number, t: number): number {
         current %= 360;
         target %= 360;
 
@@ -69,11 +76,11 @@ export class MathUtil {
 
     /**
      * 按一定的速度从一个角度转向令一个角度
-     * @param current 
-     * @param target 
-     * @param speed 
+     * @param current 当前角度
+     * @param target  目标角度
+     * @param speed   速度
      */
-    public static angleTowards(current: number, target: number, speed: number): number {
+    static angleTowards(current: number, target: number, speed: number): number {
         current %= 360;
         target %= 360;
 
@@ -95,7 +102,13 @@ export class MathUtil {
         return ((current + speed * Math.sign(dir)) % 360 + 360) % 360;
     }
 
-    public static clamp(value: number, minLimit: number, maxLimit: number) {
+    /**
+     * 获取方位内值，超过时获取对应边界值
+     * @param value     值
+     * @param minLimit  最小值
+     * @param maxLimit  最大值
+     */
+    static clamp(value: number, minLimit: number, maxLimit: number) {
         if (value < minLimit) {
             return minLimit;
         }
@@ -109,9 +122,9 @@ export class MathUtil {
 
     /**
      * 获得一个值的概率
-     * @param value 
+     * @param value 值
      */
-    public static probability(value: number) {
+    static probability(value: number) {
         return Math.random() < value;
     }
 }

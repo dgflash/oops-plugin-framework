@@ -1,3 +1,9 @@
+/*
+ * @Author: dgflash
+ * @Date: 2022-09-01 18:00:28
+ * @LastEditors: dgflash
+ * @LastEditTime: 2022-09-02 14:49:42
+ */
 import { Color, Texture2D } from "cc";
 
 /**
@@ -10,11 +16,11 @@ export class ImageUtil {
      * @param x x 坐标
      * @param y y 坐标
      * @example
-     * // 获取纹理左上角第一个像素的颜色
-     * const color = ImageUtil.getPixelColor(texture, 1, 1);
-     * // cc.color(50, 100, 123, 255);
+// 获取纹理左上角第一个像素的颜色
+const color = ImageUtil.getPixelColor(texture, 1, 1);
+cc.color(50, 100, 123, 255);
      */
-    public static getPixelColor(texture: Texture2D, x: number, y: number): Color {
+    static getPixelColor(texture: Texture2D, x: number, y: number): Color {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d')!;
         canvas.width = texture.width;
@@ -35,7 +41,7 @@ export class ImageUtil {
      * @param url 图像地址
      * @param callback 完成回调
      */
-    public static imageToBase64(url: string, callback?: (dataURL: string) => void): Promise<string> {
+    static imageToBase64(url: string, callback?: (dataURL: string) => void): Promise<string> {
         return new Promise(res => {
             let extname = /\.png|\.jpg|\.jpeg/.exec(url)?.[0];
             //@ts-ignore
@@ -68,7 +74,7 @@ export class ImageUtil {
      * 将 Base64 字符转为 cc.Texture2D 资源（有问题）
      * @param base64 Base64 字符
      */
-    public static base64ToTexture(base64: string): Texture2D {
+    static base64ToTexture(base64: string): Texture2D {
         const image = document.createElement('img');
         image.src = base64;
         const texture = new Texture2D();
@@ -82,7 +88,7 @@ export class ImageUtil {
      * 将 Base64 字符转为二进制数据（有问题）
      * @param base64 Base64 字符
      */
-    public static base64ToBlob(base64: string): Blob {
+    static base64ToBlob(base64: string): Blob {
         const strings = base64.split(',');
         //@ts-ignore
         const type = /image\/\w+|;/.exec(strings[0])[0];

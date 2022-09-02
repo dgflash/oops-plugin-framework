@@ -1,21 +1,25 @@
 import { Component, EventTouch, _decorator } from "cc";
-import { oops } from "../../Oops";
 import { LanguageLabel } from "../../../libs/gui/language/LanguageLabel";
+import { oops } from "../../Oops";
 
-const { ccclass, property, menu } = _decorator;
+const { ccclass, property } = _decorator;
 
-/** 公共提示框 */
+/** 公共提示窗口 */
 @ccclass("CommonPrompt")
-export default class CommonPrompt extends Component {
+export class CommonPrompt extends Component {
+    /** 窗口标题多语言组件 */
     @property(LanguageLabel)
     private lab_title: LanguageLabel | null = null;
 
+    /** 提示内容多语言组件 */
     @property(LanguageLabel)
     private lab_content: LanguageLabel | null = null;
 
+    /** 确认按钮文本多语言组件 */
     @property(LanguageLabel)
     private lab_ok: LanguageLabel | null = null
 
+    /** 取消按钮文本多语言组件 */
     @property(LanguageLabel)
     private lab_cancel: LanguageLabel | null = null;
 
@@ -35,18 +39,20 @@ export default class CommonPrompt extends Component {
     }
 
     /**
+     * 
+     * 
      * @param params 参数 
      * {
-     *  title:     标题
-     *  content:   内容
-     *  okWord:    ok按钮上的文字
-     *  okFunc:    确认时执行的方法
-     *  cancelWord: 取消按钮的文字
-     *  cancelFunc: 取消时执行的方法
-     *  needCancel: 是否需要取消按钮
+     *     title:      标题
+     *     content:    内容
+     *     okWord:     ok按钮上的文字
+     *     okFunc:     确认时执行的方法
+     *     cancelWord: 取消按钮的文字
+     *     cancelFunc: 取消时执行的方法
+     *     needCancel: 是否需要取消按钮
      * }
      */
-    public onAdded(params: any = {}) {
+    onAdded(params: any = {}) {
         this.config = params || {};
         this.setTitle();
         this.setContent();
@@ -54,6 +60,7 @@ export default class CommonPrompt extends Component {
         this.setBtnCancelLabel();
         this.node.active = true;
     }
+
     private setTitle() {
         this.lab_title!.dataID = this.config.title;
     }

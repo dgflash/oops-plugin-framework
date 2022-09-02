@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-08-15 10:06:47
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 10:03:22
+ * @LastEditTime: 2022-09-02 13:44:12
  */
 import { error, instantiate, Node, Prefab } from "cc";
 import { oops } from "../../Oops";
@@ -15,7 +15,6 @@ const ToastPrefabPath: string = 'common/prefab/notify';
 
 /*
  * 滚动消息提示层
- * 1、直接调用 show 方法来显示提示
  */
 export class LayerNotify extends LayerUI {
     /**

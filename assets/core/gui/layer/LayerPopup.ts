@@ -1,7 +1,7 @@
 /*
  * @Date: 2021-11-24 16:08:36
  * @LastEditors: dgflash
- * @LastEditTime: 2022-06-02 10:52:52
+ * @LastEditTime: 2022-09-02 13:44:28
  */
 
 import { BlockInputEvents, Layers } from "cc";
@@ -10,8 +10,7 @@ import { UIConfig } from "./LayerManager";
 import { LayerUI } from "./LayerUI";
 
 /*
- * Popup层，调用add显示，可以显示暗色背景，弹框参数可以查看PopViewParams
- * 允许同时弹出多个窗口
+ * 弹窗层，允许同时弹出多个窗口，弹框参数可以查看 PopViewParams
  */
 export class LayerPopUp extends LayerUI {
     protected black!: BlockInputEvents;

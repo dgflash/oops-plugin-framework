@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-02-10 09:50:41
  * @LastEditors: dgflash
- * @LastEditTime: 2022-04-21 17:58:20
+ * @LastEditTime: 2022-09-02 12:09:55
  */
 import { game, Game, Node } from 'cc';
 
@@ -23,6 +23,7 @@ export class GameManager {
         timeScale = scale;
     }
 
+    /** 只支持web整体加速 */
     private gameTimeScaleExtend() {
         //@ts-ignore
         game._calculateDT = function (now: number) {
