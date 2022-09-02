@@ -1,16 +1,6 @@
 import { Component } from "cc";
+import { StringUtil } from "../../utils/StringUtil";
 import { EventDispatcher } from "../event/EventDispatcher";
-
-export const guid = function () {
-    let guid: string = "";
-    for (let i = 1; i <= 32; i++) {
-        let n = Math.floor(Math.random() * 16.0).toString(16);
-        guid += n;
-        if ((i == 8) || (i == 12) || (i == 16) || (i == 20))
-            guid += "-";
-    }
-    return guid;
-}
 
 export class TimerManager extends EventDispatcher {
     private static times: any = {};
@@ -157,7 +147,7 @@ export class TimerManager extends EventDispatcher {
     /** 在指定对象上注册一个倒计时的回调管理器 */
     public register(object: any, field: string, onSecond: Function, onComplete: Function) {
         let data: any = {};
-        data.id = guid();
+        data.id = StringUtil.guid();
         data.object = object;                                   // 管理对象
         data.field = field;                                     // 时间字段
         data.onSecond = onSecond;                               // 每秒事件

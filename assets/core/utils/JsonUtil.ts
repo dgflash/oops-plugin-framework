@@ -2,11 +2,11 @@
  * @Author: dgflash
  * @Date: 2021-08-18 17:00:59
  * @LastEditors: dgflash
- * @LastEditTime: 2022-06-14 19:22:26
+ * @LastEditTime: 2022-09-02 10:03:56
  */
 
 import { error, JsonAsset } from "cc";
-import { resLoader } from "../common/loader/ResLoader";
+import { oops } from "../Oops";
 
 /** 资源路径 */
 var path: string = "config/game/";
@@ -26,7 +26,7 @@ export class JsonUtil {
             callback(data.get(name));
         else {
             var url = path + name;
-            resLoader.load(url, JsonAsset, (err: Error | null, content: JsonAsset) => {
+            oops.res.load(url, JsonAsset, (err: Error | null, content: JsonAsset) => {
                 if (err) {
                     error(err.message);
                 }
@@ -43,7 +43,7 @@ export class JsonUtil {
             }
             else {
                 var url = path + name;
-                resLoader.load(url, JsonAsset, (err: Error | null, content: JsonAsset) => {
+                oops.res.load(url, JsonAsset, (err: Error | null, content: JsonAsset) => {
                     if (err) {
                         error(err.message);
                     }
@@ -57,6 +57,6 @@ export class JsonUtil {
     static release(name: string) {
         var url = path + name;
         data.delete(name);
-        resLoader.release(url);
+        oops.res.release(url);
     }
 }

@@ -1,5 +1,11 @@
+/*
+ * @Author: dgflash
+ * @Date: 2022-09-01 18:00:28
+ * @LastEditors: dgflash
+ * @LastEditTime: 2022-09-02 10:03:09
+ */
 import { Component, Node, _decorator } from "cc";
-import { resLoader } from "../../common/loader/ResLoader";
+import { oops } from "../../Oops";
 import { ViewParams } from "./Defines";
 
 const { ccclass } = _decorator;
@@ -53,7 +59,7 @@ export class DelegateComponent extends Component {
             this.node.destroy();
 
             // 释放界面相关资源
-            resLoader.release(viewParams.prefabPath);
+            oops.res.release(viewParams.prefabPath);
         }
         else {
             this.node.removeFromParent();

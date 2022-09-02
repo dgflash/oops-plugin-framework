@@ -2,11 +2,10 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-01 18:43:43
+ * @LastEditTime: 2022-09-02 10:05:13
  */
 
 import { game, JsonAsset } from "cc";
-import { resLoader } from "../../core/common/loader/ResLoader";
 import { oops } from "../../core/Oops";
 import { BuildTimeConstants } from "./BuildTimeConstants";
 import { GameConfig } from "./GameConfig";
@@ -25,8 +24,8 @@ export class Config {
 
     public init(callback: Function) {
         let config_name = "config/config";
-        resLoader.load(config_name, JsonAsset, () => {
-            var config = resLoader.get(config_name);
+        oops.res.load(config_name, JsonAsset, () => {
+            var config = oops.res.get(config_name);
             this.btc = new BuildTimeConstants();
             this.query = new GameQueryConfig();
             this.game = new GameConfig(config);

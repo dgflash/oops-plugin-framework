@@ -2,14 +2,14 @@
  * @Author: dgflash
  * @Date: 2022-08-15 10:06:47
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-25 10:04:19
+ * @LastEditTime: 2022-09-02 10:03:22
  */
 import { error, instantiate, Node, Prefab } from "cc";
-import { resLoader } from "../../common/loader/ResLoader";
+import { oops } from "../../Oops";
+import { Notify } from "../prompt/Notify";
 import { ViewParams } from "./Defines";
 import { DelegateComponent } from "./DelegateComponent";
 import { LayerUI } from "./LayerUI";
-import { Notify } from "../prompt/Notify";
 
 const ToastPrefabPath: string = 'common/prefab/notify';
 
@@ -37,7 +37,7 @@ export class LayerNotify extends LayerUI {
 
     protected load(viewParams: ViewParams) {
         // 获取预制件资源
-        resLoader.load(viewParams.prefabPath, (err: Error | null, res: Prefab) => {
+        oops.res.load(viewParams.prefabPath, (err: Error | null, res: Prefab) => {
             if (err) {
                 error(err);
             }

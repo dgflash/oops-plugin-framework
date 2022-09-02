@@ -2,10 +2,10 @@
  * @Author: dgflash
  * @Date: 2021-08-16 09:34:56
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-12 16:49:41
+ * @LastEditTime: 2022-09-02 10:04:13
  */
 import { Animation, AnimationClip, EventTouch, instantiate, Node, Prefab, Size, UITransform, v3, Vec3 } from "cc";
-import { resLoader } from "../common/loader/ResLoader";
+import { oops } from "../Oops";
 
 /** 显示对象工具 */
 export class ViewUtil {
@@ -75,7 +75,7 @@ export class ViewUtil {
 
     /** 创建预制节点 */
     public static createPrefabNode(name: string): Node {
-        var p: Prefab = resLoader.get(name, Prefab)!;
+        var p: Prefab = oops.res.get(name, Prefab)!;
         var n = instantiate(p);
         return n;
     }
@@ -83,7 +83,7 @@ export class ViewUtil {
     /** 加载预制并创建预制节点 */
     public static createPrefabNodeAsync(path: string): Promise<Node> {
         return new Promise(async (resolve, reject) => {
-            resLoader.load(path, Prefab, (err: Error | null, content: Prefab) => {
+            oops.res.load(path, Prefab, (err: Error | null, content: Prefab) => {
                 if (err) {
                     console.error(`名为【${path}】的资源加载失败`);
                     return;
@@ -97,7 +97,7 @@ export class ViewUtil {
 
     /** 加载预制节点 */
     public static loadPrefabNode(path: string, callback: Function) {
-        resLoader.load(path, Prefab, (err: Error | null, content: Prefab) => {
+        oops.res.load(path, Prefab, (err: Error | null, content: Prefab) => {
             if (err) {
                 console.error(`名为【${path}】的资源加载失败`);
                 return;
@@ -119,7 +119,7 @@ export class ViewUtil {
             anim = node.addComponent(Animation);
         }
 
-        var clip = resLoader.get(name, AnimationClip) as AnimationClip;
+        var clip = oops.res.get(name, AnimationClip) as AnimationClip;
         if (!clip) {
             return;
         }

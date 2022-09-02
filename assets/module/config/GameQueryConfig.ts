@@ -2,11 +2,11 @@
  * @Author: dgflash
  * @Date: 2022-04-14 17:08:01
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-05 10:47:51
+ * @LastEditTime: 2022-09-02 10:00:44
  */
 import { sys } from "cc";
-import { guid } from "../../core/common/manager/TimerManager";
 import { oops } from "../../core/Oops";
+import { StringUtil } from "../../core/utils/StringUtil";
 
 /**
  * 获取和处理浏览器地址栏参数
@@ -43,7 +43,7 @@ export class GameQueryConfig {
         this._data = this.parseUrl();
 
         if (!this._data["username"]) {
-            this._data["username"] = guid();
+            this._data["username"] = StringUtil.guid();
         }
 
         oops.log.logConfig(this._data, "查询参数");

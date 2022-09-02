@@ -2,11 +2,11 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-07-21 16:08:59
+ * @LastEditTime: 2022-09-02 10:04:35
  */
 import { director, error, JsonAsset, warn } from "cc";
-import { resLoader } from "../../../core/common/loader/ResLoader";
 import { Logger } from "../../../core/common/log/Logger";
+import { oops } from "../../../core/Oops";
 import { LanguageData } from "./LanguageData";
 import { LanguageLabel } from "./LanguageLabel";
 import { LanguageSprite } from "./LanguageSprite";
@@ -35,7 +35,7 @@ export class LanguagePack {
      * @param lang 
      */
     public updateLanguage(lang: string) {
-        let lanjson: any = resLoader.get(`${this._langjsonPath}/${lang}`, JsonAsset);
+        let lanjson: any = oops.res.get(`${this._langjsonPath}/${lang}`, JsonAsset);
         if (lanjson && lanjson.json) {
             LanguageData.data = lanjson.json;
             let rootNodes = director.getScene()!.children;
@@ -65,14 +65,14 @@ export class LanguagePack {
     public loadLanguageAssets(lang: string, callback: Function) {
         let lang_texture_path = `${this._langTexturePath}/${lang}`;
         let lang_json_path = `${this._langjsonPath}/${lang}`;
-        resLoader.loadDir(lang_texture_path, (err: any) => {
+        oops.res.loadDir(lang_texture_path, (err: any) => {
             if (err) {
                 error(err);
                 callback(err);
                 return;
             }
             Logger.logConfig(lang_texture_path, "下载语言包 textures 资源");
-            resLoader.load(lang_json_path, JsonAsset, (err: Error | null) => {
+            oops.res.load(lang_json_path, JsonAsset, (err: Error | null) => {
                 if (err) {
                     error(err);
                     callback(err);
@@ -89,11 +89,11 @@ export class LanguagePack {
      */
     public releaseLanguageAssets(lang: string) {
         let langpath = `${this._langTexturePath}/${lang}`;
-        resLoader.releaseDir(langpath);
+        oops.res.releaseDir(langpath);
         Logger.logView(langpath, "释放语言图片资源");
 
         let langjsonpath = `${this._langjsonPath}/${lang}`;
-        resLoader.release(langjsonpath);
+        oops.res.release(langjsonpath);
         Logger.logView(langjsonpath, "释放语言文字资源");
     }
 }

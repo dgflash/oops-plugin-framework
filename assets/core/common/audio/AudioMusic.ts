@@ -5,7 +5,7 @@
  * @LastEditTime: 2022-07-14 15:35:38
  */
 import { AudioClip, AudioSource, error, _decorator } from 'cc';
-import { resLoader } from '../loader/ResLoader';
+import { oops } from '../../Oops';
 const { ccclass, menu } = _decorator;
 
 /** 背景音乐 */
@@ -37,7 +37,7 @@ export class AudioMusic extends AudioSource {
      * @param callback     加载完成回调
      */
     public load(url: string, callback?: Function) {
-        resLoader.load(url, AudioClip, (err: Error | null, data: AudioClip) => {
+        oops.res.load(url, AudioClip, (err: Error | null, data: AudioClip) => {
             if (err) {
                 error(err);
             }
@@ -45,7 +45,7 @@ export class AudioMusic extends AudioSource {
             if (this.playing) {
                 this._isPlay = false;
                 this.stop();
-                resLoader.release(this._url);
+                oops.res.release(this._url);
             }
 
             this.enabled = true;
@@ -74,7 +74,7 @@ export class AudioMusic extends AudioSource {
 
     release() {
         if (this._url) {
-            resLoader.release(this._url);
+            oops.res.release(this._url);
             this._url = null!;
         }
     }

@@ -2,13 +2,14 @@
  * @Author: dgflash
  * @Date: 2022-02-11 09:32:47
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-17 13:59:54
+ * @LastEditTime: 2022-09-02 10:01:26
  */
 import { ECSRootSystem } from "../libs/ecs/ECSSystem";
 import { LanguageManager } from "../libs/gui/language/Language";
 import { HttpRequest } from "../libs/network/HttpRequest";
 import { AudioManager } from "./common/audio/AudioManager";
 import { MessageManager } from "./common/event/MessageManager";
+import ResLoader from "./common/loader/ResLoader";
 import { Logger } from "./common/log/Logger";
 import { TimerManager } from "./common/manager/TimerManager";
 import { StorageManager } from "./common/storage/StorageManager";
@@ -18,6 +19,7 @@ import { LayerManager } from "./gui/layer/LayerManager";
 /** 框架版本 */
 export var version: string = "1.1.0";
 
+/** OopsFramework */
 export class oops {
     /** ----------核心模块---------- */
 
@@ -35,6 +37,8 @@ export class oops {
     static gui: LayerManager;
     /** 三维游戏世界管理 */
     static game: GameManager;
+    /** 资源管理 */
+    static res = new ResLoader();
 
     /** ----------可选模块---------- */
 

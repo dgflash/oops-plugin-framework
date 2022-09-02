@@ -2,11 +2,11 @@
  * @Author: dgflash
  * @Date: 2021-11-24 15:51:01
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-03 15:24:51
+ * @LastEditTime: 2022-09-02 10:04:57
  */
 import { CCString, Component, Size, Sprite, SpriteFrame, UITransform, _decorator } from "cc";
 import { EDITOR } from "cc/env";
-import { resLoader } from "../../../core/common/loader/ResLoader";
+import { oops } from "../../../core/Oops";
 import { LanguageData } from "./LanguageData";
 
 const { ccclass, property, menu } = _decorator;
@@ -44,7 +44,7 @@ export class LanguageSprite extends Component {
     private updateSprite() {
         // 获取语言标记
         let path = `language/texture/${LanguageData.current}/${this.dataID}/spriteFrame`;
-        let res: SpriteFrame | null = resLoader.get(path, SpriteFrame);
+        let res: SpriteFrame | null = oops.res.get(path, SpriteFrame);
         if (!res) {
             console.error("[LanguageSprite] 资源不存在 " + path);
         }

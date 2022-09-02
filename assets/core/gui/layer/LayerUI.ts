@@ -11,7 +11,7 @@
  * clear        : 清除所有Node节点，队列当中未创建的任务也会被清除。
  */
 import { error, instantiate, isValid, Node, Prefab, warn, Widget } from "cc";
-import { resLoader } from "../../common/loader/ResLoader";
+import { oops } from "../../Oops";
 import { UICallbacks, ViewParams } from "./Defines";
 import { DelegateComponent } from "./DelegateComponent";
 import { UIConfig } from "./LayerManager";
@@ -88,7 +88,7 @@ export class LayerUI extends Node {
         else {
             // 获取预制件资源
             bundle = bundle || "resources";
-            resLoader.load(bundle, viewParams.prefabPath, (err: Error | null, res: Prefab) => {
+            oops.res.load(bundle, viewParams.prefabPath, (err: Error | null, res: Prefab) => {
                 if (err) {
                     error(err);
                 }

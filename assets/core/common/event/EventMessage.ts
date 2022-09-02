@@ -2,14 +2,15 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-07-21 19:24:17
+ * @LastEditTime: 2022-09-02 09:41:12
  */
-/** ---------- 全局消息事件 ----------  */
+
+/** 框架内部全局事件  */
 export enum EventMessage {
-    /** 中途退出游戏后，再进入游戏 */
+    /** 游戏从后台进入 */
     GAME_ENTER = "EventMessage.GAME_ENTER",
-    /** 中途退出游戏 */
+    /** 游戏切到后台 */
     GAME_EXIT = "EventMessage.GAME_EXIT",
-    /** 游戏尺寸修改事件 */
+    /** 游戏画笔尺寸变化事件 */
     GAME_RESIZE = "EventMessage.GAME_RESIZE"
 }

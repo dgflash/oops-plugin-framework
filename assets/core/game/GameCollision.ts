@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-03-29 17:08:08
  * @LastEditors: dgflash
- * @LastEditTime: 2022-07-21 17:18:09
+ * @LastEditTime: 2022-09-02 09:45:41
  */
 import { ccenum, Collider, Component, ICollisionEvent, ITriggerEvent, _decorator } from "cc";
 
@@ -10,11 +10,11 @@ const { ccclass, property } = _decorator;
 
 /** 碰撞物体类型 */
 export enum CollisionType {
-    /** 角色 */
+    /** 角色类 */
     Role,
-    /** 弹道*/
+    /** 飞弹类体*/
     Ballistic,
-    /** 墙 */
+    /** 墙体类 */
     Wall
 }
 ccenum(CollisionType);

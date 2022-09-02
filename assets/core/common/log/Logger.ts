@@ -1,6 +1,6 @@
 import { log } from "cc";
 
-export enum LogType {
+enum LogType {
     /** 网络层日志 */
     Net = 1,
     /** 数据结构层日志 */
