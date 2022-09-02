@@ -2,16 +2,16 @@
  * @Author: dgflash
  * @Date: 2022-09-01 18:00:28
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 15:23:20
+ * @LastEditTime: 2022-09-02 15:45:34
 -->
 #### 介绍
 Oops Framework 基于 Cocos Creato 3.x 开发的一款游戏框架。
 1. 提供游戏常用功能库，提高开发效率
 2. 提供业务模块代码模板，降低程序设计难度
-3. 框架内置模块低耦合，可自行删减不需要的模块，适应不同类型的游
+3. 框架内置模块低耦合，可自行删减不需要的模块，以适应不同类型的游戏
 4. 框架提供游戏常用插件工具
-    - 热更新配置生成插件
-    - 策划Excel配置表生成Json格式与配套ts代码插件
+    - 热更新配置生成插件([传送门](https://gitee.com/dgflash/oops-plugin-hot-update))
+    - 策划Excel配置表生成Json格式与配套ts代码插件([传送门](https://gitee.com/dgflash/oops-plugin-excel-to-json))
 
 #### 技术文档
 - [oops-framework](https://dgflash.gitee.io/oops-plugin-framework/)
@@ -92,7 +92,6 @@ module             - 游戏通用模块
     common             - 公共模块
     config             - 配置模块
 ```
-
+&nbsp;
 #### 学习交流 QQ 群：798575969
-
 ![image](http://dgflash.gitee.io/oops-full-stack-web/doc/img/qq.png)

@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-02-11 09:32:47
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 11:08:12
+ * @LastEditTime: 2022-09-02 15:29:45
  */
 import { ECSRootSystem } from "../libs/ecs/ECSSystem";
 import { LanguageManager } from "../libs/gui/language/Language";
@@ -16,10 +16,10 @@ import { StorageManager } from "./common/storage/StorageManager";
 import { GameManager } from "./game/GameManager";
 import { LayerManager } from "./gui/layer/LayerManager";
 
-/** 框架版本 */
-export var version: string = "1.1.0";
+/** 框架版本号 */
+export var version: string = "1.1.2";
 
-/** OopsFramework */
+/** 框架核心模块访问入口 */
 export class oops {
     /** ----------核心模块---------- */
 
