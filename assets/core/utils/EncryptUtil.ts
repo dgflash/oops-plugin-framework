@@ -14,8 +14,8 @@ export class EncryptUtil {
      */
     static aesEncrypt(msg: string, key: string, iv: string): string {
         //@ts-ignore
-        let encrypt = CryptoJS.AES.encrypt(msg, utf8Parse(key), {
-            iv: this.utf8Parse(iv),
+        let encrypt = CryptoJS.AES.encrypt(msg, key, {
+            iv: iv,
             //@ts-ignore
             mode: CryptoJS.mode.CBC,
             //@ts-ignore
@@ -32,8 +32,8 @@ export class EncryptUtil {
      */
     static aesDecrypt(str: string, key: string, iv: string): string {
         //@ts-ignore
-        let decrypt = CryptoJS.AES.decrypt(str, this.utf8Parse(key), {
-            iv: this.utf8Parse(iv),
+        let decrypt = CryptoJS.AES.decrypt(str, key, {
+            iv: iv,
             //@ts-ignore
             mode: CryptoJS.mode.CBC,
             //@ts-ignore
@@ -41,10 +41,5 @@ export class EncryptUtil {
         });
         //@ts-ignore
         return CryptoJS.enc.Utf8.stringify(decrypt);
-    }
-
-    private static utf8Parse(utf8Str: string): string {
-        //@ts-ignore
-        return CryptoJS.enc.Utf8.parse(utf8Str);
     }
 }

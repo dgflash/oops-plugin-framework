@@ -10,7 +10,7 @@
   "userData": {
     "isPlugin": true,
     "loadPluginInWeb": true,
-    "loadPluginInNative": false,
-    "executionScope": "global"
+    "loadPluginInNative": true,
+    "executionScope": "enclosed"
   }
 }
