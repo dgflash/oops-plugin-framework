@@ -1,30 +1,44 @@
 import { ECSComp } from "./ECSComp";
 import { ECSEntity } from "./ECSEntity";
+import { ECSGroup } from "./ECSGroup";
 import { ECSMatcher } from "./ECSMatcher";
 import { ECSModel } from "./ECSModel";
-import { createGroup, ECSComblockSystem, ECSRootSystem, ECSSystem } from "./ECSSystem";
+import { ECSComblockSystem, ECSRootSystem, ECSSystem } from "./ECSSystem";
 
+/** Entity-Component-System（实体-组件-系统）框架 */
 export module ecs {
+    /** 实体 - 一个概念上的定义，指的是游戏世界中的一个独特物体，是一系列组件的集合 */
     export type Entity = ECSEntity;
+    /** 组件 - 一堆数据的集合，即不存在任何的行为，只用来存储状态 */
     export type Comp = ECSComp;
+    /** 系统 - 关注实体上组件数据变化，处理游戏逻辑 */
     export type System = ECSSystem;
+    /** 根系统 - 驱动游戏中所有系统工作 */
     export type RootSystem = ECSRootSystem;
+    /** 处理游戏逻辑系统对象 - 继承此对象实现自定义业务逻辑 */
     export type ComblockSystem = ECSComblockSystem;
 
+    /** 实体 - 一个概念上的定义，指的是游戏世界中的一个独特物体，是一系列组件的集合 */
     export const Entity = ECSEntity;
+    /** 组件 - 一堆数据的集合，即不存在任何的行为，只用来存储状态 */
     export const Comp = ECSComp;
+    /** 系统 - 关注实体上组件数据变化，处理游戏逻辑 */
     export const System = ECSSystem;
+    /** 根系统 - 驱动游戏中所有系统工作 */
     export const RootSystem = ECSRootSystem;
+    /** 处理游戏逻辑系统对象 - 继承此对象实现自定义业务逻辑 */
     export const ComblockSystem = ECSComblockSystem;
 
-    export type CompAddOrRemove = (entity: Entity) => void;
+    /** 组件类型 */
     export type CompType<T> = CompCtor<T> | number;
 
     //#region 接口
+    /** 实体构造器接口 */
     export interface EntityCtor<T> {
         new(): T;
     }
 
+    /** 组件接口 */
     export interface IComp {
         canRecycle: boolean;
         ent: Entity;
@@ -32,6 +46,7 @@ export module ecs {
         reset(): void;
     }
 
+    /** 组件构造器接口 */
     export interface CompCtor<T> {
         new(): T;
         /** 组件编号 */
@@ -40,6 +55,7 @@ export module ecs {
         compName: string;
     }
 
+    /** 实体匹配器接口 */
     export interface IMatcher {
         mid: number;
         indices: number[];
@@ -48,26 +64,35 @@ export module ecs {
     }
 
     /**
-     * 如果需要监听实体首次进入System的情况，实现这个接口。
-     * 
-     * entityEnter会在update方法之前执行，实体进入后，不会再次进入entityEnter方法中。
-     * 当实体从当前System移除，下次再次符合条件进入System也会执行上述流程。
+     * 监听组件首次添加到实体上时，在ComblockSystem上实现这个接口
+     * 1. entityEnter会在update方法之前执行，实体进入后，不会再次进入entityEnter方法中
+     * 2. 当实体从当前System移除，下次再次符合条件进入System也会执行上述流程
+     * @example
+    export class RoleUpgradeSystem extends ecs.ComblockSystem implements ecs.IEntityEnterSystem {
+        filter(): ecs.IMatcher {
+            return ecs.allOf(RoleUpgradeComp, RoleModelLevelComp);
+        }
+
+        entityEnter(e: Role): void {
+            e.remove(RoleUpgradeComp);
+        }
+    }
      */
     export interface IEntityEnterSystem<E extends Entity = Entity> {
         entityEnter(entity: E): void;
     }
 
-    /** 如果需要监听实体从当前System移除，需要实现这个接口。*/
+    /** 监听组件从实体上移除时，在ComblockSystem上实现这个接口 */
     export interface IEntityRemoveSystem<E extends Entity = Entity> {
         entityRemove(entity: E): void;
     }
 
-    /** 第一次执行update */
+    /** 监听系统第一次执行update处理实体时，在ComblockSystem上实现这个接口 */
     export interface ISystemFirstUpdate<E extends Entity = Entity> {
         firstUpdate(entity: E): void;
     }
 
-    /** 执行update */
+    /** 监听系统执行update处理实体时，在ComblockSystem上实现这个接口 */
     export interface ISystemUpdate<E extends Entity = Entity> {
         update(entity: E): void;
     }
@@ -77,10 +102,34 @@ export module ecs {
      * 注册组件到ecs系统中
      * @param name   由于js打包会改变类名，所以这里必须手动传入组件的名称
      * @param canNew 标识是否可以new对象。想继承自Cocos Creator的组件就不能去new，需要写成@ecs.register('name', false)
-     * @example 
-     * 实体注册 ecs.register('name')
-     * 组件注册 ecs.register('name')
-     * 组件注册之继承cc.Component特性 ecs.register('name', false)
+     * @example
+    // 注册实体
+    @ecs.register('Role')
+    export class Role extends ecs.Entity {
+
+    }
+
+    // 注册数据组件
+    @ecs.register('RoleModel')
+    export class RoleModelComp extends ecs.Comp {
+        id: number = -1;
+
+        reset() {
+            this.id =  -1;
+        }
+    }
+
+    // 注册显示对象组件
+    @ccclass('RoleViewComp')
+    @ecs.register('RoleView', false)
+    export class RoleViewComp extends CCComp {
+        @property({ type: sp.Skeleton, tooltip: '角色动画' })
+        spine: sp.Skeleton = null!;
+
+        onLoad(){
+            
+        }
+    }
      */
     export function register<T>(name: string, canNew: boolean = true) {
         return function (ctor: any) {
@@ -109,7 +158,10 @@ export module ecs {
         }
     }
 
-    /** 扩展：获取带 eid 自增量的实体（继承Entity方式的编码风格，可减少一定代码量） */
+    /**
+     * 创建一个新的实体对象或从缓存中获取一个实体对象
+     * @param ctor 实体类
+     */
     export function getEntity<T extends Entity>(ctor: EntityCtor<T>): T {
         // 获取实体对象名
         var entityName = ECSModel.entityCtors.get(ctor);
@@ -138,9 +190,25 @@ export module ecs {
     }
 
     /**
+     * 创建group，每个group只关心对应组件的添加和删除
+     * @param matcher 实体筛选器
+     */
+    export function createGroup<E extends ECSEntity = ECSEntity>(matcher: ecs.IMatcher): ECSGroup<E> {
+        let group = ECSModel.groups.get(matcher.mid);
+        if (!group) {
+            group = new ECSGroup(matcher);
+            ECSModel.groups.set(matcher.mid, group);
+            let careComponentTypeIds = matcher.indices;
+            for (let i = 0; i < careComponentTypeIds.length; i++) {
+                ECSModel.compAddOrRemove.get(careComponentTypeIds[i])!.push(group.onComponentAddOrRemove.bind(group));
+            }
+        }
+        return group as unknown as ECSGroup<E>;
+    }
+
+    /**
      * 动态查询实体
-     * @param matcher 
-     * @returns 
+     * @param matcher 匹配器
      */
     export function query<E extends Entity = Entity>(matcher: IMatcher): E[] {
         let group = ECSModel.groups.get(matcher.mid);
@@ -167,8 +235,8 @@ export module ecs {
     }
 
     /**
-     * 根据实体id获得实体对象
-     * @param eid 
+     * 通过实体唯一编号获得实体对象
+     * @param eid 实体唯一编号
      */
     export function getEntityByEid<E extends Entity = Entity>(eid: number): E {
         return ECSModel.eid2Entity.get(eid) as E;
@@ -208,7 +276,7 @@ export module ecs {
 
     /**
      * 组件间是或的关系，表示关注拥有任意一个这些组件的实体。
-     * @param args 组件索引
+     * @param args  组件类
      */
     export function anyOf(...args: CompType<IComp>[]) {
         return new ECSMatcher().anyOf(...args);
@@ -216,10 +284,8 @@ export module ecs {
 
     /**
      * 表示关注只拥有这些组件的实体
-     * 
-     * 注意：
-     *  不是特殊情况不建议使用onlyOf。因为onlyOf会监听所有组件的添加和删除事件。
-     * @param args 组件索引
+     * 注：不是特殊情况不建议使用onlyOf。因为onlyOf会监听所有组件的添加和删除事件
+     * @param args  组件类
      */
     export function onlyOf(...args: CompType<IComp>[]) {
         return new ECSMatcher().onlyOf(...args);
@@ -227,10 +293,9 @@ export module ecs {
 
     /**
      * 不包含指定的任意一个组件
-     * 
-     * eg.
-     *  ecs.excludeOf(A, B);表示不包含组件A或者组件B
-     * @param args 
+     * @param args  组件类
+     * @example
+     * ecs.excludeOf(A, B); // 表示不包含组件A或者组件B
      */
     export function excludeOf(...args: CompType<IComp>[]) {
         return new ECSMatcher().excludeOf(...args);
@@ -251,7 +316,7 @@ export module ecs {
     }
 
     /**
-     * 注册单例。主要用于那些不能手动创建对象的组件
+     * 注册单例组件 - 主要用于那些不能手动创建对象的组件
      * @param obj 
      */
     export function addSingleton(obj: IComp) {

@@ -35,7 +35,7 @@ function createComp<T extends ecs.IComp>(ctor: ecs.CompCtor<T>): T {
 }
 
 /**
- * 销毁实体。
+ * 销毁实体
  * 
  * 缓存销毁的实体，下次新建实体时会优先从缓存中拿。
  * @param entity 
@@ -109,13 +109,11 @@ export class ECSEntity {
     }
 
     /**
-     * 根据组件id动态创建组件，并通知关心的系统。
+     * 根据组件类动态创建组件，并通知关心的系统。如果实体存在了这个组件，那么会先删除之前的组件然后添加新的
      * 
-     * 如果实体存在了这个组件，那么会先删除之前的组件然后添加新的。
-     * 
-     * 注意：不要直接new Component，new来的Component不会从Component的缓存池拿缓存的数据。
-     * @param componentTypeId 组件id
-     * @param isReAdd true-表示用户指定这个实体可能已经存在了该组件，那么再次add组件的时候会先移除该组件然后再添加一遍。false-表示不重复添加组件。
+     * 注意：不要直接new Component，new来的Component不会从Component的缓存池拿缓存的数据
+     * @param componentTypeId   组件类
+     * @param isReAdd           true-表示用户指定这个实体可能已经存在了该组件，那么再次add组件的时候会先移除该组件然后再添加一遍。false-表示不重复添加组件
      */
     add<T extends ecs.IComp>(obj: T): ECSEntity;
     add(ctor: number, isReAdd?: boolean): ECSEntity;
@@ -185,6 +183,11 @@ export class ECSEntity {
         }
     }
 
+    /**
+     * 批量添加组件
+     * @param ctors 组件类
+     * @returns 
+     */
     addComponents<T extends ecs.IComp>(...ctors: ecs.CompType<T>[]) {
         for (let ctor of ctors) {
             this.add(ctor);
@@ -192,6 +195,10 @@ export class ECSEntity {
         return this;
     }
 
+    /**
+     * 获取一个组件实例
+     * @param ctor 组件类
+     */
     get(ctor: number): number;
     get<T extends ecs.IComp>(ctor: ecs.CompCtor<T>): T;
     get<T extends ecs.IComp>(ctor: ecs.CompCtor<T> | number): T {
@@ -199,6 +206,10 @@ export class ECSEntity {
         return this[ctor.compName];
     }
 
+    /**
+     * 组件是否在实体存在内
+     * @param ctor 组件类
+     */
     has(ctor: ecs.CompType<ecs.IComp>): boolean {
         if (typeof ctor == "number") {
             return this.mask.has(ctor);
@@ -209,8 +220,8 @@ export class ECSEntity {
     }
 
     /**
-     * 
-     * @param ctor 组件构造函数或者组件Tag
+     * 从实体上删除指定组件
+     * @param ctor      组件构造函数或者组件Tag
      * @param isRecycle 是否回收该组件对象。对于有些组件上有大量数据，当要描述移除组件但是不想清除组件上的数据是可以
      * 设置该参数为false，这样该组件对象会缓存在实体身上，下次重新添加组件时会将该组件对象添加回来，不会重新从组件缓存
      * 池中拿一个组件来用。

@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-09-01 18:03:51
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-01 18:39:20
+ * @LastEditTime: 2022-09-05 14:17:14
  */
 
 // 该文件用作typedoc的入口点模块——我们的API生成器
@@ -50,3 +50,8 @@ export * from './assets/core/utils/Vec3Util';
 export * from './assets/core/utils/ViewUtil';
 export * from './assets/core/Oops';
 export * from './assets/core/Root';
+
+export * from './assets/libs/ecs/ECS';
+export * from './assets/libs/ecs/ECSComp';
+export * from './assets/libs/ecs/ECSEntity';
+export * from './assets/libs/ecs/ECSSystem';

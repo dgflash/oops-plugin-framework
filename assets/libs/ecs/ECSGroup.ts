@@ -1,3 +1,9 @@
+/*
+ * @Author: dgflash
+ * @Date: 2022-09-01 18:00:28
+ * @LastEditors: dgflash
+ * @LastEditTime: 2022-09-05 14:21:54
+ */
 import { ecs } from "./ECS";
 import { ECSEntity } from "./ECSEntity";
 
@@ -20,7 +26,7 @@ export class ECSGroup<E extends ECSEntity = ECSEntity> {
     }
 
     /**
-     * 当前group中实体的数量。
+     * 当前group中实体的数量
      * 
      * 注：不要手动修改这个属性值。
      * 注：其实可以通过this._matchEntities.size获得实体数量，但是需要封装get方法。为了减少一次方法的调用所以才直接创建一个count属性

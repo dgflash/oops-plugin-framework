@@ -1,25 +1,8 @@
 import { ecs } from "./ECS";
 import { ECSEntity } from "./ECSEntity";
 import { ECSGroup } from "./ECSGroup";
-import { ECSModel } from "./ECSModel";
 
-/**
- * 创建group，每个group只关心对应组件的添加和删除
- * @param matcher 实体筛选器
- */
-export function createGroup<E extends ECSEntity = ECSEntity>(matcher: ecs.IMatcher): ECSGroup<E> {
-    let group = ECSModel.groups.get(matcher.mid);
-    if (!group) {
-        group = new ECSGroup(matcher);
-        ECSModel.groups.set(matcher.mid, group);
-        let careComponentTypeIds = matcher.indices;
-        for (let i = 0; i < careComponentTypeIds.length; i++) {
-            ECSModel.compAddOrRemove.get(careComponentTypeIds[i])!.push(group.onComponentAddOrRemove.bind(group));
-        }
-    }
-    return group as unknown as ECSGroup<E>;
-}
-
+/** 继承此类实现具体业务逻辑的系统 */
 export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
     protected group: ECSGroup<E>;
     protected dt: number = 0;
@@ -34,6 +17,7 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
     private tmpExecute: ((dt: number) => void) | null = null;
     private execute!: (dt: number) => void;
 
+    /** 构造函数 */
     constructor() {
         let hasOwnProperty = Object.hasOwnProperty;
         let prototype = Object.getPrototypeOf(this);
@@ -51,12 +35,12 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
             this.removedEntities = new Map<number, E>();
 
             this.execute = this.execute1;
-            this.group = createGroup(this.filter());
+            this.group = ecs.createGroup(this.filter());
             this.group.watchEntityEnterAndRemove(this.enteredEntities, this.removedEntities);
         }
         else {
             this.execute = this.execute0;
-            this.group = createGroup(this.filter());
+            this.group = ecs.createGroup(this.filter());
         }
 
         if (hasFirstUpdate) {
@@ -65,14 +49,17 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
         }
     }
 
+    /** 系统实始化 */
     init(): void {
 
     }
 
+    /** 系统释放事件 */
     onDestroy(): void {
 
     }
 
+    /** 是否存在实体 */
     hasEntity(): boolean {
         return this.group.count > 0;
     }
@@ -173,11 +160,7 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
     abstract filter(): ecs.IMatcher;
 }
 
-/**
- * System的root，对游戏中的System遍历从这里开始。
- * 
- * 一个System组合中只能有一个RootSystem，可以有多个并行的RootSystem。
- */
+/** 根System，对游戏中的System遍历从这里开始，一个System组合中只能有一个RootSystem，可以有多个并行的RootSystem */
 export class ECSRootSystem {
     private executeSystemFlows: ECSComblockSystem[] = [];
     private systemCnt: number = 0;
@@ -210,9 +193,7 @@ export class ECSRootSystem {
     }
 }
 
-/**
- * 系统组合器，用于将多个相同功能模块的系统逻辑上放在一起。System也可以嵌套System。
- */
+/** 系统组合器，用于将多个相同功能模块的系统逻辑上放在一起，系统也可以嵌套系统 */
 export class ECSSystem {
     private _comblockSystems: ECSComblockSystem[] = [];
     get comblockSystems() {

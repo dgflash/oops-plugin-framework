@@ -2,12 +2,15 @@
  * @Author: dgflash
  * @Date: 2022-05-12 14:18:44
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-01 11:59:03
+ * @LastEditTime: 2022-09-05 14:16:15
  */
 import { ecs } from "./ECS";
 import { ECSEntity } from "./ECSEntity";
 import { ECSGroup } from "./ECSGroup";
 
+type CompAddOrRemove = (entity: ecs.Entity) => void;
+
+/** ECS框架内部数据 */
 export class ECSModel {
     /** 实体自增id */
     static eid = 1;
@@ -28,7 +31,7 @@ export class ECSModel {
      * 每个组件的添加和删除的动作都要派送到“关心”它们的group上。goup对当前拥有或者之前（删除前）拥有该组件的实体进行组件规则判断。判断该实体是否满足group
      * 所期望的组件组合。
      */
-    static compAddOrRemove: Map<number, ecs.CompAddOrRemove[]> = new Map();
+    static compAddOrRemove: Map<number, CompAddOrRemove[]> = new Map();
 
     /** 编号获取组件 */
     static tid2comp: Map<number, ecs.IComp> = new Map();
