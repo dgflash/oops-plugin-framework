@@ -209,6 +209,8 @@ export module ecs {
     /**
      * 动态查询实体
      * @param matcher 匹配器
+     * @example
+     * ecs.query(ecs.allOf(Comp1, Comp2));
      */
     export function query<E extends Entity = Entity>(matcher: IMatcher): E[] {
         let group = ECSModel.groups.get(matcher.mid);
@@ -269,14 +271,18 @@ export module ecs {
      * 表示只关心这些组件的添加和删除动作。虽然实体可能有这些组件之外的组件，但是它们的添加和删除没有被关注，所以不会存在对关注之外的组件
      * 进行添加操作引发Group重复添加实体。
      * @param args 
+     * @example
+     * ecs.allOf(AComponent, BComponent, CComponent);
      */
     export function allOf(...args: CompType<IComp>[]) {
         return new ECSMatcher().allOf(...args);
     }
 
     /**
-     * 组件间是或的关系，表示关注拥有任意一个这些组件的实体。
+     * 组件间是或的关系，表示关注拥有任意一个这些组件的实体
      * @param args  组件类
+     * @example
+     * ecs.anyOf(AComponent, BComponent);
      */
     export function anyOf(...args: CompType<IComp>[]) {
         return new ECSMatcher().anyOf(...args);
@@ -286,6 +292,12 @@ export module ecs {
      * 表示关注只拥有这些组件的实体
      * 注：不是特殊情况不建议使用onlyOf。因为onlyOf会监听所有组件的添加和删除事件
      * @param args  组件类
+     * @example
+     // 不包含CComponent或者DComponent
+     ecs.allOf(AComponent, BComponent).excludeOf(CComponent, DComponent);
+
+     // 不同时包含CComponent和DComponent
+     ecs.allOf(AComponent, BComponent).excludeOf(CComponent).excludeOf(DComponent);
      */
     export function onlyOf(...args: CompType<IComp>[]) {
         return new ECSMatcher().onlyOf(...args);
@@ -295,7 +307,8 @@ export module ecs {
      * 不包含指定的任意一个组件
      * @param args  组件类
      * @example
-     * ecs.excludeOf(A, B); // 表示不包含组件A或者组件B
+     // 表示不包含组件A或者组件B
+     ecs.excludeOf(A, B); 
      */
     export function excludeOf(...args: CompType<IComp>[]) {
         return new ECSMatcher().excludeOf(...args);
