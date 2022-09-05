@@ -1,6 +1,7 @@
 import { ecs } from "./ECS";
 import { ECSEntity } from "./ECSEntity";
 import { ECSGroup } from "./ECSGroup";
+import { ECSModel } from "./ECSModel";
 
 /** 继承此类实现具体业务逻辑的系统 */
 export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
@@ -35,12 +36,12 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
             this.removedEntities = new Map<number, E>();
 
             this.execute = this.execute1;
-            this.group = ecs.createGroup(this.filter());
+            this.group = ECSModel.createGroup(this.filter());
             this.group.watchEntityEnterAndRemove(this.enteredEntities, this.removedEntities);
         }
         else {
             this.execute = this.execute0;
-            this.group = ecs.createGroup(this.filter());
+            this.group = ECSModel.createGroup(this.filter());
         }
 
         if (hasFirstUpdate) {

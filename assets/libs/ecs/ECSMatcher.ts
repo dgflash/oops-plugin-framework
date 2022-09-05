@@ -1,7 +1,7 @@
 import { ecs } from "./ECS";
 import { ECSEntity } from "./ECSEntity";
 import { ECSMask } from "./ECSMask";
-import { ECSModel } from "./ECSModel";
+import { CompCtor, CompType, ECSModel } from "./ECSModel";
 
 let macherId: number = 1;
 
@@ -51,7 +51,7 @@ export class ECSMatcher implements ecs.IMatcher {
      * 组件间是或的关系，表示关注拥有任意一个这些组件的实体。
      * @param args 组件索引
      */
-    anyOf(...args: ecs.CompType<ecs.IComp>[]): ECSMatcher {
+    anyOf(...args: CompType<ecs.IComp>[]): ECSMatcher {
         this.rules.push(new AnyOf(...args));
         this.bindMatchMethod();
         return this;
@@ -61,7 +61,7 @@ export class ECSMatcher implements ecs.IMatcher {
      * 组件间是与的关系，表示关注拥有所有这些组件的实体。
      * @param args 组件索引
      */
-    allOf(...args: ecs.CompType<ecs.IComp>[]): ECSMatcher {
+    allOf(...args: CompType<ecs.IComp>[]): ECSMatcher {
         this.rules.push(new AllOf(...args));
         this.bindMatchMethod();
         return this;
@@ -74,9 +74,9 @@ export class ECSMatcher implements ecs.IMatcher {
      *  不是特殊情况不建议使用onlyOf。因为onlyOf会监听所有组件的添加和删除事件。
      * @param args 组件索引
      */
-    onlyOf(...args: ecs.CompType<ecs.IComp>[]): ECSMatcher {
+    onlyOf(...args: CompType<ecs.IComp>[]): ECSMatcher {
         this.rules.push(new AllOf(...args));
-        let otherTids: ecs.CompType<ecs.IComp>[] = [];
+        let otherTids: CompType<ecs.IComp>[] = [];
         for (let ctor of ECSModel.compCtors) {
             if (args.indexOf(ctor) < 0) {
                 otherTids.push(ctor);
@@ -91,7 +91,7 @@ export class ECSMatcher implements ecs.IMatcher {
      * 不包含指定的任意一个组件
      * @param args 
      */
-    excludeOf(...args: ecs.CompType<ecs.IComp>[]) {
+    excludeOf(...args: CompType<ecs.IComp>[]) {
         this.rules.push(new ExcludeOf(...args));
         this.bindMatchMethod();
         return this;
@@ -139,7 +139,7 @@ abstract class BaseOf {
 
     protected mask = new ECSMask();
 
-    constructor(...args: ecs.CompType<ecs.IComp>[]) {
+    constructor(...args: CompType<ecs.IComp>[]) {
         let componentTypeId = -1;
         let len = args.length;
         for (let i = 0; i < len; i++) {
@@ -147,7 +147,7 @@ abstract class BaseOf {
                 componentTypeId = args[i] as number;
             }
             else {
-                componentTypeId = (args[i] as ecs.CompCtor<ecs.IComp>).tid;
+                componentTypeId = (args[i] as CompCtor<ecs.IComp>).tid;
             }
             if (componentTypeId == -1) {
                 throw Error('存在没有注册的组件！');

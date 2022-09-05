@@ -1,6 +1,6 @@
 import { ecs } from "./ECS";
 import { ECSMask } from "./ECSMask";
-import { ECSModel } from "./ECSModel";
+import { CompCtor, CompType, ECSModel } from "./ECSModel";
 
 //#region 辅助方法
 
@@ -24,13 +24,13 @@ function broadcastCompAddOrRemove(entity: ECSEntity, componentTypeId: number) {
  * 创建组件对象
  * @param ctor
  */
-function createComp<T extends ecs.IComp>(ctor: ecs.CompCtor<T>): T {
+function createComp<T extends ecs.IComp>(ctor: CompCtor<T>): T {
     var cct = ECSModel.compCtors[ctor.tid];
     if (!cct) {
         throw Error(`没有找到该组件的构造函数，检查${ctor.compName}是否为不可构造的组件`);
     }
     let comps = ECSModel.compPools.get(ctor.tid)!;
-    let component = comps.pop() || new (cct as ecs.CompCtor<T>);
+    let component = comps.pop() || new (cct as CompCtor<T>);
     return component as T;
 }
 
@@ -57,6 +57,7 @@ function destroyEntity(entity: ECSEntity) {
 
 //#endregion
 
+/** ECS实体对象 */
 export class ECSEntity {
     /** 实体唯一标识，不要手动修改 */
     eid: number = -1;
@@ -65,7 +66,7 @@ export class ECSEntity {
     /** 组件过滤数据 */
     private mask = new ECSMask();
     /** 当前实体身上附加的组件构造函数 */
-    private compTid2Ctor: Map<number, ecs.CompType<ecs.IComp>> = new Map();
+    private compTid2Ctor: Map<number, CompType<ecs.IComp>> = new Map();
     /** 配合 entity.remove(Comp, false)， 记录组件实例上的缓存数据，在添加时恢复原数据 */
     private compTid2Obj: Map<number, ecs.IComp> = new Map();
 
@@ -117,9 +118,9 @@ export class ECSEntity {
      */
     add<T extends ecs.IComp>(obj: T): ECSEntity;
     add(ctor: number, isReAdd?: boolean): ECSEntity;
-    add<T extends ecs.IComp>(ctor: ecs.CompCtor<T>, isReAdd?: boolean): T;
-    add<T extends ecs.IComp>(ctor: ecs.CompType<T>, isReAdd?: boolean): T;
-    add<T extends ecs.IComp>(ctor: ecs.CompType<T> | T, isReAdd: boolean = false): T | ECSEntity {
+    add<T extends ecs.IComp>(ctor: CompCtor<T>, isReAdd?: boolean): T;
+    add<T extends ecs.IComp>(ctor: CompType<T>, isReAdd?: boolean): T;
+    add<T extends ecs.IComp>(ctor: CompType<T> | T, isReAdd: boolean = false): T | ECSEntity {
         if (typeof ctor === 'function') {
             let compTid = ctor.tid;
             if (ctor.tid === -1) {
@@ -158,7 +159,7 @@ export class ECSEntity {
             return comp;
         }
         else {
-            let tmpCtor = (ctor.constructor as ecs.CompCtor<T>);
+            let tmpCtor = (ctor.constructor as CompCtor<T>);
             let compTid = tmpCtor.tid;
             // console.assert(compTid !== -1 || !compTid, '组件未注册！');
             // console.assert(this.compTid2Ctor.has(compTid), '已存在该组件！');
@@ -188,7 +189,7 @@ export class ECSEntity {
      * @param ctors 组件类
      * @returns 
      */
-    addComponents<T extends ecs.IComp>(...ctors: ecs.CompType<T>[]) {
+    addComponents<T extends ecs.IComp>(...ctors: CompType<T>[]) {
         for (let ctor of ctors) {
             this.add(ctor);
         }
@@ -200,8 +201,8 @@ export class ECSEntity {
      * @param ctor 组件类
      */
     get(ctor: number): number;
-    get<T extends ecs.IComp>(ctor: ecs.CompCtor<T>): T;
-    get<T extends ecs.IComp>(ctor: ecs.CompCtor<T> | number): T {
+    get<T extends ecs.IComp>(ctor: CompCtor<T>): T;
+    get<T extends ecs.IComp>(ctor: CompCtor<T> | number): T {
         // @ts-ignore
         return this[ctor.compName];
     }
@@ -210,7 +211,7 @@ export class ECSEntity {
      * 组件是否在实体存在内
      * @param ctor 组件类
      */
-    has(ctor: ecs.CompType<ecs.IComp>): boolean {
+    has(ctor: CompType<ecs.IComp>): boolean {
         if (typeof ctor == "number") {
             return this.mask.has(ctor);
         }
@@ -226,7 +227,7 @@ export class ECSEntity {
      * 设置该参数为false，这样该组件对象会缓存在实体身上，下次重新添加组件时会将该组件对象添加回来，不会重新从组件缓存
      * 池中拿一个组件来用。
      */
-    remove(ctor: ecs.CompType<ecs.IComp>, isRecycle: boolean = true) {
+    remove(ctor: CompType<ecs.IComp>, isRecycle: boolean = true) {
         let hasComp = false;
         //@ts-ignore
         let componentTypeId = ctor.tid;
@@ -258,7 +259,7 @@ export class ECSEntity {
         }
     }
 
-    private _remove(comp: ecs.CompType<ecs.IComp>) {
+    private _remove(comp: CompType<ecs.IComp>) {
         this.remove(comp, false);
     }
 

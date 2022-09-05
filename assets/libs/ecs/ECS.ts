@@ -1,8 +1,7 @@
 import { ECSComp } from "./ECSComp";
 import { ECSEntity } from "./ECSEntity";
-import { ECSGroup } from "./ECSGroup";
 import { ECSMatcher } from "./ECSMatcher";
-import { ECSModel } from "./ECSModel";
+import { CompCtor, CompType, ECSModel, EntityCtor } from "./ECSModel";
 import { ECSComblockSystem, ECSRootSystem, ECSSystem } from "./ECSSystem";
 
 /** Entity-Component-System（实体-组件-系统）框架 */
@@ -29,14 +28,7 @@ export module ecs {
     /** 处理游戏逻辑系统对象 - 继承此对象实现自定义业务逻辑 */
     export const ComblockSystem = ECSComblockSystem;
 
-    /** 组件类型 */
-    export type CompType<T> = CompCtor<T> | number;
-
     //#region 接口
-    /** 实体构造器接口 */
-    export interface EntityCtor<T> {
-        new(): T;
-    }
 
     /** 组件接口 */
     export interface IComp {
@@ -44,15 +36,6 @@ export module ecs {
         ent: Entity;
 
         reset(): void;
-    }
-
-    /** 组件构造器接口 */
-    export interface CompCtor<T> {
-        new(): T;
-        /** 组件编号 */
-        tid: number;
-        /** 组件名 */
-        compName: string;
     }
 
     /** 实体匹配器接口 */
@@ -190,23 +173,6 @@ export module ecs {
     }
 
     /**
-     * 创建group，每个group只关心对应组件的添加和删除
-     * @param matcher 实体筛选器
-     */
-    export function createGroup<E extends ECSEntity = ECSEntity>(matcher: ecs.IMatcher): ECSGroup<E> {
-        let group = ECSModel.groups.get(matcher.mid);
-        if (!group) {
-            group = new ECSGroup(matcher);
-            ECSModel.groups.set(matcher.mid, group);
-            let careComponentTypeIds = matcher.indices;
-            for (let i = 0; i < careComponentTypeIds.length; i++) {
-                ECSModel.compAddOrRemove.get(careComponentTypeIds[i])!.push(group.onComponentAddOrRemove.bind(group));
-            }
-        }
-        return group as unknown as ECSGroup<E>;
-    }
-
-    /**
      * 动态查询实体
      * @param matcher 匹配器
      * @example
@@ -215,7 +181,7 @@ export module ecs {
     export function query<E extends Entity = Entity>(matcher: IMatcher): E[] {
         let group = ECSModel.groups.get(matcher.mid);
         if (!group) {
-            group = createGroup(matcher);
+            group = ECSModel.createGroup(matcher);
             ECSModel.eid2Entity.forEach(group.onComponentAddOrRemove, group);
         }
         return group.matchEntities as E[];
