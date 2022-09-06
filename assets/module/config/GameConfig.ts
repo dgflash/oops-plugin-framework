@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-05 17:06:44
+ * @LastEditTime: 2022-09-06 17:29:04
  */
 
 import { oops } from "../../core/Oops";
@@ -42,9 +42,11 @@ export class GameConfig {
     get language(): Array<string> {
         return this._data.language.type || ["zh"];
     }
+    /** 获取当前客户端支持的语言 Json 配置路径 */
     get languagePathJson(): string {
         return this._data.language.path.json || "language/json";
     }
+    /** 获取当前客户端支持的语言纹理配置路径 */
     get languagePathTexture(): string {
         return this._data.language.path.texture || "language/texture";
     }

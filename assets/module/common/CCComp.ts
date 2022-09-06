@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2021-11-11 19:05:32
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-05 10:31:47
+ * @LastEditTime: 2022-09-06 17:20:51
  */
 
 import { _decorator } from 'cc';
@@ -12,12 +12,28 @@ import { ecs } from '../../libs/ecs/ECS';
 const { ccclass, property } = _decorator;
 
 /** 
- * ECS结合Cocos Creator组件
+ * 游戏显示对象组件
+ * 
  * 使用方法：
- * 1、对象拥有Cocos引擎组件功能、ECS 组件全局访问功能
- * 2、网络游戏，优先有数据对象，在才创建视图组件的流程，在释放视图组件时，不释放数据对象
- * 3、对象自带监听、释放、发送全局消息功能
- * 4、对象管理的所有节点摊平，直接通过节点名获取cc.Node对象（节点名不能有重名）
+ * 1. 对象拥有 cc.Component 组件功能与 ecs.Comp 组件功能
+ * 2. 对象自带全局事件监听、释放、发送全局消息功能
+ * 3. 对象管理的所有节点摊平，直接通过节点名获取cc.Node对象（节点名不能有重名）
+ * 
+ * 应用场景
+ * 1. 网络游戏，优先有数据对象，然后创建视图对象，当释放视图组件时，部分场景不希望释放数据对象
+ * 
+ * @example
+// 注册显示对象组件
+@ccclass('RoleViewComp')
+@ecs.register('RoleView', false)
+export class RoleViewComp extends CCComp {
+    @property({ type: sp.Skeleton, tooltip: '角色动画' })
+    spine: sp.Skeleton = null!;
+
+    onLoad(){
+        
+    }
+}
  */
 @ccclass('CCComp')
 export abstract class CCComp extends GameComponent implements ecs.IComp {

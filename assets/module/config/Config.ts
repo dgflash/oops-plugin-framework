@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 10:05:13
+ * @LastEditTime: 2022-09-06 17:28:01
  */
 
 import { game, JsonAsset } from "cc";
@@ -13,15 +13,16 @@ import { GameQueryConfig } from "./GameQueryConfig";
 
 /** 游戏配置静态访问类 */
 export class Config {
-    /** 构建时环境常量 */
+    /** 环境常量 */
     public btc!: BuildTimeConstants;
 
-    /** 配置数据，版本号、支持语种等数据 */
+    /** 游戏配置数据，版本号、支持语种等数据 */
     public game!: GameConfig;
 
-    /** 处理浏览器地址栏参数，包括服务器ip、端口等数据 */
+    /** 浏览器查询参数 */
     public query!: GameQueryConfig;
 
+    /** 初始化游戏配置 */
     public init(callback: Function) {
         let config_name = "config/config";
         oops.res.load(config_name, JsonAsset, () => {

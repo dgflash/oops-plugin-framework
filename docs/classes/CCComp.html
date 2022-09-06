@@ -1,4 +1,4 @@
-<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>GameComponent | oops-framework</title><meta name="description" content="Documentation for oops-framework"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script async src="../assets/search.js" id="search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>CCComp | oops-framework</title><meta name="description" content="Documentation for oops-framework"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script async src="../assets/search.js" id="search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
 <div class="tsd-toolbar-contents container">
 <div class="table-cell" id="tsd-search" data-base="..">
 <div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
@@ -11,25 +11,38 @@
 <div class="tsd-page-title">
 <ul class="tsd-breadcrumb">
 <li><a href="../modules.html">oops-framework</a></li>
-<li><a href="GameComponent.html">GameComponent</a></li></ul>
-<h1>Class GameComponent</h1></div>
+<li><a href="CCComp.html">CCComp</a></li></ul>
+<h1>Class CCComp<code class="tsd-tag ts-flagAbstract">Abstract</code> </h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>游戏显示对象组件模板</p>
+<div class="tsd-comment tsd-typography"><p>游戏显示对象组件</p>
+<p>使用方法：</p>
+<ol>
+<li>对象拥有 cc.Component 组件功能与 ecs.Comp 组件功能</li>
+<li>对象自带全局事件监听、释放、发送全局消息功能</li>
+<li>对象管理的所有节点摊平，直接通过节点名获取cc.Node对象（节点名不能有重名）</li>
+</ol>
+<p>应用场景</p>
+<ol>
+<li>网络游戏，优先有数据对象，然后创建视图对象，当释放视图组件时，部分场景不希望释放数据对象</li>
+</ol>
+
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-3">// 注册显示对象组件</span><br/><span class="hl-1">@</span><span class="hl-7">ccclass</span><span class="hl-1">(</span><span class="hl-9">&#39;RoleViewComp&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">@</span><span class="hl-0">ecs</span><span class="hl-1">.</span><span class="hl-7">register</span><span class="hl-1">(</span><span class="hl-9">&#39;RoleView&#39;</span><span class="hl-1">, </span><span class="hl-6">false</span><span class="hl-1">)</span><br/><span class="hl-5">export</span><span class="hl-1"> </span><span class="hl-6">class</span><span class="hl-1"> </span><span class="hl-4">RoleViewComp</span><span class="hl-1"> </span><span class="hl-6">extends</span><span class="hl-1"> </span><span class="hl-4">CCComp</span><span class="hl-1"> {</span><br/><span class="hl-1">   @</span><span class="hl-7">property</span><span class="hl-1">({ </span><span class="hl-0">type:</span><span class="hl-1"> </span><span class="hl-0">sp</span><span class="hl-1">.</span><span class="hl-0">Skeleton</span><span class="hl-1">, </span><span class="hl-0">tooltip:</span><span class="hl-1"> </span><span class="hl-9">&#39;角色动画&#39;</span><span class="hl-1"> })</span><br/><span class="hl-1">   </span><span class="hl-0">spine</span><span class="hl-1">: </span><span class="hl-4">sp</span><span class="hl-1">.</span><span class="hl-4">Skeleton</span><span class="hl-1"> = </span><span class="hl-6">null</span><span class="hl-1">!;</span><br/><br/><span class="hl-1">   </span><span class="hl-7">onLoad</span><span class="hl-1">(){</span><br/><span class="hl-1">       </span><br/><span class="hl-1">   }</span><br/><span class="hl-1">}</span>
+</code></pre>
 </div></section>
 <section class="tsd-panel tsd-hierarchy">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
-<li><span class="tsd-signature-type">Component</span>
+<li><a href="GameComponent.html" class="tsd-signature-type" data-tsd-kind="Class">GameComponent</a>
 <section class="tsd-panel tsd-hierarchy">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
-<li><span class="target">GameComponent</span>
-<section class="tsd-panel tsd-hierarchy">
-<h4>Hierarchy</h4>
+<li><span class="target">CCComp</span></li></ul></section></li></ul></section>
+<section class="tsd-panel">
+<h4>Implements</h4>
 <ul class="tsd-hierarchy">
-<li><a href="CCComp.html" class="tsd-signature-type" data-tsd-kind="Class">CCComp</a></li></ul></section></li></ul></section></li></ul></section><aside class="tsd-sources">
+<li><a href="../interfaces/ecs.IComp.html" class="tsd-signature-type" data-tsd-kind="Interface">IComp</a></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/core/game/GameComponent.ts:15</li></ul></aside>
+<li>Defined in assets/module/common/CCComp.ts:39</li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -37,92 +50,93 @@
 <div class="tsd-accordion-details">
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading">Constructors</h3>
-<div class="tsd-index-list"><a href="GameComponent.html#constructor" class="tsd-index-link tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#4D7FFF" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-512-path"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)" id="icon-512-text"></path></svg><span>constructor</span></a>
+<div class="tsd-index-list"><a href="CCComp.html#constructor" class="tsd-index-link tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#4D7FFF" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-512-path"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)" id="icon-512-text"></path></svg><span>constructor</span></a>
 </div></section>
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading">Properties</h3>
-<div class="tsd-index-list"><a href="GameComponent.html#__editorExtras__" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-1024-path"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)" id="icon-1024-text"></path></svg><span>__editor<wbr/>Extras__</span></a>
-<a href="GameComponent.html#__prefab" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>__prefab</span></a>
-<a href="GameComponent.html#_enabled" class="tsd-index-link deprecated tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_enabled</span></a>
-<a href="GameComponent.html#_eventDispatcher" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-private"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_event<wbr/>Dispatcher</span></a>
-<a href="GameComponent.html#_id" class="tsd-index-link deprecated tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_id</span></a>
-<a href="GameComponent.html#_isBindMessageActive" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-private"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_is<wbr/>Bind<wbr/>Message<wbr/>Active</span></a>
-<a href="GameComponent.html#_name" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_name</span></a>
-<a href="GameComponent.html#_objFlags" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_obj<wbr/>Flags</span></a>
-<a href="GameComponent.html#_sceneGetter" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_scene<wbr/>Getter</span></a>
-<a href="GameComponent.html#dynamicsAssets" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-private"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>dynamics<wbr/>Assets</span></a>
-<a href="GameComponent.html#node" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>node</span></a>
-<a href="GameComponent.html#nodes" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-private"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>nodes</span></a>
-<a href="GameComponent.html#EventHandler" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>Event<wbr/>Handler</span></a>
-<a href="GameComponent.html#system" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>system</span></a>
+<div class="tsd-index-list"><a href="CCComp.html#__editorExtras__" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-1024-path"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)" id="icon-1024-text"></path></svg><span>__editor<wbr/>Extras__</span></a>
+<a href="CCComp.html#__prefab" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>__prefab</span></a>
+<a href="CCComp.html#_enabled" class="tsd-index-link deprecated tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_enabled</span></a>
+<a href="CCComp.html#_id" class="tsd-index-link deprecated tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_id</span></a>
+<a href="CCComp.html#_name" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_name</span></a>
+<a href="CCComp.html#_objFlags" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_obj<wbr/>Flags</span></a>
+<a href="CCComp.html#_sceneGetter" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>_scene<wbr/>Getter</span></a>
+<a href="CCComp.html#canRecycle" class="tsd-index-link tsd-kind-property tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>can<wbr/>Recycle</span></a>
+<a href="CCComp.html#ent" class="tsd-index-link tsd-kind-property tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>ent</span></a>
+<a href="CCComp.html#node" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>node</span></a>
+<a href="CCComp.html#EventHandler" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>Event<wbr/>Handler</span></a>
+<a href="CCComp.html#compName" class="tsd-index-link tsd-kind-property tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>comp<wbr/>Name</span></a>
+<a href="CCComp.html#system" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>system</span></a>
+<a href="CCComp.html#tid" class="tsd-index-link tsd-kind-property tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>tid</span></a>
 </div></section>
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading">Accessors</h3>
-<div class="tsd-index-list"><a href="GameComponent.html#__scriptAsset" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF4D4D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-262144-path"></rect><path d="M8.85 16L11.13 7.24H12.582L14.85 16H13.758L13.182 13.672H10.53L9.954 16H8.85ZM10.746 12.76H12.954L12.282 10.06C12.154 9.548 12.054 9.12 11.982 8.776C11.91 8.432 11.866 8.208 11.85 8.104C11.834 8.208 11.79 8.432 11.718 8.776C11.646 9.12 11.546 9.544 11.418 10.048L10.746 12.76Z" fill="var(--color-text)" id="icon-262144-text"></path></svg><span>__script<wbr/>Asset</span></a>
-<a href="GameComponent.html#_isOnLoadCalled" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>_is<wbr/>On<wbr/>Load<wbr/>Called</span></a>
-<a href="GameComponent.html#enabled" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>enabled</span></a>
-<a href="GameComponent.html#enabledInHierarchy" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>enabled<wbr/>In<wbr/>Hierarchy</span></a>
-<a href="GameComponent.html#eventDispatcher" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>event<wbr/>Dispatcher</span></a>
-<a href="GameComponent.html#hideFlags" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>hide<wbr/>Flags</span></a>
-<a href="GameComponent.html#isValid" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>is<wbr/>Valid</span></a>
-<a href="GameComponent.html#name" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>name</span></a>
-<a href="GameComponent.html#replicated" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>replicated</span></a>
-<a href="GameComponent.html#uuid" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>uuid</span></a>
+<div class="tsd-index-list"><a href="CCComp.html#__scriptAsset" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF4D4D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-262144-path"></rect><path d="M8.85 16L11.13 7.24H12.582L14.85 16H13.758L13.182 13.672H10.53L9.954 16H8.85ZM10.746 12.76H12.954L12.282 10.06C12.154 9.548 12.054 9.12 11.982 8.776C11.91 8.432 11.866 8.208 11.85 8.104C11.834 8.208 11.79 8.432 11.718 8.776C11.646 9.12 11.546 9.544 11.418 10.048L10.746 12.76Z" fill="var(--color-text)" id="icon-262144-text"></path></svg><span>__script<wbr/>Asset</span></a>
+<a href="CCComp.html#_isOnLoadCalled" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>_is<wbr/>On<wbr/>Load<wbr/>Called</span></a>
+<a href="CCComp.html#enabled" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>enabled</span></a>
+<a href="CCComp.html#enabledInHierarchy" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>enabled<wbr/>In<wbr/>Hierarchy</span></a>
+<a href="CCComp.html#eventDispatcher" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>event<wbr/>Dispatcher</span></a>
+<a href="CCComp.html#hideFlags" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>hide<wbr/>Flags</span></a>
+<a href="CCComp.html#isValid" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>is<wbr/>Valid</span></a>
+<a href="CCComp.html#name" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>name</span></a>
+<a href="CCComp.html#replicated" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>replicated</span></a>
+<a href="CCComp.html#uuid" class="tsd-index-link tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg><span>uuid</span></a>
 </div></section>
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading">Methods</h3>
-<div class="tsd-index-list"><a href="GameComponent.html#__preload" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF4DB8" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-2048-path"></rect><path d="M9.162 16V7.24H10.578L11.514 10.072C11.602 10.328 11.674 10.584 11.73 10.84C11.794 11.088 11.842 11.28 11.874 11.416C11.906 11.28 11.954 11.088 12.018 10.84C12.082 10.584 12.154 10.324 12.234 10.06L13.122 7.24H14.538V16H13.482V12.82C13.482 12.468 13.49 12.068 13.506 11.62C13.53 11.172 13.558 10.716 13.59 10.252C13.622 9.78 13.654 9.332 13.686 8.908C13.726 8.476 13.762 8.1 13.794 7.78L12.366 12.16H11.334L9.894 7.78C9.934 8.092 9.97 8.456 10.002 8.872C10.042 9.28 10.078 9.716 10.11 10.18C10.142 10.636 10.166 11.092 10.182 11.548C10.206 12.004 10.218 12.428 10.218 12.82V16H9.162Z" fill="var(--color-text)" id="icon-2048-text"></path></svg><span>__preload?</span></a>
-<a href="GameComponent.html#_destroyImmediate" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_destroy<wbr/>Immediate</span></a>
-<a href="GameComponent.html#_destruct" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_destruct</span></a>
-<a href="GameComponent.html#_getLocalBounds" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_get<wbr/>Local<wbr/>Bounds?</span></a>
-<a href="GameComponent.html#_getRenderScene" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_get<wbr/>Render<wbr/>Scene</span></a>
-<a href="GameComponent.html#_instantiate" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_instantiate</span></a>
-<a href="GameComponent.html#_onPreDestroy" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_on<wbr/>Pre<wbr/>Destroy</span></a>
-<a href="GameComponent.html#addAutoReleaseAsset" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>add<wbr/>Auto<wbr/>Release<wbr/>Asset</span></a>
-<a href="GameComponent.html#addAutoReleaseAssets" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>add<wbr/>Auto<wbr/>Release<wbr/>Assets</span></a>
-<a href="GameComponent.html#addComponent" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>add<wbr/>Component</span></a>
-<a href="GameComponent.html#bindMessageActive" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>bind<wbr/>Message<wbr/>Active</span></a>
-<a href="GameComponent.html#destroy" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>destroy</span></a>
-<a href="GameComponent.html#dispatchEvent" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>dispatch<wbr/>Event</span></a>
-<a href="GameComponent.html#get" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>get</span></a>
-<a href="GameComponent.html#getComponent" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>get<wbr/>Component</span></a>
-<a href="GameComponent.html#getComponentInChildren" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>get<wbr/>Component<wbr/>In<wbr/>Children</span></a>
-<a href="GameComponent.html#getComponents" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>get<wbr/>Components</span></a>
-<a href="GameComponent.html#getComponentsInChildren" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>get<wbr/>Components<wbr/>In<wbr/>Children</span></a>
-<a href="GameComponent.html#lateUpdate" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>late<wbr/>Update?</span></a>
-<a href="GameComponent.html#off" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>off</span></a>
-<a href="GameComponent.html#on" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>on</span></a>
-<a href="GameComponent.html#onDestroy" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>on<wbr/>Destroy</span></a>
-<a href="GameComponent.html#onDisable" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>on<wbr/>Disable?</span></a>
-<a href="GameComponent.html#onEnable" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>on<wbr/>Enable?</span></a>
-<a href="GameComponent.html#onFocusInEditor" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>on<wbr/>Focus<wbr/>In<wbr/>Editor?</span></a>
-<a href="GameComponent.html#onLoad" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>on<wbr/>Load</span></a>
-<a href="GameComponent.html#onLostFocusInEditor" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>on<wbr/>Lost<wbr/>Focus<wbr/>In<wbr/>Editor?</span></a>
-<a href="GameComponent.html#onRestore" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>on<wbr/>Restore?</span></a>
-<a href="GameComponent.html#resetInEditor" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>reset<wbr/>In<wbr/>Editor?</span></a>
-<a href="GameComponent.html#schedule" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>schedule</span></a>
-<a href="GameComponent.html#scheduleOnce" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>schedule<wbr/>Once</span></a>
-<a href="GameComponent.html#start" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>start?</span></a>
-<a href="GameComponent.html#unbindMessageActive" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>unbind<wbr/>Message<wbr/>Active</span></a>
-<a href="GameComponent.html#unschedule" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>unschedule</span></a>
-<a href="GameComponent.html#unscheduleAllCallbacks" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>unschedule<wbr/>All<wbr/>Callbacks</span></a>
-<a href="GameComponent.html#update" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>update?</span></a>
-<a href="GameComponent.html#_deferredDestroy" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_deferred<wbr/>Destroy</span></a>
+<div class="tsd-index-list"><a href="CCComp.html#__preload" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF4DB8" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-2048-path"></rect><path d="M9.162 16V7.24H10.578L11.514 10.072C11.602 10.328 11.674 10.584 11.73 10.84C11.794 11.088 11.842 11.28 11.874 11.416C11.906 11.28 11.954 11.088 12.018 10.84C12.082 10.584 12.154 10.324 12.234 10.06L13.122 7.24H14.538V16H13.482V12.82C13.482 12.468 13.49 12.068 13.506 11.62C13.53 11.172 13.558 10.716 13.59 10.252C13.622 9.78 13.654 9.332 13.686 8.908C13.726 8.476 13.762 8.1 13.794 7.78L12.366 12.16H11.334L9.894 7.78C9.934 8.092 9.97 8.456 10.002 8.872C10.042 9.28 10.078 9.716 10.11 10.18C10.142 10.636 10.166 11.092 10.182 11.548C10.206 12.004 10.218 12.428 10.218 12.82V16H9.162Z" fill="var(--color-text)" id="icon-2048-text"></path></svg><span>__preload?</span></a>
+<a href="CCComp.html#_destroyImmediate" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_destroy<wbr/>Immediate</span></a>
+<a href="CCComp.html#_destruct" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_destruct</span></a>
+<a href="CCComp.html#_getLocalBounds" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_get<wbr/>Local<wbr/>Bounds?</span></a>
+<a href="CCComp.html#_getRenderScene" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_get<wbr/>Render<wbr/>Scene</span></a>
+<a href="CCComp.html#_instantiate" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_instantiate</span></a>
+<a href="CCComp.html#_onPreDestroy" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_on<wbr/>Pre<wbr/>Destroy</span></a>
+<a href="CCComp.html#addAutoReleaseAsset" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>add<wbr/>Auto<wbr/>Release<wbr/>Asset</span></a>
+<a href="CCComp.html#addAutoReleaseAssets" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>add<wbr/>Auto<wbr/>Release<wbr/>Assets</span></a>
+<a href="CCComp.html#addComponent" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>add<wbr/>Component</span></a>
+<a href="CCComp.html#bindMessageActive" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>bind<wbr/>Message<wbr/>Active</span></a>
+<a href="CCComp.html#destroy" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>destroy</span></a>
+<a href="CCComp.html#dispatchEvent" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>dispatch<wbr/>Event</span></a>
+<a href="CCComp.html#get" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>get</span></a>
+<a href="CCComp.html#getComponent" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>get<wbr/>Component</span></a>
+<a href="CCComp.html#getComponentInChildren" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>get<wbr/>Component<wbr/>In<wbr/>Children</span></a>
+<a href="CCComp.html#getComponents" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>get<wbr/>Components</span></a>
+<a href="CCComp.html#getComponentsInChildren" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>get<wbr/>Components<wbr/>In<wbr/>Children</span></a>
+<a href="CCComp.html#lateUpdate" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>late<wbr/>Update?</span></a>
+<a href="CCComp.html#off" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>off</span></a>
+<a href="CCComp.html#on" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>on</span></a>
+<a href="CCComp.html#onDestroy" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>on<wbr/>Destroy</span></a>
+<a href="CCComp.html#onDisable" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>on<wbr/>Disable?</span></a>
+<a href="CCComp.html#onEnable" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>on<wbr/>Enable?</span></a>
+<a href="CCComp.html#onFocusInEditor" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>on<wbr/>Focus<wbr/>In<wbr/>Editor?</span></a>
+<a href="CCComp.html#onLoad" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>on<wbr/>Load</span></a>
+<a href="CCComp.html#onLostFocusInEditor" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>on<wbr/>Lost<wbr/>Focus<wbr/>In<wbr/>Editor?</span></a>
+<a href="CCComp.html#onRestore" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>on<wbr/>Restore?</span></a>
+<a href="CCComp.html#reset" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>reset</span></a>
+<a href="CCComp.html#resetInEditor" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>reset<wbr/>In<wbr/>Editor?</span></a>
+<a href="CCComp.html#schedule" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>schedule</span></a>
+<a href="CCComp.html#scheduleOnce" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>schedule<wbr/>Once</span></a>
+<a href="CCComp.html#start" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>start?</span></a>
+<a href="CCComp.html#unbindMessageActive" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>unbind<wbr/>Message<wbr/>Active</span></a>
+<a href="CCComp.html#unschedule" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>unschedule</span></a>
+<a href="CCComp.html#unscheduleAllCallbacks" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>unschedule<wbr/>All<wbr/>Callbacks</span></a>
+<a href="CCComp.html#update" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>update?</span></a>
+<a href="CCComp.html#_deferredDestroy" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>_deferred<wbr/>Destroy</span></a>
 </div></section></div></details></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Constructors</h2>
 <section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><a id="constructor" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>constructor</span><a href="#constructor" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" id="icon-anchor-a"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" id="icon-anchor-b"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" id="icon-anchor-c"></path></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
-<li class="tsd-signature tsd-anchor-link" id="constructor.new_GameComponent">new <wbr/>Game<wbr/>Component<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="GameComponent.html" class="tsd-signature-type" data-tsd-kind="Class">GameComponent</a><a href="#constructor.new_GameComponent" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="constructor.new_CCComp">new CCComp<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="CCComp.html" class="tsd-signature-type" data-tsd-kind="Class">CCComp</a><a href="#constructor.new_CCComp" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> name: <span class="tsd-signature-type">string</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="GameComponent.html" class="tsd-signature-type" data-tsd-kind="Class">GameComponent</a></h4><aside class="tsd-sources">
-<p>Inherited from Component.constructor</p>
+<h4 class="tsd-returns-title">Returns <a href="CCComp.html" class="tsd-signature-type" data-tsd-kind="Class">CCComp</a></h4><aside class="tsd-sources">
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#constructor">constructor</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:17876</li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
@@ -130,13 +144,13 @@
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a id="__editorExtras__" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagInternal">Internal</code> <span>__editor<wbr/>Extras__</span><a href="#__editorExtras__" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">__editor<wbr/>Extras__<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">unknown</span></div><aside class="tsd-sources">
-<p>Inherited from Component.__editorExtras__</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#__editorExtras__">__editorExtras__</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:17870</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a id="__prefab" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagInternal">Internal</code> <span>__prefab</span><a href="#__prefab" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">__prefab<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">CompPrefabInfo</span></div><aside class="tsd-sources">
-<p>Inherited from Component.__prefab</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#__prefab">__prefab</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26928</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a id="_enabled" class="tsd-anchor"></a>
@@ -145,14 +159,9 @@
 <div class="tsd-comment tsd-typography">
 <h3>Deprecated</h3><p>since v3.5.0, this is an engine private interface that will be removed in the future.</p>
 </div><aside class="tsd-sources">
-<p>Inherited from Component._enabled</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#_enabled">_enabled</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26924</li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private"><a id="_eventDispatcher" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>_event<wbr/>Dispatcher</span><a href="#_eventDispatcher" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">_event<wbr/>Dispatcher<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><a href="EventDispatcher.html" class="tsd-signature-type" data-tsd-kind="Class">EventDispatcher</a><span class="tsd-signature-symbol"> = null</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in assets/core/game/GameComponent.ts:16</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a id="_id" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span class="deprecated">_id</span><a href="#_id" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">_id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
@@ -160,39 +169,39 @@
 
 <h3>Deprecated</h3><p>since v3.5.0, this is an engine private interface that will be removed in the future.</p>
 </div><aside class="tsd-sources">
-<p>Inherited from Component._id</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#_id">_id</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26937</li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private"><a id="_isBindMessageActive" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>_is<wbr/>Bind<wbr/>Message<wbr/>Active</span><a href="#_isBindMessageActive" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">_is<wbr/>Bind<wbr/>Message<wbr/>Active<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in assets/core/game/GameComponent.ts:26</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a id="_name" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_name</span><a href="#_name" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">_name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
-<p>Inherited from Component._name</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#_name">_name</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:17875</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a id="_objFlags" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagInternal">Internal</code> <span>_obj<wbr/>Flags</span><a href="#_objFlags" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">_obj<wbr/>Flags<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
-<p>Inherited from Component._objFlags</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#_objFlags">_objFlags</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:17874</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a id="_sceneGetter" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagInternal">Internal</code> <span>_scene<wbr/>Getter</span><a href="#_sceneGetter" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">_scene<wbr/>Getter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">RenderScene</span><span class="tsd-signature-symbol">)</span></div><aside class="tsd-sources">
-<p>Inherited from Component._sceneGetter</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#_sceneGetter">_sceneGetter</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26932</li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private"><a id="dynamicsAssets" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>dynamics<wbr/>Assets</span><a href="#dynamicsAssets" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">dynamics<wbr/>Assets<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Asset</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
-<div class="tsd-comment tsd-typography"><p>自动释放资源</p>
-</div><aside class="tsd-sources">
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="canRecycle" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>can<wbr/>Recycle</span><a href="#canRecycle" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">can<wbr/>Recycle<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div><aside class="tsd-sources">
+<p>Implementation of <a href="../interfaces/ecs.IComp.html">IComp</a>.<a href="../interfaces/ecs.IComp.html#canRecycle">canRecycle</a></p>
 <ul>
-<li>Defined in assets/core/game/GameComponent.ts:39</li></ul></aside></section>
+<li>Defined in assets/module/common/CCComp.ts:43</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="ent" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>ent</span><a href="#ent" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">ent<span class="tsd-signature-symbol">:</span> <a href="ECSEntity.html" class="tsd-signature-type" data-tsd-kind="Class">ECSEntity</a></div><aside class="tsd-sources">
+<p>Implementation of <a href="../interfaces/ecs.IComp.html">IComp</a>.<a href="../interfaces/ecs.IComp.html#ent">ent</a></p>
+<ul>
+<li>Defined in assets/module/common/CCComp.ts:44</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a id="node" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>node</span><a href="#node" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">node<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Node</span></div>
@@ -204,28 +213,31 @@
 <h3>Example</h3><pre><code class="language-ts"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-9">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-0">comp</span><span class="hl-1">.</span><span class="hl-0">node</span><span class="hl-1">);</span>
 </code></pre>
 </div><aside class="tsd-sources">
-<p>Inherited from Component.node</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#node">node</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26920</li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private"><a id="nodes" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>nodes</span><a href="#nodes" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">nodes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Node</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
-<div class="tsd-comment tsd-typography"><p>摊平的节点集合（不能重名）</p>
-</div><aside class="tsd-sources">
-<ul>
-<li>Defined in assets/core/game/GameComponent.ts:41</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a id="EventHandler" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>Event<wbr/>Handler</span><a href="#EventHandler" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">Event<wbr/>Handler<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">typeof </span><span class="tsd-signature-type">EventHandler</span></div><aside class="tsd-sources">
-<p>Inherited from Component.EventHandler</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#EventHandler">EventHandler</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26855</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="compName" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>comp<wbr/>Name</span><a href="#compName" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">comp<wbr/>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in assets/module/common/CCComp.ts:41</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a id="system" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>system</span><a href="#system" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">system<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span></div><aside class="tsd-sources">
-<p>Inherited from Component.system</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#system">system</a></p>
 <ul>
-<li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26910</li></ul></aside></section></section>
+<li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26910</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="tid" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>tid</span><a href="#tid" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">tid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = -1</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in assets/module/common/CCComp.ts:40</li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Accessors</h2>
 <section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a id="__scriptAsset" class="tsd-anchor"></a>
@@ -237,7 +249,7 @@
 <h3>Deprecated</h3><p>since v3.5.0, this is an engine private interface that will be removed in the future.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">null</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.__scriptAsset</p>
+<p>Inherited from GameComponent.__scriptAsset</p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26872</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a id="_isOnLoadCalled" class="tsd-anchor"></a>
@@ -257,7 +269,7 @@
 <h3>Deprecated</h3><p>since v3.5.0, this is an engine private interface that will be removed in the future.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
-<p>Inherited from Component._isOnLoadCalled</p>
+<p>Inherited from GameComponent._isOnLoadCalled</p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26909</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a id="enabled" class="tsd-anchor"></a>
@@ -276,7 +288,7 @@
 </code></pre>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.enabled</p>
+<p>Inherited from GameComponent.enabled</p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26884</li></ul></aside></li>
 <li class="tsd-signature" id="enabled.enabled-2"><span class="tsd-signature-symbol">set</span> enabled<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
@@ -287,7 +299,7 @@
 <li>
 <h5>value: <span class="tsd-signature-type">boolean</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.enabled</p>
+<p>Inherited from GameComponent.enabled</p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26885</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a id="enabledInHierarchy" class="tsd-anchor"></a>
@@ -305,15 +317,16 @@
 </code></pre>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.enabledInHierarchy</p>
+<p>Inherited from GameComponent.enabledInHierarchy</p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26896</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class"><a id="eventDispatcher" class="tsd-anchor"></a>
+<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a id="eventDispatcher" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>event<wbr/>Dispatcher</span><a href="#eventDispatcher" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited">
 <li class="tsd-signature" id="eventDispatcher.eventDispatcher-1"><span class="tsd-signature-symbol">get</span> eventDispatcher<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="EventDispatcher.html" class="tsd-signature-type" data-tsd-kind="Class">EventDispatcher</a></li>
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <a href="EventDispatcher.html" class="tsd-signature-type" data-tsd-kind="Class">EventDispatcher</a></h4><aside class="tsd-sources">
+<p>Inherited from GameComponent.eventDispatcher</p>
 <ul>
 <li>Defined in assets/core/game/GameComponent.ts:18</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a id="hideFlags" class="tsd-anchor"></a>
@@ -322,7 +335,7 @@
 <li class="tsd-signature" id="hideFlags.hideFlags-1"><span class="tsd-signature-symbol">get</span> hideFlags<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Flags</span></li>
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Flags</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.hideFlags</p>
+<p>Inherited from GameComponent.hideFlags</p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:17893</li></ul></aside></li>
 <li class="tsd-signature" id="hideFlags.hideFlags-2"><span class="tsd-signature-symbol">set</span> hideFlags<span class="tsd-signature-symbol">(</span>hideFlags<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Flags</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
@@ -338,7 +351,7 @@
 <li>
 <h5>hideFlags: <span class="tsd-signature-type">Flags</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.hideFlags</p>
+<p>Inherited from GameComponent.hideFlags</p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:17892</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a id="isValid" class="tsd-anchor"></a>
@@ -365,7 +378,7 @@ but this is often caused by a particular logical requirements, which is not norm
 </code></pre>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.isValid</p>
+<p>Inherited from GameComponent.isValid</p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:17922</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a id="name" class="tsd-anchor"></a>
@@ -374,7 +387,7 @@ but this is often caused by a particular logical requirements, which is not norm
 <li class="tsd-signature" id="name.name-1"><span class="tsd-signature-symbol">get</span> name<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.name</p>
+<p>Inherited from GameComponent.name</p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26856</li></ul></aside></li>
 <li class="tsd-signature" id="name.name-2"><span class="tsd-signature-symbol">set</span> name<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
@@ -385,7 +398,7 @@ but this is often caused by a particular logical requirements, which is not norm
 <li>
 <h5>value: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.name</p>
+<p>Inherited from GameComponent.name</p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26857</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a id="replicated" class="tsd-anchor"></a>
@@ -394,7 +407,7 @@ but this is often caused by a particular logical requirements, which is not norm
 <li class="tsd-signature" id="replicated.replicated-1"><span class="tsd-signature-symbol">get</span> replicated<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.replicated</p>
+<p>Inherited from GameComponent.replicated</p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:17895</li></ul></aside></li>
 <li class="tsd-signature" id="replicated.replicated-2"><span class="tsd-signature-symbol">set</span> replicated<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
@@ -405,7 +418,7 @@ but this is often caused by a particular logical requirements, which is not norm
 <li>
 <h5>value: <span class="tsd-signature-type">boolean</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.replicated</p>
+<p>Inherited from GameComponent.replicated</p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:17894</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a id="uuid" class="tsd-anchor"></a>
@@ -423,7 +436,7 @@ but this is often caused by a particular logical requirements, which is not norm
 </code></pre>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.uuid</p>
+<p>Inherited from GameComponent.uuid</p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26868</li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
@@ -445,7 +458,7 @@ This method should be removed if script priority is supported.</p>
 如果支持脚本优先级，则应删除此方法。</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.__preload</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#__preload">__preload</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27146</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="_destroyImmediate" class="tsd-anchor"></a>
@@ -457,7 +470,7 @@ This method should be removed if script priority is supported.</p>
 <h3>Deprecated</h3><p>since v3.5.0, this is an engine private interface that will be removed in the future.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component._destroyImmediate</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#_destroyImmediate">_destroyImmediate</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:17973</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="_destruct" class="tsd-anchor"></a>
@@ -478,7 +491,7 @@ This method should be removed if script priority is supported.</p>
 </code></pre>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component._destruct</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#_destruct">_destruct</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:17969</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-inherited"><a id="_getLocalBounds" class="tsd-anchor"></a>
@@ -501,7 +514,7 @@ a custom axis aligned bounding box (AABB), so the editor&#39;s scene view can pe
 <div class="tsd-comment tsd-typography"><p>The rect to store the result bounding rect</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component._getLocalBounds</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#_getLocalBounds">_getLocalBounds</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27211</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="_getRenderScene" class="tsd-anchor"></a>
@@ -513,7 +526,7 @@ a custom axis aligned bounding box (AABB), so the editor&#39;s scene view can pe
 <h3>Deprecated</h3><p>since v3.5.0, this is an engine private interface that will be removed in the future.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">RenderScene</span></h4><aside class="tsd-sources">
-<p>Inherited from Component._getRenderScene</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#_getRenderScene">_getRenderScene</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26941</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="_instantiate" class="tsd-anchor"></a>
@@ -530,7 +543,7 @@ a custom axis aligned bounding box (AABB), so the editor&#39;s scene view can pe
 <li>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> cloned: <span class="tsd-signature-type">Component</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Component</span></h4><aside class="tsd-sources">
-<p>Inherited from Component._instantiate</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#_instantiate">_instantiate</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27065</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="_onPreDestroy" class="tsd-anchor"></a>
@@ -542,12 +555,12 @@ a custom axis aligned bounding box (AABB), so the editor&#39;s scene view can pe
 <h3>Deprecated</h3><p>since v3.5.0, this is an engine private interface that will be removed in the future.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component._onPreDestroy</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#_onPreDestroy">_onPreDestroy</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27061</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="addAutoReleaseAsset" class="tsd-anchor"></a>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="addAutoReleaseAsset" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>add<wbr/>Auto<wbr/>Release<wbr/>Asset</span><a href="#addAutoReleaseAsset" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 <li class="tsd-signature tsd-anchor-link" id="addAutoReleaseAsset.addAutoReleaseAsset-1">add<wbr/>Auto<wbr/>Release<wbr/>Asset<span class="tsd-signature-symbol">(</span>asset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Asset</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#addAutoReleaseAsset.addAutoReleaseAsset-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>添加自动释放的资源</p>
@@ -558,11 +571,12 @@ a custom axis aligned bounding box (AABB), so the editor&#39;s scene view can pe
 <li>
 <h5>asset: <span class="tsd-signature-type">Asset</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#addAutoReleaseAsset">addAutoReleaseAsset</a></p>
 <ul>
 <li>Defined in assets/core/game/GameComponent.ts:53</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="addAutoReleaseAssets" class="tsd-anchor"></a>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="addAutoReleaseAssets" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>add<wbr/>Auto<wbr/>Release<wbr/>Assets</span><a href="#addAutoReleaseAssets" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 <li class="tsd-signature tsd-anchor-link" id="addAutoReleaseAssets.addAutoReleaseAssets-1">add<wbr/>Auto<wbr/>Release<wbr/>Assets<span class="tsd-signature-symbol">(</span>assets<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Asset</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#addAutoReleaseAssets.addAutoReleaseAssets-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>添加自动释放的资源数组</p>
@@ -573,6 +587,7 @@ a custom axis aligned bounding box (AABB), so the editor&#39;s scene view can pe
 <li>
 <h5>assets: <span class="tsd-signature-type">Asset</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#addAutoReleaseAssets">addAutoReleaseAssets</a></p>
 <ul>
 <li>Defined in assets/core/game/GameComponent.ts:61</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="addComponent" class="tsd-anchor"></a>
@@ -603,7 +618,7 @@ a custom axis aligned bounding box (AABB), so the editor&#39;s scene view can pe
 <div class="tsd-comment tsd-typography"><p>The class of component to be retrieved or to be created</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">T</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.addComponent</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#addComponent">addComponent</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26952</li></ul></aside></li>
 <li class="tsd-signature tsd-anchor-link" id="addComponent.addComponent-2">add<wbr/>Component<span class="tsd-signature-symbol">(</span>className<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Component</span><a href="#addComponent.addComponent-2" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
@@ -624,17 +639,18 @@ a custom axis aligned bounding box (AABB), so the editor&#39;s scene view can pe
 <div class="tsd-comment tsd-typography"><p>A string for the class name of the component</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Component</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.addComponent</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#addComponent">addComponent</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26962</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="bindMessageActive" class="tsd-anchor"></a>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="bindMessageActive" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>bind<wbr/>Message<wbr/>Active</span><a href="#bindMessageActive" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 <li class="tsd-signature tsd-anchor-link" id="bindMessageActive.bindMessageActive-1">bind<wbr/>Message<wbr/>Active<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#bindMessageActive.bindMessageActive-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>绑定node active属性，即只有active为true才会响应事件</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#bindMessageActive">bindMessageActive</a></p>
 <ul>
 <li>Defined in assets/core/game/GameComponent.ts:29</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="destroy" class="tsd-anchor"></a>
@@ -643,12 +659,12 @@ a custom axis aligned bounding box (AABB), so the editor&#39;s scene view can pe
 <li class="tsd-signature tsd-anchor-link" id="destroy.destroy-1">destroy<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><a href="#destroy.destroy-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.destroy</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#destroy">destroy</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27057</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="dispatchEvent" class="tsd-anchor"></a>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="dispatchEvent" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>dispatch<wbr/>Event</span><a href="#dispatchEvent" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 <li class="tsd-signature tsd-anchor-link" id="dispatchEvent.dispatchEvent-1">dispatch<wbr/>Event<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, args<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#dispatchEvent.dispatchEvent-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>触发全局事件</p>
@@ -665,11 +681,12 @@ a custom axis aligned bounding box (AABB), so the editor&#39;s scene view can pe
 <div class="tsd-comment tsd-typography"><p>事件参数</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#dispatchEvent">dispatchEvent</a></p>
 <ul>
 <li>Defined in assets/core/game/GameComponent.ts:109</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="get" class="tsd-anchor"></a>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="get" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get</span><a href="#get" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 <li class="tsd-signature tsd-anchor-link" id="get.get-1">get<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Node</span><a href="#get.get-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>通过节点名获取预制上的节点，整个预制不能有重名节点</p>
@@ -680,6 +697,7 @@ a custom axis aligned bounding box (AABB), so the editor&#39;s scene view can pe
 <li>
 <h5>name: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Node</span></h4><aside class="tsd-sources">
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#get">get</a></p>
 <ul>
 <li>Defined in assets/core/game/GameComponent.ts:44</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="getComponent" class="tsd-anchor"></a>
@@ -712,7 +730,7 @@ You can also get component in the node by passing in the name of the script.</p>
 <div class="tsd-comment tsd-typography"><p>The class of component to be retrieved or to be created</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">T</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.getComponent</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#getComponent">getComponent</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26978</li></ul></aside></li>
 <li class="tsd-signature tsd-anchor-link" id="getComponent.getComponent-2">get<wbr/>Component<span class="tsd-signature-symbol">(</span>className<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Component</span><a href="#getComponent.getComponent-2" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
@@ -735,7 +753,7 @@ You can also get component in the node by passing in the name of the script.</p>
 <div class="tsd-comment tsd-typography"><p>A string for the class name of the component</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Component</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.getComponent</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#getComponent">getComponent</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:26993</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="getComponentInChildren" class="tsd-anchor"></a>
@@ -766,7 +784,7 @@ You can also get component in the node by passing in the name of the script.</p>
 <div class="tsd-comment tsd-typography"><p>The class of component to be retrieved</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">T</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.getComponentInChildren</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#getComponentInChildren">getComponentInChildren</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27025</li></ul></aside></li>
 <li class="tsd-signature tsd-anchor-link" id="getComponentInChildren.getComponentInChildren-2">get<wbr/>Component<wbr/>In<wbr/>Children<span class="tsd-signature-symbol">(</span>className<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Component</span><a href="#getComponentInChildren.getComponentInChildren-2" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
@@ -787,7 +805,7 @@ You can also get component in the node by passing in the name of the script.</p>
 <div class="tsd-comment tsd-typography"><p>A string for the class name of the component</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Component</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.getComponentInChildren</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#getComponentInChildren">getComponentInChildren</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27035</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="getComponents" class="tsd-anchor"></a>
@@ -818,7 +836,7 @@ You can also get component in the node by passing in the name of the script.</p>
 <div class="tsd-comment tsd-typography"><p>The class of components to be retrieved</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type" data-tsd-kind="Type parameter">T</span><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.getComponents</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#getComponents">getComponents</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27004</li></ul></aside></li>
 <li class="tsd-signature tsd-anchor-link" id="getComponents.getComponents-2">get<wbr/>Components<span class="tsd-signature-symbol">(</span>className<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Component</span><span class="tsd-signature-symbol">[]</span><a href="#getComponents.getComponents-2" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
@@ -839,7 +857,7 @@ You can also get component in the node by passing in the name of the script.</p>
 <div class="tsd-comment tsd-typography"><p>A string for the class name of the components</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Component</span><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.getComponents</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#getComponents">getComponents</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27014</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="getComponentsInChildren" class="tsd-anchor"></a>
@@ -870,7 +888,7 @@ You can also get component in the node by passing in the name of the script.</p>
 <div class="tsd-comment tsd-typography"><p>The class of components to be retrieved</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type" data-tsd-kind="Type parameter">T</span><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.getComponentsInChildren</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#getComponentsInChildren">getComponentsInChildren</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27046</li></ul></aside></li>
 <li class="tsd-signature tsd-anchor-link" id="getComponentsInChildren.getComponentsInChildren-2">get<wbr/>Components<wbr/>In<wbr/>Children<span class="tsd-signature-symbol">(</span>className<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Component</span><span class="tsd-signature-symbol">[]</span><a href="#getComponentsInChildren.getComponentsInChildren-2" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
@@ -891,7 +909,7 @@ You can also get component in the node by passing in the name of the script.</p>
 <div class="tsd-comment tsd-typography"><p>A string for the class name of the components</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Component</span><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.getComponentsInChildren</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#getComponentsInChildren">getComponentsInChildren</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27056</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a id="lateUpdate" class="tsd-anchor"></a>
@@ -915,12 +933,12 @@ You can only call its super class method inside it. It should not be called manu
 <div class="tsd-comment tsd-typography"><p>the delta time in seconds it took to complete the last frame</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.lateUpdate</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#lateUpdate">lateUpdate</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27134</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="off" class="tsd-anchor"></a>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="off" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>off</span><a href="#off" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 <li class="tsd-signature tsd-anchor-link" id="off.off-1">off<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#off.off-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>移除全局事件</p>
@@ -933,11 +951,12 @@ You can only call its super class method inside it. It should not be called manu
 <div class="tsd-comment tsd-typography"><p>事件名</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#off">off</a></p>
 <ul>
 <li>Defined in assets/core/game/GameComponent.ts:98</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="on" class="tsd-anchor"></a>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="on" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>on</span><a href="#on" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 <li class="tsd-signature tsd-anchor-link" id="on.on-1">on<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Function</span>, object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#on.on-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>注册全局事件</p>
@@ -958,15 +977,16 @@ You can only call its super class method inside it. It should not be called manu
 <div class="tsd-comment tsd-typography"><p>侦听函数绑定的this对象</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#on">on</a></p>
 <ul>
 <li>Defined in assets/core/game/GameComponent.ts:73</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a id="onDestroy" class="tsd-anchor"></a>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a id="onDestroy" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>on<wbr/>Destroy</span><a href="#onDestroy" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited">
 <li class="tsd-signature tsd-anchor-link" id="onDestroy.onDestroy-1">on<wbr/>Destroy<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#onDestroy.onDestroy-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Overrides Component.onDestroy</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#onDestroy">onDestroy</a></p>
 <ul>
 <li>Defined in assets/core/game/GameComponent.ts:113</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a id="onDisable" class="tsd-anchor"></a>
@@ -983,7 +1003,7 @@ You can only call its super class method inside it. It should not be called manu
 该方法为生命周期方法，父类未必会有实现。并且你只能在该方法内部调用父类的实现，不可在其它地方直接调用该方法。</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.onDisable</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#onDisable">onDisable</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27184</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a id="onEnable" class="tsd-anchor"></a>
@@ -1000,7 +1020,7 @@ You can only call its super class method inside it. It should not be called manu
 该方法为生命周期方法，父类未必会有实现。并且你只能在该方法内部调用父类的实现，不可在其它地方直接调用该方法。</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.onEnable</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#onEnable">onEnable</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27176</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="onFocusInEditor" class="tsd-anchor"></a>
@@ -1009,16 +1029,16 @@ You can only call its super class method inside it. It should not be called manu
 <li class="tsd-signature tsd-anchor-link" id="onFocusInEditor.onFocusInEditor-1">on<wbr/>Focus<wbr/>In<wbr/>Editor<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#onFocusInEditor.onFocusInEditor-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.onFocusInEditor</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#onFocusInEditor">onFocusInEditor</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27193</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="onLoad" class="tsd-anchor"></a>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="onLoad" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>on<wbr/>Load</span><a href="#onLoad" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 <li class="tsd-signature tsd-anchor-link" id="onLoad.onLoad-1">on<wbr/>Load<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#onLoad.onLoad-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Overrides Component.onLoad</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#onLoad">onLoad</a></p>
 <ul>
 <li>Defined in assets/core/game/GameComponent.ts:48</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="onLostFocusInEditor" class="tsd-anchor"></a>
@@ -1027,7 +1047,7 @@ You can only call its super class method inside it. It should not be called manu
 <li class="tsd-signature tsd-anchor-link" id="onLostFocusInEditor.onLostFocusInEditor-1">on<wbr/>Lost<wbr/>Focus<wbr/>In<wbr/>Editor<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#onLostFocusInEditor.onLostFocusInEditor-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.onLostFocusInEditor</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#onLostFocusInEditor">onLostFocusInEditor</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27194</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a id="onRestore" class="tsd-anchor"></a>
@@ -1074,9 +1094,18 @@ will be reset by editor.</p>
 此方法仅在编辑器下会被调用。</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.onRestore</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#onRestore">onRestore</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27252</li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="reset" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagAbstract">Abstract</code> <span>reset</span><a href="#reset" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<li class="tsd-signature tsd-anchor-link" id="reset.reset-1">reset<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#reset.reset-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
+<p>Implementation of <a href="../interfaces/ecs.IComp.html">IComp</a>.<a href="../interfaces/ecs.IComp.html#reset">reset</a></p>
+<ul>
+<li>Defined in assets/module/common/CCComp.ts:46</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="resetInEditor" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagOptional">Optional</code> <span>reset<wbr/>In<wbr/>Editor</span><a href="#resetInEditor" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
@@ -1089,7 +1118,7 @@ This function is only called in editor.<br/></p>
 <h3>Zh</h3><p>用来初始化组件或节点的一些属性，当该组件被第一次添加到节点上或用户点击了它的 Reset 菜单时调用。这个回调只会在编辑器下调用。</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.resetInEditor</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#resetInEditor">resetInEditor</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27200</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="schedule" class="tsd-anchor"></a>
@@ -1127,7 +1156,7 @@ If the task is already scheduled, then the interval parameter will be updated wi
 <div class="tsd-comment tsd-typography"><p>The delay time for the first invocation, Unit: s</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.schedule</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#schedule">schedule</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27083</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="scheduleOnce" class="tsd-anchor"></a>
@@ -1142,7 +1171,7 @@ If the task is already scheduled, then the interval parameter will be updated wi
 
 <h3>Method</h3><p>scheduleOnce</p>
 
-<h3>See</h3><p><a href="GameComponent.html#schedule">schedule</a></p>
+<h3>See</h3><p><a href="CCComp.html#schedule">schedule</a></p>
 
 <h3>Example</h3><pre><code class="language-ts"><span class="hl-5">import</span><span class="hl-1"> { </span><span class="hl-0">log</span><span class="hl-1"> } </span><span class="hl-5">from</span><span class="hl-1"> </span><span class="hl-9">&#39;cc&#39;</span><span class="hl-1">;</span><br/><span class="hl-6">this</span><span class="hl-1">.</span><span class="hl-7">scheduleOnce</span><span class="hl-1">((</span><span class="hl-0">dt</span><span class="hl-1">) </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-6">void</span><span class="hl-1"> </span><span class="hl-7">log</span><span class="hl-1">(</span><span class="hl-9">`time: </span><span class="hl-6">${</span><span class="hl-0">dt</span><span class="hl-6">}</span><span class="hl-9">`</span><span class="hl-1">), </span><span class="hl-10">2</span><span class="hl-1">);</span>
 </code></pre>
@@ -1159,7 +1188,7 @@ If the task is already scheduled, then the interval parameter will be updated wi
 <div class="tsd-comment tsd-typography"><p>The delay time for the first invocation, Unit: s</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.scheduleOnce</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#scheduleOnce">scheduleOnce</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27097</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a id="start" class="tsd-anchor"></a>
@@ -1177,17 +1206,18 @@ You can only call its super class method inside it. It should not be called manu
 该方法为生命周期方法，父类未必会有实现。并且你只能在该方法内部调用父类的实现，不可在其它地方直接调用该方法。</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.start</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#start">start</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27168</li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="unbindMessageActive" class="tsd-anchor"></a>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="unbindMessageActive" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>unbind<wbr/>Message<wbr/>Active</span><a href="#unbindMessageActive" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 <li class="tsd-signature tsd-anchor-link" id="unbindMessageActive.unbindMessageActive-1">unbind<wbr/>Message<wbr/>Active<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#unbindMessageActive.unbindMessageActive-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>解绑node active属性，无论node是否可见都会响应事件</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#unbindMessageActive">unbindMessageActive</a></p>
 <ul>
 <li>Defined in assets/core/game/GameComponent.ts:34</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="unschedule" class="tsd-anchor"></a>
@@ -1211,7 +1241,7 @@ You can only call its super class method inside it. It should not be called manu
 <div class="tsd-comment tsd-typography"><p>The callback function of the task</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.unschedule</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#unschedule">unschedule</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27107</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="unscheduleAllCallbacks" class="tsd-anchor"></a>
@@ -1228,7 +1258,7 @@ You can only call its super class method inside it. It should not be called manu
 </code></pre>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.unscheduleAllCallbacks</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#unscheduleAllCallbacks">unscheduleAllCallbacks</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27116</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a id="update" class="tsd-anchor"></a>
@@ -1252,7 +1282,7 @@ You can only call its super class method inside it. It should not be called manu
 <div class="tsd-comment tsd-typography"><p>the delta time in seconds it took to complete the last frame</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component.update</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#update">update</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:27125</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="_deferredDestroy" class="tsd-anchor"></a>
@@ -1261,7 +1291,7 @@ You can only call its super class method inside it. It should not be called manu
 <li class="tsd-signature tsd-anchor-link" id="_deferredDestroy._deferredDestroy-1">_deferred<wbr/>Destroy<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#_deferredDestroy._deferredDestroy-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
-<p>Inherited from Component._deferredDestroy</p>
+<p>Inherited from <a href="GameComponent.html">GameComponent</a>.<a href="GameComponent.html#_deferredDestroy">_deferredDestroy</a></p>
 <ul>
 <li>Defined in ../../../../../CocosDashboard_1.1.0/resources/.editors/Creator/3.6.0/resources/resources/3d/engine/bin/.declarations/cc.d.ts:17866</li></ul></aside></li></ul></section></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -1288,70 +1318,71 @@ You can only call its super class method inside it. It should not be called manu
 <li class="tsd-kind-namespace"><a href="../modules/ecs.html">ecs</a></li></ul></li></ul></div></details></nav>
 <nav class="tsd-navigation secondary menu-sticky">
 <ul>
-<li class="current tsd-kind-class"><a href="GameComponent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-128-path"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)" id="icon-128-text"></path></svg><span>Game<wbr/>Component</span></a>
+<li class="current tsd-kind-class"><a href="CCComp.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-128-path"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)" id="icon-128-text"></path></svg><span>CCComp</span></a>
 <ul>
-<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#constructor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-512-path"></use><use href="#icon-512-text"></use></svg>constructor</a></li>
-<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#__editorExtras__" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>__editor<wbr/>Extras__</a></li>
-<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#__prefab" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>__prefab</a></li>
-<li class="deprecated tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#_enabled" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_enabled</a></li>
-<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="GameComponent.html#_eventDispatcher" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_event<wbr/>Dispatcher</a></li>
-<li class="deprecated tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#_id" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_id</a></li>
-<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="GameComponent.html#_isBindMessageActive" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_is<wbr/>Bind<wbr/>Message<wbr/>Active</a></li>
-<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a href="GameComponent.html#_name" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_name</a></li>
-<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#_objFlags" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_obj<wbr/>Flags</a></li>
-<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#_sceneGetter" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_scene<wbr/>Getter</a></li>
-<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="GameComponent.html#dynamicsAssets" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>dynamics<wbr/>Assets</a></li>
-<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#node" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>node</a></li>
-<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="GameComponent.html#nodes" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>nodes</a></li>
-<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#EventHandler" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>Event<wbr/>Handler</a></li>
-<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#system" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>system</a></li>
-<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#__scriptAsset" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>__script<wbr/>Asset</a></li>
-<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#_isOnLoadCalled" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>_is<wbr/>On<wbr/>Load<wbr/>Called</a></li>
-<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#enabled" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>enabled</a></li>
-<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#enabledInHierarchy" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>enabled<wbr/>In<wbr/>Hierarchy</a></li>
-<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="GameComponent.html#eventDispatcher" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>event<wbr/>Dispatcher</a></li>
-<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#hideFlags" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>hide<wbr/>Flags</a></li>
-<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#isValid" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>is<wbr/>Valid</a></li>
-<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#name" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>name</a></li>
-<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#replicated" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>replicated</a></li>
-<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#uuid" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>uuid</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-inherited"><a href="GameComponent.html#__preload" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>__preload?</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#_destroyImmediate" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_destroy<wbr/>Immediate</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#_destruct" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_destruct</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-inherited"><a href="GameComponent.html#_getLocalBounds" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_get<wbr/>Local<wbr/>Bounds?</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#_getRenderScene" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_get<wbr/>Render<wbr/>Scene</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#_instantiate" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_instantiate</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#_onPreDestroy" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_on<wbr/>Pre<wbr/>Destroy</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class"><a href="GameComponent.html#addAutoReleaseAsset" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>add<wbr/>Auto<wbr/>Release<wbr/>Asset</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class"><a href="GameComponent.html#addAutoReleaseAssets" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>add<wbr/>Auto<wbr/>Release<wbr/>Assets</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#addComponent" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>add<wbr/>Component</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class"><a href="GameComponent.html#bindMessageActive" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>bind<wbr/>Message<wbr/>Active</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#destroy" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>destroy</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class"><a href="GameComponent.html#dispatchEvent" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>dispatch<wbr/>Event</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class"><a href="GameComponent.html#get" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>get</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#getComponent" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>get<wbr/>Component</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#getComponentInChildren" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>get<wbr/>Component<wbr/>In<wbr/>Children</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#getComponents" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>get<wbr/>Components</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#getComponentsInChildren" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>get<wbr/>Components<wbr/>In<wbr/>Children</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a href="GameComponent.html#lateUpdate" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>late<wbr/>Update?</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class"><a href="GameComponent.html#off" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>off</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class"><a href="GameComponent.html#on" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>on</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="GameComponent.html#onDestroy" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>on<wbr/>Destroy</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a href="GameComponent.html#onDisable" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>on<wbr/>Disable?</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a href="GameComponent.html#onEnable" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>on<wbr/>Enable?</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#onFocusInEditor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>on<wbr/>Focus<wbr/>In<wbr/>Editor?</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class"><a href="GameComponent.html#onLoad" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>on<wbr/>Load</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#onLostFocusInEditor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>on<wbr/>Lost<wbr/>Focus<wbr/>In<wbr/>Editor?</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a href="GameComponent.html#onRestore" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>on<wbr/>Restore?</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#resetInEditor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>reset<wbr/>In<wbr/>Editor?</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#schedule" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>schedule</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#scheduleOnce" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>schedule<wbr/>Once</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a href="GameComponent.html#start" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>start?</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class"><a href="GameComponent.html#unbindMessageActive" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>unbind<wbr/>Message<wbr/>Active</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#unschedule" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>unschedule</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#unscheduleAllCallbacks" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>unschedule<wbr/>All<wbr/>Callbacks</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a href="GameComponent.html#update" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>update?</a></li>
-<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="GameComponent.html#_deferredDestroy" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_deferred<wbr/>Destroy</a></li></ul></li></ul></nav></div></div>
+<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#constructor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-512-path"></use><use href="#icon-512-text"></use></svg>constructor</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#__editorExtras__" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>__editor<wbr/>Extras__</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#__prefab" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>__prefab</a></li>
+<li class="deprecated tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#_enabled" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_enabled</a></li>
+<li class="deprecated tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#_id" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_id</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a href="CCComp.html#_name" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_name</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#_objFlags" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_obj<wbr/>Flags</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#_sceneGetter" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>_scene<wbr/>Getter</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class"><a href="CCComp.html#canRecycle" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>can<wbr/>Recycle</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class"><a href="CCComp.html#ent" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>ent</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#node" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>node</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#EventHandler" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>Event<wbr/>Handler</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class"><a href="CCComp.html#compName" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>comp<wbr/>Name</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#system" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>system</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class"><a href="CCComp.html#tid" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>tid</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#__scriptAsset" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>__script<wbr/>Asset</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#_isOnLoadCalled" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>_is<wbr/>On<wbr/>Load<wbr/>Called</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#enabled" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>enabled</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#enabledInHierarchy" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>enabled<wbr/>In<wbr/>Hierarchy</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#eventDispatcher" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>event<wbr/>Dispatcher</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#hideFlags" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>hide<wbr/>Flags</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#isValid" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>is<wbr/>Valid</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#name" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>name</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#replicated" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>replicated</a></li>
+<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#uuid" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-262144-path"></use><use href="#icon-262144-text"></use></svg>uuid</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-inherited"><a href="CCComp.html#__preload" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>__preload?</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#_destroyImmediate" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_destroy<wbr/>Immediate</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#_destruct" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_destruct</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-inherited"><a href="CCComp.html#_getLocalBounds" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_get<wbr/>Local<wbr/>Bounds?</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#_getRenderScene" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_get<wbr/>Render<wbr/>Scene</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#_instantiate" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_instantiate</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#_onPreDestroy" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_on<wbr/>Pre<wbr/>Destroy</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#addAutoReleaseAsset" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>add<wbr/>Auto<wbr/>Release<wbr/>Asset</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#addAutoReleaseAssets" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>add<wbr/>Auto<wbr/>Release<wbr/>Assets</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#addComponent" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>add<wbr/>Component</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#bindMessageActive" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>bind<wbr/>Message<wbr/>Active</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#destroy" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>destroy</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#dispatchEvent" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>dispatch<wbr/>Event</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#get" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>get</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#getComponent" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>get<wbr/>Component</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#getComponentInChildren" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>get<wbr/>Component<wbr/>In<wbr/>Children</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#getComponents" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>get<wbr/>Components</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#getComponentsInChildren" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>get<wbr/>Components<wbr/>In<wbr/>Children</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a href="CCComp.html#lateUpdate" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>late<wbr/>Update?</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#off" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>off</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#on" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>on</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a href="CCComp.html#onDestroy" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>on<wbr/>Destroy</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a href="CCComp.html#onDisable" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>on<wbr/>Disable?</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a href="CCComp.html#onEnable" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>on<wbr/>Enable?</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#onFocusInEditor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>on<wbr/>Focus<wbr/>In<wbr/>Editor?</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#onLoad" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>on<wbr/>Load</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#onLostFocusInEditor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>on<wbr/>Lost<wbr/>Focus<wbr/>In<wbr/>Editor?</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a href="CCComp.html#onRestore" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>on<wbr/>Restore?</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class"><a href="CCComp.html#reset" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>reset</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#resetInEditor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>reset<wbr/>In<wbr/>Editor?</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#schedule" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>schedule</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#scheduleOnce" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>schedule<wbr/>Once</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a href="CCComp.html#start" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>start?</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#unbindMessageActive" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>unbind<wbr/>Message<wbr/>Active</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#unschedule" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>unschedule</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#unscheduleAllCallbacks" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>unschedule<wbr/>All<wbr/>Callbacks</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-inherited"><a href="CCComp.html#update" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>update?</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="CCComp.html#_deferredDestroy" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>_deferred<wbr/>Destroy</a></li></ul></li></ul></nav></div></div>
 <div class="container tsd-generator">
 <p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
 <div class="overlay"></div><script src="../assets/main.js"></script></body></html>

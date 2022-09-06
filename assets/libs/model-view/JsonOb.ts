@@ -1,3 +1,9 @@
+/*
+ * @Author: dgflash
+ * @Date: 2022-09-01 18:00:28
+ * @LastEditors: dgflash
+ * @LastEditTime: 2022-09-06 17:18:05
+ */
 /**
  * 实现动态绑定的核心部分，
  * 每次修改属性值，都会调用对应函数，并且获取值的路径
@@ -23,12 +29,14 @@ export class JsonOb<T> {
     }
 
     private _callback;
+
     /**对象属性劫持 */
     private observe<T>(obj: T, path?: any) {
         if (OP.toString.call(obj) === types.array) {
             this.overrideArrayProto(obj, path);
         }
 
+        // @ts-ignore  注：避免API生成工具报错
         Object.keys(obj).forEach((key) => {
             let self = this;
             // @ts-ignore

@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-04-14 17:08:01
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 10:00:44
+ * @LastEditTime: 2022-09-06 17:29:45
  */
 import { sys } from "cc";
 import { oops } from "../../core/Oops";
@@ -35,6 +35,7 @@ export class GameQueryConfig {
         return this._data;
     }
 
+    /** 构造函数 */
     constructor() {
         if (!sys.isBrowser) {
             this._data = {};
