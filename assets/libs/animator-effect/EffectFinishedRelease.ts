@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-08-19 15:36:08
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-19 17:55:17
+ * @LastEditTime: 2022-09-07 14:59:03
  */
 
 import { Animation, Component, ParticleSystem, _decorator } from 'cc';
