@@ -7,7 +7,7 @@ import { EncryptUtil } from "../../utils/EncryptUtil";
 export class StorageManager {
     private _key: string | null = null;
     private _iv: string | null = null;
-    private _id: number = -1;
+    private _id: string = "";
 
     /**
      * 初始化密钥
@@ -23,7 +23,7 @@ export class StorageManager {
      * 设置用户唯一标识
      * @param id 
      */
-    setUser(id: number) {
+    setUser(id: string) {
         this._id = id;
     }
 

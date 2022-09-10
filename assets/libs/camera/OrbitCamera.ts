@@ -141,7 +141,7 @@ export class OrbitCamera extends Component {
         }
 
         if (this.enableScaleRadius) {
-            input.on(Input.EventType.MOUSE_WHEEL, this.onMouseWhee, this);
+            input.on(Input.EventType.MOUSE_WHEEL, this.onMouseWheel, this);
         }
 
         this.resetTargetRotation();
@@ -204,13 +204,13 @@ export class OrbitCamera extends Component {
     private onTouchEnd() {
         this._touched = false;
     }
+    //#endregion
 
-    private onMouseWhee(event: EventMouse) {
+    private onMouseWheel(event: EventMouse) {
         let scrollY = event.getScrollY();
         this._targetRadius += this.radiusScaleSpeed * -Math.sign(scrollY);          // 滚轮向前为负，滚轮向后为正
         this._targetRadius = Math.min(this.maxRadius, Math.max(this.minRadius, this._targetRadius));
     }
-    //#endregion
 
     update(dt: number) {
         let targetRotation = this._targetRotation;
