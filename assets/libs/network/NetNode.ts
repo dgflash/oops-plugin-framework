@@ -17,12 +17,14 @@ type BoolFunc = () => boolean;
 
 var NetNodeStateStrs = ["已关闭", "连接中", "验证中", "可传输数据"];
 
+/** 网络提示类型枚举 */
 export enum NetTipsType {
     Connecting,
     ReConnecting,
     Requesting,
 }
 
+/** 网络状态枚举 */
 export enum NetNodeState {
     Closed,                     // 已关闭
     Connecting,                 // 连接中
@@ -30,6 +32,7 @@ export enum NetNodeState {
     Working,                    // 可传输数据
 }
 
+/** 网络连接参数 */
 export interface NetConnectOptions {
     host?: string,              // 地址
     port?: number,              // 端口
@@ -37,6 +40,7 @@ export interface NetConnectOptions {
     autoReconnect?: number,     // -1 永久重连，0不自动重连，其他正整数为自动重试次数
 }
 
+/** 网络节点 */
 export class NetNode {
     protected _connectOptions: NetConnectOptions | null = null;
     protected _autoReconnect: number = 0;
@@ -61,7 +65,7 @@ export class NetNode {
     protected _listener: { [key: string]: CallbackObject[] | null } = {}    // 监听者列表
 
     /********************** 网络相关处理 *********************/
-    public init(socket: ISocket, protocol: IProtocolHelper, networkTips: INetworkTips | null = null, execFunc: ExecuterFunc | null = null) {
+    init(socket: ISocket, protocol: IProtocolHelper, networkTips: INetworkTips | null = null, execFunc: ExecuterFunc | null = null) {
         Logger.logNet(`网络初始化`);
         this._socket = socket;
         this._protocolHelper = protocol;
@@ -71,7 +75,11 @@ export class NetNode {
         }
     }
 
-    public connect(options: NetConnectOptions): boolean {
+    /**
+     * 请求连接服务器
+     * @param options 连接参数
+     */
+    connect(options: NetConnectOptions): boolean {
         if (this._socket && this._state == NetNodeState.Closed) {
             if (!this._isSocketInit) {
                 this.initSocket();
@@ -243,7 +251,12 @@ export class NetNode {
         }
     }
 
-    public close(code?: number, reason?: string) {
+    /**
+     * 断开网络
+     * @param code      关闭码
+     * @param reason    关闭原因
+     */
+    close(code?: number, reason?: string) {
         this.clearTimer();
         this._listener = {};
         this._requests.length = 0;
@@ -260,15 +273,23 @@ export class NetNode {
         }
     }
 
-    /** 只是关闭Socket套接字（仍然重用缓存与当前状态） */
-    public closeSocket(code?: number, reason?: string) {
+    /**
+     * 只是关闭Socket套接字（仍然重用缓存与当前状态）
+     * @param code      关闭码
+     * @param reason    关闭原因
+     */
+    closeSocket(code?: number, reason?: string) {
         if (this._socket) {
             this._socket.close(code, reason);
         }
     }
 
-    /** 发起请求，如果当前处于重连中，进入缓存列表等待重连完成后发送 */
-    public send(buf: NetData, force: boolean = false): number {
+    /**
+     * 发起请求，如果当前处于重连中，进入缓存列表等待重连完成后发送
+     * @param buf       网络数据
+     * @param force     是否强制发送
+     */
+    send(buf: NetData, force: boolean = false): number {
         if (this._state == NetNodeState.Working || force) {
             return this._socket!.send(buf);
         }
@@ -288,14 +309,28 @@ export class NetNode {
         }
     }
 
-    /** 发起请求，并进入缓存列表 */
-    public request(reqProtocol: IRequestProtocol, rspObject: CallbackObject, showTips: boolean = true, force: boolean = false) {
+    /**
+     * 发起请求，并进入缓存列表
+     * @param reqProtocol 请求协议
+     * @param rspObject   回调对象
+     * @param showTips    是否触发请求提示
+     * @param force       是否强制发送
+     * @param channelId   通道编号
+     */
+    request(reqProtocol: IRequestProtocol, rspObject: CallbackObject, showTips: boolean = true, force: boolean = false) {
         var rspCmd = this._protocolHelper!.handlerRequestPackage(reqProtocol);
         this.base_request(reqProtocol, rspCmd, rspObject, showTips, force);
     }
 
-    /** 唯一request，确保没有同一响应的请求（避免一个请求重复发送，netTips界面的屏蔽也是一个好的方法） */
-    public requestUnique(reqProtocol: IRequestProtocol, rspObject: CallbackObject, showTips: boolean = true, force: boolean = false): boolean {
+    /**
+     * 唯一request，确保没有同一响应的请求（避免一个请求重复发送，netTips界面的屏蔽也是一个好的方法）
+     * @param reqProtocol 请求协议
+     * @param rspObject   回调对象
+     * @param showTips    是否触发请求提示
+     * @param force       是否强制发送
+     * @param channelId   通道编号
+     */
+    requestUnique(reqProtocol: IRequestProtocol, rspObject: CallbackObject, showTips: boolean = true, force: boolean = false): boolean {
         var rspCmd = this._protocolHelper!.handlerRequestPackage(reqProtocol);
 
         for (let i = 0; i < this._requests.length; ++i) {
@@ -329,7 +364,13 @@ export class NetNode {
     }
 
     /********************** 回调相关处理 *********************/
-    public setResponeHandler(cmd: string, callback: NetCallFunc, target?: any): boolean {
+    /**
+     * 设置一个唯一的服务器推送监听
+     * @param cmd       命令字串
+     * @param callback  回调方法
+     * @param target    目标对象
+     */
+    setResponeHandler(cmd: string, callback: NetCallFunc, target?: any): boolean {
         if (callback == null) {
             error(`命令为【${cmd}】设置响应处理程序错误`);
             return false;
@@ -338,8 +379,14 @@ export class NetNode {
         return true;
     }
 
-    /** 可添加多个同类返回消息的监听 */
-    public addResponeHandler(cmd: string, callback: NetCallFunc, target?: any): boolean {
+    /**
+     * 可添加多个同类返回消息的监听
+     * @param cmd       命令字串
+     * @param callback  回调方法
+     * @param target    目标对象
+     * @returns 
+     */
+    addResponeHandler(cmd: string, callback: NetCallFunc, target?: any): boolean {
         if (callback == null) {
             error(`命令为【${cmd}】添加响应处理程序错误`);
             return false;
@@ -357,8 +404,13 @@ export class NetNode {
         return true;
     }
 
-    /** 删除一个监听中指定子回调 */
-    public removeResponeHandler(cmd: string, callback: NetCallFunc, target?: any) {
+    /**
+     * 删除一个监听中指定子回调
+     * @param cmd       命令字串
+     * @param callback  回调方法
+     * @param target    目标对象
+     */
+    removeResponeHandler(cmd: string, callback: NetCallFunc, target?: any) {
         if (null != this._listener[cmd] && callback != null) {
             let index = this.getNetListenersIndex(cmd, { target, callback });
             if (-1 != index) {
@@ -367,7 +419,11 @@ export class NetNode {
         }
     }
 
-    public cleanListeners(cmd: string = "") {
+    /**
+     * 清除所有监听或指定命令的监听
+     * @param cmd  命令字串（默认不填为清除所有）
+     */
+    cleanListeners(cmd: string = "") {
         if (cmd == "") {
             this._listener = {}
         }
@@ -424,11 +480,13 @@ export class NetNode {
         }
     }
 
-    public isAutoReconnect() {
+    /** 是否自动重连接 */
+    isAutoReconnect() {
         return this._autoReconnect != 0;
     }
 
-    public rejectReconnect() {
+    /** 拒绝重新连接 */
+    rejectReconnect() {
         this._autoReconnect = 0;
         this.clearTimer();
     }

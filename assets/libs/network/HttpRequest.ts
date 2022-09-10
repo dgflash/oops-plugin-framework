@@ -1,78 +1,116 @@
 /*
- * @CreateTime: May 30, 2018 9:35 AM
  * @Author: dgflash
- * @Contact: dgflash@qq.com
- * @Last Modified By: dgflash
- * @Last Modified Time: May 26, 2020 2:04 PM
- * @Description: HTTP
+ * @Date: 2022-09-01 18:00:28
+ * @LastEditors: dgflash
+ * @LastEditTime: 2022-09-09 18:10:50
  */
-
 import { error, warn } from "cc";
 
 var urls: any = {};                      // 当前请求地址集合
 var reqparams: any = {};                 // 请求参数
 
+/** 请求事件 */
 export enum HttpEvent {
-    NO_NETWORK = "http_request_no_network",                  // 断网
-    UNKNOWN_ERROR = "http_request_unknown_error",            // 未知错误
-    TIMEOUT = "http_request_timout"                          // 请求超时
+    /** 断网 */
+    NO_NETWORK = "http_request_no_network",
+    /** 未知错误 */
+    UNKNOWN_ERROR = "http_request_unknown_error",
+    /** 请求超时 */
+    TIMEOUT = "http_request_timout"
 }
 
+/** HTTP请求 */
 export class HttpRequest {
     /** 服务器地址 */
-    public server: string = "http://192.168.1.150/";
+    server: string = "http://127.0.0.1/";
     /** 请求超时时间 */
-    public timeout: number = 10000;
+    timeout: number = 10000;
 
     /**
      * HTTP GET请求
-     * 例：
-     * 
-     * Get
-        var complete = function(response){
-            LogWrap.log(response);
-        }
-        var error = function(response){
-            LogWrap.log(response);
-        }
-        this.get(name, complete, error);
-    */
-    public get(name: string, completeCallback: Function, errorCallback: Function) {
+     * @param name                  协议名
+     * @param completeCallback      请求完整回调方法
+     * @param errorCallback         请求失败回调方法
+     * @example
+    var complete = function(response){
+        console.log(response);
+    }
+    var error = function(response){
+        console.log(response);
+    }
+    oops.http.get(name, complete, error);
+     */
+    get(name: string, completeCallback: Function, errorCallback: Function) {
         this.sendRequest(name, null, false, completeCallback, errorCallback)
     }
-    public getWithParams(name: string, params: any, completeCallback: Function, errorCallback: Function) {
+
+    /**
+     * HTTP GET请求
+     * @param name                  协议名
+     * @param params                查询参数
+     * @param completeCallback      请求完整回调方法
+     * @param errorCallback         请求失败回调方法
+     * @example
+    var param = '{"uid":12345}'
+    var complete = function(response){
+        var jsonData = JSON.parse(response);
+        var data = JSON.parse(jsonData.Data);
+        console.log(data.Id);
+    }
+    var error = function(response){
+        console.log(response);
+    }
+    oops.http.getWithParams(name, param, complete, error);
+     */
+    getWithParams(name: string, params: any, completeCallback: Function, errorCallback: Function) {
         this.sendRequest(name, params, false, completeCallback, errorCallback)
     }
 
-    public getByArraybuffer(name: string, completeCallback: Function, errorCallback: Function) {
+    /**
+     * HTTP GET请求非文本格式数据
+     * @param name                  协议名
+     * @param completeCallback      请求完整回调方法
+     * @param errorCallback         请求失败回调方法
+     */
+    getByArraybuffer(name: string, completeCallback: Function, errorCallback: Function) {
         this.sendRequest(name, null, false, completeCallback, errorCallback, 'arraybuffer', false);
     }
-    public getWithParamsByArraybuffer(name: string, params: any, completeCallback: Function, errorCallback: Function) {
+
+    /**
+     * HTTP GET请求非文本格式数据
+     * @param name                  协议名
+     * @param params                查询参数
+     * @param completeCallback      请求完整回调方法
+     * @param errorCallback         请求失败回调方法
+     */
+    getWithParamsByArraybuffer(name: string, params: any, completeCallback: Function, errorCallback: Function) {
         this.sendRequest(name, params, false, completeCallback, errorCallback, 'arraybuffer', false);
     }
 
-    /** 
+    /**
      * HTTP POST请求
-     * 例：
-     *      
-     * Post
-        var param = '{"LoginCode":"donggang_dev","Password":"e10adc3949ba59abbe56e057f20f883e"}'
-        var complete = function(response){
-                var jsonData = JSON.parse(response);
-                var data = JSON.parse(jsonData.Data);
-            LogWrap.log(data.Id);
-        }
-        var error = function(response){
-            LogWrap.log(response);
-        }
-        this.post(name, param, complete, error);
-    */
-    public post(name: string, params: any, completeCallback?: Function, errorCallback?: Function) {
+     * @param name                  协议名
+     * @param params                查询参数
+     * @param completeCallback      请求完整回调方法
+     * @param errorCallback         请求失败回调方法
+     * @example
+    var param = '{"LoginCode":"donggang_dev","Password":"e10adc3949ba59abbe56e057f20f883e"}'
+    var complete = function(response){
+        var jsonData = JSON.parse(response);
+        var data = JSON.parse(jsonData.Data);
+        console.log(data.Id);
+    }
+    var error = function(response){
+        console.log(response);
+    }
+    oops.http.post(name, param, complete, error);
+     */
+    post(name: string, params: any, completeCallback?: Function, errorCallback?: Function) {
         this.sendRequest(name, params, true, completeCallback, errorCallback);
     }
 
     /** 取消请求中的请求 */
-    public abort(name: string) {
+    abort(name: string) {
         var xhr = urls[this.server + name];
         if (xhr) {
             xhr.abort();

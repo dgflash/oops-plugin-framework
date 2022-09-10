@@ -1,4 +1,11 @@
 /*
+ * @Author: dgflash
+ * @Date: 2022-09-01 18:00:28
+ * @LastEditors: dgflash
+ * @LastEditTime: 2022-09-09 18:31:18
+ */
+
+/*
  * 网络相关接口定义
  */
 export type NetData = (string | ArrayBufferLike | Blob | ArrayBufferView);

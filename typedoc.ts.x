@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-09-01 18:03:51
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-06 17:27:03
+ * @LastEditTime: 2022-09-09 17:39:23
  */
 
 // 该文件用作typedoc的入口点模块——我们的API生成器
@@ -60,6 +60,14 @@ export * from './assets/libs/ecs/ECS';
 export * from './assets/libs/ecs/ECSComp';
 export * from './assets/libs/ecs/ECSEntity';
 export * from './assets/libs/ecs/ECSSystem';
+/** module/network */
+export * from './assets/libs/network/HttpRequest';
+export * from './assets/libs/network/NetInterface';
+export * from './assets/libs/network/NetManager';
+export * from './assets/libs/network/NetNode';
+export * from './assets/libs/network/WebSock';
+export * from './assets/libs/network/NetProtocolPako';
+
 /** module/ecs */
 export * from './assets/module/common/CCComp';
 export * from './assets/module/common/CCVMParentComp';
