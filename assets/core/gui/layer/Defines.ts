@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2021-11-18 11:21:32
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 13:37:03
+ * @LastEditTime: 2022-09-13 17:48:48
  */
 import { Node } from "cc";
 
@@ -56,5 +56,5 @@ export class ViewParams {
     /** 是否在使用状态 */
     valid: boolean = true;
     /** 界面根节点 */
-    node: Node | null = null;;
+    node: Node | null = null;
 }
