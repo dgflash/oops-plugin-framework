@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-09-01 18:03:51
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-09 17:39:23
+ * @LastEditTime: 2022-09-22 14:51:28
  */
 
 // 该文件用作typedoc的入口点模块——我们的API生成器
@@ -55,6 +55,15 @@ export * from './assets/core/utils/RotateUtil';
 export * from './assets/core/utils/StringUtil';
 export * from './assets/core/utils/Vec3Util';
 export * from './assets/core/utils/ViewUtil';
+/** libs/animator-effect */
+export * from './assets/libs/animator-effect/Effect2DFollow3D';
+export * from './assets/libs/animator-effect/Effect2DFollow3D';
+export * from './assets/libs/animator-effect/EffectDelayRelease';
+export * from './assets/libs/animator-effect/EffectFinishedRelease';
+export * from './assets/libs/animator-effect/EffectSingleCase';
+/** libs/collection */
+export * from './assets/libs/collection/AsyncQueue';
+export * from './assets/libs/collection/Collection';
 /** libs/ecs */
 export * from './assets/libs/ecs/ECS';
 export * from './assets/libs/ecs/ECSComp';
@@ -65,9 +74,8 @@ export * from './assets/libs/network/HttpRequest';
 export * from './assets/libs/network/NetInterface';
 export * from './assets/libs/network/NetManager';
 export * from './assets/libs/network/NetNode';
-export * from './assets/libs/network/WebSock';
 export * from './assets/libs/network/NetProtocolPako';
-
+export * from './assets/libs/network/WebSock';
 /** module/ecs */
 export * from './assets/module/common/CCComp';
 export * from './assets/module/common/CCVMParentComp';
@@ -75,3 +83,7 @@ export * from './assets/module/common/CCVMParentComp';
 export * from './assets/module/config/Config';
 export * from './assets/module/config/GameConfig';
 export * from './assets/module/config/GameQueryConfig';
+
+
+
+

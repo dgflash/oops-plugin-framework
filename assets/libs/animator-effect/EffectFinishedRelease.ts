@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-08-19 15:36:08
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-07 14:59:03
+ * @LastEditTime: 2022-09-22 14:55:58
  */
 
 import { Animation, Component, ParticleSystem, _decorator } from 'cc';
@@ -11,7 +11,7 @@ import { EffectEvent } from './EffectEvent';
 
 const { ccclass, property } = _decorator;
 
-/** 动画播放完释放特效 */
+/** 动画播放完释放特效 - Animation、ParticleSystem */
 @ccclass('EffectFinishedRelease')
 export class EffectFinishedRelease extends Component {
     /** 动画最大播放时间 */
@@ -20,7 +20,7 @@ export class EffectFinishedRelease extends Component {
     protected onEnable() {
         let anims: Animation[] = this.node.getComponentsInChildren(Animation);
         anims.forEach(animator => {
-            let aniName = animator.defaultClip.name;
+            let aniName = animator.defaultClip?.name;
             if (aniName) {
                 let aniState = animator.getState(aniName);
                 if (aniState) {

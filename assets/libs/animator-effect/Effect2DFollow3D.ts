@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-03-31 18:03:50
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-07 10:05:32
+ * @LastEditTime: 2022-09-22 14:53:47
  */
 
 import { Camera, Component, Node, Vec3, _decorator } from "cc";
@@ -21,6 +21,7 @@ export class Effect2DFollow3D extends Component {
     @property({ type: Node })
     nodeUi: Node = null!;
 
+    /** 距离 */
     @property
     distance: number = 10;
 

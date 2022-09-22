@@ -21,33 +21,45 @@ interface AsyncTask {
     params: any
 }
 
-/** 异步队列处理 */
+/**
+ * 异步队列处理
+ * @example
+var queue: AsyncQueue = new AsyncQueue();
+queue.push((next: NextFunction, params: any, args: any) => {
+    oops.res.load("language/font/" + oops.language.current, next);
+});
+queue.push((next: NextFunction, params: any, args: any) => {
+    oops.res.loadDir("common", next);
+});
+queue.complete =  () => {
+    console.log("处理完成");
+};
+queue.play();
+ */
 export class AsyncQueue {
-    // 正在运行的任务
-    private _runningAsyncTask: AsyncTask | null = null;
-
     // 任务task的唯一标识
     private static _$uuid_count: number = 1;
 
+    // 正在运行的任务
+    private _runningAsyncTask: AsyncTask | null = null;
+
     private _queues: Array<AsyncTask> = [];
 
-    public get queues(): Array<AsyncTask> {
+    /** 任务队列 */
+    get queues(): Array<AsyncTask> {
         return this._queues;
     }
+
     // 正在执行的异步任务标识
     private _isProcessingTaskUUID: number = 0;
-
     private _enable: boolean = true;
-    /**
-     * 是否开启可用
-     */
-    public get enable() {
+
+    /** 是否开启可用 */
+    get enable() {
         return this._enable;
     }
-    /**
-     * 是否开启可用
-     */
-    public set enable(val: boolean) {
+    /** 是否开启可用 */
+    set enable(val: boolean) {
         if (this._enable === val) {
             return;
         }
@@ -60,13 +72,14 @@ export class AsyncQueue {
     /**
      * 任务队列完成回调
      */
-    public complete: Function | null = null;
+    complete: Function | null = null;
 
     /**
-     * push一个异步任务到队列中
-     * 返回任务uuid
+     * 添加一个异步任务到队列中
+     * @param callback  回调
+     * @param params    参数
      */
-    public push(callback: AsyncCallback, params: any = null): number {
+    push(callback: AsyncCallback, params: any = null): number {
         let uuid = AsyncQueue._$uuid_count++;
         this._queues.push({
             uuid: uuid,
@@ -77,10 +90,12 @@ export class AsyncQueue {
     }
 
     /**
-     * push多个任务，多个任务函数会同时执行,
-     * 返回任务uuid
+     * 添加多个任务，多个任务函数会同时执行
+     * @param params     参数据
+     * @param callbacks  回调
+     * @returns 
      */
-    public pushMulti(params: any, ...callbacks: AsyncCallback[]): number {
+    pushMulti(params: any, ...callbacks: AsyncCallback[]): number {
         let uuid = AsyncQueue._$uuid_count++;
         this._queues.push({
             uuid: uuid,
@@ -90,8 +105,11 @@ export class AsyncQueue {
         return uuid;
     }
 
-    /** 移除一个还未执行的异步任务 */
-    public remove(uuid: number) {
+    /**
+     * 移除一个还未执行的异步任务
+     * @param uuid  任务唯一编号
+     */
+    remove(uuid: number) {
         if (this._runningAsyncTask?.uuid === uuid) {
             warn("正在执行的任务不可以移除");
             return;
@@ -104,24 +122,18 @@ export class AsyncQueue {
         }
     }
 
-    /**
-     * 队列长度
-     */
-    public get size(): number {
+    /** 队列长度 */
+    get size(): number {
         return this._queues.length;
     }
 
-    /**
-     * 是否有正在处理的任务
-     */
-    public get isProcessing(): boolean {
+    /** 是否有正在处理的任务 */
+    get isProcessing(): boolean {
         return this._isProcessingTaskUUID > 0;
     }
 
-    /**
-     * 队列是否已停止
-     */
-    public get isStop(): boolean {
+    /** 队列是否已停止 */
+    get isStop(): boolean {
         if (this._queues.length > 0) {
             return false;
         }
@@ -132,39 +144,22 @@ export class AsyncQueue {
     }
 
     /** 正在执行的任务参数 */
-    public get runningParams() {
+    get runningParams() {
         if (this._runningAsyncTask) {
             return this._runningAsyncTask.params;
         }
         return null;
     }
 
-    /**
-     * 清空队列
-     */
-    public clear() {
+    /** 清空队列 */
+    clear() {
         this._queues = [];
         this._isProcessingTaskUUID = 0;
         this._runningAsyncTask = null;
     }
 
-    protected next(taskUUID: number, args: any = null) {
-        if (this._isProcessingTaskUUID === taskUUID) {
-            this._isProcessingTaskUUID = 0;
-            this._runningAsyncTask = null;
-            this.play(args);
-        }
-        else {
-            if (this._runningAsyncTask) {
-                log(this._runningAsyncTask);
-            }
-        }
-    }
-
-    /**
-     * 跳过当前正在执行的任务
-     */
-    public step() {
+    /** 跳过当前正在执行的任务 */
+    step() {
         if (this.isProcessing) {
             this.next(this._isProcessingTaskUUID);
         }
@@ -172,8 +167,9 @@ export class AsyncQueue {
 
     /**
      * 开始运行队列
+     * @param args  参数
      */
-    public play(args: any = null) {
+    play(args: any = null) {
         if (this.isProcessing) {
             return;
         }
@@ -215,7 +211,6 @@ export class AsyncQueue {
         else {
             this._isProcessingTaskUUID = 0;
             this._runningAsyncTask = null;
-            // cc.log("任务完成")
             if (this.complete) {
                 this.complete(args);
             }
@@ -223,11 +218,11 @@ export class AsyncQueue {
     }
 
     /**
-     * 【比较常用，所以单独提出来封装】往队列中push一个延时任务
+     * 往队列中push一个延时任务
      * @param time 毫秒时间
      * @param callback （可选参数）时间到了之后回调
      */
-    public yieldTime(time: number, callback: Function | null = null) {
+    yieldTime(time: number, callback: Function | null = null) {
         let task = function (next: Function, params: any, args: any) {
             let _t = setTimeout(() => {
                 clearTimeout(_t);
@@ -240,20 +235,33 @@ export class AsyncQueue {
         this.push(task, { des: "AsyncQueue.yieldTime" });
     }
 
+    protected next(taskUUID: number, args: any = null) {
+        if (this._isProcessingTaskUUID === taskUUID) {
+            this._isProcessingTaskUUID = 0;
+            this._runningAsyncTask = null;
+            this.play(args);
+        }
+        else {
+            if (this._runningAsyncTask) {
+                log(this._runningAsyncTask);
+            }
+        }
+    }
+
     /**
      * 返回一个执行函数，执行函数调用count次后，next将触发
      * @param count 
      * @param next 
      * @return 返回一个匿名函数
      */
-    public static excuteTimes(count: number, next: Function | null = null): Function {
+    static excuteTimes(count: number, next: Function | null = null): Function {
         let fnum: number = count;
-        let tempCall = () => {
+        let call = () => {
             --fnum;
             if (fnum === 0) {
                 next && next();
             }
         }
-        return tempCall;
+        return call;
     }
 }

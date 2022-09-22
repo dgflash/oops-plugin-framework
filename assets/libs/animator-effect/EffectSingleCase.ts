@@ -2,11 +2,10 @@
  * @Author: dgflash
  * @Date: 2021-10-12 14:00:43
  * @LastEditors: dgflash
- * @LastEditTime: 2022-08-20 14:57:42
+ * @LastEditTime: 2022-09-22 14:55:05
  */
 
 import { Component, Node, NodePool, Prefab, Vec3 } from 'cc';
-import { resLoader } from '../../core/common/loader/ResLoader';
 import { oops } from '../../core/Oops';
 import { ViewUtil } from '../../core/utils/ViewUtil';
 import { EffectEvent } from './EffectEvent';
@@ -25,7 +24,7 @@ interface IEffectParams {
     isPlayFinishedRelease?: boolean
 }
 
-/** 全局单例特效 */
+/** 动画特效对象池管理器 */
 export class EffectSingleCase {
     private static _instance: EffectSingleCase;
     public static get instance(): EffectSingleCase {
@@ -52,7 +51,7 @@ export class EffectSingleCase {
         return new Promise((resolve, reject) => {
             var np = this.effects.get(name);
             if (np == undefined) {
-                resLoader.load(name, Prefab, (err: Error | null, prefab: Prefab) => {
+                oops.res.load(name, Prefab, (err: Error | null, prefab: Prefab) => {
                     if (err) {
                         console.error(`名为【${name}】的特效资源加载失败`);
                         return;
