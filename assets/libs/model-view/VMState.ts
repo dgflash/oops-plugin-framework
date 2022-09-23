@@ -1,4 +1,4 @@
-import { Button, CCInteger, color, Color, Enum, Node, Renderable2D, Sprite, UIOpacity, _decorator } from 'cc';
+import { Button, CCInteger, color, Color, Enum, Node, UIRenderer, Sprite, UIOpacity, _decorator } from 'cc';
 import { VM } from './ViewModel';
 import VMBase from './VMBase';
 
@@ -229,9 +229,9 @@ export default class VMState extends VMBase {
                 }
             }
             case ACTION.NODE_COLOR: {
-                let renderable2D = node.getComponent(Renderable2D);
-                if (renderable2D) {
-                    renderable2D.color = check ? this.valueActionColor : color(255, 255, 255);
+                let uir = node.getComponent(UIRenderer);
+                if (uir) {
+                    uir.color = check ? this.valueActionColor : color(255, 255, 255);
                     break;
                 }
             }
