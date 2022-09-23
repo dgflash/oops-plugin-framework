@@ -2,9 +2,9 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 12:00:16
+ * @LastEditTime: 2022-09-23 15:20:46
  */
-import { Component, director, game, Game, log, Node, view, _decorator } from "cc";
+import { Component, director, game, Game, log, Node, sys, view, _decorator } from "cc";
 import { ecs } from "../libs/ecs/ECS";
 import { LanguageManager } from "../libs/gui/language/Language";
 import { HttpRequest } from "../libs/network/HttpRequest";
@@ -99,10 +99,12 @@ export class Root extends Component {
         });
 
         // 游戏尺寸修改事件
-        var c_gui = this.gui?.addComponent(GUI)!;
-        view.setResizeCallback(() => {
-            c_gui.resize();
-            oops.message.dispatchEvent(EventMessage.GAME_RESIZE);
-        });
+        if (sys.isMobile == false) {
+            var c_gui = this.gui?.addComponent(GUI)!;
+            view.setResizeCallback(() => {
+                c_gui.resize();
+                oops.message.dispatchEvent(EventMessage.GAME_RESIZE);
+            });
+        }
     }
 }
