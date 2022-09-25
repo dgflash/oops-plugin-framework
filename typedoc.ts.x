@@ -77,8 +77,8 @@ export * from './assets/libs/network/NetNode';
 export * from './assets/libs/network/NetProtocolPako';
 export * from './assets/libs/network/WebSock';
 /** module/ecs */
-export * from './assets/module/common/CCComp';
-export * from './assets/module/common/CCVMParentComp';
+// export * from './assets/module/common/CCComp';
+// export * from './assets/module/common/CCVMParentComp';
 /** module/config */
 export * from './assets/module/config/Config';
 export * from './assets/module/config/GameConfig';
