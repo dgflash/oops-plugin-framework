@@ -35,7 +35,7 @@ export class EffectFinishedRelease extends Component {
         let particles: ParticleSystem[] = this.node.getComponentsInChildren(ParticleSystem);
         particles.forEach(particle => {
             particle.simulationSpeed = 1;
-            // particle.clear();         // cc3.6 执行报错
+            particle.clear();
             particle.stop();
             particle.play()
 
