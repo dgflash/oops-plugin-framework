@@ -15,18 +15,18 @@
 <h1>Class CCComp<code class="tsd-tag ts-flagAbstract">Abstract</code> </h1></div>
 <section class="tsd-panel tsd-comment">
 <div class="tsd-comment tsd-typography"><p>游戏显示对象组件</p>
-<p>使用方法：</p>
+<p>功能介绍：</p>
 <ol>
 <li>对象拥有 cc.Component 组件功能与 ecs.Comp 组件功能</li>
 <li>对象自带全局事件监听、释放、发送全局消息功能</li>
-<li>对象管理的所有节点摊平，直接通过节点名获取cc.Node对象（节点名不能有重名）</li>
+<li>对象管理的所有节点摊平，直接通过节点名获取cc.Node对象</li>
 </ol>
 <p>应用场景</p>
 <ol>
 <li>网络游戏，优先有数据对象，然后创建视图对象，当释放视图组件时，部分场景不希望释放数据对象</li>
 </ol>
 
-<h3>Example</h3><pre><code class="language-ts"><span class="hl-3">// 注册显示对象组件</span><br/><span class="hl-1">@</span><span class="hl-7">ccclass</span><span class="hl-1">(</span><span class="hl-9">&#39;RoleViewComp&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">@</span><span class="hl-0">ecs</span><span class="hl-1">.</span><span class="hl-7">register</span><span class="hl-1">(</span><span class="hl-9">&#39;RoleView&#39;</span><span class="hl-1">, </span><span class="hl-6">false</span><span class="hl-1">)</span><br/><span class="hl-5">export</span><span class="hl-1"> </span><span class="hl-6">class</span><span class="hl-1"> </span><span class="hl-4">RoleViewComp</span><span class="hl-1"> </span><span class="hl-6">extends</span><span class="hl-1"> </span><span class="hl-4">CCComp</span><span class="hl-1"> {</span><br/><span class="hl-1">   @</span><span class="hl-7">property</span><span class="hl-1">({ </span><span class="hl-0">type:</span><span class="hl-1"> </span><span class="hl-0">sp</span><span class="hl-1">.</span><span class="hl-0">Skeleton</span><span class="hl-1">, </span><span class="hl-0">tooltip:</span><span class="hl-1"> </span><span class="hl-9">&#39;角色动画&#39;</span><span class="hl-1"> })</span><br/><span class="hl-1">   </span><span class="hl-0">spine</span><span class="hl-1">: </span><span class="hl-4">sp</span><span class="hl-1">.</span><span class="hl-4">Skeleton</span><span class="hl-1"> = </span><span class="hl-6">null</span><span class="hl-1">!;</span><br/><br/><span class="hl-1">   </span><span class="hl-7">onLoad</span><span class="hl-1">(){</span><br/><span class="hl-1">       </span><br/><span class="hl-1">   }</span><br/><span class="hl-1">}</span>
+<h3>Example</h3><pre><code class="language-ts"><span class="hl-1">@</span><span class="hl-7">ccclass</span><span class="hl-1">(</span><span class="hl-9">&#39;RoleViewComp&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">@</span><span class="hl-0">ecs</span><span class="hl-1">.</span><span class="hl-7">register</span><span class="hl-1">(</span><span class="hl-9">&#39;RoleView&#39;</span><span class="hl-1">, </span><span class="hl-6">false</span><span class="hl-1">)</span><br/><span class="hl-5">export</span><span class="hl-1"> </span><span class="hl-6">class</span><span class="hl-1"> </span><span class="hl-4">RoleViewComp</span><span class="hl-1"> </span><span class="hl-6">extends</span><span class="hl-1"> </span><span class="hl-4">CCComp</span><span class="hl-1"> {</span><br/><span class="hl-1">   @</span><span class="hl-7">property</span><span class="hl-1">({ </span><span class="hl-0">type:</span><span class="hl-1"> </span><span class="hl-0">sp</span><span class="hl-1">.</span><span class="hl-0">Skeleton</span><span class="hl-1">, </span><span class="hl-0">tooltip:</span><span class="hl-1"> </span><span class="hl-9">&#39;角色动画&#39;</span><span class="hl-1"> })</span><br/><span class="hl-1">   </span><span class="hl-0">spine</span><span class="hl-1">: </span><span class="hl-4">sp</span><span class="hl-1">.</span><span class="hl-4">Skeleton</span><span class="hl-1"> = </span><span class="hl-6">null</span><span class="hl-1">!;</span><br/><br/><span class="hl-1">   </span><span class="hl-7">onLoad</span><span class="hl-1">(){</span><br/><span class="hl-1">       </span><br/><span class="hl-1">   }</span><br/><span class="hl-1">}</span>
 </code></pre>
 </div></section>
 <section class="tsd-panel tsd-hierarchy">
@@ -42,7 +42,7 @@
 <ul class="tsd-hierarchy">
 <li><a href="../interfaces/ecs.IComp.html" class="tsd-signature-type" data-tsd-kind="Interface">IComp</a></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/module/common/CCComp.ts:39</li></ul></aside>
+<li>Defined in assets/module/common/CCComp.ts:38</li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -195,13 +195,13 @@
 <div class="tsd-signature">can<wbr/>Recycle<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/ecs.IComp.html">IComp</a>.<a href="../interfaces/ecs.IComp.html#canRecycle">canRecycle</a></p>
 <ul>
-<li>Defined in assets/module/common/CCComp.ts:43</li></ul></aside></section>
+<li>Defined in assets/module/common/CCComp.ts:42</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="ent" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>ent</span><a href="#ent" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">ent<span class="tsd-signature-symbol">:</span> <a href="ECSEntity.html" class="tsd-signature-type" data-tsd-kind="Class">ECSEntity</a></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/ecs.IComp.html">IComp</a>.<a href="../interfaces/ecs.IComp.html#ent">ent</a></p>
 <ul>
-<li>Defined in assets/module/common/CCComp.ts:44</li></ul></aside></section>
+<li>Defined in assets/module/common/CCComp.ts:43</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a id="node" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>node</span><a href="#node" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">node<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Node</span></div>
@@ -226,7 +226,7 @@
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>comp<wbr/>Name</span><a href="#compName" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">comp<wbr/>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/module/common/CCComp.ts:41</li></ul></aside></section>
+<li>Defined in assets/module/common/CCComp.ts:40</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a id="system" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>system</span><a href="#system" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">system<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span></div><aside class="tsd-sources">
@@ -237,7 +237,7 @@
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagStatic">Static</code> <span>tid</span><a href="#tid" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">tid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = -1</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in assets/module/common/CCComp.ts:40</li></ul></aside></section></section>
+<li>Defined in assets/module/common/CCComp.ts:39</li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Accessors</h2>
 <section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a id="__scriptAsset" class="tsd-anchor"></a>
@@ -1105,7 +1105,7 @@ will be reset by editor.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/ecs.IComp.html">IComp</a>.<a href="../interfaces/ecs.IComp.html#reset">reset</a></p>
 <ul>
-<li>Defined in assets/module/common/CCComp.ts:46</li></ul></aside></li></ul></section>
+<li>Defined in assets/module/common/CCComp.ts:45</li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a id="resetInEditor" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagOptional">Optional</code> <span>reset<wbr/>In<wbr/>Editor</span><a href="#resetInEditor" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">

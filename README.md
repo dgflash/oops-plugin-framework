@@ -1,10 +1,4 @@
-<!--
- * @Author: dgflash
- * @Date: 2022-09-01 18:00:28
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 16:19:58
--->
-#### 介绍
+### 介绍
 Oops Framework 基于 Cocos Creator 3.x 开发的一款游戏框架。
 1. 提供游戏常用功能库，提高开发效率
 2. 提供业务模块代码模板，降低程序设计难度
@@ -13,46 +7,36 @@ Oops Framework 基于 Cocos Creator 3.x 开发的一款游戏框架。
     - 热更新配置生成插件([传送门](https://gitee.com/dgflash/oops-plugin-hot-update))
     - 策划Excel配置表生成Json格式与配套ts代码插件([传送门](https://gitee.com/dgflash/oops-plugin-excel-to-json))
 
-#### 技术文档
+### 技术文档
 - [oops-framework](https://dgflash.gitee.io/oops-plugin-framework/)
 - [ecs](https://gitee.com/dgflash/oops-framework/tree/master/doc/ecs/ecs.md)
 - [mvvm](https://gitee.com/dgflash/oops-framework/tree/master/doc/mvvm)
 
-#### 学习部署说明
+### 学习部署说明
 1. 下载教程项目
 ```
 git clone https://gitee.com/dgflash/oops-framework.git
 ```
 
 2. 下载框架插件
-    ##### windows
+    #### windows
     执行根目录下的 update-oops-plugin-framework.bat 下载最新版本框架插件
     
-    ##### mac
+    #### mac
     项目下载后执行 update-oops-plugin-framework.sh 下载最新版本框架插件
 
-#### 开发部署说明
+### 开发部署说明
 1. 下载游戏项目模板
 ```
 git clone https://gitee.com/dgflash/oops-game-kit.git
 ```
 
 2. 下载框架插件
-    ##### windows
+    #### windows
     执行根目录下的 update-oops-plugin-framework.bat 下载最新版本框架插件
     
-    ##### mac
+    #### mac
     项目下载后执行 update-oops-plugin-framework.sh 下载最新版本框架插件
-
-
-#### 在线演示
-- [框架部分功能演示](https://oops-1255342636.cos-website.ap-shanghai.myqcloud.com/oops-framework/)
-- [全栈解决方案 oops-moba](https://store.cocos.com/app/detail/3814)
-- [游戏地图模块 oops-rpg-2d](https://store.cocos.com/app/detail/3675)
-- [游戏地图模块 oops-rpg-3d](https://oops-1255342636.cos-website.ap-shanghai.myqcloud.com/oops-solution/?type=2)
-- [新手引导模块 oops-guide](https://store.cocos.com/app/detail/3653)
-- [开源框架 oops-framework gitee](https://gitee.com/dgflash/oops-framework)
-- [开源框架 oops-framework github](https://github.com/dgflash/oops-framework)
 
 ### 框架目录结构
 ```
@@ -92,6 +76,25 @@ module             - 游戏通用模块
     common             - 公共模块
     config             - 配置模块
 ```
-&nbsp;
-#### 学习交流 QQ 群：798575969
-![image](http://dgflash.gitee.io/oops-full-stack-web/doc/img/qq.png)
+
+### QQ群
+- 798575969（1群） 
+- 621415300（2群）
+
+### QQ频道扫码加入，提供教程，持续更新
+![](http://dgflash.gitee.io/oops-full-stack-web/doc/img/qq.png)
+
+
+### 在线演示
+[网络游戏全栈解决方案](https://store.cocos.com/app/detail/3814)
+
+[角色扮演游戏解决方案](https://store.cocos.com/app/detail/3675)
+
+[新手引导解决方案](https://store.cocos.com/app/detail/3653)
+
+[框架实现的解决方案演示](https://oops-1255342636.cos-website.ap-shanghai.myqcloud.com/oops-solution/)
+
+[开源框架 oops-framework gitee](https://gitee.com/dgflash/oops-framework)
+
+[开源框架 oops-framework github](https://github.com/dgflash/oops-framework)
+

@@ -36,7 +36,7 @@ export class ViewUtil {
      */
     static findNodes(reg: RegExp, parent: Node, nodes?: Array<Node>): Array<Node> {
         let ns: Array<Node> = nodes || [];
-        let items: Array<Node> = parent.children;
+        let items = parent.children;
         for (let i = 0; i < items.length; i++) {
             let _name: string = items[i].name;
             if (reg.test(_name)) {
