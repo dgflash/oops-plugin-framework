@@ -14,7 +14,11 @@ import { LayerPopUp } from "./LayerPopup";
  * 模式弹窗层，该层的窗口同时只能显示一个，删除以后会自动从队列当中取一个弹窗，直到队列为空
  */
 export class LayerDialog extends LayerPopUp {
+    /** 窗口数据队列 */
     private queue: Array<ViewParams> = [];
+    /** 窗口参数队列 - 预防同一资源的窗口参数覆盖 */
+    private queue_params: Array<any> = [];
+    /** 当前窗口数据 */
     private current!: ViewParams;
 
     add(config: UIConfig, params?: any, callbacks?: UICallbacks): string {
@@ -27,7 +31,6 @@ export class LayerDialog extends LayerPopUp {
             viewParams = new ViewParams();
             viewParams.uuid = this.getUuid(prefabPath);
             viewParams.prefabPath = prefabPath;
-            viewParams.params = params || {};
             viewParams.callbacks = callbacks || {};
 
             var onRemove_Source = viewParams.callbacks.onRemoved;
@@ -45,8 +48,10 @@ export class LayerDialog extends LayerPopUp {
 
         if (this.current && this.current.valid) {
             this.queue.push(viewParams);
+            this.queue_params.push(params || {});
         }
         else {
+            viewParams.params = params || {};
             this.current = viewParams;
             this.load(viewParams);
         }
@@ -61,6 +66,7 @@ export class LayerDialog extends LayerPopUp {
     private next() {
         if (this.queue.length > 0) {
             this.current = this.queue.shift()!;
+            this.current.params = this.queue_params.shift();
             if (this.current.node) {
                 this.createNode(this.current);
             }
