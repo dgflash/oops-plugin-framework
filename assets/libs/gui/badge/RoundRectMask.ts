@@ -41,7 +41,7 @@ export class RoundRectMask extends Component {
             // @ts-ignore.
             this.mask['onDraw'] = this.onDraw.bind(this.mask);
             this.mask['_updateGraphics'] = this._updateGraphics.bind(this.mask);
-            this.mask.type = Mask.Type.RECT;
+            this.mask.type = Mask.Type.GRAPHICS_RECT;
         }
     }
 
