@@ -70,7 +70,7 @@ export class StorageManager {
                 value = EncryptUtil.aesEncrypt(`${value}`, this._key, this._iv);
             }
             catch (e) {
-                value = null;
+                console.error(e);
             }
         }
         sys.localStorage.setItem(key, value);
@@ -93,13 +93,14 @@ export class StorageManager {
         if (!PREVIEW) {
             key = md5(key);
         }
+
         let str: string | null = sys.localStorage.getItem(key);
         if (null != str && '' !== str && !PREVIEW && null != this._key && null != this._iv) {
             try {
                 str = EncryptUtil.aesDecrypt(str, this._key, this._iv);
             }
             catch (e) {
-                str = null;
+                console.error(e);
             }
         }
 
