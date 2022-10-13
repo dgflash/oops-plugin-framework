@@ -4,6 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 15:29:45
  */
+import { ecs } from "../libs/ecs/ECS";
 import { ECSRootSystem } from "../libs/ecs/ECSSystem";
 import { LanguageManager } from "../libs/gui/language/Language";
 import { HttpRequest } from "../libs/network/HttpRequest";
@@ -26,9 +27,9 @@ export class oops {
     /** 日志管理 */
     static log = Logger;
     /** 全局消息 */
-    static message: MessageManager;
+    static message: MessageManager = MessageManager.Instance;
     /** 本地存储 */
-    static storage: StorageManager;
+    static storage: StorageManager = new StorageManager();
     /** 游戏时间管理 */
     static timer: TimerManager;
     /** 游戏音乐管理 */
@@ -45,7 +46,7 @@ export class oops {
     /** 多语言模块 */
     static language: LanguageManager;
     /** HTTP */
-    static http: HttpRequest;
+    static http: HttpRequest = new HttpRequest();
     /** ECS */
-    static ecs: ECSRootSystem;
+    static ecs: ECSRootSystem = new ecs.RootSystem();
 }

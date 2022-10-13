@@ -1,6 +1,5 @@
 import { sys } from "cc";
 import { PREVIEW } from "cc/env";
-import { md5 } from "../../../libs/security/Md5";
 import { EncryptUtil } from "../../utils/EncryptUtil";
 
 /** 本地存储 */
@@ -15,8 +14,10 @@ export class StorageManager {
      * @param iv  aes加密的iv
      */
     init(key: string, iv: string) {
-        this._key = md5(key);
-        this._iv = md5(iv);
+        EncryptUtil.initCrypto(key, iv);
+
+        this._key = EncryptUtil.md5(key);
+        this._iv = EncryptUtil.md5(iv);
     }
 
     /**
@@ -41,7 +42,7 @@ export class StorageManager {
             return;
         }
         if (!PREVIEW) {
-            key = md5(key);
+            key = EncryptUtil.md5(key);
         }
         if (null == value) {
             console.warn("存储的值为空，则直接移除该存储");
@@ -66,12 +67,7 @@ export class StorageManager {
         }
 
         if (!PREVIEW && null != this._key && null != this._iv) {
-            try {
-                value = EncryptUtil.aesEncrypt(`${value}`, this._key, this._iv);
-            }
-            catch (e) {
-                console.error(e);
-            }
+            value = EncryptUtil.aesEncrypt(`${value}`, this._key, this._iv);
         }
         sys.localStorage.setItem(key, value);
     }
@@ -91,17 +87,12 @@ export class StorageManager {
         key = `${key}_${this._id}`;
 
         if (!PREVIEW) {
-            key = md5(key);
+            key = EncryptUtil.md5(key);
         }
 
         let str: string | null = sys.localStorage.getItem(key);
         if (null != str && '' !== str && !PREVIEW && null != this._key && null != this._iv) {
-            try {
-                str = EncryptUtil.aesDecrypt(str, this._key, this._iv);
-            }
-            catch (e) {
-                console.error(e);
-            }
+            str = EncryptUtil.aesDecrypt(str, this._key, this._iv);
         }
 
         if (null === str) {
@@ -142,7 +133,7 @@ export class StorageManager {
         key = `${key}_${this._id}`;
 
         if (!PREVIEW) {
-            key = md5(key);
+            key = EncryptUtil.md5(key);
         }
         sys.localStorage.removeItem(key);
     }

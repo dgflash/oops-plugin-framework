@@ -39,9 +39,12 @@ export class Root extends Component {
 
     onLoad() {
         console.log(`Oops Framework v${version}`);
-
-        this.init();
-        config.init(this.run.bind(this));
+        this.enabled = false;
+        config.init(() => {
+            this.enabled = true;
+            this.init();
+            this.run();
+        });
     }
 
     update(dt: number) {
@@ -64,17 +67,13 @@ export class Root extends Component {
     }
 
     protected init() {
-        oops.message = MessageManager.Instance;
-        oops.storage = new StorageManager();
         oops.language = new LanguageManager();
         oops.timer = new TimerManager(this);
         oops.audio = AudioManager.instance;
-        oops.http = new HttpRequest();
         oops.game = new GameManager(this.game!);
         oops.gui = new LayerManager(this.gui!);
         this.initGui();
 
-        oops.ecs = new ecs.RootSystem();
         this.initEcsSystem();
         oops.ecs.init();
 
