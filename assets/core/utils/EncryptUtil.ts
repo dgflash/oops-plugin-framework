@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-09-02 09:28:00
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 14:50:10
+ * @LastEditTime: 2022-10-21 09:46:39
  */
 
 import CryptoES from "crypto-es";
@@ -27,6 +27,7 @@ export class EncryptUtil {
         return CryptoES.MD5(msg).toString();
     }
 
+    /** 初始化加密库 */
     static initCrypto(key: string, iv: string) {
         this.key = key;
         this.iv = CryptoES.enc.Hex.parse(iv);
@@ -78,7 +79,7 @@ export class EncryptUtil {
             }
             return JSON.stringify(jsonObj);
         },
-        parse: function (jsonStr) {
+        parse: function (jsonStr: any) {
             const jsonObj = JSON.parse(jsonStr);
             const cipherParams = CryptoES.lib.CipherParams.create(
                 { ciphertext: CryptoES.enc.Base64.parse(jsonObj.ct) },

@@ -89,7 +89,7 @@ export class RandomManager {
         var temp: Array<T> = objects.slice();
         var result: Array<T> = [];
         for (let i = 0; i < n; i++) {
-            let index = this.getRandomInt(0, n, 1);
+            let index = this.getRandomInt(0, objects.length, n);
             result.push(temp.splice(index, 1)[0]);
         }
         return result;
@@ -100,7 +100,7 @@ export class RandomManager {
      * @param n     随机数量
      * @param sum   随机元素合
      * @example
-    var c = RandomManager.instance.getRandomBySumList(5, -100,);
+    var c = RandomManager.instance.getRandomBySumList(5, -100);
     console.log("定和随机分配", c);
      */
     getRandomBySumList(n: number, sum: number): number[] {
