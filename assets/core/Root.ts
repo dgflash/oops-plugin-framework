@@ -2,18 +2,13 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-23 15:20:46
+ * @LastEditTime: 2022-11-01 15:44:57
  */
 import { Component, director, game, Game, log, Node, sys, view, _decorator } from "cc";
-import { ecs } from "../libs/ecs/ECS";
 import { LanguageManager } from "../libs/gui/language/Language";
-import { HttpRequest } from "../libs/network/HttpRequest";
-import { config } from "../module/config/Config";
 import { AudioManager } from "./common/audio/AudioManager";
 import { EventMessage } from "./common/event/EventMessage";
-import { MessageManager } from "./common/event/MessageManager";
 import { TimerManager } from "./common/manager/TimerManager";
-import { StorageManager } from "./common/storage/StorageManager";
 import { GameManager } from "./game/GameManager";
 import { GUI } from "./gui/GUI";
 import { LayerManager } from "./gui/layer/LayerManager";
@@ -40,7 +35,7 @@ export class Root extends Component {
     onLoad() {
         console.log(`Oops Framework v${version}`);
         this.enabled = false;
-        config.init(() => {
+        oops.config.init(() => {
             this.enabled = true;
             this.init();
             this.run();

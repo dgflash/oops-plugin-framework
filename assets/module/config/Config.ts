@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-06 17:28:01
+ * @LastEditTime: 2022-11-01 15:47:16
  */
 
 import { game, JsonAsset } from "cc";
@@ -45,4 +45,8 @@ export class Config {
     }
 }
 
+/**
+ * 游戏配置静态访问类
+ * @deprecated 下个版本废弃，请使用 oops.config
+ */
 export const config = new Config()
