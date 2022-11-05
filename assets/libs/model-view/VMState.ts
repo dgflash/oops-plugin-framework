@@ -1,6 +1,6 @@
 import { Button, CCInteger, color, Color, Enum, Node, UIRenderer, Sprite, UIOpacity, _decorator } from 'cc';
 import { VM } from './ViewModel';
-import VMBase from './VMBase';
+import { VMBase } from './VMBase';
 
 const { ccclass, property, menu, help } = _decorator;
 

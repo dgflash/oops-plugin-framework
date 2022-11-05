@@ -5,15 +5,15 @@
  * @LastEditTime: 2022-08-11 15:43:34
  */
 import { CCString, _decorator } from "cc";
-import { EDITOR } from "cc/env";
 import { StringFormatFunction } from "./StringFormat";
-import VMCustom from "./VMCustom";
+import { VMCustom } from "./VMCustom";
+import { VMEnv } from "./VMEnv";
 
 const { ccclass, property, menu, help } = _decorator;
 
 @ccclass
 @menu('ModelViewer/VM-Progress (VM-进度条)')
-@help('https://github.com/wsssheep/cocos_creator_mvvm_tools/blob/master/docs/VMProgress.md')
+@help('https://gitee.com/dgflash/oops-framework/blob/master/doc/mvvm/VMProgress.md')
 export default class VMProgress extends VMCustom {
     @property({
         visible: false,
@@ -46,9 +46,9 @@ export default class VMProgress extends VMCustom {
     }
 
     start() {
-        if (!EDITOR) {
-            this.onValueInit();
-        }
+        if (VMEnv.editor) return;
+
+        this.onValueInit();
     }
 
     onValueInit() {

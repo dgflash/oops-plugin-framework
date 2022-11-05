@@ -13,7 +13,7 @@ const { ccclass, help, executionOrder } = _decorator;
  */
 @ccclass
 @executionOrder(-1)
-@help('https://github.com/wsssheep/cocos_creator_mvvm_tools/blob/master/docs/VMParent.md')
+@help('https://gitee.com/dgflash/oops-framework/blob/master/doc/mvvm/VMParent.md')
 export default class VMParent extends GameComponent {
     /** 绑定的标签，可以通过这个tag 获取 当前的 vm 实例 */
     protected tag: string = '_temp';

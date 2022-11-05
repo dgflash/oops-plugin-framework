@@ -25,7 +25,7 @@ type CustomCallback = (curValue: number, targetValue: number) => string;
  */
 @ccclass
 @menu("添加特殊行为/UI/Roll Number (滚动数字)")
-export default class BhvRollNumber extends Component {
+export class BhvRollNumber extends Component {
     @property({
         type: Label,
         tooltip: '需要滚动的 Label 组件,如果不进行设置，就会从自己的节点自动查找'

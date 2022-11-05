@@ -1,5 +1,5 @@
 import { Enum, _decorator } from 'cc';
-import VMBase from './VMBase';
+import { VMBase } from './VMBase';
 
 const { ccclass, property, menu, help } = _decorator;
 
@@ -17,7 +17,7 @@ enum CLAMP_MODE {
  */
 @ccclass
 @menu('ModelViewer/VM-Modify(修改Model)')
-@help('https://github.com/wsssheep/cocos_creator_mvvm_tools/blob/master/docs/VMModify.md')
+@help('https://gitee.com/dgflash/oops-framework/blob/master/doc/mvvm/VMModify.md')
 export default class VMModify extends VMBase {
     @property({
         tooltip: "监视对象路径"

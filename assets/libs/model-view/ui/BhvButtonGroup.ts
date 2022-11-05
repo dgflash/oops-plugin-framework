@@ -13,7 +13,7 @@ enum PARAM_TYPE {
  */
 @ccclass
 @menu("添加特殊行为/UI/Button Group(一组按钮控制)")
-export default class BhvButtonGroup extends Component {
+export class BhvButtonGroup extends Component {
     @property({
         type: Enum(Button.Transition)
     })

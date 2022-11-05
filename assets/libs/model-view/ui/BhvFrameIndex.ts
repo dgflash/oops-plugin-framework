@@ -6,7 +6,7 @@ const { ccclass, property, executeInEditMode, requireComponent, menu } = _decora
 @executeInEditMode
 @requireComponent(Sprite)
 @menu("添加特殊行为/UI/Frame Index(帧图改变)")
-export default class BhvFrameIndex extends Component {
+export class BhvFrameIndex extends Component {
     @property({
         type: [SpriteFrame],
         tooltip: 'sprite将会用到帧图片'

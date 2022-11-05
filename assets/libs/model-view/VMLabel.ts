@@ -1,7 +1,7 @@
 import { CCString, error, _decorator } from 'cc';
-import { EDITOR } from 'cc/env';
 import { StringFormatFunction } from './StringFormat';
-import VMBase from './VMBase';
+import { VMBase } from './VMBase';
+import { VMEnv } from './VMEnv';
 
 const { ccclass, property, menu, executeInEditMode, help } = _decorator;
 
@@ -20,7 +20,7 @@ const LABEL_TYPE = {
 @ccclass
 @executeInEditMode
 @menu('ModelViewer/VM-Label(文本VM)')
-@help('https://github.com/wsssheep/cocos_creator_mvvm_tools/blob/master/docs/VMLabel.md')
+@help('https://gitee.com/dgflash/oops-framework/blob/master/doc/mvvm/VMLabel.md')
 export default class VMLabel extends VMBase {
     @property({
         tooltip: '是否启用模板代码,只能在运行时之前设置,\n将会动态解析模板语法 {{0}},并且自动设置监听的路径'
@@ -29,6 +29,7 @@ export default class VMLabel extends VMBase {
 
     @property({
         visible() {
+            // @ts-ignore
             return this.templateMode === false;
         }
     })
@@ -42,6 +43,7 @@ export default class VMLabel extends VMBase {
     @property({
         type: [CCString],
         visible() {
+            // @ts-ignore
             return this.templateMode === true;
         }
     })
@@ -64,16 +66,18 @@ export default class VMLabel extends VMBase {
     onLoad() {
         super.onLoad();
         this.checkLabel();
-        if (!EDITOR) {
-            if (this.templateMode) {
-                this.originText = this.getLabelValue();
-                this.parseTemplate();
-            }
+
+        if (VMEnv.editor) return;
+
+        if (this.templateMode) {
+            this.originText = this.getLabelValue();
+            this.parseTemplate();
         }
     }
 
     start() {
-        if (EDITOR) return;
+        if (VMEnv.editor) return;
+
         this.onValueInit();
     }
 
