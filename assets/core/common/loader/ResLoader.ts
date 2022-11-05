@@ -285,9 +285,3 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
         }
     }
 }
-
-/**
- * 资源管理模块
- * @deprecated 下个版本废弃，请使用 oops.res
- */
-export var resLoader = new ResLoader(); 

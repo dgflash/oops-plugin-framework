@@ -8,7 +8,7 @@ import { ecs } from "../libs/ecs/ECS";
 import { ECSRootSystem } from "../libs/ecs/ECSSystem";
 import { LanguageManager } from "../libs/gui/language/Language";
 import { HttpRequest } from "../libs/network/HttpRequest";
-import { config } from "../module/config/Config";
+import { Config } from "../module/config/Config";
 import { AudioManager } from "./common/audio/AudioManager";
 import { MessageManager } from "./common/event/MessageManager";
 import { ResLoader } from "./common/loader/ResLoader";
@@ -25,7 +25,7 @@ export var version: string = "1.1.3";
 export class oops {
     /** ----------核心模块---------- */
     /** 游戏配置 */
-    static config = config;
+    static config = new Config();
     /** 日志管理 */
     static log = Logger;
     /** 全局消息 */

@@ -4,8 +4,11 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-11-01 15:44:57
  */
-import { Component, director, game, Game, log, Node, sys, view, _decorator } from "cc";
+import { Component, director, game, Game, JsonAsset, log, Node, sys, view, _decorator } from "cc";
 import { LanguageManager } from "../libs/gui/language/Language";
+import { BuildTimeConstants } from "../module/config/BuildTimeConstants";
+import { GameConfig } from "../module/config/GameConfig";
+import { GameQueryConfig } from "../module/config/GameQueryConfig";
 import { AudioManager } from "./common/audio/AudioManager";
 import { EventMessage } from "./common/event/EventMessage";
 import { TimerManager } from "./common/manager/TimerManager";
@@ -35,7 +38,18 @@ export class Root extends Component {
     onLoad() {
         console.log(`Oops Framework v${version}`);
         this.enabled = false;
-        oops.config.init(() => {
+
+        let config_name = "config/config";
+        oops.res.load(config_name, JsonAsset, () => {
+            var config = oops.res.get(config_name);
+            oops.config.btc = new BuildTimeConstants();
+            oops.config.query = new GameQueryConfig();
+            oops.config.game = new GameConfig(config);
+            oops.http.server = oops.config.game.httpServer;                                      // Http 服务器地址
+            oops.http.timeout = oops.config.game.httpTimeout;                                    // Http 请求超时时间
+            oops.storage.init(oops.config.game.localDataKey, oops.config.game.localDataIv);      // 初始化本地存储加密
+            game.frameRate = oops.config.game.frameRate;                                         // 初始化每秒传输帧数
+
             this.enabled = true;
             this.init();
             this.run();

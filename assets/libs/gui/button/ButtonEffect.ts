@@ -1,5 +1,5 @@
 import { Animation, AnimationClip, EventTouch, _decorator } from "cc";
-import { resLoader } from "../../../core/common/loader/ResLoader";
+import { oops } from "../../../core/Oops";
 import ButtonSimple from "./ButtonSimple";
 
 const { ccclass, property, menu } = _decorator;
@@ -17,8 +17,8 @@ export default class ButtonEffect extends ButtonSimple {
     onLoad() {
         this.anim = this.node.addComponent(Animation);
 
-        var ac_start = resLoader.get("common/anim/button_scale_start", AnimationClip)!;
-        var ac_end = resLoader.get("common/anim/button_scale_end", AnimationClip)!;
+        var ac_start = oops.res.get("common/anim/button_scale_start", AnimationClip)!;
+        var ac_end = oops.res.get("common/anim/button_scale_end", AnimationClip)!;
         this.anim.defaultClip = ac_start;
         this.anim.createState(ac_start, ac_start?.name);
         this.anim.createState(ac_end, ac_end?.name);
