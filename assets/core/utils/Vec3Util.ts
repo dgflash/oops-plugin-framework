@@ -291,7 +291,7 @@ export class Vec3Util {
         var tt = t * t;
 
         var pStart: Vec3 = posStart.clone();
-        var pos = posStart.clone();
+        var pos = new Vec3();
 
         var pCon: Vec3 = posCon.clone();
         var pEnd: Vec3 = posEnd.clone();
