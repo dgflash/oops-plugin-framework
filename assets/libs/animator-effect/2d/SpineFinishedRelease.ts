@@ -6,7 +6,7 @@
  */
 
 import { Component, sp, _decorator } from 'cc';
-import { resLoader } from '../../../core/common/loader/ResLoader';
+import { oops } from '../../../core/Oops';
 const { ccclass, property } = _decorator;
 
 /** 动画播放完隐藏特效 */
@@ -28,7 +28,7 @@ export class SpineFinishedRelease extends Component {
         this.spine.setCompleteListener(this.onSpineComplete.bind(this));
 
         if (this.resPath) {
-            resLoader.load(this.resPath, sp.SkeletonData, (err: Error | null, sd: sp.SkeletonData) => {
+            oops.res.load(this.resPath, sp.SkeletonData, (err: Error | null, sd: sp.SkeletonData) => {
                 if (err) {
                     console.error(`加载【${this.resPath}】的 SPINE 资源不存在`);
                     return;

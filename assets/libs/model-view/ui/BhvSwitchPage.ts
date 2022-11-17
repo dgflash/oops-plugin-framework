@@ -1,12 +1,12 @@
 import { CCInteger, Component, Node, _decorator } from "cc";
-import { EDITOR } from "cc/env";
+import { VMEnv } from "../VMEnv";
 
 const { ccclass, property, executeInEditMode, menu } = _decorator;
 
 @ccclass
 @executeInEditMode
 @menu("添加特殊行为/UI/Switch Page (切换页面)")
-export default class BhvSwitchPage extends Component {
+export class BhvSwitchPage extends Component {
     @property
     isLoopPage: boolean = false;
 
@@ -34,7 +34,7 @@ export default class BhvSwitchPage extends Component {
         this.preIndex = this._index;//标记之前的页面
         this._index = v;
 
-        if (EDITOR) {
+        if (VMEnv.editor) {
             this._updateEditorPage(v);
         }
         else {
@@ -57,7 +57,8 @@ export default class BhvSwitchPage extends Component {
     }
 
     private _updateEditorPage(page: number) {
-        if (!EDITOR) return;
+        if (!VMEnv.editor) return;
+
         let children = this.node.children;
         for (let i = 0; i < children.length; i++) {
             const node = children[i];

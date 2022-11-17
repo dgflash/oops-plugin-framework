@@ -2,18 +2,16 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-23 15:20:46
+ * @LastEditTime: 2022-11-01 15:44:57
  */
-import { Component, director, game, Game, log, Node, sys, view, _decorator } from "cc";
-import { ecs } from "../libs/ecs/ECS";
+import { Component, director, game, Game, JsonAsset, log, Node, sys, view, _decorator } from "cc";
 import { LanguageManager } from "../libs/gui/language/Language";
-import { HttpRequest } from "../libs/network/HttpRequest";
-import { config } from "../module/config/Config";
+import { BuildTimeConstants } from "../module/config/BuildTimeConstants";
+import { GameConfig } from "../module/config/GameConfig";
+import { GameQueryConfig } from "../module/config/GameQueryConfig";
 import { AudioManager } from "./common/audio/AudioManager";
 import { EventMessage } from "./common/event/EventMessage";
-import { MessageManager } from "./common/event/MessageManager";
 import { TimerManager } from "./common/manager/TimerManager";
-import { StorageManager } from "./common/storage/StorageManager";
 import { GameManager } from "./game/GameManager";
 import { GUI } from "./gui/GUI";
 import { LayerManager } from "./gui/layer/LayerManager";
@@ -40,7 +38,18 @@ export class Root extends Component {
     onLoad() {
         console.log(`Oops Framework v${version}`);
         this.enabled = false;
-        config.init(() => {
+
+        let config_name = "config/config";
+        oops.res.load(config_name, JsonAsset, () => {
+            var config = oops.res.get(config_name);
+            oops.config.btc = new BuildTimeConstants();
+            oops.config.query = new GameQueryConfig();
+            oops.config.game = new GameConfig(config);
+            oops.http.server = oops.config.game.httpServer;                                      // Http 服务器地址
+            oops.http.timeout = oops.config.game.httpTimeout;                                    // Http 请求超时时间
+            oops.storage.init(oops.config.game.localDataKey, oops.config.game.localDataIv);      // 初始化本地存储加密
+            game.frameRate = oops.config.game.frameRate;                                         // 初始化每秒传输帧数
+
             this.enabled = true;
             this.init();
             this.run();

@@ -1,5 +1,5 @@
 import { CCString, Component, Enum, log, Node, _decorator } from "cc";
-import { EDITOR } from "cc/env";
+import { VMEnv } from "./VMEnv";
 
 const { ccclass, property, executeInEditMode, menu, help } = _decorator;
 
@@ -17,7 +17,7 @@ enum ACTION_MODE {
 @ccclass
 @executeInEditMode
 @menu('ModelViewer/Edit-Comps (快速组件操作)')
-@help('https://github.com/wsssheep/cocos_creator_mvvm_tools/blob/master/docs/VMCompsEdit.md')
+@help('https://gitee.com/dgflash/oops-framework/blob/master/doc/mvvm/VMCompsEdit.md')
 export default class MVCompsEdit extends Component {
     @property({
         type: [CCString]
@@ -149,11 +149,10 @@ export default class MVCompsEdit extends Component {
     collectNodes: Node[] = [];
 
     onLoad() {
-        //不要把脚本挂载运行时的提示
-        if (!EDITOR) {
-            let path = this.getNodePath(this.node);
-            console.error('you forget delete MVEditFinder,[path]', path);
-        }
+        if (VMEnv.editor) return;
+
+        let path = this.getNodePath(this.node);
+        console.error('you forget delete MVEditFinder,[path]', path);
     }
 
     setComponents(state: number) {
@@ -213,17 +212,16 @@ export default class MVCompsEdit extends Component {
                         }
                     }
                     break;
-                case 1://激活组件
+                case 1:         // 激活组件
                     v.enabled = true;
                     break;
-                case 2://关闭组件
+                case 2:         // 关闭组件
                     v.enabled = false;
                     break;
-                case 3://删除组件
+                case 3:         // 删除组件
                     v.node.removeComponent(v);
                     break;
-                case 4://替换指定路径
-
+                case 4:         // 替换指定路径
                     let targetPath = this.targetPath;
                     let replacePath = this.replacePath;
                     if (v.templateMode === true) {

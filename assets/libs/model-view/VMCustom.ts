@@ -1,6 +1,6 @@
 import { Toggle, _decorator } from 'cc';
-import { EDITOR } from 'cc/env';
-import VMBase from './VMBase';
+import { VMBase } from './VMBase';
+import { VMEnv } from './VMEnv';
 
 const { ccclass, property, executeInEditMode, menu, help } = _decorator;
 
@@ -26,8 +26,8 @@ const COMP_ARRAY_CHECK = [
 @ccclass
 @executeInEditMode
 @menu('ModelViewer/VM-Custom (自定义VM)')
-@help('https://github.com/wsssheep/cocos_creator_mvvm_tools/blob/master/docs/VMCustom.md')
-export default class VMCustom extends VMBase {
+@help('https://gitee.com/dgflash/oops-framework/blob/master/doc/mvvm/VMCustom.md')
+export class VMCustom extends VMBase {
     @property({
         tooltip: '激活controller,以开启双向绑定，否则只能接收消息',
     })
@@ -76,10 +76,11 @@ export default class VMCustom extends VMBase {
 
         // 只在运行时检查组件是否缺失可用
         this.checkEditorComponent();//编辑器检查
-        if (!EDITOR) {
-            this._watchComponent = this.node.getComponent(this.componentName);
-            this.checkComponentState();
-        }
+
+        if (VMEnv.editor) return;
+
+        this._watchComponent = this.node.getComponent(this.componentName);
+        this.checkComponentState();
     }
 
     onRestore() {
@@ -93,18 +94,18 @@ export default class VMCustom extends VMBase {
 
     // 挂在对应节点后，自动获取组件属性和名字
     checkEditorComponent() {
-        if (EDITOR) {
-            let checkArray = COMP_ARRAY_CHECK;
-            for (let i = 0; i < checkArray.length; i++) {
-                const params = checkArray[i];
-                let comp = this.node.getComponent(params[0] as string);
-                if (comp) {
-                    if (this.componentName == '') this.componentName = params[0] as string;
-                    if (this.componentProperty == '') this.componentProperty = params[1] as string;
-                    if (params[2] !== null) this.controller = params[2] as boolean;
+        if (VMEnv.editor) return;
 
-                    break;
-                }
+        let checkArray = COMP_ARRAY_CHECK;
+        for (let i = 0; i < checkArray.length; i++) {
+            const params = checkArray[i];
+            let comp = this.node.getComponent(params[0] as string);
+            if (comp) {
+                if (this.componentName == '') this.componentName = params[0] as string;
+                if (this.componentProperty == '') this.componentProperty = params[1] as string;
+                if (params[2] !== null) this.controller = params[2] as boolean;
+
+                break;
             }
         }
     }
@@ -133,7 +134,8 @@ export default class VMCustom extends VMBase {
 
     /** 初始化获取数据 */
     onValueInit() {
-        if (EDITOR) return; //编辑器模式不初始化
+        if (VMEnv.editor) return;
+
         //更新信息
         this.setComponentValue(this.VM.getValue(this.watchPath));
     }
@@ -150,7 +152,8 @@ export default class VMCustom extends VMBase {
 
     update(dt: number) {
         // 脏检查（组件是否存在，是否被激活）
-        if (EDITOR == true) return;
+        if (VMEnv.editor) return;
+
         //if (this.templateMode == true) return; //todo 模板模式下不能计算  
         if (!this.controller) return;
         if (!this._canWatchComponent || this._watchComponent['enabled'] === false) return;

@@ -4,11 +4,11 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-06 17:18:05
  */
+
 /**
  * 实现动态绑定的核心部分，
  * 每次修改属性值，都会调用对应函数，并且获取值的路径
  */
-
 const OP = Object.prototype;
 const types = {
     obj: '[object Object]',

@@ -1,5 +1,5 @@
 import { CCString, Enum, EventHandler, _decorator } from 'cc';
-import VMBase from './VMBase';
+import { VMBase } from './VMBase';
 
 // +普通 label 更新数据的情况,label.string = xxx;
 // +frameIndex 插件，通过number 数值设置 BhvFrameIndex 来切换当前贴图
@@ -30,7 +30,7 @@ enum FILTER_MODE {
 @ccclass
 @executeInEditMode
 @menu('ModelViewer/VM-EventCall(调用函数)')
-@help('https://github.com/wsssheep/cocos_creator_mvvm_tools/blob/master/docs/VMEvent.md')
+@help('https://gitee.com/dgflash/oops-framework/blob/master/doc/mvvm/VMEvent.md')
 export default class VMEvent extends VMBase {
     @property({
         tooltip: '使用模板模式，可以使用多路径监听'

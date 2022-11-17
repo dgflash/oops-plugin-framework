@@ -1,6 +1,7 @@
 import { Component, log, _decorator } from 'cc';
-import { DEBUG, EDITOR } from 'cc/env';
+import { DEBUG } from 'cc/env';
 import { VM } from './ViewModel';
+import { VMEnv } from './VMEnv';
 
 // 用来处理通知数据的层级
 // 控制旗下子节点的数据
@@ -9,13 +10,14 @@ import { VM } from './ViewModel';
 
 const DEBUG_WATCH_PATH: boolean = false;
 
-const { ccclass, property } = _decorator;
+const { ccclass, help } = _decorator;
 
 /**
  * watchPath 的基础，只提供绑定功能 和 对应的数据更新函数
  */
 @ccclass
-export default class VMBase extends Component {
+@help('https://gitee.com/dgflash/oops-framework/blob/master/doc/mvvm/VMBase.md')
+export class VMBase extends Component {
     /**VM管理 */
     VM = VM;
 
@@ -35,7 +37,7 @@ export default class VMBase extends Component {
      * 如果需要重写onLoad 方法，请根据顺序调用 super.onLoad()，执行默认方法
      */
     onLoad() {
-        if (EDITOR) return;
+        if (VMEnv.editor) return;
 
         // 提前拆分、并且解析路径
         let paths = this.watchPath.split('.');
@@ -86,7 +88,8 @@ export default class VMBase extends Component {
     }
 
     onEnable() {
-        if (EDITOR) return;                     // 编辑器模式不能判断
+        if (VMEnv.editor) return;
+
         if (this.templateMode) {
             this.setMultPathEvent(true);
         }
@@ -98,7 +101,8 @@ export default class VMBase extends Component {
     }
 
     onDisable() {
-        if (EDITOR) return;//编辑器模式不能判断
+        if (VMEnv.editor) return;
+
         if (this.templateMode) {
             this.setMultPathEvent(false);
         }
@@ -109,7 +113,8 @@ export default class VMBase extends Component {
 
     // 多路径监听方式
     private setMultPathEvent(enabled: boolean = true) {
-        if (EDITOR) return;
+        if (VMEnv.editor) return;
+
         let arr = this.watchPathArr;
         for (let i = 0; i < arr.length; i++) {
             const path = arr[i];

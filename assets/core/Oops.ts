@@ -2,12 +2,13 @@
  * @Author: dgflash
  * @Date: 2022-02-11 09:32:47
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 15:29:45
+ * @LastEditTime: 2022-11-01 15:47:42
  */
 import { ecs } from "../libs/ecs/ECS";
 import { ECSRootSystem } from "../libs/ecs/ECSSystem";
 import { LanguageManager } from "../libs/gui/language/Language";
 import { HttpRequest } from "../libs/network/HttpRequest";
+import { Config } from "../module/config/Config";
 import { AudioManager } from "./common/audio/AudioManager";
 import { MessageManager } from "./common/event/MessageManager";
 import { ResLoader } from "./common/loader/ResLoader";
@@ -18,12 +19,13 @@ import { GameManager } from "./game/GameManager";
 import { LayerManager } from "./gui/layer/LayerManager";
 
 /** 框架版本号 */
-export var version: string = "1.1.2";
+export var version: string = "1.1.3";
 
 /** 框架核心模块访问入口 */
 export class oops {
     /** ----------核心模块---------- */
-
+    /** 游戏配置 */
+    static config = new Config();
     /** 日志管理 */
     static log = Logger;
     /** 全局消息 */

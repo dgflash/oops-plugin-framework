@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-06 17:29:04
+ * @LastEditTime: 2022-11-01 15:26:26
  */
 
 import { oops } from "../../core/Oops";
@@ -52,6 +52,11 @@ export class GameConfig {
     }
 
     private _data: any = null;
+    /** 游戏配置数据 */
+    public get data(): any {
+        return this._data;
+    }
+
     constructor(config: any) {
         let data = config.json;
         this._data = Object.freeze(data);

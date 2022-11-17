@@ -144,7 +144,7 @@ export class OrbitCamera extends Component {
             input.on(Input.EventType.MOUSE_WHEEL, this.onMouseWheel, this);
         }
 
-        this.resetTargetRotation();
+        if (this.target) this.resetTargetRotation();
 
         // 根据欧拉角信息计算摄像机四元数，旋转顺序为 YZX
         Quat.fromEuler(this._rotation, this._targetRotation.x, this._targetRotation.y, this._targetRotation.z);
@@ -164,7 +164,7 @@ export class OrbitCamera extends Component {
         let targetRotation: Vec3 = this._targetRotation.set(this._startRotation);
         if (this.followTargetRotationY) {
             targetRotation = tempVec3_2.set(targetRotation);
-            Quat.toEuler(tempVec3, this.target!.worldRotation);
+            Quat.toEuler(tempVec3, this.target.worldRotation);
             targetRotation.add(tempVec3);
         }
     }
