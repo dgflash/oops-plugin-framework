@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-11-01 15:44:57
+ * @LastEditTime: 2022-11-18 17:56:04
  */
 import { Component, director, game, Game, JsonAsset, log, Node, sys, view, _decorator } from "cc";
 import { LanguageManager } from "../libs/gui/language/Language";
@@ -26,14 +26,14 @@ export class Root extends Component {
         type: Node,
         tooltip: "游戏层"
     })
-    game: Node | null = null;
+    game: Node = null!;
 
     /** 界面层节点 */
     @property({
         type: Node,
         tooltip: "界面层"
     })
-    gui: Node | null = null;
+    gui: Node = null!;
 
     onLoad() {
         console.log(`Oops Framework v${version}`);
@@ -79,8 +79,8 @@ export class Root extends Component {
         oops.language = new LanguageManager();
         oops.timer = new TimerManager(this);
         oops.audio = AudioManager.instance;
-        oops.game = new GameManager(this.game!);
-        oops.gui = new LayerManager(this.gui!);
+        oops.game = new GameManager(this.game);
+        oops.gui = new LayerManager(this.gui);
         this.initGui();
 
         this.initEcsSystem();
@@ -107,8 +107,8 @@ export class Root extends Component {
         });
 
         // 游戏尺寸修改事件
+        var c_gui = this.gui.addComponent(GUI)!;
         if (sys.isMobile == false) {
-            var c_gui = this.gui?.addComponent(GUI)!;
             view.setResizeCallback(() => {
                 c_gui.resize();
                 oops.message.dispatchEvent(EventMessage.GAME_RESIZE);
