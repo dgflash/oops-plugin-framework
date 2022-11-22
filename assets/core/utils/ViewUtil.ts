@@ -153,25 +153,26 @@ export class ViewUtil {
         if (!clip) {
             return;
         }
-        if (onlyOne && anim.getState(clip!.name) && anim.getState(clip!.name).isPlaying) {
+
+        if (onlyOne && anim.getState(clip.name) && anim.getState(clip.name).isPlaying) {
             return;
         }
 
         if (isDefaultClip) {
             anim.defaultClip = clip;
-            anim!.play();
+            anim.play();
             return;
         }
 
         // 播放完成后恢复播放默认动画
         anim.once(Animation.EventType.FINISHED, () => {
-            if (anim!.defaultClip) {
-                anim!.play();
+            if (anim.defaultClip) {
+                anim.play();
             }
         }, this);
 
-        if (anim.getState(clip!.name)) {
-            anim.play(clip!.name);
+        if (anim.getState(clip.name)) {
+            anim.play(clip.name);
             return
         }
         anim.createState(clip, clip!.name);
