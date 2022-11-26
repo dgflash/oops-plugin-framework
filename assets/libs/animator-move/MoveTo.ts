@@ -93,6 +93,10 @@ export class MoveTo extends Component {
 
         // 移动完成事件
         if (this.timer.update(dt)) {
+            if (this.ns == Node.NodeSpace.WORLD)
+                this.node.worldPosition = this.end;
+            else
+                this.node.position = this.end;
             this.exit();
         }
     }
