@@ -1,6 +1,6 @@
 import { log } from "cc";
 
-enum LogType {
+export enum LogType {
     /** 网络层日志 */
     Net = 1,
     /** 数据结构层日志 */
@@ -52,8 +52,10 @@ export class Logger {
      * @example
 oops.log.setTags(LogType.View|LogType.Business)
      */
-    static setTags(tag: LogType = 0) {
-        this.tags = tag;
+    static setTags(tag: LogType = null!) {
+        if (tag) {
+            this.tags = tag;
+        }
     }
 
     /**
