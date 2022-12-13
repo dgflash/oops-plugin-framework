@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-04-14 17:08:01
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 13:28:16
+ * @LastEditTime: 2022-12-13 11:36:00
  */
 import { Asset, Component, isValid, Node, _decorator } from "cc";
 import { EventDispatcher } from "../common/event/EventDispatcher";
@@ -106,7 +106,7 @@ export class GameComponent extends Component {
      * @param event      事件名
      * @param args       事件参数
      */
-    dispatchEvent(event: string, args = null) {
+    dispatchEvent(event: string, args: any = null) {
         this.eventDispatcher.dispatchEvent(event, args);
     }
 
