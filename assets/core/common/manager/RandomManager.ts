@@ -27,6 +27,16 @@ export class RandomManager {
     }
 
     /**
+     * 生成指定范围的随机浮点数
+     * @param min   最小值
+     * @param max   最大值
+     * @param type  类型
+     */
+    getRandomFloat(min: number, max: number): number {
+        return this.getRandom() * (max - min) + min;
+    }
+
+    /**
      * 生成指定范围的随机整数
      * @param min   最小值
      * @param max   最大值
