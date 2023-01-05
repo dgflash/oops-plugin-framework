@@ -35,6 +35,9 @@ export class TimerManager extends EventDispatcher {
         }
         return this.serverTime;
     }
+    getServerTime(): number {
+        return this.serverTime + this.getTime();
+    }
 
     /**
      * 格式化日期显示
