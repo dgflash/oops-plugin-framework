@@ -3,7 +3,7 @@
  * @Author: dgflash
  * @Date: 2022-03-25 18:12:10
  * @LastEditors: dgflash
- * @LastEditTime: 2022-07-25 11:52:17
+ * @LastEditTime: 2023-01-05 18:26:56
  */
 import { Component, Node, Vec3, _decorator } from "cc";
 import { Timer } from "../../core/common/manager/TimerManager";
@@ -93,10 +93,12 @@ export class MoveTo extends Component {
 
         // 移动完成事件
         if (this.timer.update(dt)) {
-            if (this.ns == Node.NodeSpace.WORLD)
-                this.node.worldPosition = this.end;
-            else
-                this.node.position = this.end;
+            if (this.offset == 0) {
+                if (this.ns == Node.NodeSpace.WORLD)
+                    this.node.worldPosition = this.end;
+                else
+                    this.node.position = this.end;
+            }
             this.exit();
         }
     }
