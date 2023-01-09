@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2021-11-18 11:21:32
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-13 17:48:48
+ * @LastEditTime: 2023-01-09 11:52:38
  */
 import { Node } from "cc";
 
@@ -46,15 +46,15 @@ export interface PopViewParams extends UICallbacks {
 /** 本类型仅供gui模块内部使用，请勿在功能逻辑中使用 */
 export class ViewParams {
     /** 界面唯一标识 */
-    uuid!: string;
+    uuid: string = null!;
     /** 预制路径 */
-    prefabPath!: string;
+    prefabPath: string = null!;
     /** 传递给打开界面的参数 */
-    params: any | null;
+    params: any = null!;
     /** 窗口事件 */
-    callbacks!: UICallbacks | null;
+    callbacks: UICallbacks = null!;
     /** 是否在使用状态 */
     valid: boolean = true;
     /** 界面根节点 */
-    node: Node | null = null;
+    node: Node = null!;
 }

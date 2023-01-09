@@ -10,7 +10,7 @@
  * size         : 当前层上显示的所有Node节点数。
  * clear        : 清除所有Node节点，队列当中未创建的任务也会被清除。
  */
-import { error, instantiate, isValid, Node, Prefab, warn, Widget } from "cc";
+import { Node, Prefab, Widget, error, instantiate, isValid, warn } from "cc";
 import { oops } from "../../Oops";
 import { UICallbacks, ViewParams } from "./Defines";
 import { DelegateComponent } from "./DelegateComponent";
@@ -111,12 +111,12 @@ export class LayerUI extends Node {
      */
     protected createNode(viewParams: ViewParams) {
         viewParams.valid = true;
-        let childNode: Node | null = viewParams!.node!;
-        let comp: DelegateComponent | null = childNode.getComponent(DelegateComponent);
-        childNode.parent = this;
-        comp!.add();
 
-        return childNode;
+        let comp: DelegateComponent = viewParams.node.getComponent(DelegateComponent)!;
+        viewParams.node.parent = this;
+        comp.add();
+
+        return viewParams.node;
     }
 
     /**
@@ -131,7 +131,7 @@ export class LayerUI extends Node {
         // 界面移出舞台
         let children = this.__nodes();
         for (let i = 0; i < children.length; i++) {
-            let viewParams = children[i].viewParams!;
+            let viewParams = children[i].viewParams;
             if (viewParams.prefabPath === prefabPath) {
                 if (isDestroy) {
                     // 直接释放界面
@@ -159,7 +159,7 @@ export class LayerUI extends Node {
                 this.ui_nodes.delete(viewParams.uuid);
 
             var childNode = viewParams.node;
-            var comp = childNode!.getComponent(DelegateComponent)!;
+            var comp = childNode.getComponent(DelegateComponent)!;
             comp.remove(isDestroy);
         }
     }
@@ -169,9 +169,10 @@ export class LayerUI extends Node {
      */
     private removeCache(prefabPath: string) {
         let viewParams = this.ui_cache.get(prefabPath);
-        if (viewParams && viewParams.valid == false) {
+        if (viewParams) {
             var childNode = viewParams.node;
-            childNode!.getComponent(DelegateComponent)!.remove(true);
+            var comp = childNode.getComponent(DelegateComponent)!
+            comp.remove(true);
             this.ui_nodes.delete(viewParams.uuid);
             this.ui_cache.delete(prefabPath);
         }
@@ -181,14 +182,14 @@ export class LayerUI extends Node {
      * 根据唯一标识获取节点，如果节点不存在或者还在队列中，则返回null 
      * @param uuid  唯一标识
      */
-    getByUuid(uuid: string): Node | null {
+    getByUuid(uuid: string): Node {
         let children = this.__nodes();
         for (let comp of children) {
             if (comp.viewParams && comp.viewParams.uuid === uuid) {
                 return comp.node;
             }
         }
-        return null;
+        return null!;
     }
 
     /**
@@ -199,7 +200,7 @@ export class LayerUI extends Node {
         let arr: Array<Node> = [];
         let children = this.__nodes();
         for (let comp of children) {
-            if (comp.viewParams!.prefabPath === prefabPath) {
+            if (comp.viewParams.prefabPath === prefabPath) {
                 arr.push(comp.node);
             }
         }
@@ -213,7 +214,7 @@ export class LayerUI extends Node {
     has(prefabPathOrUUID: string): boolean {
         let children = this.__nodes();
         for (let comp of children) {
-            if (comp.viewParams!.uuid === prefabPathOrUUID || comp.viewParams!.prefabPath === prefabPathOrUUID) {
+            if (comp.viewParams.uuid === prefabPathOrUUID || comp.viewParams.prefabPath === prefabPathOrUUID) {
                 return true;
             }
         }
@@ -228,7 +229,7 @@ export class LayerUI extends Node {
         let arr: Node[] = [];
         let children = this.__nodes();
         for (let comp of children) {
-            if (prefabPathReg.test(comp.viewParams!.prefabPath)) {
+            if (prefabPathReg.test(comp.viewParams.prefabPath)) {
                 arr.push(comp.node);
             }
         }
