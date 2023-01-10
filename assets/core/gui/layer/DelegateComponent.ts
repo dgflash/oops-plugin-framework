@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-09-01 18:00:28
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 13:38:43
+ * @LastEditTime: 2023-01-09 11:55:03
  */
 import { Component, Node, _decorator } from "cc";
 import { oops } from "../../Oops";
@@ -14,37 +14,33 @@ const { ccclass } = _decorator;
 @ccclass('DelegateComponent')
 export class DelegateComponent extends Component {
     /** 视图参数 */
-    viewParams: ViewParams | null = null;
+    viewParams: ViewParams = null!;
 
     /** 窗口添加 */
     add() {
-        let viewParams = this.viewParams!;
-
         // 触发窗口组件上添加到父节点后的事件
-        this.applyComponentsFunction(this.node, "onAdded", viewParams.params);
-        if (typeof viewParams.callbacks!.onAdded === "function") {
-            viewParams.callbacks!.onAdded(this.node, viewParams.params);
+        this.applyComponentsFunction(this.node, "onAdded", this.viewParams.params);
+        if (typeof this.viewParams.callbacks.onAdded === "function") {
+            this.viewParams.callbacks.onAdded(this.node, this.viewParams.params);
         }
     }
 
     /** 删除节点，该方法只能调用一次，将会触发onBeforeRemoved回调 */
     remove(isDestroy: boolean) {
-        let viewParams = this.viewParams!;
-
-        if (viewParams.valid) {
+        if (this.viewParams.valid) {
             // 触发窗口组件上移除之前的事件
-            this.applyComponentsFunction(this.node, "onBeforeRemove", viewParams.params);
+            this.applyComponentsFunction(this.node, "onBeforeRemove", this.viewParams.params);
 
             //  通知外部对象窗口组件上移除之前的事件（关闭窗口前的关闭动画处理）
-            if (typeof viewParams.callbacks!.onBeforeRemove === "function") {
-                viewParams.callbacks!.onBeforeRemove(
+            if (typeof this.viewParams.callbacks.onBeforeRemove === "function") {
+                this.viewParams.callbacks.onBeforeRemove(
                     this.node,
                     () => {
-                        this.removed(viewParams, isDestroy);
+                        this.removed(this.viewParams, isDestroy);
                     });
             }
             else {
-                this.removed(viewParams, isDestroy);
+                this.removed(this.viewParams, isDestroy);
             }
         }
     }
@@ -53,7 +49,7 @@ export class DelegateComponent extends Component {
     private removed(viewParams: ViewParams, isDestroy: boolean) {
         viewParams.valid = false;
 
-        if (typeof viewParams.callbacks!.onRemoved === "function") {
+        if (typeof viewParams.callbacks.onRemoved === "function") {
             viewParams.callbacks!.onRemoved(this.node, viewParams.params);
         }
 
@@ -69,17 +65,15 @@ export class DelegateComponent extends Component {
     }
 
     onDestroy() {
-        let viewParams = this.viewParams!;
-
         // 触发窗口组件上窗口移除之后的事件
-        this.applyComponentsFunction(this.node, "onRemoved", viewParams.params);
+        this.applyComponentsFunction(this.node, "onRemoved", this.viewParams.params);
 
         // 通知外部对象窗口移除之后的事件
-        if (typeof viewParams.callbacks!.onRemoved === "function") {
-            viewParams.callbacks!.onRemoved(this.node, viewParams.params);
+        if (typeof this.viewParams.callbacks!.onRemoved === "function") {
+            this.viewParams.callbacks!.onRemoved(this.node, this.viewParams.params);
         }
 
-        this.viewParams = null;
+        this.viewParams = null!;
     }
 
     protected applyComponentsFunction(node: Node, funName: string, params: any) {
