@@ -307,6 +307,7 @@ export class Timer {
     }
 
     stop() {
+        this._elapsedTime = 0;
         this.step = -1;
     }
 }

@@ -1,4 +1,4 @@
-import { Asset, AssetManager, assetManager, Constructor, error, js, Prefab, resources, __private } from "cc";
+import { Asset, AssetManager, Constructor, Prefab, __private, assetManager, error, js, resources } from "cc";
 
 type ProgressCallback = __private._cocos_core_asset_manager_shared__ProgressCallback;
 type CompleteCallback<T = any> = __private._cocos_core_asset_manager_shared__CompleteCallbackWithData;
@@ -177,13 +177,31 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
      */
     releaseDir(path: string, bundleName: string = "resources") {
         var bundle: AssetManager.Bundle | null = assetManager.getBundle(bundleName);
-        var infos = bundle?.getDirWithPath(path);
-        infos?.map((info) => {
-            this.releasePrefabtDepsRecursively(info.uuid);
-        });
+        if (bundle) {
+            var infos = bundle.getDirWithPath(path);
+            if (infos) {
+                infos.map((info) => {
+                    this.releasePrefabtDepsRecursively(info.uuid);
+                });
+            }
 
-        if (path == "" && bundleName != "resources" && bundle) {
-            assetManager.removeBundle(bundle);
+            if (path == "" && bundleName != "resources") {
+                assetManager.removeBundle(bundle);
+            }
+        }
+    }
+
+    /** 释放预制依赖资源 */
+    private releasePrefabtDepsRecursively(uuid: string) {
+        var asset = assetManager.assets.get(uuid)!;
+        assetManager.releaseAsset(asset);
+
+        if (asset instanceof Prefab) {
+            var uuids: string[] = assetManager.dependUtil.getDepsRecursively(uuid)!;
+            uuids.forEach(uuid => {
+                var asset = assetManager.assets.get(uuid)!;
+                asset.decRef();
+            });
         }
     }
 
@@ -268,20 +286,6 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
         }
         else {
             this.loadByBundleAndArgs(resources, args);
-        }
-    }
-
-    /** 释放预制依赖资源 */
-    private releasePrefabtDepsRecursively(uuid: string) {
-        var asset = assetManager.assets.get(uuid)!;
-        assetManager.releaseAsset(asset);
-
-        if (asset instanceof Prefab) {
-            var uuids: string[] = assetManager.dependUtil.getDepsRecursively(uuid)!;
-            uuids.forEach(uuid => {
-                var asset = assetManager.assets.get(uuid)!;
-                asset.decRef();
-            });
         }
     }
 }
