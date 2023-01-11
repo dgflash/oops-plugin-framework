@@ -3,7 +3,7 @@
  * @Author: dgflash
  * @Date: 2022-03-25 18:12:10
  * @LastEditors: dgflash
- * @LastEditTime: 2023-01-05 18:26:56
+ * @LastEditTime: 2023-01-10 17:41:58
  */
 import { Component, Node, Vec3, _decorator } from "cc";
 import { Timer } from "../../core/common/manager/TimerManager";
@@ -51,6 +51,12 @@ export class MoveTo extends Component {
         }
         else {
             end = this.target as Vec3;
+        }
+
+        // 移动目标节点被释放时
+        if (end == null) {
+            this.exit();
+            return;
         }
 
         // 目标移动后，重计算移动方向与移动到目标点的速度
