@@ -104,10 +104,14 @@ oops.log.table(object);
     /**
      * 打印标准日志
      * @param msg       日志消息
-     * @param describe  标题描述
      */
-    static trace(msg: any, describe?: string) {
-        this.print(LogType.Trace, msg, "", describe)
+    static trace(msg: any) {
+        // 标记没有打开，不打印该日志
+        if (!this.isOpen(LogType.Trace)) {
+            return;
+
+        }
+        console.log(msg);
     }
 
     /**
