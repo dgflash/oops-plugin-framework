@@ -122,10 +122,13 @@ export default class LabelTime extends Label {
         this.countDown--;
         this.format();
         if (this.onSecond) this.onSecond(this.node);
+
+        if (this.countDown == 0) {
+            this.onScheduleComplete();
+        }
     }
 
     private onScheduleComplete() {
-        this.countDown--;
         this.timing_end();
         if (this.onComplete) this.onComplete(this.node);
     }
@@ -133,13 +136,11 @@ export default class LabelTime extends Label {
     /** 开始计时 */
     private timing_start() {
         this.schedule(this.onScheduleSecond, 1);
-        this.scheduleOnce(this.onScheduleComplete, this.countDown);
         this.format();
     }
 
     private timing_end() {
-        this.unschedule(this.onScheduleSecond);
-        this.unschedule(this.onScheduleComplete);
+        this.unscheduleAllCallbacks();
         this.format();
     }
 }
