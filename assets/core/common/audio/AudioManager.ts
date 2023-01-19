@@ -1,4 +1,4 @@
-import { Component, director, Node } from "cc";
+import { Component } from "cc";
 import { oops } from "../../Oops";
 import { AudioEffect } from "./AudioEffect";
 import { AudioMusic } from "./AudioMusic";
@@ -12,27 +12,6 @@ const LOCAL_STORE_KEY = "game_audio";
 oops.audio.playMusic("audios/nocturne");
  */
 export class AudioManager extends Component {
-    static _instance: AudioManager;
-
-    /** 音频管理单例对象 */
-    static get instance(): AudioManager {
-        if (this._instance == null) {
-            var node = new Node("UIAudioManager");
-            director.addPersistRootNode(node);
-            this._instance = node.addComponent(AudioManager);
-            this._instance.load();
-
-            var music = new Node("UIMusic");
-            music.parent = node;
-            this._instance.music = music.addComponent(AudioMusic);
-
-            var effect = new Node("UIEffect");
-            effect.parent = node;
-            this._instance.effect = effect.addComponent(AudioEffect);
-        }
-        return this._instance;
-    }
-
     private local_data: any = {};
 
     private music!: AudioMusic;
@@ -187,6 +166,9 @@ export class AudioManager extends Component {
 
     /** 本地加载音乐音效的音量、开关配置数据并设置到游戏中 */
     load() {
+        this.music = this.getComponent(AudioMusic) || this.addComponent(AudioMusic)!;
+        this.effect = this.getComponent(AudioEffect) || this.addComponent(AudioEffect)!;
+
         let data = oops.storage.get(LOCAL_STORE_KEY);
         if (data) {
             try {

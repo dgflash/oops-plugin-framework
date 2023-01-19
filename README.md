@@ -46,8 +46,9 @@ core               - 框加核心技术库
         event              - 全局事件
         loader             - 加载模块
         log                - 日志模块
-        manager            - 时间管理、随机管理
+        random             - 随机管理
         storage            - 本地存储
+        timer              - 时间管理
     game               - 游戏世界类
     gui                - 游戏界面类
         layer              - 多层界面、窗口管理
@@ -71,14 +72,13 @@ libs               - 框架中可选技术库
     model-view         - MVVM框架
     network            - 网络模块
     render-texture     - 渲染纹理组件
-    security           - 安全组件
 module             - 游戏通用模块
     common             - 公共模块
     config             - 配置模块
 ```
 
 ### QQ群
-- 798575969（1群已满） 
+- 798575969（1群） 
 - 621415300（2群）
 
 ### QQ频道扫码加入，提供教程，持续更新
@@ -88,13 +88,14 @@ module             - 游戏通用模块
 ### 在线演示
 [网络游戏全栈解决方案](https://store.cocos.com/app/detail/3814)
 
-[角色扮演游戏解决方案](https://store.cocos.com/app/detail/3675)
+[角色扮演游戏解决方案 - 2D角色](https://store.cocos.com/app/detail/3675)
+
+[角色扮演游戏解决方案 - 3D角色](https://store.cocos.com/app/detail/4139)
 
 [新手引导解决方案](https://store.cocos.com/app/detail/3653)
 
-[框架实现的解决方案演示](https://oops-1255342636.cos-website.ap-shanghai.myqcloud.com/oops-solution/)
+[Tiledmap地图类游戏解决方案](https://store.cocos.com/app/detail/4428)
 
 [开源框架 oops-framework gitee](https://gitee.com/dgflash/oops-framework)
 
 [开源框架 oops-framework github](https://github.com/dgflash/oops-framework)
-

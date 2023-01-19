@@ -30,6 +30,11 @@ declare module 'cc/env'{
 	export const ALIPAY: boolean;
 
 	/**
+	 * Running in the taobao creative app.
+	 */
+	export const TAOBAO: boolean;
+
+	/**
 	 * Running in the ByteDance's mini game.
 	 */
 	export const BYTEDANCE: boolean;

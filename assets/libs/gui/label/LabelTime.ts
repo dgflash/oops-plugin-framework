@@ -1,6 +1,4 @@
 import { Label, _decorator } from "cc";
-import { EDITOR } from "cc/env";
-import { oops } from "../../../core/Oops";
 
 const { ccclass, property, menu } = _decorator;
 
@@ -29,10 +27,11 @@ export default class LabelTime extends Label {
 
     private dateDisable!: boolean;
     private result!: string;
-    private timeId!: string;
 
-    public second!: Function;
-    public complete!: Function;
+    /** 每秒触发事件 */
+    onSecond: Function = null!;
+    /** 倒计时完成事件 */
+    onComplete: Function = null!;
 
     private replace(value: string, ...args: any): string {
         return value.replace(/\{(\d+)\}/g,
@@ -104,33 +103,43 @@ export default class LabelTime extends Label {
     }
 
     /** 设置时间能否由天数显示 */
-    public setDateDisable(flag: boolean) {
+    setDateDisable(flag: boolean) {
         this.dateDisable = flag;
     }
 
-    public setCdTime(second: number) {
+    /** 设置倒计时时间 */
+    setTime(second: number) {
         this.countDown = second;                                             // 倒计时，初始化显示字符串
-        this.format();
+        this.timing_end();
+        this.timing_start();
     }
 
     start() {
-        this.format();
-        if (!EDITOR)
-            this.timeId = oops.timer.register(this, "countDown", this.onSecond, this.onComplete);
+        this.timing_start();
     }
 
-    onDestroy() {
-        if (!EDITOR)
-            oops.timer.unRegister(this.timeId);
+    private onScheduleSecond() {
+        this.countDown--;
+        this.format();
+        if (this.onSecond) this.onSecond(this.node);
     }
 
-    private onSecond() {
-        this.format();
-        if (this.second) this.second(this.node);
+    private onScheduleComplete() {
+        this.countDown--;
+        this.timing_end();
+        if (this.onComplete) this.onComplete(this.node);
     }
 
-    private onComplete() {
+    /** 开始计时 */
+    private timing_start() {
+        this.schedule(this.onScheduleSecond, 1);
+        this.scheduleOnce(this.onScheduleComplete, this.countDown);
         this.format();
-        if (this.complete) this.complete(this.node);
+    }
+
+    private timing_end() {
+        this.unschedule(this.onScheduleSecond);
+        this.unschedule(this.onScheduleComplete);
+        this.format();
     }
 }

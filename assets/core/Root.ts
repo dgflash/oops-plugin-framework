@@ -2,20 +2,20 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-11-18 17:56:04
+ * @LastEditTime: 2023-01-19 11:48:04
  */
-import { Component, director, game, Game, JsonAsset, log, Node, sys, view, _decorator } from "cc";
+import { Component, Game, JsonAsset, Node, _decorator, director, game, log, sys, view } from "cc";
 import { LanguageManager } from "../libs/gui/language/Language";
 import { BuildTimeConstants } from "../module/config/BuildTimeConstants";
 import { GameConfig } from "../module/config/GameConfig";
 import { GameQueryConfig } from "../module/config/GameQueryConfig";
+import { oops, version } from "./Oops";
 import { AudioManager } from "./common/audio/AudioManager";
 import { EventMessage } from "./common/event/EventMessage";
-import { TimerManager } from "./common/manager/TimerManager";
 import { GameManager } from "./game/GameManager";
 import { GUI } from "./gui/GUI";
 import { LayerManager } from "./gui/layer/LayerManager";
-import { oops, version } from "./Oops";
+import { TimerManager } from "./common/timer/TimerManager";
 
 const { ccclass, property } = _decorator;
 
@@ -34,6 +34,9 @@ export class Root extends Component {
         tooltip: "界面层"
     })
     gui: Node = null!;
+
+    /** 持久根节点 */
+    persistRootNode: Node = null!
 
     onLoad() {
         console.log(`Oops Framework v${version}`);
@@ -76,9 +79,18 @@ export class Root extends Component {
     }
 
     protected init() {
+        // 创建持久根节点
+        this.persistRootNode = new Node("PersistRootNode");
+        director.addPersistRootNode(this.persistRootNode);
+
+        // 创建音频模块
+        oops.audio = this.persistRootNode.addComponent(AudioManager);
+        oops.audio.load();
+
+        // 创建时间模块
+        oops.timer = this.persistRootNode.addComponent(TimerManager)!;
+
         oops.language = new LanguageManager();
-        oops.timer = new TimerManager(this);
-        oops.audio = AudioManager.instance;
         oops.game = new GameManager(this.game);
         oops.gui = new LayerManager(this.gui);
         this.initGui();

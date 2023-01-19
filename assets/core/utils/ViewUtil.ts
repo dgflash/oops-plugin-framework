@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2021-08-16 09:34:56
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 14:18:25
+ * @LastEditTime: 2023-01-19 14:52:12
  */
 import { Animation, AnimationClip, EventTouch, instantiate, Node, Prefab, Size, UITransform, v3, Vec3 } from "cc";
 import { oops } from "../Oops";
@@ -166,8 +166,8 @@ export class ViewUtil {
 
         // 播放完成后恢复播放默认动画
         anim.once(Animation.EventType.FINISHED, () => {
-            if (anim.defaultClip) {
-                anim.play();
+            if (anim!.defaultClip) {
+                anim!.play();
             }
         }, this);
 

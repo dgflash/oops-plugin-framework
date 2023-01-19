@@ -2,10 +2,10 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 11:59:18
+ * @LastEditTime: 2023-01-19 14:52:40
  */
-import { Camera, Component, math, ResolutionPolicy, screen, UITransform, view, _decorator } from "cc";
-import { Logger } from "../common/log/Logger";
+import { Camera, Component, ResolutionPolicy, UITransform, _decorator, math, screen, view } from "cc";
+import { oops } from "../Oops";
 
 const { ccclass, menu } = _decorator;
 
@@ -79,7 +79,7 @@ export class GUI extends Component {
         this.transform!.width = finalW;
         this.transform!.height = finalH;
 
-        Logger.trace(dr, "设计尺寸");
-        Logger.trace(s, "屏幕尺寸");
+        oops.log.logView(dr, "设计尺寸");
+        oops.log.logView(s, "屏幕尺寸");
     }
 }

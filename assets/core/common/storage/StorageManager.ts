@@ -78,7 +78,7 @@ export class StorageManager {
      * @param defaultValue 获取的默认值
      * @returns 
      */
-    get(key: string, defaultValue?: any): string {
+    get(key: string, defaultValue: any = ""): string {
         if (null == key) {
             console.error("存储的key不能为空");
             return null!;

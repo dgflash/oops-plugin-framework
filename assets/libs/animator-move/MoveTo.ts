@@ -3,10 +3,10 @@
  * @Author: dgflash
  * @Date: 2022-03-25 18:12:10
  * @LastEditors: dgflash
- * @LastEditTime: 2023-01-10 17:41:58
+ * @LastEditTime: 2023-01-19 14:59:50
  */
 import { Component, Node, Vec3, _decorator } from "cc";
-import { Timer } from "../../core/common/manager/TimerManager";
+import { Timer } from "../../core/common/timer/Timer";
 import { Vec3Util } from "../../core/utils/Vec3Util";
 
 const { ccclass, property } = _decorator;

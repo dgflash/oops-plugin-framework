@@ -17,8 +17,9 @@ export * from './assets/core/common/event/EventMessage';
 export * from './assets/core/common/event/MessageManager';
 export * from './assets/core/common/loader/ResLoader';
 export * from './assets/core/common/log/Logger';
-export * from './assets/core/common/manager/RandomManager';
-export * from './assets/core/common/manager/TimerManager';
+export * from './assets/core/common/random/RandomManager';
+export * from './assets/core/common/timer/TimerManager';
+export * from './assets/core/common/timer/Timer';
 export * from './assets/core/common/storage/StorageManager';
 /** core/game */
 export * from './assets/core/game/GameCollision';
