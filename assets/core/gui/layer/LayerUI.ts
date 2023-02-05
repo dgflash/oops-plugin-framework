@@ -10,7 +10,7 @@
  * size         : 当前层上显示的所有Node节点数。
  * clear        : 清除所有Node节点，队列当中未创建的任务也会被清除。
  */
-import { Node, Prefab, Widget, error, instantiate, isValid, warn } from "cc";
+import { error, instantiate, isValid, Node, Prefab, warn, Widget } from "cc";
 import { oops } from "../../Oops";
 import { UICallbacks, ViewParams } from "./Defines";
 import { DelegateComponent } from "./DelegateComponent";
@@ -87,8 +87,8 @@ export class LayerUI extends Node {
             this.createNode(vp);
         }
         else {
-            // 获取预制件资源
-            bundle = bundle || "resources";
+            // 优先加载配置的指定资源包中资源，如果没配置则加载默认资源包资源
+            bundle = bundle || oops.res.defaultBundleName;
             oops.res.load(bundle, viewParams.prefabPath, (err: Error | null, res: Prefab) => {
                 if (err) {
                     error(err);

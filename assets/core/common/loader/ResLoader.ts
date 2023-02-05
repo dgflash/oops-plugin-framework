@@ -1,4 +1,4 @@
-import { Asset, AssetManager, Constructor, Prefab, __private, assetManager, error, js, resources } from "cc";
+import { Asset, AssetManager, assetManager, Constructor, error, js, Prefab, resources, __private } from "cc";
 
 type ProgressCallback = __private._cocos_asset_asset_manager_shared__ProgressCallback;
 type CompleteCallback<T = any> = __private._cocos_asset_asset_manager_shared__CompleteCallbackWithData;
@@ -14,8 +14,16 @@ interface ILoadResArgs<T extends Asset> {
     onComplete: CompleteCallback<T> | null;
 }
 
-/** 游戏资管理 */
+/** 
+ * 游戏资管理 
+ * 1、加载默认resources文件夹中资源
+ * 2、加载默认bundle远程资源
+ * 3、主动传递bundle名时，优先加载传递bundle名资源包中的资源
+ */
 export class ResLoader {
+    /** 全局默认加载的资源包名 */
+    defaultBundleName: string = "resources";
+
     /**
      * 加载远程资源
      * @param url           资源地址
@@ -105,6 +113,7 @@ oops.res.load("spine_path", sp.SkeletonData, (err: Error | null, sd: sp.Skeleton
         }
         else {
             args = this.parseLoadResArgs(bundleName, paths, type, onProgress);
+            args.bundle = this.defaultBundleName;
         }
         this.loadByArgs(args);
     }
@@ -160,7 +169,9 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
      * @param path          资源路径
      * @param bundleName    远程资源包名
      */
-    release(path: string, bundleName: string = "resources") {
+    release(path: string, bundleName?: string) {
+        if (bundleName == null) bundleName = this.defaultBundleName;
+
         var bundle = assetManager.getBundle(bundleName);
         if (bundle) {
             var asset = bundle.get(path);
@@ -175,7 +186,9 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
      * @param path          资源文件夹路径
      * @param bundleName    远程资源包名
      */
-    releaseDir(path: string, bundleName: string = "resources") {
+    releaseDir(path: string, bundleName?: string) {
+        if (bundleName == null) bundleName = this.defaultBundleName;
+
         var bundle: AssetManager.Bundle | null = assetManager.getBundle(bundleName);
         if (bundle) {
             var infos = bundle.getDirWithPath(path);
