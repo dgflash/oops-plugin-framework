@@ -113,8 +113,8 @@ export class LayerUI extends Node {
         viewParams.valid = true;
 
         let comp: DelegateComponent = viewParams.node.getComponent(DelegateComponent)!;
-        viewParams.node.parent = this;
         comp.add();
+        viewParams.node.parent = this;
 
         return viewParams.node;
     }
