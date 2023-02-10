@@ -40,4 +40,9 @@ export class Collection<K, V> extends Map<K, V>{
         }
         return false;
     }
+
+    clear(): void {
+        this._array.splice(0, this._array.length);
+        super.clear();
+    }
 }
