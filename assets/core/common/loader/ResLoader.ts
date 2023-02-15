@@ -1,4 +1,4 @@
-import { Asset, AssetManager, assetManager, Constructor, error, js, Prefab, resources, __private } from "cc";
+import { Asset, AssetManager, Constructor, Prefab, __private, assetManager, error, js, resources } from "cc";
 
 type ProgressCallback = __private._cocos_asset_asset_manager_shared__ProgressCallback;
 type CompleteCallback<T = any> = __private._cocos_asset_asset_manager_shared__CompleteCallbackWithData;
@@ -159,6 +159,7 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
         }
         else {
             args = this.parseLoadResArgs(bundleName, dir, type, onProgress);
+            args.bundle = this.defaultBundleName;
         }
         args.dir = args.paths as string;
         this.loadByArgs(args);
@@ -224,9 +225,11 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
      * @param type          资源类型
      * @param bundleName    远程资源包名
      */
-    get<T extends Asset>(path: string, type?: __private._cocos_asset_asset_manager_shared__AssetType<T> | null, bundleName: string = "resources"): T | null {
-        var bundle: AssetManager.Bundle | null = assetManager.getBundle(bundleName);
-        return bundle!.get(path, type);
+    get<T extends Asset>(path: string, type?: __private._cocos_asset_asset_manager_shared__AssetType<T> | null, bundleName?: string): T | null {
+        if (bundleName == null) bundleName = this.defaultBundleName;
+
+        var bundle: AssetManager.Bundle = assetManager.getBundle(bundleName)!;
+        return bundle.get(path, type);
     }
 
     /** 打印缓存中所有资源信息 */

@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2023-01-19 11:48:04
+ * @LastEditTime: 2023-02-14 18:07:56
  */
 import { Component, Game, JsonAsset, Node, _decorator, director, game, log, sys, view } from "cc";
 import { LanguageManager } from "../libs/gui/language/Language";
@@ -42,7 +42,7 @@ export class Root extends Component {
         console.log(`Oops Framework v${version}`);
         this.enabled = false;
 
-        let config_name = "config/config";
+        let config_name = "config";
         oops.res.load(config_name, JsonAsset, () => {
             var config = oops.res.get(config_name);
             oops.config.btc = new BuildTimeConstants();
