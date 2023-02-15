@@ -36,13 +36,13 @@ export default class AnimatorBase extends Component {
     /** ---------- 后续扩展代码 结束 ---------- */
 
     @property({ type: JsonAsset, tooltip: '状态机json文件' })
-    protected AssetRawUrl: JsonAsset = null!;
+    AssetRawUrl: JsonAsset = null!;
 
     @property({ tooltip: '是否在start中自动启动状态机' })
-    protected PlayOnStart: boolean = true;
+    PlayOnStart: boolean = true;
 
     @property({ tooltip: '是否在update中自动触发状态机逻辑更新' })
-    protected AutoUpdate: boolean = true;
+    AutoUpdate: boolean = true;
 
     /** 是否初始化 */
     protected _hasInit: boolean = false;
