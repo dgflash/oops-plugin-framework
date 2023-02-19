@@ -31,7 +31,7 @@ export class LayerDialog extends LayerPopUp {
             viewParams = new ViewParams();
             viewParams.uuid = this.getUuid(prefabPath);
             viewParams.prefabPath = prefabPath;
-            viewParams.callbacks = callbacks || {};
+            viewParams.callbacks = callbacks ?? {};
 
             var onRemove_Source = viewParams.callbacks.onRemoved;
             viewParams.callbacks.onRemoved = (node: Node | null, params: any) => {

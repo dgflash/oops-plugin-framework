@@ -67,8 +67,8 @@ export class LayerUI extends Node {
             this.ui_nodes.set(viewParams.uuid, viewParams);
         }
 
-        viewParams.params = params || {};
-        viewParams.callbacks = callbacks || {};
+        viewParams.params = params ?? {};
+        viewParams.callbacks = callbacks ?? {};
         viewParams.valid = true;
 
         this.load(viewParams, config.bundle)
