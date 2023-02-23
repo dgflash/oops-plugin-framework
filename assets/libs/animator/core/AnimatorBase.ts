@@ -106,11 +106,11 @@ export default class AnimatorBase extends Component {
         // 混合当前动画播放速度
         let playSpeed = this._ac.curState.speed;
         if (this._ac.curState.multi) {
-            playSpeed *= this._ac.params.getNumber(this._ac.curState.multi) || 1;
+            playSpeed *= this._ac.params.getNumber(this._ac.curState.multi) ?? 1;
         }
         this.scaleTime(playSpeed);
 
-        // 更新AnimatorStateLogic
+        // 更新动画状态逻辑
         if (this._stateLogicMap) {
             let curLogic = this._stateLogicMap.get(this._ac.curState.name);
             curLogic && curLogic.onUpdate();
