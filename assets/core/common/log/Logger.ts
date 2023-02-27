@@ -1,5 +1,6 @@
 import { log } from "cc";
 
+/** 日志类型 */
 export enum LogType {
     /** 网络层日志 */
     Net = 1,
@@ -13,6 +14,16 @@ export enum LogType {
     Config = 16,
     /** 标准日志 */
     Trace = 32,
+}
+
+/** 日志文本颜色 */
+export enum LogColor {
+    /** 蓝色 */
+    Blue = "color:#0000FF",
+    /** 绿色 */
+    Green = "color:#00FF00",
+    /** 橙色 */
+    Orange = "color:#FF4700"
 }
 
 var names = {
@@ -105,13 +116,14 @@ oops.log.table(object);
      * 打印标准日志
      * @param msg       日志消息
      */
-    static trace(msg: any) {
+    static trace(msg: any, color: string = "color:#000000;") {
         // 标记没有打开，不打印该日志
         if (!this.isOpen(LogType.Trace)) {
             return;
 
         }
-        console.log(msg);
+        var backLog = console.log || log;
+        backLog.call(null, "%c%s%s", color, this.getDateString(), msg);
     }
 
     /**
