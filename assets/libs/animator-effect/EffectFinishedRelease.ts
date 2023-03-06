@@ -38,7 +38,6 @@ export class EffectFinishedRelease extends Component {
                     if (aniName) {
                         let aniState = animator.getState(aniName);
                         if (aniState) {
-                            aniState.speed = 1;
                             let duration = aniState.duration;
                             this.maxDuration = duration > this.maxDuration ? duration : this.maxDuration;
                         }
@@ -48,10 +47,9 @@ export class EffectFinishedRelease extends Component {
                 this.scheduleOnce(this.onRecovery.bind(this), this.maxDuration);
             }
             // 粒子动画
-            else {
+            else if (ParticleSystem) {
                 let particles: ParticleSystem[] = this.node.getComponentsInChildren(ParticleSystem);
                 particles.forEach(particle => {
-                    particle.simulationSpeed = 1;
                     particle.clear();
                     particle.stop();
                     particle.play()

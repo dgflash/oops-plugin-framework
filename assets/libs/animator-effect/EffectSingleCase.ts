@@ -2,10 +2,10 @@
  * @Author: dgflash
  * @Date: 2021-10-12 14:00:43
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-22 14:55:05
+ * @LastEditTime: 2023-03-06 14:40:34
  */
 
-import { Component, Node, NodePool, Prefab, Vec3 } from 'cc';
+import { Animation, Component, Node, NodePool, ParticleSystem, Prefab, Vec3, sp } from 'cc';
 import { oops } from '../../core/Oops';
 import { ViewUtil } from '../../core/utils/ViewUtil';
 import { EffectEvent } from './EffectEvent';
@@ -27,14 +27,29 @@ interface IEffectParams {
 /** 动画特效对象池管理器 */
 export class EffectSingleCase {
     private static _instance: EffectSingleCase;
-    public static get instance(): EffectSingleCase {
+    static get instance(): EffectSingleCase {
         if (this._instance == null) {
             this._instance = new EffectSingleCase();
         }
         return this._instance;
     }
 
+
+    /** 全局动画播放速度 */
+    private _speed: number = 1;
+    get speed(): number {
+        return this._speed;
+    }
+    set speed(value: number) {
+        this._speed = value;
+        this.effects_use.forEach((value: Boolean, key: Node) => {
+            this.setSpeed(key);
+        });
+    }
+
+    /** 不同类型的对象池集合 */
     private effects: Map<string, NodePool> = new Map();
+    private effects_use: Map<Node, boolean> = new Map();
 
     constructor() {
         oops.message.on(EffectEvent.Put, this.onHandler, this);
@@ -48,7 +63,7 @@ export class EffectSingleCase {
 
     /** 加载资源并现实特效 */
     loadAndShow(name: string, parent?: Node, params?: IEffectParams): Promise<Node> {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             var np = this.effects.get(name);
             if (np == undefined) {
                 oops.res.load(name, Prefab, (err: Error | null, prefab: Prefab) => {
@@ -91,11 +106,16 @@ export class EffectSingleCase {
         }
         else {
             node = np.get()!;
+            node.getComponent(EffectFinishedRelease);
         }
+        this.setSpeed(node);
 
         if (params && params.pos) node.position = params.pos;
 
         if (parent) node.parent = parent;
+
+        // 记录缓冲池中放出的节点
+        this.effects_use.set(node, true);
 
         return node;
     }
@@ -109,6 +129,10 @@ export class EffectSingleCase {
         var name = node.getComponent(EffectData)!.type;
         var np = this.effects.get(name);
         if (np) {
+            // 回收使用的节点
+            this.effects_use.delete(node);
+
+            // 回到到池中
             np.put(node);
         }
     }
@@ -127,6 +151,37 @@ export class EffectSingleCase {
                 np.clear();
             });
             this.effects.clear();
+        }
+    }
+
+    /** 设置动画速度 */
+    private setSpeed(node: Node) {
+        // SPINE动画
+        let spine = node.getComponent(sp.Skeleton);
+        if (spine) {
+            spine.timeScale = this.speed;
+        }
+        else {
+            // COCOS动画
+            let anims: Animation[] = node.getComponentsInChildren(Animation);
+            if (anims.length > 0) {
+                anims.forEach(animator => {
+                    let aniName = animator.defaultClip?.name;
+                    if (aniName) {
+                        let aniState = animator.getState(aniName);
+                        if (aniState) {
+                            aniState.speed = this.speed;
+                        }
+                    }
+                });
+            }
+            // 粒子动画
+            else if (ParticleSystem) {
+                let particles: ParticleSystem[] = node.getComponentsInChildren(ParticleSystem);
+                particles.forEach(particle => {
+                    particle.simulationSpeed = this.speed;
+                });
+            }
         }
     }
 }
