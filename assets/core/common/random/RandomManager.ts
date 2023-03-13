@@ -4,6 +4,9 @@
 export class RandomManager {
     private static _instance: RandomManager;
 
+    /** 是否运行在客户端环境 */
+    isClient: boolean = true;
+
     /** 随机数管理单例对象 */
     static get instance(): RandomManager {
         if (this._instance == null) {
@@ -12,18 +15,24 @@ export class RandomManager {
         return this._instance;
     }
 
-    private seedrandom!: any;
     private getRandom(): number {
-        if (this.seedrandom)
-            return this.seedrandom.quick();
-
         return Math.random();
     }
 
     /** 设置随机种子 */
     setSeed(seed: number) {
-        //@ts-ignore
-        this.seedrandom = new Math.seedrandom(seed);
+        if (this.isClient) {
+            //注：seedrandom.min.js文件在Cocos Creator中导入为插件生效
+            //@ts-ignore
+            if (Math.seedrandom) {
+                //@ts-ignore
+                new Math.seedrandom(seed, { global: true });
+            }
+        }
+        else {
+            var seedrandom = require('seedrandom');
+            new seedrandom(seed, { global: true });
+        }
     }
 
     /**
