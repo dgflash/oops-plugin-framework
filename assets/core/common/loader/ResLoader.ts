@@ -1,4 +1,4 @@
-import { Asset, AssetManager, Constructor, Prefab, __private, assetManager, error, js, resources } from "cc";
+import { Asset, AssetManager, Constructor, __private, assetManager, error, js, resources } from "cc";
 
 type ProgressCallback = __private._cocos_asset_asset_manager_shared__ProgressCallback;
 type CompleteCallback<T = any> = __private._cocos_asset_asset_manager_shared__CompleteCallbackWithData;
@@ -210,13 +210,14 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
         var asset = assetManager.assets.get(uuid)!;
         assetManager.releaseAsset(asset);
 
-        if (asset instanceof Prefab) {
-            var uuids: string[] = assetManager.dependUtil.getDepsRecursively(uuid)!;
-            uuids.forEach(uuid => {
-                var asset = assetManager.assets.get(uuid)!;
-                asset.decRef();
-            });
-        }
+        // Cocos引擎内部已处理子关联资源的释放
+        // if (asset instanceof Prefab) {
+        //     var uuids: string[] = assetManager.dependUtil.getDepsRecursively(uuid)!;
+        //     uuids.forEach(uuid => {
+        //         var asset = assetManager.assets.get(uuid)!;
+        //         asset.decRef();
+        //     });
+        // }
     }
 
     /**
