@@ -6,6 +6,10 @@ export class RandomManager {
 
     /** 是否运行在客户端环境 */
     isClient: boolean = true;
+    /** 是否为全局伪随机 */
+    isGlobal: boolean = false;
+
+    private random: any = null;
 
     /** 随机数管理单例对象 */
     static get instance(): RandomManager {
@@ -16,7 +20,7 @@ export class RandomManager {
     }
 
     private getRandom(): number {
-        return Math.random();
+        return this.isGlobal ? Math.random() : this.random();
     }
 
     /** 设置随机种子 */
@@ -25,13 +29,20 @@ export class RandomManager {
             //注：seedrandom.min.js文件在Cocos Creator中导入为插件生效
             //@ts-ignore
             if (Math.seedrandom) {
-                //@ts-ignore
-                new Math.seedrandom(seed, { global: true });
+                if (this.isGlobal)
+                    //@ts-ignore
+                    new Math.seedrandom(seed, { global: true });
+                else
+                    //@ts-ignore
+                    this.random = new Math.seedrandom(seed);
             }
         }
         else {
             var seedrandom = require('seedrandom');
-            new seedrandom(seed, { global: true });
+            if (this.isGlobal)
+                new seedrandom(seed, { global: true });
+            else
+                this.random = new seedrandom(seed);
         }
     }
 
