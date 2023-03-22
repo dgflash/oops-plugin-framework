@@ -35,14 +35,14 @@ export class StorageManager {
      * @returns 
      */
     set(key: string, value: any) {
-        key = `${key}_${this._id}`;
+        var keywords = `${key}_${this._id}`;
 
         if (null == key) {
             console.error("存储的key不能为空");
             return;
         }
         if (!PREVIEW) {
-            key = EncryptUtil.md5(key);
+            keywords = EncryptUtil.md5(keywords);
         }
         if (null == value) {
             console.warn("存储的值为空，则直接移除该存储");
@@ -69,7 +69,7 @@ export class StorageManager {
         if (!PREVIEW && null != this._key && null != this._iv) {
             value = EncryptUtil.aesEncrypt(`${value}`, this._key, this._iv);
         }
-        sys.localStorage.setItem(key, value);
+        sys.localStorage.setItem(keywords, value);
     }
 
     /**
@@ -130,12 +130,12 @@ export class StorageManager {
             return;
         }
 
-        key = `${key}_${this._id}`;
+        var keywords = `${key}_${this._id}`;
 
         if (!PREVIEW) {
-            key = EncryptUtil.md5(key);
+            keywords = EncryptUtil.md5(keywords);
         }
-        sys.localStorage.removeItem(key);
+        sys.localStorage.removeItem(keywords);
     }
 
     /** 清空整个本地存储 */
