@@ -21,7 +21,7 @@ export enum LogColor {
     /** 蓝色 */
     Blue = "color:#0000FF",
     /** 绿色 */
-    Green = "color:#00FF00",
+    Green = "color:#00FF0A",
     /** 橙色 */
     Orange = "color:#FF4700"
 }
