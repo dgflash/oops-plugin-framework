@@ -16,16 +16,6 @@ export enum LogType {
     Trace = 32,
 }
 
-/** 日志文本颜色 */
-export enum LogColor {
-    /** 蓝色 */
-    Blue = "color:#0000FF",
-    /** 绿色 */
-    Green = "color:#00FF0A",
-    /** 橙色 */
-    Orange = "color:#FF4700"
-}
-
 var names = {
     "1": "网络日志",
     "2": "数据日志",
