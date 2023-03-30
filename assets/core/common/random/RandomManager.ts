@@ -52,7 +52,7 @@ export class RandomManager {
      * @param max   最大值
      * @param type  类型
      */
-    getRandomFloat(min: number, max: number): number {
+    getRandomFloat(min: number = 0, max: number = 1): number {
         return this.getRandom() * (max - min) + min;
     }
 
