@@ -118,6 +118,29 @@ oops.res.load("spine_path", sp.SkeletonData, (err: Error | null, sd: sp.Skeleton
         this.loadByArgs(args);
     }
 
+    loadAsync<T extends Asset>(bundleName: string, paths: string | string[], type: AssetType<T> | null, onProgress: ProgressCallback | null, onComplete: CompleteCallback<T> | null): void;
+    loadAsync<T extends Asset>(bundleName: string, paths: string | string[], onProgress: ProgressCallback | null, onComplete: CompleteCallback<T> | null): void;
+    loadAsync<T extends Asset>(bundleName: string, paths: string | string[], onComplete?: CompleteCallback<T> | null): void;
+    loadAsync<T extends Asset>(bundleName: string, paths: string | string[], type: AssetType<T> | null, onComplete?: CompleteCallback<T> | null): void;
+    loadAsync<T extends Asset>(paths: string | string[], type: AssetType<T> | null, onProgress: ProgressCallback | null, onComplete: CompleteCallback<T> | null): void;
+    loadAsync<T extends Asset>(paths: string | string[], onProgress: ProgressCallback | null, onComplete: CompleteCallback<T> | null): void;
+    loadAsync<T extends Asset>(paths: string | string[], onComplete?: CompleteCallback<T> | null): void;
+    loadAsync<T extends Asset>(paths: string | string[], type: AssetType<T> | null, onComplete?: CompleteCallback<T> | null): void;
+    loadAsync<T extends Asset>(
+        bundleName: string,
+        paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null,
+        type?: AssetType<T> | ProgressCallback | CompleteCallback | null,
+    ) {
+        return new Promise((resolve, reject) => {
+            this.load(bundleName, paths, type, (err: Error | null, asset: Asset) => {
+                if (err) {
+                    error(err.message);
+                }
+                resolve(asset)
+            });
+        });
+    }
+
     /**
      * 加载文件夹中的资源
      * @param bundleName    远程包名
