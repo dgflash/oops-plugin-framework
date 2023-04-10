@@ -15,6 +15,7 @@ export class RandomManager {
     static get instance(): RandomManager {
         if (this._instance == null) {
             this._instance = new RandomManager();
+            this._instance.random = Math.random;
         }
         return this._instance;
     }
