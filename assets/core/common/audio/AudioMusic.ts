@@ -2,9 +2,9 @@
  * @Author: dgflash
  * @Date: 2022-06-21 12:05:13
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 10:29:01
+ * @LastEditTime: 2023-05-16 09:11:30
  */
-import { AudioClip, AudioSource, error, _decorator } from 'cc';
+import { AudioClip, AudioSource, _decorator, error } from 'cc';
 import { oops } from '../../Oops';
 const { ccclass, menu } = _decorator;
 
@@ -48,6 +48,9 @@ export class AudioMusic extends AudioSource {
             if (this.playing) {
                 this._isPlay = false;
                 this.stop();
+            }
+
+            if (this._url) {
                 oops.res.release(this._url);
             }
 
