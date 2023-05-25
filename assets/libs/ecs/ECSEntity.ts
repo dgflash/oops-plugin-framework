@@ -267,6 +267,7 @@ export class ECSEntity {
     destroy() {
         if (this._children) {
             this._children.forEach(e => {
+                this.removeChild(e);
                 e.destroy();
             });
         }
