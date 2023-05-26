@@ -104,6 +104,9 @@ export class StorageManager {
     /** 获取指定关键字的数值 */
     getNumber(key: string, defaultValue: number = 0): number {
         var r = this.get(key);
+        if (r == "0") {
+            return Number(r);
+        }
         return Number(r) || defaultValue;
     }
 
