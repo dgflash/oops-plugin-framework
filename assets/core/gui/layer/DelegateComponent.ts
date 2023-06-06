@@ -69,9 +69,9 @@ export class DelegateComponent extends Component {
         this.applyComponentsFunction(this.node, "onRemoved", this.viewParams.params);
 
         // 通知外部对象窗口移除之后的事件
-        if (typeof this.viewParams.callbacks!.onRemoved === "function") {
-            this.viewParams.callbacks!.onRemoved(this.node, this.viewParams.params);
-        }
+        // if (typeof this.viewParams.callbacks!.onRemoved === "function") {
+        //     this.viewParams.callbacks!.onRemoved(this.node, this.viewParams.params);
+        // }
 
         this.viewParams = null!;
     }
