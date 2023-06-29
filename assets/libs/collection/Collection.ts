@@ -20,7 +20,12 @@ export class Collection<K, V> extends Map<K, V>{
      * @param value     数据值
      */
     set(key: K, value: V) {
-        if (!this.has(key)) {
+        if (this.has(key)) {
+            var old = this.get(key)!;
+            var index = this._array.indexOf(old);
+            this._array[index] = value;
+        }
+        else {
             this._array.push(value);
         }
 
