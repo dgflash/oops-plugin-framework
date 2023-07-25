@@ -1,6 +1,6 @@
-import { Button, CCInteger, color, Color, Enum, Node, UIRenderer, Sprite, UIOpacity, _decorator } from 'cc';
-import { VM } from './ViewModel';
+import { Button, CCInteger, Color, Enum, Node, Sprite, UIOpacity, UIRenderer, _decorator, color } from 'cc';
 import { VMBase } from './VMBase';
+import { VM } from './ViewModel';
 
 const { ccclass, property, menu, help } = _decorator;
 
@@ -215,8 +215,8 @@ export default class VMState extends VMBase {
 
                 if (opacity) {
                     opacity.opacity = check ? 255 : 0;
-                    break;
                 }
+                break;
             }
             case ACTION.NODE_OPACITY: {
                 let opacity = node.getComponent(UIOpacity);
@@ -225,15 +225,15 @@ export default class VMState extends VMBase {
 
                 if (opacity) {
                     opacity.opacity = check ? this.valueActionOpacity : 255;
-                    break;
                 }
+                break;
             }
             case ACTION.NODE_COLOR: {
                 let uir = node.getComponent(UIRenderer);
                 if (uir) {
                     uir.color = check ? this.valueActionColor : color(255, 255, 255);
-                    break;
                 }
+                break;
             }
             case ACTION.COMPONENT_CUSTOM:
                 let comp: any = node.getComponent(this.valueComponentName);
@@ -246,15 +246,15 @@ export default class VMState extends VMBase {
                 let sprite = node.getComponent(Sprite);
                 if (sprite) {
                     sprite.grayscale = check!;
-                    break;
                 }
+                break;
             }
             case ACTION.BUTTON_INTERACTABLE: {
                 let sprite = node.getComponent(Button);
                 if (sprite) {
                     sprite.interactable = check!;
-                    break;
                 }
+                break;
             }
             default:
                 break;

@@ -45,10 +45,7 @@ export class LanguageSprite extends Component {
         // 获取语言标记
         let path = `language/texture/${LanguageData.current}/${this.dataID}/spriteFrame`;
         let res: SpriteFrame | null = oops.res.get(path, SpriteFrame);
-        if (!res) {
-            console.error("[LanguageSprite] 资源不存在 " + path);
-        }
-        else {
+        if (res) {
             let spcomp: Sprite = this.getComponent(Sprite)!;
             spcomp.spriteFrame = res;
 
@@ -58,6 +55,9 @@ export class LanguageSprite extends Component {
                 let rawSize = res._originalSize as Size;
                 spcomp.getComponent(UITransform)?.setContentSize(rawSize);
             }
+        }
+        else {
+            console.error("[LanguageSprite] 资源不存在 " + path);
         }
     }
 }
