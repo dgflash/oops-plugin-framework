@@ -1,5 +1,6 @@
-import { CCString, Component, error, Label, RichText, warn, _decorator } from "cc";
+import { CCString, Component, Label, RichText, TTFFont, _decorator, warn } from "cc";
 import { EDITOR } from "cc/env";
+import { oops } from "../../../core/Oops";
 import { LanguageData } from "./LanguageData";
 
 const { ccclass, property, menu } = _decorator;
@@ -67,35 +68,12 @@ export class LanguageLabel extends Component {
         this._needUpdate = true;
     }
 
+    /** 初始字体尺寸 */
     initFontSize: number = 0;
 
     onLoad() {
         this._needUpdate = true;
-        if (!this.getComponent(Label) && !this.getComponent(RichText)) {
-            error(this.node.name, this._dataID);
-            return;
-        }
-
-        if (this.getComponent(RichText)) {
-            this.initFontSize = this.getComponent(RichText)!.fontSize;
-        }
-
-        if (this.getComponent(Label)) {
-            this.initFontSize = this.getComponent(Label)!.fontSize;
-        }
-    }
-
-    /**
-     * 默认文本的系统字体名字
-     */
-    public getLabelFont(lang: string): string {
-        switch (lang) {
-            case "zh":
-            case "tr": {
-                return "SimHei";
-            }
-        }
-        return "Helvetica";
+        this.updateContent();
     }
 
     /**
@@ -124,27 +102,34 @@ export class LanguageLabel extends Component {
 
     update() {
         if (this._needUpdate) {
-            this.updateLabel();
+            this.updateContent();
             this._needUpdate = false;
         }
     }
-    updateLabel() {
-        do {
-            if (!this._dataID) {
-                break;
-            }
 
-            let spcomp: any = this.getComponent(Label);
-            if (!spcomp) {
-                spcomp = this.getComponent(RichText);
-                if (!spcomp) {
-                    warn("[LanguageLabel], 该节点没有cc.Label || cc.RichText组件");
-                    break;
-                }
-            }
+    updateContent() {
+        var label = this.getComponent(Label);
+        var richtext = this.getComponent(RichText);
+        var path = oops.language.pack.json + "/" + oops.language.current;
+        var font: TTFFont | null = oops.res.get(path, TTFFont);
 
-            spcomp.string = this.string;
+        if (label) {
+            if (font && !label.useSystemFont) {
+                label.font = font;
+            }
+            label.string = this.string;
+            this.initFontSize = label.fontSize;
         }
-        while (false);
+        else if (richtext) {
+            if (font && !richtext.useSystemFont) {
+                richtext.font = font;
+            }
+            this.initFontSize = richtext.fontSize;
+            richtext.string = this.string;
+            this.initFontSize = richtext.fontSize;
+        }
+        else {
+            warn("[LanguageLabel], 该节点没有cc.Label || cc.RichText组件");
+        }
     }
 }

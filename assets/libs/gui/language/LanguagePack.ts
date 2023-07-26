@@ -2,9 +2,9 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2023-07-25 11:53:51
+ * @LastEditTime: 2023-07-26 17:20:19
  */
-import { director, error, JsonAsset, warn } from "cc";
+import { director, error, JsonAsset, TTFFont, warn } from "cc";
 import { Logger } from "../../../core/common/log/Logger";
 import { oops } from "../../../core/Oops";
 import { LanguageData } from "./LanguageData";
@@ -91,7 +91,12 @@ export class LanguagePack {
                     return;
                 }
                 Logger.logConfig(path, "下载语言包 json 资源");
-                resolve(null);
+
+                oops.res.load(path, TTFFont, (err: Error | null) => {
+                    if (err == null) Logger.logConfig(path, "下载语言包 ttf 资源");
+
+                    resolve(null);
+                });
             })
         });
     }
