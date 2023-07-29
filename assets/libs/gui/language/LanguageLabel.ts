@@ -73,7 +73,6 @@ export class LanguageLabel extends Component {
 
     onLoad() {
         this._needUpdate = true;
-        this.updateContent();
     }
 
     /**
