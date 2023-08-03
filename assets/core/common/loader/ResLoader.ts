@@ -1,8 +1,8 @@
 import { Asset, AssetManager, Constructor, __private, assetManager, error, js, resources } from "cc";
 
-type ProgressCallback = __private._cocos_asset_asset_manager_shared__ProgressCallback;
-type CompleteCallback<T = any> = __private._cocos_asset_asset_manager_shared__CompleteCallbackWithData;
-type IRemoteOptions = __private._cocos_asset_asset_manager_shared__IRemoteOptions;
+type ProgressCallback = __private._cocos_asset_asset_manager_deprecated__LoadProgressCallback;
+type CompleteCallback<T = any> = any;       // (error: Error | null, asset: T) => void;  (error: Error | null, asset: T[], urls: string[]) => void;
+type IRemoteOptions = { [k: string]: any; ext?: string; } | null;
 type AssetType<T = Asset> = Constructor<T>;
 
 interface ILoadResArgs<T extends Asset> {
@@ -249,7 +249,7 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
      * @param type          资源类型
      * @param bundleName    远程资源包名
      */
-    get<T extends Asset>(path: string, type?: __private._cocos_asset_asset_manager_shared__AssetType<T> | null, bundleName?: string): T | null {
+    get<T extends Asset>(path: string, type?: __private._types_globals__Constructor<T> | null, bundleName?: string): T | null {
         if (bundleName == null) bundleName = this.defaultBundleName;
 
         var bundle: AssetManager.Bundle = assetManager.getBundle(bundleName)!;

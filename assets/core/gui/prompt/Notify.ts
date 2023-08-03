@@ -13,10 +13,10 @@ const { ccclass, property } = _decorator;
 @ccclass('Notify')
 export class Notify extends Component {
     @property(Label)
-    private lab_content: Label | null = null;
+    private lab_content: Label = null!;
 
     @property(Animation)
-    private animation: Animation | null = null;
+    private animation: Animation = null!;
 
     onLoad() {
         if (this.animation)
@@ -33,14 +33,14 @@ export class Notify extends Component {
      * @param useI18n   设置为 true 时，使用多语言功能 msg 参数为多语言 key
      */
     toast(msg: string, useI18n: boolean) {
-        let label = this.lab_content?.getComponent(LanguageLabel)!;
+        let label = this.lab_content.getComponent(LanguageLabel)!;
         if (useI18n) {
+            label.enabled = true;
             label.dataID = msg;
         }
         else {
-            if (label)
-                label.dataID = "";
-            this.lab_content!.string = msg;
+            label.enabled = false;
+            this.lab_content.string = msg;
         }
     }
 }
