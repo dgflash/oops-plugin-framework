@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2022-04-14 17:08:01
  * @LastEditors: dgflash
- * @LastEditTime: 2022-04-14 18:26:24
+ * @LastEditTime: 2023-08-11 10:00:51
  */
 import { _decorator } from "cc";
 import LabelNumber from "./LabelNumber";
@@ -88,7 +88,16 @@ export class LabelChange extends LabelNumber {
                 return;
             }
             let num = this.num + dt * this.speed;
-            if (this.isInteger) num = Math.ceil(num);
+
+            if (this.isInteger){
+                if(this.end < this.num)
+                {
+                    num = Math.floor(num);
+                }
+                else{
+                    num = Math.ceil(num);
+                }
+            }
 
             /** 变化完成 */
             if (this.isEnd(num)) {
