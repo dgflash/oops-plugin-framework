@@ -2,9 +2,9 @@
  * @Author: dgflash
  * @Date: 2022-04-14 17:08:01
  * @LastEditors: dgflash
- * @LastEditTime: 2023-08-11 09:54:30
+ * @LastEditTime: 2023-08-11 10:27:04
  */
-import { error, Label, _decorator } from "cc";
+import { Label, _decorator, error } from "cc";
 
 const { ccclass, property, menu } = _decorator;
 
@@ -12,37 +12,29 @@ const { ccclass, property, menu } = _decorator;
 @ccclass("LabelNumber")
 @menu('ui/label/LabelNumber')
 export default class LabelNumber extends Label {
-    @property
+    @property({ tooltip: "数字" })
     _num: number = 0;
-    @property
+    @property({ tooltip: "数字" })
+    get num(): number {
+        return this._num;
+    }
     set num(value: number) {
         this._num = value;
         this.updateLabel();
     }
-    get num(): number {
-        return this._num;
+
+    @property({ tooltip: "货币符号" })
+    symbol: string = "";
+
+    start() {
+        this.updateLabel();
     }
 
-    @property({
-        tooltip: "是否显示货币符号"
-    })
-    _showSym: string = "";
-    @property
-    set showSym(value: string) {
-        if (value) {
-            this._showSym = value;
-            this.updateLabel();
-        }
-    }
-    get showSym(): string {
-        return this._showSym;
-    }
-
-    /** 刷新lab */
+    /** 刷新文本 */
     protected updateLabel() {
         if (typeof (this._num) != "number") {
             error("[LabelNumber] num不是一个合法数字");
         }
-        this.string = this.num.toString();
+        this.string = this.num.toString() + this.symbol;
     }
 }
