@@ -170,11 +170,10 @@ export class LayerUI extends Node {
     private removeCache(prefabPath: string) {
         let viewParams = this.ui_cache.get(prefabPath);
         if (viewParams) {
-            var childNode = viewParams.node;
-            var comp = childNode.getComponent(DelegateComponent)!
-            comp.remove(true);
             this.ui_nodes.delete(viewParams.uuid);
             this.ui_cache.delete(prefabPath);
+            var childNode = viewParams.node;
+            childNode.destroy();
         }
     }
 
