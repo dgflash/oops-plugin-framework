@@ -2,17 +2,19 @@
  * @Author: dgflash
  * @Date: 2022-02-11 09:32:47
  * @LastEditors: dgflash
- * @LastEditTime: 2023-01-19 11:15:02
+ * @LastEditTime: 2023-08-21 15:19:56
  */
 import { ecs } from "../libs/ecs/ECS";
 import { ECSRootSystem } from "../libs/ecs/ECSSystem";
 import { LanguageManager } from "../libs/gui/language/Language";
 import { HttpRequest } from "../libs/network/HttpRequest";
+import { NetManager } from "../libs/network/NetManager";
 import { Config } from "../module/config/Config";
 import { AudioManager } from "./common/audio/AudioManager";
 import { MessageManager } from "./common/event/MessageManager";
 import { ResLoader } from "./common/loader/ResLoader";
 import { Logger } from "./common/log/Logger";
+import { RandomManager } from "./common/random/RandomManager";
 import { StorageManager } from "./common/storage/StorageManager";
 import { TimerManager } from "./common/timer/TimerManager";
 import { GameManager } from "./game/GameManager";
@@ -24,12 +26,15 @@ export var version: string = "1.1.3";
 /** 框架核心模块访问入口 */
 export class oops {
     /** ----------核心模块---------- */
-    /** 游戏配置 */
-    static config = new Config();
+    
     /** 日志管理 */
     static log = Logger;
+    /** 游戏配置 */
+    static config = new Config();
     /** 全局消息 */
     static message: MessageManager = MessageManager.Instance;
+    /** 随机工具 */
+    static random = RandomManager.instance;
     /** 本地存储 */
     static storage: StorageManager = new StorageManager();
     /** 游戏时间管理 */
@@ -49,6 +54,8 @@ export class oops {
     static language: LanguageManager;
     /** HTTP */
     static http: HttpRequest = new HttpRequest();
+    /** WebSocket */
+    static tcp: NetManager = new NetManager();
     /** ECS */
     static ecs: ECSRootSystem = new ecs.RootSystem();
 }
