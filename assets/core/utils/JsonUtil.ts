@@ -2,10 +2,10 @@
  * @Author: dgflash
  * @Date: 2021-08-18 17:00:59
  * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 14:48:29
+ * @LastEditTime: 2023-08-22 15:48:02
  */
 
-import { error, JsonAsset } from "cc";
+import { JsonAsset } from "cc";
 import { oops } from "../Oops";
 
 /** 资源路径 */
@@ -37,10 +37,13 @@ export class JsonUtil {
             var url = path + name;
             oops.res.load(url, JsonAsset, (err: Error | null, content: JsonAsset) => {
                 if (err) {
-                    error(err.message);
+                    console.warn(err.message);
+                    callback(null);
                 }
-                data.set(name, content.json);
-                callback(content.json)
+                else {
+                    data.set(name, content.json);
+                    callback(content.json);
+                }
             });
         }
     }
@@ -58,10 +61,13 @@ export class JsonUtil {
                 var url = path + name;
                 oops.res.load(url, JsonAsset, (err: Error | null, content: JsonAsset) => {
                     if (err) {
-                        error(err.message);
+                        console.warn(err.message);
+                        resolve(null);
                     }
-                    data.set(name, content.json);
-                    resolve(content.json)
+                    else {
+                        data.set(name, content.json);
+                        resolve(content.json);
+                    }
                 });
             }
         });

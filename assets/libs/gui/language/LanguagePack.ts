@@ -2,11 +2,12 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2023-07-26 17:20:19
+ * @LastEditTime: 2023-08-22 16:34:28
  */
 import { director, error, JsonAsset, TTFFont, warn } from "cc";
 import { Logger } from "../../../core/common/log/Logger";
 import { oops } from "../../../core/Oops";
+import { JsonUtil } from "../../../core/utils/JsonUtil";
 import { LanguageData } from "./LanguageData";
 import { LanguageLabel } from "./LanguageLabel";
 import { LanguageSpine } from "./LanguageSpine";
@@ -25,32 +26,25 @@ export class LanguagePack {
      * @param lang 
      */
     updateLanguage(lang: string) {
-        let lanjson: any = oops.res.get(`${this.json}/${lang}`, JsonAsset);
-        if (lanjson && lanjson.json) {
-            LanguageData.data = lanjson.json;
-            let rootNodes = director.getScene()!.children;
-            for (let i = 0; i < rootNodes.length; ++i) {
-                // 更新所有的LanguageLabel节点
-                let labels = rootNodes[i].getComponentsInChildren(LanguageLabel);
-                for (let j = 0; j < labels.length; j++) {
-                    labels[j].language();
-                }
-
-                // 更新所有的LanguageSprite节点
-                let sprites = rootNodes[i].getComponentsInChildren(LanguageSprite);
-                for (let j = 0; j < sprites.length; j++) {
-                    sprites[j].language();
-                }
-
-                // 更新所有的LanguageSpine节点
-                let spines = rootNodes[i].getComponentsInChildren(LanguageSpine);
-                for (let j = 0; j < spines.length; j++) {
-                    spines[j].language();
-                }
+        let rootNodes = director.getScene()!.children;
+        for (let i = 0; i < rootNodes.length; ++i) {
+            // 更新所有的LanguageLabel节点
+            let labels = rootNodes[i].getComponentsInChildren(LanguageLabel);
+            for (let j = 0; j < labels.length; j++) {
+                labels[j].language();
             }
-        }
-        else {
-            warn("没有找到指定语言内容配置", lang);
+
+            // 更新所有的LanguageSprite节点
+            let sprites = rootNodes[i].getComponentsInChildren(LanguageSprite);
+            for (let j = 0; j < sprites.length; j++) {
+                sprites[j].language();
+            }
+
+            // 更新所有的LanguageSpine节点
+            let spines = rootNodes[i].getComponentsInChildren(LanguageSpine);
+            for (let j = 0; j < spines.length; j++) {
+                spines[j].language();
+            }
         }
     }
 
@@ -63,9 +57,23 @@ export class LanguagePack {
         await this.loadTexture(lang);
         await this.loadSpine(lang);
         await this.loadJson(lang);
+        await this.loadTable(lang);
+
         callback(lang);
     }
 
+    /** 多语言Excel配置表数据 */
+    private loadTable(lang: string) {
+        return new Promise(async (resolve, reject) => {
+            LanguageData.excel = await JsonUtil.loadAsync("Language");
+            if (LanguageData.excel) {
+                Logger.logConfig("config/game/Language", "下载语言包 excel 资源");
+            }
+            resolve(null);
+        });
+    }
+
+    /** 纹理多语言资源 */
     private loadTexture(lang: string) {
         return new Promise((resolve, reject) => {
             let path = `${this.texture}/${lang}`;
@@ -81,15 +89,18 @@ export class LanguagePack {
         });
     }
 
+    /** Json格式多语言资源 */
     private loadJson(lang: string) {
         return new Promise((resolve, reject) => {
             let path = `${this.json}/${lang}`;
-            oops.res.load(path, JsonAsset, (err: Error | null) => {
+            oops.res.load(path, JsonAsset, (err: Error | null, asste: JsonAsset) => {
                 if (err) {
                     error(err);
                     resolve(null);
                     return;
                 }
+
+                LanguageData.json = asste.json;
                 Logger.logConfig(path, "下载语言包 json 资源");
 
                 oops.res.load(path, TTFFont, (err: Error | null) => {
@@ -101,6 +112,7 @@ export class LanguagePack {
         });
     }
 
+    /** SPINE动画多语言资源 */
     private loadSpine(lang: string) {
         return new Promise((resolve, reject) => {
             let path = `${this.spine}/${lang}`;
