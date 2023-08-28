@@ -41,6 +41,14 @@ export class AudioManager extends Component {
         }
     }
 
+    /** 循环播放背景音乐 */
+    playerMusicLoop(url: string) {
+        if (this._switch_music) {
+            this.music.loop = true;
+            this.music.load(url);
+        }
+    }
+
     /**
      * 获取背景音乐播放进度
      */
