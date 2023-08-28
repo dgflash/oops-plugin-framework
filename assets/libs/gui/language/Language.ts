@@ -1,4 +1,3 @@
-import { warn } from "cc";
 import { EventDispatcher } from "../../../core/common/event/EventDispatcher";
 import { Logger } from "../../../core/common/log/Logger";
 import { LanguageData } from "./LanguageData";
@@ -12,38 +11,31 @@ export enum LanguageEvent {
 }
 
 export class LanguageManager extends EventDispatcher {
-    private _support: Array<string> = ["zh", "en", "tr"];        // 支持的语言
+    private _languages: Array<string> = ["zh", "en", "tr"];        // 支持的语言
     private _languagePack: LanguagePack = new LanguagePack();    // 语言包
+    private _defaultLanguage: string = "zh";                     // 默认语言
 
-    private _defaultLanguage: string = "zh";                      // 默认语言
-
-    /** 设置多语言系统支持哪些语种 */
-    set supportLanguages(supportLanguages: Array<string>) {
-        this._support = supportLanguages;
+    /** 支持的多种语言列表 */
+    get languages(): string[] {
+        return this._languages;
+    }
+    set languages(languages: Array<string>) {
+        this._languages = languages;
     }
 
-    /** 默认语言,读取语言失败使用 */
-    set defaultLanguage(lang: string) {
+    /** 设置的当前语言列表中没有配置时，使用默认语言 */
+    set default(lang: string) {
         this._defaultLanguage = lang || "zh";
+    }
+
+    /** 获取当前语种 */
+    get current(): string {
+        return LanguageData.current;
     }
 
     /** 语言包 */
     get pack(): LanguagePack {
         return this._languagePack;
-    }
-
-    /**
-     * 获取当前语种
-     */
-    get current(): string {
-        return LanguageData.current;
-    }
-
-    /**
-     * 获取支持的多语种数组
-     */
-    get languages(): string[] {
-        return this._support;
     }
 
     isExist(lang: string): boolean {
@@ -65,15 +57,19 @@ export class LanguageManager extends EventDispatcher {
      * @param language 
      */
     setLanguage(language: string, callback: (success: boolean) => void) {
-        if (!language) {
+        if (language == null || language == "") {
             language = this._defaultLanguage;
         }
-        language = language.toLowerCase();
+        else {
+            language = language.toLowerCase();
+        }
+
         let index = this.languages.indexOf(language);
         if (index < 0) {
-            warn("当前不支持该语种" + language + ` 将自动切换到 ${this._defaultLanguage} 语种!`);
+            console.log(`当前不支持【${language}】语言，将自动切换到【${this._defaultLanguage}】语言`);
             language = this._defaultLanguage;
         }
+
         if (language === LanguageData.current) {
             callback(false);
             return;
