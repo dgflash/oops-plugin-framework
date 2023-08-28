@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2023-02-14 18:07:56
+ * @LastEditTime: 2023-08-28 08:50:53
  */
 import { Component, Game, JsonAsset, Node, _decorator, director, game, log, sys, view } from "cc";
 import { LanguageManager } from "../libs/gui/language/Language";
@@ -16,6 +16,7 @@ import { GameManager } from "./game/GameManager";
 import { GUI } from "./gui/GUI";
 import { LayerManager } from "./gui/layer/LayerManager";
 import { TimerManager } from "./common/timer/TimerManager";
+import { EDITOR } from "cc/env";
 
 const { ccclass, property } = _decorator;
 
@@ -39,24 +40,26 @@ export class Root extends Component {
     persistRootNode: Node = null!
 
     onLoad() {
-        console.log(`Oops Framework v${version}`);
-        this.enabled = false;
+        if (!EDITOR) {
+            console.log(`Oops Framework v${version}`);
+            this.enabled = false;
 
-        let config_name = "config";
-        oops.res.load(config_name, JsonAsset, () => {
-            var config = oops.res.get(config_name);
-            oops.config.btc = new BuildTimeConstants();
-            oops.config.query = new GameQueryConfig();
-            oops.config.game = new GameConfig(config);
-            oops.http.server = oops.config.game.httpServer;                                      // Http 服务器地址
-            oops.http.timeout = oops.config.game.httpTimeout;                                    // Http 请求超时时间
-            oops.storage.init(oops.config.game.localDataKey, oops.config.game.localDataIv);      // 初始化本地存储加密
-            game.frameRate = oops.config.game.frameRate;                                         // 初始化每秒传输帧数
+            let config_name = "config";
+            oops.res.load(config_name, JsonAsset, () => {
+                var config = oops.res.get(config_name);
+                oops.config.btc = new BuildTimeConstants();
+                oops.config.query = new GameQueryConfig();
+                oops.config.game = new GameConfig(config);
+                oops.http.server = oops.config.game.httpServer;                                      // Http 服务器地址
+                oops.http.timeout = oops.config.game.httpTimeout;                                    // Http 请求超时时间
+                oops.storage.init(oops.config.game.localDataKey, oops.config.game.localDataIv);      // 初始化本地存储加密
+                game.frameRate = oops.config.game.frameRate;                                         // 初始化每秒传输帧数
 
-            this.enabled = true;
-            this.init();
-            this.run();
-        });
+                this.enabled = true;
+                this.init();
+                this.run();
+            });
+        }
     }
 
     update(dt: number) {
