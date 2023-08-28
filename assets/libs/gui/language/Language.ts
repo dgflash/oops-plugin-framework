@@ -10,15 +10,21 @@ export enum LanguageEvent {
     /** 语种资源释放事件 */
     RELEASE_RES = "LanguageEvent.RELEASE_RES"
 }
-const DEFAULT_LANGUAGE = "zh";
 
 export class LanguageManager extends EventDispatcher {
     private _support: Array<string> = ["zh", "en", "tr"];        // 支持的语言
-    private _languagePack: LanguagePack = new LanguagePack();    // 语言包  
+    private _languagePack: LanguagePack = new LanguagePack();    // 语言包
+
+    private _defaultLanguage: string = "zh";                      // 默认语言
 
     /** 设置多语言系统支持哪些语种 */
     set supportLanguages(supportLanguages: Array<string>) {
         this._support = supportLanguages;
+    }
+
+    /** 默认语言,读取语言失败使用 */
+    set defaultLanguage(lang: string) {
+        this._defaultLanguage = lang || "zh";
     }
 
     /** 语言包 */
@@ -60,13 +66,13 @@ export class LanguageManager extends EventDispatcher {
      */
     setLanguage(language: string, callback: (success: boolean) => void) {
         if (!language) {
-            language = DEFAULT_LANGUAGE;
+            language = this._defaultLanguage;
         }
         language = language.toLowerCase();
         let index = this.languages.indexOf(language);
         if (index < 0) {
-            warn("当前不支持该语种" + language + " 将自动切换到 zh 语种!");
-            language = DEFAULT_LANGUAGE;
+            warn("当前不支持该语种" + language + ` 将自动切换到 ${this._defaultLanguage} 语种!`);
+            language = this._defaultLanguage;
         }
         if (language === LanguageData.current) {
             callback(false);
