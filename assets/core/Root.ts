@@ -2,7 +2,7 @@
  * @Author: dgflash
  * @Date: 2021-07-03 16:13:17
  * @LastEditors: dgflash
- * @LastEditTime: 2023-08-28 08:50:53
+ * @LastEditTime: 2023-08-28 10:02:57
  */
 import { Component, Game, JsonAsset, Node, _decorator, director, game, log, sys, view } from "cc";
 import { LanguageManager } from "../libs/gui/language/Language";
@@ -12,13 +12,14 @@ import { GameQueryConfig } from "../module/config/GameQueryConfig";
 import { oops, version } from "./Oops";
 import { AudioManager } from "./common/audio/AudioManager";
 import { EventMessage } from "./common/event/EventMessage";
+import { TimerManager } from "./common/timer/TimerManager";
 import { GameManager } from "./game/GameManager";
 import { GUI } from "./gui/GUI";
 import { LayerManager } from "./gui/layer/LayerManager";
-import { TimerManager } from "./common/timer/TimerManager";
-import { EDITOR } from "cc/env";
 
 const { ccclass, property } = _decorator;
+
+var isInited = false;
 
 /** 框架显示层根节点 */
 export class Root extends Component {
@@ -40,7 +41,9 @@ export class Root extends Component {
     persistRootNode: Node = null!
 
     onLoad() {
-        if (!EDITOR) {
+        if (!isInited) {
+            isInited = true;      // 注：这里是规避cc3.8在编辑器模式下运行时，关闭游戏会两次初始化报错
+
             console.log(`Oops Framework v${version}`);
             this.enabled = false;
 
