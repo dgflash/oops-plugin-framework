@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-08-28 10:02:57
  */
-import { Component, Game, JsonAsset, Node, _decorator, director, game, log, sys, view } from "cc";
+import { Component, Game, JsonAsset, Node, _decorator, director, game, screen, sys } from "cc";
 import { LanguageManager } from "../libs/gui/language/Language";
 import { BuildTimeConstants } from "../module/config/BuildTimeConstants";
 import { GameConfig } from "../module/config/GameConfig";
@@ -106,7 +106,7 @@ export class Root extends Component {
 
         // 游戏显示事件
         game.on(Game.EVENT_SHOW, () => {
-            log("Game.EVENT_SHOW");
+            oops.log.logView("【系统】游戏前台显示");
             oops.timer.load();     // 平台不需要在退出时精准计算时间，直接暂时游戏时间
             oops.audio.resumeAll();
             director.resume();
@@ -116,7 +116,7 @@ export class Root extends Component {
 
         // 游戏隐藏事件
         game.on(Game.EVENT_HIDE, () => {
-            log("Game.EVENT_HIDE");
+            oops.log.logView("【系统】游戏切到后台");
             oops.timer.save();     // 平台不需要在退出时精准计算时间，直接暂时游戏时间
             oops.audio.pauseAll();
             director.pause();
@@ -127,10 +127,19 @@ export class Root extends Component {
         // 游戏尺寸修改事件
         var c_gui = this.gui.addComponent(GUI)!;
         if (sys.isMobile == false) {
-            view.setResizeCallback(() => {
+            screen.on("window-resize", () => {
+                oops.log.logView("【系统】游戏画布尺寸变化");
                 c_gui.resize();
                 oops.message.dispatchEvent(EventMessage.GAME_RESIZE);
-            });
+            }, this);
+
+            screen.on("fullscreen-change", () => {
+                oops.log.logView("【系统】游戏全屏显示");
+            }, this);
         }
+
+        screen.on("orientation-change", () => {
+            oops.log.logView("【系统】游戏旋转屏幕");
+        }, this);
     }
 }
