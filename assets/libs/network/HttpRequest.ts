@@ -87,7 +87,11 @@ export class HttpRequest {
      * HTTP GET请求
      * @param name                  协议名
      * @param params                查询参数
-     * @returns 
+     * @example 
+    var txt = await oops.http.getAsync(name);
+    if (txt.isSucc) {
+        console.log(txt.res);
+    }
      */
     getAsync(name: string, params: any = null): Promise<HttpReturn> {
         return new Promise((resolve, reject) => {
