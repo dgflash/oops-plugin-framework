@@ -19,12 +19,29 @@ export enum HttpEvent {
     TIMEOUT = "http_request_timout"
 }
 
+export class HttpReturn {
+    isSucc: boolean = false;
+    res?: any;
+    err?: any;
+}
+
 /** HTTP请求 */
 export class HttpRequest {
     /** 服务器地址 */
     server: string = "http://127.0.0.1/";
     /** 请求超时时间 */
     timeout: number = 10000;
+    /** 自定义请求头信息 */
+    header: Map<string, string> = new Map<string, string>();
+
+    /**
+     * 添加自定义请求头信息
+     * @param name  信息名
+     * @param value 信息值
+     */
+    addHeader(name: string, value: string) {
+        this.header.set(name, value);
+    }
 
     /**
      * HTTP GET请求
@@ -67,6 +84,29 @@ export class HttpRequest {
     }
 
     /**
+     * HTTP GET请求
+     * @param name                  协议名
+     * @param params                查询参数
+     * @returns 
+     */
+    getAsync(name: string, params: any = null): Promise<HttpReturn> {
+        return new Promise((resolve, reject) => {
+            var ret: HttpReturn = new HttpReturn();
+            var complete = function (response: any) {
+                ret.isSucc = true;
+                ret.res = response;
+                resolve(ret);
+            }
+            var error = function (response: any) {
+                ret.isSucc = true;
+                ret.err = response;
+                resolve(ret);
+            }
+            this.sendRequest(name, params, false, complete, error)
+        });
+    }
+
+    /**
      * HTTP GET请求非文本格式数据
      * @param name                  协议名
      * @param completeCallback      请求完整回调方法
@@ -85,6 +125,29 @@ export class HttpRequest {
      */
     getWithParamsByArraybuffer(name: string, params: any, completeCallback: Function, errorCallback: Function) {
         this.sendRequest(name, params, false, completeCallback, errorCallback, 'arraybuffer', false);
+    }
+
+    /**
+     * HTTP GET请求非文本格式数据
+     * @param name                  协议名
+     * @param params                查询参数
+     * @returns Promise<any>
+     */
+    getAsyncByArraybuffer(name: string, params: any = null): Promise<HttpReturn> {
+        return new Promise((resolve, reject) => {
+            var ret: HttpReturn = new HttpReturn();
+            var complete = function (response: any) {
+                ret.isSucc = true;
+                ret.res = response;
+                resolve(ret);
+            }
+            var error = function (response: any) {
+                ret.isSucc = true;
+                ret.err = response;
+                resolve(ret);
+            }
+            this.sendRequest(name, params, false, complete, error, 'arraybuffer', false);
+        });
     }
 
     /**
@@ -109,7 +172,33 @@ export class HttpRequest {
         this.sendRequest(name, params, true, completeCallback, errorCallback);
     }
 
-    /** 取消请求中的请求 */
+    /**
+     * HTTP POST请求
+     * @param name                  协议名
+     * @param params                查询参数
+     * @returns 
+     */
+    postAsync(name: string, params: any = null): Promise<HttpReturn> {
+        return new Promise((resolve, reject) => {
+            var ret: HttpReturn = new HttpReturn();
+            var complete = function (response: any) {
+                ret.isSucc = true;
+                ret.res = response;
+                resolve(ret);
+            }
+            var error = function (response: any) {
+                ret.isSucc = true;
+                ret.err = response;
+                resolve(ret);
+            }
+            this.sendRequest(name, params, true, complete, error);
+        });
+    }
+
+    /**
+     * 取消请求中的请求
+     * @param name     协议名
+     */
     abort(name: string) {
         var xhr = urls[this.server + name];
         if (xhr) {
@@ -119,6 +208,8 @@ export class HttpRequest {
 
     /**
      * 获得字符串形式的参数
+     * @param params 参数对象
+     * @returns 参数字符串
      */
     private getParamString(params: any) {
         var result = "";
@@ -132,8 +223,7 @@ export class HttpRequest {
                 result += `${name}=${data}&`;
             }
         }
-
-        return result.substr(0, result.length - 1);
+        return result.substring(0, result.length - 1);
     }
 
     /** 
@@ -195,7 +285,11 @@ export class HttpRequest {
             xhr.open("GET", newUrl);
         }
 
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+        // 添加自定义请求头信息
+        for (const [key, value] of this.header) {
+            xhr.setRequestHeader(key, value);
+        }
+        // xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
         // xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8");
 
         var data: any = {};
