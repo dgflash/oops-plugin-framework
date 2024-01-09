@@ -178,6 +178,26 @@ export class GameComponent extends Component {
     }
     //#endregion
 
+    //#region 音频播放管理
+    /**
+     * 循环播放背景音乐 - 音频资源会在对象释放时自动释放
+     * @param url       资源地址
+     */
+    playMusic(url: string) {
+        this.resPaths.set(url, oops.res.defaultBundleName);
+        oops.audio.playerMusicLoop(url);
+    }
+
+    /**
+    * 播放音效 - 音频资源会在对象释放时自动释放
+    * @param url        资源地址
+    */
+    playEffect(url: string) {
+        this.resPaths.set(url, oops.res.defaultBundleName);
+        oops.audio.playEffect(url);
+    }
+    //#endregion
+
     protected onDestroy() {
         // 释放消息对象
         if (this._event) {
