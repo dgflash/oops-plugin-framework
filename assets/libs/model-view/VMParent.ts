@@ -1,5 +1,5 @@
 import { Component, _decorator } from 'cc';
-import { GameComponent } from '../../core/game/GameComponent';
+import { GameComponent } from '../../module/common/GameComponent';
 import { VM } from './ViewModel';
 
 const { ccclass, help, executionOrder } = _decorator;
@@ -49,8 +49,6 @@ export default class VMParent extends GameComponent {
         // console.groupEnd()
 
         this.onBind();
-
-        super.onLoad();
     }
 
     /**在 onLoad 完成 和 start() 之前调用，你可以在这里进行初始化数据等操作 */

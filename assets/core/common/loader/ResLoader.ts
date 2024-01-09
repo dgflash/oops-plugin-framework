@@ -1,9 +1,9 @@
 import { Asset, AssetManager, Constructor, __private, assetManager, error, js, resources } from "cc";
 
-type ProgressCallback = __private._cocos_asset_asset_manager_deprecated__LoadProgressCallback;
-type CompleteCallback<T = any> = any;       // (error: Error | null, asset: T) => void;  (error: Error | null, asset: T[], urls: string[]) => void;
-type IRemoteOptions = { [k: string]: any; ext?: string; } | null;
-type AssetType<T = Asset> = Constructor<T>;
+export type ProgressCallback = __private._cocos_asset_asset_manager_deprecated__LoadProgressCallback;
+export type CompleteCallback<T = any> = any;       // (error: Error | null, asset: T) => void;  (error: Error | null, asset: T[], urls: string[]) => void;
+export type IRemoteOptions = { [k: string]: any; ext?: string; } | null;
+export type AssetType<T = Asset> = Constructor<T>;
 
 interface ILoadResArgs<T extends Asset> {
     bundle?: string;

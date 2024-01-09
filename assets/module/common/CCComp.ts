@@ -6,7 +6,7 @@
  */
 
 import { _decorator } from 'cc';
-import { GameComponent } from '../../core/game/GameComponent';
+import { GameComponent } from './GameComponent';
 import { ecs } from '../../libs/ecs/ECS';
 
 const { ccclass, property } = _decorator;
