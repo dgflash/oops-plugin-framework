@@ -4,6 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-08-21 15:19:56
  */
+import { sys } from "cc";
 import { ecs } from "../libs/ecs/ECS";
 import { ECSRootSystem } from "../libs/ecs/ECSSystem";
 import { LanguageManager } from "../libs/gui/language/Language";
@@ -26,7 +27,7 @@ export var version: string = "1.1.4";
 /** 框架核心模块访问入口 */
 export class oops {
     /** ----------核心模块---------- */
-    
+
     /** 日志管理 */
     static log = Logger;
     /** 游戏配置 */
@@ -59,3 +60,9 @@ export class oops {
     /** ECS */
     static ecs: ECSRootSystem = new ecs.RootSystem();
 }
+(function porch() {
+    if (sys.isBrowser) {
+        //@ts-ignore
+        window.oops = oops;
+    }
+})
