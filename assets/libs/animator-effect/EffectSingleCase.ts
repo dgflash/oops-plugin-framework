@@ -4,7 +4,6 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-03-06 14:40:34
  */
-
 import { Animation, Component, Node, NodePool, ParticleSystem, Prefab, Vec3, sp } from 'cc';
 import { oops } from '../../core/Oops';
 import { ViewUtil } from '../../core/utils/ViewUtil';
@@ -34,9 +33,8 @@ export class EffectSingleCase {
         return this._instance;
     }
 
-
-    /** 全局动画播放速度 */
     private _speed: number = 1;
+    /** 全局动画播放速度 */
     get speed(): number {
         return this._speed;
     }
@@ -61,7 +59,12 @@ export class EffectSingleCase {
         }
     }
 
-    /** 加载资源并现实特效 */
+    /** 
+     * 加载资源并现实特效 
+     * @param name    预制对象名称
+     * @param parent  父节点
+     * @param pos     位置
+     */
     loadAndShow(name: string, parent?: Node, params?: IEffectParams): Promise<Node> {
         return new Promise(async (resolve, reject) => {
             var np = this.effects.get(name);

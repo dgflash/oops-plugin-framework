@@ -4,6 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-08-21 15:19:56
  */
+import { sys } from "cc";
 import { ecs } from "../libs/ecs/ECS";
 import { ECSRootSystem } from "../libs/ecs/ECSSystem";
 import { LanguageManager } from "../libs/gui/language/Language";
@@ -19,6 +20,7 @@ import { StorageManager } from "./common/storage/StorageManager";
 import { TimerManager } from "./common/timer/TimerManager";
 import { GameManager } from "./game/GameManager";
 import { LayerManager } from "./gui/layer/LayerManager";
+import { DEBUG } from "cc/env";
 
 /** 框架版本号 */
 export var version: string = "1.1.4";
@@ -26,7 +28,7 @@ export var version: string = "1.1.4";
 /** 框架核心模块访问入口 */
 export class oops {
     /** ----------核心模块---------- */
-    
+
     /** 日志管理 */
     static log = Logger;
     /** 游戏配置 */
@@ -58,4 +60,10 @@ export class oops {
     static tcp: NetManager = new NetManager();
     /** ECS */
     static ecs: ECSRootSystem = new ecs.RootSystem();
+}
+
+// 引入oops全局变量以方便调试
+if (DEBUG) {
+    //@ts-ignore
+    window.oops = oops;
 }
