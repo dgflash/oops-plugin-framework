@@ -21,6 +21,7 @@ import { TimerManager } from "./common/timer/TimerManager";
 import { GameManager } from "./game/GameManager";
 import { LayerManager } from "./gui/layer/LayerManager";
 import { DEBUG } from "cc/env";
+import { EffectSingleCase } from "../libs/animator-effect/EffectSingleCase";
 
 /** 框架版本号 */
 export var version: string = "1.1.4";
@@ -60,6 +61,8 @@ export class oops {
     static tcp: NetManager = new NetManager();
     /** ECS */
     static ecs: ECSRootSystem = new ecs.RootSystem();
+    /** 动画特效对象池管理器 */
+    static pool: EffectSingleCase = EffectSingleCase.instance;
 }
 
 // 引入oops全局变量以方便调试
