@@ -4,10 +4,12 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-08-21 15:19:56
  */
-import { sys } from "cc";
+import { DEBUG } from "cc/env";
+import { EffectSingleCase } from "../libs/animator-effect/EffectSingleCase";
 import { ecs } from "../libs/ecs/ECS";
 import { ECSRootSystem } from "../libs/ecs/ECSSystem";
 import { LanguageManager } from "../libs/gui/language/Language";
+import { VM } from "../libs/model-view/ViewModel";
 import { HttpRequest } from "../libs/network/HttpRequest";
 import { NetManager } from "../libs/network/NetManager";
 import { Config } from "../module/config/Config";
@@ -20,11 +22,9 @@ import { StorageManager } from "./common/storage/StorageManager";
 import { TimerManager } from "./common/timer/TimerManager";
 import { GameManager } from "./game/GameManager";
 import { LayerManager } from "./gui/layer/LayerManager";
-import { DEBUG } from "cc/env";
-import { EffectSingleCase } from "../libs/animator-effect/EffectSingleCase";
 
 /** 框架版本号 */
-export var version: string = "1.1.4";
+export var version: string = "1.1.5";
 
 /** 框架核心模块访问入口 */
 export class oops {
@@ -55,14 +55,16 @@ export class oops {
 
     /** 多语言模块 */
     static language: LanguageManager;
+    /** 动画特效对象池管理器 */
+    static pool: EffectSingleCase = EffectSingleCase.instance;
     /** HTTP */
     static http: HttpRequest = new HttpRequest();
     /** WebSocket */
     static tcp: NetManager = new NetManager();
     /** ECS */
     static ecs: ECSRootSystem = new ecs.RootSystem();
-    /** 动画特效对象池管理器 */
-    static pool: EffectSingleCase = EffectSingleCase.instance;
+    /** MVVM */
+    static mvvm = VM;
 }
 
 // 引入oops全局变量以方便调试
