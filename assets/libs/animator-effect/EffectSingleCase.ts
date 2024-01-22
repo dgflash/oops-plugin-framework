@@ -12,7 +12,8 @@ import { EffectFinishedRelease } from './EffectFinishedRelease';
 
 /** 效果数据 */
 class EffectData extends Component {
-    type: string = null!;
+    /** 资源路径 */
+    path: string = null!;
 }
 
 /** 特效参数 */
@@ -23,7 +24,12 @@ interface IEffectParams {
     isPlayFinishedRelease?: boolean
 }
 
-/** 动画特效对象池管理器 */
+/** 
+ * 动画特效对象池管理器，加载动画后自动播放，播放完后自动回收到池中
+ * 1、支持Spine动画
+ * 2、支持Cocos Animation动画
+ * 3、支持Cocos ParticleSystem粒子动画
+ */
 export class EffectSingleCase {
     private static _instance: EffectSingleCase;
     static get instance(): EffectSingleCase {
@@ -45,9 +51,12 @@ export class EffectSingleCase {
         });
     }
 
-    /** 不同类型的对象池集合 */
+    /** 对象池集合 */
     private effects: Map<string, NodePool> = new Map();
+    /** 正在使用中的显示对象集合 */
     private effects_use: Map<Node, boolean> = new Map();
+    /** 对象池中用到的资源 - 这里只管理本对象加载的资源，预加载资源由其它对象自己施放 */
+    private res: Map<string, boolean> = new Map();
 
     constructor() {
         oops.message.on(EffectEvent.Put, this.onHandler, this);
@@ -61,60 +70,69 @@ export class EffectSingleCase {
 
     /** 
      * 加载资源并现实特效 
-     * @param name    预制对象名称
+     * @param path    预制资源路径
      * @param parent  父节点
      * @param pos     位置
      */
-    loadAndShow(name: string, parent?: Node, params?: IEffectParams): Promise<Node> {
+    loadAndShow(path: string, parent?: Node, params?: IEffectParams): Promise<Node> {
         return new Promise(async (resolve, reject) => {
-            var np = this.effects.get(name);
+            var np = this.effects.get(path);
             if (np == undefined) {
-                oops.res.load(name, Prefab, (err: Error | null, prefab: Prefab) => {
+                // 记录显示对象资源
+                this.res.set(path, true);
+
+                oops.res.load(path, Prefab, (err: Error | null, prefab: Prefab) => {
                     if (err) {
-                        console.error(`名为【${name}】的特效资源加载失败`);
+                        console.error(`名为【${path}】的特效资源加载失败`);
                         return;
                     }
 
-                    var node = this.show(name, parent, params);
+                    var node = this.show(path, parent, params);
                     resolve(node);
                 });
             }
             else {
-                var node = this.show(name, parent, params);
+                var node = this.show(path, parent, params);
                 resolve(node);
             }
         });
     }
 
     /** 
-     * 显示预制对象 
-     * @param name    预制对象名称
+     * 显示预制对象
+     * @param path    预制资源路径
      * @param parent  父节点
      * @param pos     位置
      */
-    show(name: string, parent?: Node, params?: IEffectParams): Node {
-        var np = this.effects.get(name);
+    show(path: string, parent?: Node, params?: IEffectParams): Node {
+        var np = this.effects.get(path);
         if (np == null) {
             np = new NodePool();
-            this.effects.set(name, np);
+            this.effects.set(path, np);
         }
 
         var node: Node;
+        // 创建池中新显示对象
         if (np.size() == 0) {
-            node = ViewUtil.createPrefabNode(name);
-            node.addComponent(EffectData).type = name;
+            node = ViewUtil.createPrefabNode(path);
+            node.addComponent(EffectData).path = path;
             if (params && params.isPlayFinishedRelease) {
                 node.addComponent(EffectFinishedRelease);
             }
         }
+        // 池中获取没使用的显示对象
         else {
             node = np.get()!;
             node.getComponent(EffectFinishedRelease);
         }
+
+        // 设置动画播放速度
         this.setSpeed(node);
 
+        // 设置显示对象位置
         if (params && params.pos) node.position = params.pos;
 
+        // 显示到屏幕上
         if (parent) node.parent = parent;
 
         // 记录缓冲池中放出的节点
@@ -129,7 +147,7 @@ export class EffectSingleCase {
      * @param node  节点
      */
     put(node: Node) {
-        var name = node.getComponent(EffectData)!.type;
+        var name = node.getComponent(EffectData)!.path;
         var np = this.effects.get(name);
         if (np) {
             // 回收使用的节点
@@ -142,11 +160,11 @@ export class EffectSingleCase {
 
     /**
      * 清除对象池数据
-     * @param name  参数为空时，清除所有对象池数据;指定名时，清楚指定数据
+     * @param path  参数为空时，清除所有对象池数据;指定名时，清楚指定数据
      */
-    clear(name?: string) {
-        if (name) {
-            var np = this.effects.get(name)!;
+    clear(path?: string) {
+        if (path) {
+            var np = this.effects.get(path)!;
             np.clear();
         }
         else {
@@ -154,6 +172,23 @@ export class EffectSingleCase {
                 np.clear();
             });
             this.effects.clear();
+        }
+    }
+
+    /**
+     * 施放对象池中显示对象的资源内存
+     * @param path 资源路径 
+     */
+    release(path?: string) {
+        if (path) {
+            this.clear(path);
+            oops.res.release(path);
+        }
+        else {
+            this.clear();
+            this.res.forEach((value: boolean, path: string) => {
+                oops.res.release(path);
+            });
         }
     }
 
