@@ -13,10 +13,8 @@ export type NetCallFunc = (data: any) => void;
 
 /** 请求协议 */
 export interface IRequestProtocol {
-    /** 动作名 */
-    action: string,
-    /** 模块名 */
-    method: string,
+    /** 协议命令编号 */
+    cmd: string,
     /** 回调方法名 */
     callback?: string,
     /** 是否压缩 */

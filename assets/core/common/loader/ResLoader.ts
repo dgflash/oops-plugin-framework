@@ -196,7 +196,7 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
         if (bundle) {
             var asset = bundle.get(path);
             if (asset) {
-                this.releasePrefabtDepsRecursively(asset._uuid);
+                this.releasePrefabtDepsRecursively(asset);
             }
         }
     }
@@ -225,9 +225,18 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
     }
 
     /** 释放预制依赖资源 */
-    private releasePrefabtDepsRecursively(uuid: string) {
-        var asset = assetManager.assets.get(uuid)!;
-        assetManager.releaseAsset(asset);
+    private releasePrefabtDepsRecursively(uuid: string | Asset) {
+        if (uuid instanceof Asset) {
+            uuid.decRef();
+            // assetManager.releaseAsset(uuid);
+        }
+        else {
+            var asset = assetManager.assets.get(uuid);
+            if (asset) {
+                asset.decRef();
+                // assetManager.releaseAsset(asset);
+            }
+        }
 
         // Cocos引擎内部已处理子关联资源的释放
         // if (asset instanceof Prefab) {

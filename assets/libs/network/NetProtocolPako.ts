@@ -55,7 +55,7 @@ export class NetProtocolPako implements IProtocolHelper {
     }
 
     handlerRequestPackage(reqProtocol: IRequestProtocol): string {
-        var rspCmd = reqProtocol.action + "_" + reqProtocol.method;
+        var rspCmd = reqProtocol.cmd;
         reqProtocol.callback = rspCmd;
         if (reqProtocol.isCompress) {
             reqProtocol.data = zip(reqProtocol.data);

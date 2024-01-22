@@ -315,9 +315,8 @@ export class NetNode {
      * @param rspObject   回调对象
      * @param showTips    是否触发请求提示
      * @param force       是否强制发送
-     * @param channelId   通道编号
      */
-    request(reqProtocol: IRequestProtocol, rspObject: CallbackObject, showTips: boolean = true, force: boolean = false) {
+    request<T>(reqProtocol: IRequestProtocol, rspObject: CallbackObject, showTips: boolean = true, force: boolean = false) {
         var rspCmd = this._protocolHelper!.handlerRequestPackage(reqProtocol);
         this.base_request(reqProtocol, rspCmd, rspObject, showTips, force);
     }
@@ -328,7 +327,6 @@ export class NetNode {
      * @param rspObject   回调对象
      * @param showTips    是否触发请求提示
      * @param force       是否强制发送
-     * @param channelId   通道编号
      */
     requestUnique(reqProtocol: IRequestProtocol, rspObject: CallbackObject, showTips: boolean = true, force: boolean = false): boolean {
         var rspCmd = this._protocolHelper!.handlerRequestPackage(reqProtocol);
@@ -345,7 +343,7 @@ export class NetNode {
     }
 
     private base_request(reqProtocol: IRequestProtocol, rspCmd: string, rspObject: CallbackObject, showTips: boolean = true, force: boolean = false) {
-        var buf = JSON.stringify(reqProtocol);
+        var buf: NetData = JSON.stringify(reqProtocol);         // 转为二进制流发送
 
         if (this._state == NetNodeState.Working || force) {
             this._socket!.send(buf);
