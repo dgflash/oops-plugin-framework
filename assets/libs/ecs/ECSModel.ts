@@ -76,4 +76,7 @@ export class ECSModel {
         }
         return group as unknown as ECSGroup<E>;
     }
+
+    /** 系统组件 */
+    static systems: Map<string, ecs.System> = new Map<string, ecs.System>();
 }

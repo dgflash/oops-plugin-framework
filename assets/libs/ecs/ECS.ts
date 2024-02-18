@@ -116,8 +116,17 @@ export module ecs {
      */
     export function register<T>(name: string, canNew: boolean = true) {
         return function (ctor: any) {
+            // 注册系统
+            if (ctor.s) {
+                var system: ecs.System = ECSModel.systems.get(name);
+                if (system == null) {
+                    system = new ecs.System();
+                    ECSModel.systems.set(name, system);
+                }
+                system.add(new ctor);
+            }
             // 注册实体
-            if (ctor.tid == undefined) {
+            else if (ctor.tid == undefined) {
                 ECSModel.entityCtors.set(ctor as EntityCtor<T>, name);
             }
             // 注册组件

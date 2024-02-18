@@ -5,6 +5,8 @@ import { ECSModel } from "./ECSModel";
 
 /** 继承此类实现具体业务逻辑的系统 */
 export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
+    static s: boolean = true;
+
     protected group: ECSGroup<E>;
     protected dt: number = 0;
 
@@ -179,6 +181,12 @@ export class ECSRootSystem {
     }
 
     init() {
+        // 自动注册系统组件
+        ECSModel.systems.forEach(s => {
+            this.add(s);
+        });
+
+        // 初始化组件
         this.executeSystemFlows.forEach(sys => sys.init());
     }
 
