@@ -102,23 +102,26 @@ export module ecs {
         }
     }
 
+    // 注册系统组件
+    @ecs.register('Initialize')
+    export class InitResSystem extends ecs.ComblockSystem implements ecs.IEntityEnterSystem {
+
+    }
+
     // 注册显示对象组件
     @ccclass('RoleViewComp')
     @ecs.register('RoleView', false)
     export class RoleViewComp extends CCComp {
-        @property({ type: sp.Skeleton, tooltip: '角色动画' })
-        spine: sp.Skeleton = null!;
-
         onLoad(){
             
         }
     }
-     */
+    */
     export function register<T>(name: string, canNew: boolean = true) {
         return function (ctor: any) {
             // 注册系统
             if (ctor.s) {
-                var system: ecs.System = ECSModel.systems.get(name);
+                var system = ECSModel.systems.get(name);
                 if (system == null) {
                     system = new ecs.System();
                     ECSModel.systems.set(name, system);

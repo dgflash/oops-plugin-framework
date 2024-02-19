@@ -182,9 +182,7 @@ export class ECSRootSystem {
 
     init() {
         // 自动注册系统组件
-        ECSModel.systems.forEach(s => {
-            this.add(s);
-        });
+        ECSModel.systems.forEach(sys => this.add(sys));
 
         // 初始化组件
         this.executeSystemFlows.forEach(sys => sys.init());
