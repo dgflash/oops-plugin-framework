@@ -187,7 +187,7 @@ export class LayerManager {
     has(uiId: number): boolean {
         var config = this.configs[uiId];
         if (config == null) {
-            warn(`编号为【${uiId}】的界面失败，配置信息不存在`);
+            warn(`编号为【${uiId}】的界面配置不存在，配置信息不存在`);
             return false;
         }
 
@@ -204,6 +204,37 @@ export class LayerManager {
                 break;
             case LayerType.System:
                 result = this.system.has(config.prefab);
+                break;
+        }
+        return result;
+    }
+
+    /**
+     * 缓存中是否存在指定标识的窗口
+     * @param uiId 窗口唯一标识
+     * @example
+     * oops.gui.has(UIID.Loading);
+     */
+    get(uiId: number): Node {
+        var config = this.configs[uiId];
+        if (config == null) {
+            warn(`编号为【${uiId}】的界面配置不存在，配置信息不存在`);
+            return null!;
+        }
+
+        var result: Node = null!;
+        switch (config.layer) {
+            case LayerType.UI:
+                result = this.ui.getByPrefabPath(config.prefab);
+                break;
+            case LayerType.PopUp:
+                result = this.popup.getByPrefabPath(config.prefab);
+                break;
+            case LayerType.Dialog:
+                result = this.dialog.getByPrefabPath(config.prefab);
+                break;
+            case LayerType.System:
+                result = this.system.getByPrefabPath(config.prefab);
                 break;
         }
         return result;

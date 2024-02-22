@@ -178,6 +178,15 @@ export class LayerUI extends Node {
     }
 
     /**
+     * 根据预制路径获取已打开界面的节点对象
+     * @param prefabPath  预制路径
+     */
+    getByPrefabPath(prefabPath: string): Node {
+        var uuid = this.getUuid(prefabPath);
+        return this.getByUuid(uuid);
+    }
+
+    /**
      * 根据唯一标识获取节点，如果节点不存在或者还在队列中，则返回null 
      * @param uuid  唯一标识
      */
