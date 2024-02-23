@@ -55,8 +55,6 @@ export class oops {
 
     /** 多语言模块 */
     static language: LanguageManager;
-    /** 动画特效对象池管理器 */
-    static pool: EffectSingleCase = EffectSingleCase.instance;
     /** HTTP */
     static http: HttpRequest = new HttpRequest();
     /** WebSocket */
