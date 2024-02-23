@@ -5,7 +5,6 @@
  * @LastEditTime: 2023-08-21 15:19:56
  */
 import { DEBUG } from "cc/env";
-import { EffectSingleCase } from "../libs/animator-effect/EffectSingleCase";
 import { ecs } from "../libs/ecs/ECS";
 import { ECSRootSystem } from "../libs/ecs/ECSSystem";
 import { LanguageManager } from "../libs/gui/language/Language";
