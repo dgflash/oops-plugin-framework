@@ -98,7 +98,17 @@ export class LayerManager {
      * oops.gui.toast("提示内容");
      */
     toast(content: string, useI18n: boolean = false) {
-        this.notify.show(content, useI18n)
+        this.notify.toast(content, useI18n)
+    }
+
+    /** 打开等待提示 */
+    waitOpen() {
+        this.notify.waitOpen();
+    }
+
+    /** 关闭等待提示 */
+    waitClose() {
+        this.notify.waitClose();
     }
 
     /**
