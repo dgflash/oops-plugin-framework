@@ -189,6 +189,28 @@ export class LayerManager {
     }
 
     /**
+     * 场景替换
+     * @param removeUiId  移除场景编号
+     * @param openUiId    新打开场景编号
+     * @param uiArgs      新打开场景参数
+     */
+    replace(removeUiId: number, openUiId: number, uiArgs: any = null) {
+        this.remove(removeUiId);
+        this.open(openUiId, uiArgs);
+    }
+
+    /**
+     * 异步场景替换
+     * @param removeUiId  移除场景编号
+     * @param openUiId    新打开场景编号
+     * @param uiArgs      新打开场景参数
+     */
+    replaceAsync(removeUiId: number, openUiId: number, uiArgs: any = null): Promise<Node | null> {
+        this.remove(removeUiId);
+        return this.openAsync(openUiId, uiArgs);
+    }
+
+    /**
      * 缓存中是否存在指定标识的窗口
      * @param uiId 窗口唯一标识
      * @example
