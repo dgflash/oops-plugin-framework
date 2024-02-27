@@ -168,4 +168,47 @@ export class StringUtil {
         }
         return realLength;
     }
+
+    /**
+     * 是否为空
+     * @param str 
+     */
+    public static IsEmpty(str: string): boolean {
+        if (str == null || str == undefined || str.length == 0) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 参数替换
+     * @param  str
+     * @param  rest
+     *  
+     * @example
+     *
+     * var str:string = "here is some info '{0}' and {1}";
+     * StringUtil.substitute(str, 15.4, true);
+     *
+     * "here is some info '15.4' and true"
+     */
+    public static substitute(str: string, ...rest: any[]): string {
+        if (str == null) return '';
+
+        var len: number = rest.length;
+        var args: any[];
+        if (len == 1 && rest[0] instanceof Array) {
+            args = rest[0];
+            len = args.length;
+        }
+        else {
+            args = rest;
+        }
+
+        for (var i: number = 0; i < len; i++) {
+            str = str.replace(new RegExp("\\{" + i + "\\}", "g"), args[i]);
+        }
+
+        return str;
+    }
 }
