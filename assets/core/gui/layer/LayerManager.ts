@@ -195,8 +195,8 @@ export class LayerManager {
      * @param uiArgs      新打开场景参数
      */
     replace(removeUiId: number, openUiId: number, uiArgs: any = null) {
-        this.remove(removeUiId);
         this.open(openUiId, uiArgs);
+        this.remove(removeUiId);
     }
 
     /**
@@ -206,8 +206,11 @@ export class LayerManager {
      * @param uiArgs      新打开场景参数
      */
     replaceAsync(removeUiId: number, openUiId: number, uiArgs: any = null): Promise<Node | null> {
-        this.remove(removeUiId);
-        return this.openAsync(openUiId, uiArgs);
+        return new Promise<Node | null>(async (resolve, reject) => {
+            var node = await this.openAsync(openUiId, uiArgs);
+            this.remove(removeUiId);
+            resolve(node);
+        });
     }
 
     /**
