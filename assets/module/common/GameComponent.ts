@@ -7,7 +7,7 @@
 import { Asset, Component, Node, __private, _decorator } from "cc";
 import { oops } from "../../core/Oops";
 import { EventDispatcher } from "../../core/common/event/EventDispatcher";
-import { ListenerFunc } from "../../core/common/event/EventMessage";
+import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage";
 import { AssetType, CompleteCallback, ProgressCallback } from "../../core/common/loader/ResLoader";
 import { ViewUtil } from "../../core/utils/ViewUtil";
 
@@ -197,6 +197,31 @@ export class GameComponent extends Component {
         oops.audio.playEffect(url);
     }
     //#endregion
+
+    /** 监听游戏从后台进入事件 */
+    protected setEventShow(callback: ListenerFunc) {
+        this.on(EventMessage.GAME_ENTER, callback, this);
+    }
+
+    /** 监听游戏切到后台事件 */
+    protected setEventHide(callback: ListenerFunc) {
+        this.on(EventMessage.GAME_EXIT, callback, this);
+    }
+
+    /** 监听游戏画笔尺寸变化事件 */
+    protected setWindowResize(callback: ListenerFunc) {
+        this.on(EventMessage.GAME_RESIZE, callback, this);
+    }
+
+    /** 监听游戏全屏事件 */
+    protected setFullscreenChange(callback: ListenerFunc) {
+        this.on(EventMessage.GAME_FULL_SCREEN, callback, this);
+    }
+
+    /** 监听游戏旋转屏幕事件 */
+    protected setOrientationChange(callback: ListenerFunc) {
+        this.on(EventMessage.GAME_ORIENTATION, callback, this);
+    }
 
     protected onDestroy() {
         // 释放消息对象

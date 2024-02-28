@@ -5,14 +5,13 @@
  * @LastEditTime: 2022-11-01 15:47:16
  */
 
-import { BuildTimeConstants } from "./BuildTimeConstants";
 import { GameConfig } from "./GameConfig";
 import { GameQueryConfig } from "./GameQueryConfig";
 
 /** 游戏配置静态访问类 */
 export class Config {
     /** 环境常量 */
-    public btc!: BuildTimeConstants;
+    // public btc!: BuildTimeConstants;
 
     /** 游戏配置数据，版本号、支持语种等数据 */
     public game!: GameConfig;

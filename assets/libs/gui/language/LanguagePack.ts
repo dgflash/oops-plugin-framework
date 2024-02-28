@@ -67,7 +67,7 @@ export class LanguagePack {
         return new Promise(async (resolve, reject) => {
             LanguageData.excel = await JsonUtil.loadAsync("Language");
             if (LanguageData.excel) {
-                Logger.logConfig("config/game/Language", "下载语言包 excel 资源");
+                Logger.logConfig("config/game/Language", "下载语言包 table 资源");
             }
             resolve(null);
         });

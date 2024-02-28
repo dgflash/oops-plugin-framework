@@ -6,7 +6,6 @@
  */
 import { Component, Game, JsonAsset, Node, _decorator, director, game, screen, sys } from "cc";
 import { LanguageManager } from "../libs/gui/language/Language";
-import { BuildTimeConstants } from "../module/config/BuildTimeConstants";
 import { GameConfig } from "../module/config/GameConfig";
 import { GameQueryConfig } from "../module/config/GameQueryConfig";
 import { oops, version } from "./Oops";
@@ -50,7 +49,7 @@ export class Root extends Component {
             let config_name = "config";
             oops.res.load(config_name, JsonAsset, () => {
                 var config = oops.res.get(config_name);
-                oops.config.btc = new BuildTimeConstants();
+                // oops.config.btc = new BuildTimeConstants();
                 oops.config.query = new GameQueryConfig();
                 oops.config.game = new GameConfig(config);
                 oops.http.server = oops.config.game.httpServer;                                      // Http 服务器地址
@@ -105,7 +104,6 @@ export class Root extends Component {
 
         // 游戏显示事件
         game.on(Game.EVENT_SHOW, () => {
-            oops.log.logView("【系统】游戏前台显示");
             oops.timer.load();     // 平台不需要在退出时精准计算时间，直接暂时游戏时间
             oops.audio.resumeAll();
             director.resume();
@@ -115,7 +113,6 @@ export class Root extends Component {
 
         // 游戏隐藏事件
         game.on(Game.EVENT_HIDE, () => {
-            oops.log.logView("【系统】游戏切到后台");
             oops.timer.save();     // 平台不需要在退出时精准计算时间，直接暂时游戏时间
             oops.audio.pauseAll();
             director.pause();
@@ -127,18 +124,17 @@ export class Root extends Component {
         var c_gui = this.gui.addComponent(GUI)!;
         if (sys.isMobile == false) {
             screen.on("window-resize", () => {
-                oops.log.logView("【系统】游戏画布尺寸变化");
                 c_gui.resize();
                 oops.message.dispatchEvent(EventMessage.GAME_RESIZE);
             }, this);
 
             screen.on("fullscreen-change", () => {
-                oops.log.logView("【系统】游戏全屏显示");
+                oops.message.dispatchEvent(EventMessage.GAME_FULL_SCREEN);
             }, this);
         }
 
         screen.on("orientation-change", () => {
-            oops.log.logView("【系统】游戏旋转屏幕");
+            oops.message.dispatchEvent(EventMessage.GAME_ORIENTATION);
         }, this);
     }
 }
