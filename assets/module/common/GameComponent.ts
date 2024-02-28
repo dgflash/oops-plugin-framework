@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-12-13 11:36:00
  */
-import { Asset, Component, Node, __private, _decorator } from "cc";
+import { Asset, Component, EventTouch, Node, __private, _decorator } from "cc";
 import { oops } from "../../core/Oops";
 import { EventDispatcher } from "../../core/common/event/EventDispatcher";
 import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage";
@@ -198,6 +198,7 @@ export class GameComponent extends Component {
     }
     //#endregion
 
+    //#region 游戏逻辑事件
     /** 监听游戏从后台进入事件 */
     protected setEventShow(callback: ListenerFunc) {
         this.on(EventMessage.GAME_ENTER, callback, this);
@@ -222,6 +223,43 @@ export class GameComponent extends Component {
     protected setOrientationChange(callback: ListenerFunc) {
         this.on(EventMessage.GAME_ORIENTATION, callback, this);
     }
+
+    /** 
+     * 批量设置当前界面按钮事件 
+     * @example
+     * this.setButton("Label1", "Label2");
+     * 
+     * Label1(event: EventTouch) { console.log(event.target.name); }
+     * Label2(event: EventTouch) { console.log(event.target.name); }
+     */
+    protected setButton(...args: string[]) {
+        this.node.on(Node.EventType.TOUCH_END, (event: EventTouch) => {
+            var func = this[event.target.name];
+            if (func)
+                func(event);
+            else
+                console.error(`名为【${event.target.name}】的按钮事件方法不存在`);
+        }, this);
+    }
+
+    /** 
+     * 批量设置全局事件 
+     * @example
+     *  this.setEvent("onGlobal");
+     *  this.dispatchEvent("onGlobal", "全局事件");
+     * 
+     *  onGlobal(event: string, args: any) { console.log(args) };
+     */
+    protected setEvent(...args: string[]) {
+        for (const name of args) {
+            var func = this[name];
+            if (func)
+                this.on(name, this[name], this);
+            else
+                console.error(`名为【${name}】的全局事方法不存在`);
+        }
+    }
+    //#endregion
 
     protected onDestroy() {
         // 释放消息对象
