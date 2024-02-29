@@ -54,7 +54,7 @@ export class LayerNotify extends Node {
     }
 
     /**
-     * 显示toast
+     * 渐隐飘过提示
      * @param content 文本表示
      * @param useI18n 是否使用多语言
      */

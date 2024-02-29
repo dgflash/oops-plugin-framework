@@ -234,7 +234,8 @@ export class GameComponent extends Component {
      */
     protected setButton(...args: string[]) {
         this.node.on(Node.EventType.TOUCH_END, (event: EventTouch) => {
-            var func = this[event.target.name];
+            var self: any = this;
+            var func = self[event.target.name];
             if (func)
                 func(event);
             else
@@ -251,10 +252,11 @@ export class GameComponent extends Component {
      *  onGlobal(event: string, args: any) { console.log(args) };
      */
     protected setEvent(...args: string[]) {
+        var self: any = this;
         for (const name of args) {
-            var func = this[name];
+            var func = self[name];
             if (func)
-                this.on(name, this[name], this);
+                this.on(name, self[name], this);
             else
                 console.error(`名为【${name}】的全局事方法不存在`);
         }

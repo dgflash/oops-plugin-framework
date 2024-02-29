@@ -74,8 +74,10 @@ export class CommonPrompt extends Component {
     }
 
     private setBtnCancelLabel() {
-        this.lab_cancel!.dataID = this.config.cancelWord;
-        this.lab_cancel!.node!.parent!.active = this.config.needCancel || false;
+        if (this.lab_cancel) {
+            this.lab_cancel.dataID = this.config.cancelWord;
+            this.lab_cancel.node.parent!.active = this.config.needCancel || false;
+        }
     }
 
     private onOk() {
