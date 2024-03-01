@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-12-13 11:36:00
  */
-import { Asset, Component, EventTouch, Node, __private, _decorator } from "cc";
+import { Asset, Component, EventKeyboard, EventTouch, Input, Node, __private, _decorator, input } from "cc";
 import { oops } from "../../core/Oops";
 import { EventDispatcher } from "../../core/common/event/EventDispatcher";
 import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage";
@@ -261,6 +261,32 @@ export class GameComponent extends Component {
                 console.error(`名为【${name}】的全局事方法不存在`);
         }
     }
+
+    /**
+     * 键盘事件开关
+     * @param on 打开键盘事件为true
+     */
+    setKeyboard(on: boolean) {
+        if (on) {
+            input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+            input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
+            input.on(Input.EventType.KEY_PRESSING, this.onKeyPressing, this);
+        }
+        else {
+            input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+            input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
+            input.off(Input.EventType.KEY_PRESSING, this.onKeyPressing, this);
+        }
+    }
+
+    /** 键按下 */
+    protected onKeyDown(event: EventKeyboard) { }
+
+    /** 键放开 */
+    protected onKeyUp(event: EventKeyboard) { }
+
+    /** 键长按 */
+    protected onKeyPressing(event: EventKeyboard) { }
     //#endregion
 
     protected onDestroy() {
