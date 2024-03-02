@@ -13,7 +13,11 @@ import { ViewUtil } from "../../core/utils/ViewUtil";
 
 const { ccclass } = _decorator;
 
-/** 游戏显示对象组件模板 */
+/** 
+ * 游戏显示对象组件模板
+ * 1、当前对象加载的资源，会在对象释放时，自动释放引用的资源
+ * 2、当前对象支持启动游戏引擎提供的各种常用逻辑事件
+ */
 @ccclass("GameComponent")
 export class GameComponent extends Component {
     //#region 全局事件管理
@@ -180,16 +184,25 @@ export class GameComponent extends Component {
 
     //#region 音频播放管理
     /**
-     * 循环播放背景音乐 - 音频资源会在对象释放时自动释放
+     * 播放背景音乐
      * @param url       资源地址
      */
     playMusic(url: string) {
         this.resPaths.set(url, oops.res.defaultBundleName);
-        oops.audio.playerMusicLoop(url);
+        oops.audio.playMusic(url);
     }
 
     /**
-    * 播放音效 - 音频资源会在对象释放时自动释放
+     * 循环播放背景音乐
+     * @param url        资源地址
+     */
+    playMusicLoop(url: string) {
+        this.resPaths.set(url, oops.res.defaultBundleName);
+        oops.audio.playMusicLoop(url);
+    }
+
+    /**
+    * 播放音效
     * @param url        资源地址
     */
     playEffect(url: string) {
