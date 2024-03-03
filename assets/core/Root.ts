@@ -108,7 +108,7 @@ export class Root extends Component {
             oops.audio.resumeAll();
             director.resume();
             game.resume();
-            oops.message.dispatchEvent(EventMessage.GAME_ENTER);
+            oops.message.dispatchEvent(EventMessage.GAME_SHOW);
         });
 
         // 游戏隐藏事件
@@ -117,7 +117,7 @@ export class Root extends Component {
             oops.audio.pauseAll();
             director.pause();
             game.pause();
-            oops.message.dispatchEvent(EventMessage.GAME_EXIT);
+            oops.message.dispatchEvent(EventMessage.GAME_HIDE);
         });
 
         // 游戏尺寸修改事件

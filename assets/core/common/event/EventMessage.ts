@@ -15,9 +15,9 @@ export type ListenerFunc = (event: string, args: any) => void
 /** 框架内部全局事件  */
 export enum EventMessage {
     /** 游戏从后台进入事件 */
-    GAME_ENTER = "GAME_ENTER",
+    GAME_SHOW = "GAME_ENTER",
     /** 游戏切到后台事件 */
-    GAME_EXIT = "GAME_EXIT",
+    GAME_HIDE = "GAME_EXIT",
     /** 游戏画笔尺寸变化事件 */
     GAME_RESIZE = "GAME_RESIZE",
     /** 游戏全屏事件 */

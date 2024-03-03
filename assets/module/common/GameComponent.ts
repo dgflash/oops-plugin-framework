@@ -212,34 +212,10 @@ export class GameComponent extends Component {
     //#endregion
 
     //#region 游戏逻辑事件
-    /** 监听游戏从后台进入事件 */
-    protected setEventShow(callback: ListenerFunc) {
-        this.on(EventMessage.GAME_ENTER, callback, this);
-    }
-
-    /** 监听游戏切到后台事件 */
-    protected setEventHide(callback: ListenerFunc) {
-        this.on(EventMessage.GAME_EXIT, callback, this);
-    }
-
-    /** 监听游戏画笔尺寸变化事件 */
-    protected setWindowResize(callback: ListenerFunc) {
-        this.on(EventMessage.GAME_RESIZE, callback, this);
-    }
-
-    /** 监听游戏全屏事件 */
-    protected setFullscreenChange(callback: ListenerFunc) {
-        this.on(EventMessage.GAME_FULL_SCREEN, callback, this);
-    }
-
-    /** 监听游戏旋转屏幕事件 */
-    protected setOrientationChange(callback: ListenerFunc) {
-        this.on(EventMessage.GAME_ORIENTATION, callback, this);
-    }
-
     /** 
-     * 批量设置当前界面按钮事件 
+     * 批量设置当前界面按钮事件
      * @example
+     * 注：按钮节点Label1、Label2必须绑定ButtonSimple、ButtonEffect等类型的按钮组件才会生效，方法名必须与节点名一致
      * this.setButton("Label1", "Label2");
      * 
      * Label1(event: EventTouch) { console.log(event.target.name); }
@@ -250,7 +226,7 @@ export class GameComponent extends Component {
             var self: any = this;
             var func = self[event.target.name];
             if (func)
-                func(event);
+                func.call(this, event);
             else
                 console.error(`名为【${event.target.name}】的按钮事件方法不存在`);
         }, this);
@@ -300,6 +276,46 @@ export class GameComponent extends Component {
 
     /** 键长按 */
     protected onKeyPressing(event: EventKeyboard) { }
+
+    /** 监听游戏从后台进入事件 */
+    protected setGameShow() {
+        this.on(EventMessage.GAME_SHOW, this.onGameShow, this);
+    }
+
+    /** 监听游戏切到后台事件 */
+    protected setGameHide() {
+        this.on(EventMessage.GAME_HIDE, this.onGameHide, this);
+    }
+
+    /** 监听游戏画笔尺寸变化事件 */
+    protected setGameResize() {
+        this.on(EventMessage.GAME_RESIZE, this.onGameResize, this);
+    }
+
+    /** 监听游戏全屏事件 */
+    protected setGameFullScreen() {
+        this.on(EventMessage.GAME_FULL_SCREEN, this.onGameFullScreen, this);
+    }
+
+    /** 监听游戏旋转屏幕事件 */
+    protected setGameOrientation() {
+        this.on(EventMessage.GAME_ORIENTATION, this.onGameOrientation, this);
+    }
+
+    /** 游戏从后台进入事件回调 */
+    protected onGameShow(): void { }
+
+    /** 游戏切到后台事件回调 */
+    protected onGameHide(): void { }
+
+    /** 游戏画笔尺寸变化事件回调 */
+    protected onGameResize(): void { }
+
+    /** 游戏全屏事件回调 */
+    protected onGameFullScreen(): void { }
+
+    /** 游戏旋转屏幕事件回调 */
+    protected onGameOrientation(): void { }
     //#endregion
 
     protected onDestroy() {
