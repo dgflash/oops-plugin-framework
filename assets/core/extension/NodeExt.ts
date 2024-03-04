@@ -32,6 +32,12 @@ declare module "cc" {
         scale_y: number;
         /** 获取、设置Z轴缩放 */
         scale_z: number;
+        /** 获取、设置节点的 X 欧拉角 */
+        angle_x: number;
+        /** 获取、设置节点的 Y 欧拉角 */
+        angle_y: number;
+        /** 获取、设置节点的 Z 欧拉角 */
+        angle_z: number;
     }
 }
 
@@ -40,6 +46,40 @@ if (!EDITOR) {
     if (!Node.prototype["$__definedProperties__"]) {
         //@ts-ignore
         Node.prototype["$__definedProperties__"] = true;
+
+        /** 获取、设置节点的 X 欧拉角 */
+        Object.defineProperty(Node.prototype, "angle_x", {
+            get: function () {
+                let self: Node = this;
+                return self.eulerAngles.x;
+            },
+            set: function (value: number) {
+                let self: Node = this;
+                self.setRotationFromEuler(value, self.eulerAngles.y, self.eulerAngles.z);
+            }
+        });
+
+        /** 获取、设置节点的 Y 欧拉角 */
+        Object.defineProperty(Node.prototype, "angle_y", {
+            get: function () {
+                return this.eulerAngles.y;
+            },
+            set: function (value: number) {
+                let self: Node = this;
+                self.setRotationFromEuler(self.eulerAngles.x, value, self.eulerAngles.z);
+            }
+        });
+
+        /** 获取、设置节点的 Z 欧拉角 */
+        Object.defineProperty(Node.prototype, "angle_z", {
+            get: function () {
+                return this.eulerAngles.y;
+            },
+            set: function (value: number) {
+                let self: Node = this;
+                self.setRotationFromEuler(self.eulerAngles.x, self.eulerAngles.y, value);
+            }
+        });
 
         /** 获取、设置节点的 X 坐标 */
         Object.defineProperty(Node.prototype, "x", {
