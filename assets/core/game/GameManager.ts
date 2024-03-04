@@ -4,9 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 12:09:55
  */
-import { game, Game, Node } from 'cc';
-
-var timeScale = 1;
+import { Node, director } from 'cc';
 
 /** 游戏世界管理 */
 export class GameManager {
@@ -15,30 +13,10 @@ export class GameManager {
 
     constructor(root: Node) {
         this.root = root;
-        this.gameTimeScaleExtend();
     }
 
-    /** 设置游戏动画速度（不支持 Native 模式） */
+    /** 设置游戏动画速度 */
     setTimeScale(scale: number) {
-        timeScale = scale;
-    }
-
-    /** 只支持web整体加速 */
-    private gameTimeScaleExtend() {
-        //@ts-ignore
-        game._calculateDT = function (now: number) {
-            if (!now) now = performance.now();
-            //@ts-ignore
-            this._deltaTime = now > this._startTime ? (now - this._startTime) / 1000 : 0;
-            //@ts-ignore
-            if (this._deltaTime > Game.DEBUG_DT_THRESHOLD) {
-                //@ts-ignore
-                this._deltaTime = this.frameTime / 1000;
-            }
-            //@ts-ignore
-            this._startTime = now;
-            //@ts-ignore
-            return this._deltaTime * timeScale;
-        };
+        director.globalGameTimeScale = scale;
     }
 }
