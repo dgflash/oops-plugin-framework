@@ -6,7 +6,7 @@ import { EncryptUtil } from "../../utils/EncryptUtil";
 export class StorageManager {
     private _key: string | null = null;
     private _iv: string | null = null;
-    private _id: string = "";
+    private _id: string = null!;
 
     /**
      * 初始化密钥
@@ -35,7 +35,7 @@ export class StorageManager {
      * @returns 
      */
     set(key: string, value: any) {
-        var keywords = `${key}_${this._id}`;
+        var keywords = this.getKey(key);
 
         if (null == key) {
             console.error("存储的key不能为空");
@@ -84,7 +84,7 @@ export class StorageManager {
             return null!;
         }
 
-        key = `${key}_${this._id}`;
+        key = this.getKey(key);
 
         if (!PREVIEW) {
             key = EncryptUtil.md5(key);
@@ -144,5 +144,12 @@ export class StorageManager {
     /** 清空整个本地存储 */
     clear() {
         sys.localStorage.clear();
+    }
+
+    private getKey(key: string): string {
+        if (this._id == null || this._id == "") {
+            return key;
+        }
+        return `${this._id}_${key}`;
     }
 }
