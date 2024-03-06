@@ -41,7 +41,7 @@ export class StorageManager {
             console.error("存储的key不能为空");
             return;
         }
-        if (!PREVIEW) {
+        if (this.encrypted) {
             keywords = EncryptUtil.md5(keywords);
         }
         if (null == value) {
@@ -66,7 +66,7 @@ export class StorageManager {
             value = value + "";
         }
 
-        if (!PREVIEW && null != this._key && null != this._iv) {
+        if (this.encrypted && null != this._key && null != this._iv) {
             value = EncryptUtil.aesEncrypt(`${value}`, this._key, this._iv);
         }
         sys.localStorage.setItem(keywords, value);
@@ -86,12 +86,12 @@ export class StorageManager {
 
         key = this.getKey(key);
 
-        if (!PREVIEW) {
+        if (this.encrypted) {
             key = EncryptUtil.md5(key);
         }
 
         let str: string | null = sys.localStorage.getItem(key);
-        if (null != str && '' !== str && !PREVIEW && null != this._key && null != this._iv) {
+        if (null != str && '' !== str && this.encrypted && null != this._key && null != this._iv) {
             str = EncryptUtil.aesDecrypt(str, this._key, this._iv);
         }
 
@@ -135,7 +135,7 @@ export class StorageManager {
 
         var keywords = this.getKey(key);
 
-        if (!PREVIEW) {
+        if (this.encrypted) {
             keywords = EncryptUtil.md5(keywords);
         }
         sys.localStorage.removeItem(keywords);
@@ -146,10 +146,16 @@ export class StorageManager {
         sys.localStorage.clear();
     }
 
+    /** 获取数据分组关键字 */
     private getKey(key: string): string {
         if (this._id == null || this._id == "") {
             return key;
         }
         return `${this._id}_${key}`;
+    }
+
+    /** 数据加密开关 */
+    private get encrypted(): boolean {
+        return !PREVIEW
     }
 }
