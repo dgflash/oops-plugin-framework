@@ -124,33 +124,6 @@ export class TimerManager extends Component {
         return this.serverTime + this.getTime();
     }
 
-    /**
-     * 格式化日期显示
-     * @param format 格式化字符串（例：yyyy-MM-dd hh:mm:ss）
-     * @param date   时间对象
-     */
-    format(format: string, date: Date): string {
-        let o: any = {
-            "M+": date.getMonth() + 1,                      // month 
-            "d+": date.getDate(),                           // day 
-            "h+": date.getHours(),                          // hour 
-            "m+": date.getMinutes(),                        // minute 
-            "s+": date.getSeconds(),                        // second 
-            "q+": Math.floor((date.getMonth() + 3) / 3),    // quarter 
-            "S": date.getMilliseconds()                     // millisecond 
-        }
-        if (/(y+)/.test(format)) {
-            format = format.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
-        }
-
-        for (let k in o) {
-            if (new RegExp("(" + k + ")").test(format)) {
-                format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
-            }
-        }
-        return format;
-    }
-
     /** 获取游戏开始到现在逝去的时间 */
     getTime(): number {
         return this.getLocalTime() - this.initTime;
