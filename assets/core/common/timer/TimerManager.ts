@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-01-19 14:37:19
  */
-import { Component } from "cc";
+import { Component, game } from "cc";
 import { StringUtil } from "../../utils/StringUtil";
 import { Timer } from "./Timer";
 
@@ -12,13 +12,11 @@ import { Timer } from "./Timer";
 export class TimerManager extends Component {
     /** 倒计时数据 */
     private times: any = {};
-    /** 当前游戏进入的时间毫秒值 */
-    private initTime: number = (new Date()).getTime();
     /** 服务器时间与本地时间同步 */
     private serverTime: number = 0;
 
+    /** 后台管理倒计时完成事件 */
     update(dt: number) {
-        // 后台管理倒计时完成事件
         for (let key in this.times) {
             let data = this.times[key];
             var timer = data.timer as Timer;
@@ -111,27 +109,24 @@ export class TimerManager extends Component {
 
     /**
      * 服务器时间与本地时间同步
-     * @param val   服务器时间刻度
-     * 
+     * @param value   服务器时间刻度
      */
-    setServerTime(val?: number): number {
-        if (val) {
-            this.serverTime = val;
-        }
-        return this.serverTime;
+    setServerTime(value: number): void {
+        this.serverTime = value;
     }
+    /** 获取写服务器同步的时间刻度 */
     getServerTime(): number {
         return this.serverTime + this.getTime();
-    }
-
-    /** 获取游戏开始到现在逝去的时间 */
-    getTime(): number {
-        return this.getLocalTime() - this.initTime;
     }
 
     /** 获取本地时间刻度 */
     getLocalTime(): number {
         return Date.now();
+    }
+
+    /** 获取游戏开始到现在逝去的时间 */
+    getTime(): number {
+        return game.totalTime;
     }
 
     /** 游戏最小化时记录时间数据 */
