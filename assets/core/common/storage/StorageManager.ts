@@ -133,7 +133,7 @@ export class StorageManager {
             return;
         }
 
-        var keywords = `${key}_${this._id}`;
+        var keywords = this.getKey(key);
 
         if (!PREVIEW) {
             keywords = EncryptUtil.md5(keywords);
