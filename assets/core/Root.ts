@@ -16,7 +16,7 @@ import { GameManager } from "./game/GameManager";
 import { GUI } from "./gui/GUI";
 import { LayerManager } from "./gui/layer/LayerManager";
 
-const { ccclass, property } = _decorator;
+const { property } = _decorator;
 
 var isInited = false;
 
@@ -27,7 +27,7 @@ export class Root extends Component {
         type: Node,
         tooltip: "游戏层"
     })
-    game: Node = null!;
+    game: Node = null!;            // 可使用多摄像机自定义二维或三维游戏场景
 
     /** 界面层节点 */
     @property({
@@ -37,7 +37,7 @@ export class Root extends Component {
     gui: Node = null!;
 
     /** 持久根节点 */
-    persistRootNode: Node = null!
+    private persistRootNode: Node = null!
 
     onLoad() {
         if (!isInited) {
