@@ -257,11 +257,6 @@ export class LayerUI extends Node {
         return result;
     }
 
-    /** 层节点数量 */
-    size(): number {
-        return this.children.length;
-    }
-
     /**
      * 清除所有节点，队列当中的也删除
      * @param isDestroy  移除后是否释放
