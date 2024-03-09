@@ -91,13 +91,15 @@ export class LayerUI extends Node {
             bundle = bundle || oops.res.defaultBundleName;
             oops.res.load(bundle, viewParams.prefabPath, (err: Error | null, res: Prefab) => {
                 if (err) {
-                    error(err);
+                    this.ui_nodes.delete(viewParams.uuid);
+                    error(`路径为【${viewParams.prefabPath}】的预制加载失败`);
+                    return;
                 }
 
                 let childNode: Node = instantiate(res);
                 viewParams.node = childNode;
 
-                let comp: DelegateComponent = childNode.addComponent(DelegateComponent);
+                let comp = childNode.addComponent(DelegateComponent);
                 comp.viewParams = viewParams;
 
                 this.createNode(viewParams);
@@ -112,11 +114,9 @@ export class LayerUI extends Node {
     protected createNode(viewParams: ViewParams) {
         viewParams.valid = true;
 
-        let comp: DelegateComponent = viewParams.node.getComponent(DelegateComponent)!;
+        let comp = viewParams.node.getComponent(DelegateComponent)!;
         comp.add();
         viewParams.node.parent = this;
-
-        return viewParams.node;
     }
 
     /**
@@ -255,11 +255,6 @@ export class LayerUI extends Node {
             }
         }
         return result;
-    }
-
-    /** 层节点数量 */
-    size(): number {
-        return this.children.length;
     }
 
     /**

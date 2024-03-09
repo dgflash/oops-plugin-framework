@@ -59,9 +59,7 @@ export class LayerDialog extends LayerPopUp {
             if (onRemove_Source) {
                 onRemove_Source(node, params);
             }
-            setTimeout(() => {
-                this.next();
-            }, 0);
+            setTimeout(this.next.bind(this), 0);
         };
 
         viewParams.params = params || {};

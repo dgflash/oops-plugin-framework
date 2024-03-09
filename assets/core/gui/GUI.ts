@@ -4,18 +4,14 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-01-19 14:52:40
  */
-import { Camera, Component, ResolutionPolicy, UITransform, _decorator, math, screen, view } from "cc";
+import { Component, ResolutionPolicy, UITransform, _decorator, math, screen, view } from "cc";
 import { oops } from "../Oops";
 
-const { ccclass, menu } = _decorator;
+const { ccclass } = _decorator;
 
 /** 游戏界面屏幕自适应管理 */
 @ccclass('GUI')
 export class GUI extends Component {
-    /** 界面层矩形信息组件 */
-    transform!: UITransform;
-    /** 游戏二维摄像机 */
-    camera!: Camera;
     /** 是否为竖屏显示 */
     portrait!: boolean;
 
@@ -23,6 +19,8 @@ export class GUI extends Component {
     private portraitDrz: math.Size = null!;
     /** 横屏设计尺寸 */
     private landscapeDrz: math.Size = null!;
+    /** 界面层矩形信息组件 */
+    private transform: UITransform = null!;
 
     onLoad() {
         this.init();
@@ -31,7 +29,6 @@ export class GUI extends Component {
     /** 初始化引擎 */
     protected init() {
         this.transform = this.getComponent(UITransform)!;
-        this.camera = this.getComponentInChildren(Camera)!;
 
         if (view.getDesignResolutionSize().width > view.getDesignResolutionSize().height) {
             this.landscapeDrz = view.getDesignResolutionSize();
