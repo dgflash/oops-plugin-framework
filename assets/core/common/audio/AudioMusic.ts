@@ -39,30 +39,40 @@ export class AudioMusic extends AudioSource {
      * @param callback     加载完成回调
      */
     public load(url: string, callback?: Function) {
-        oops.res.load(url, AudioClip, (err: Error | null, data: AudioClip) => {
-            if (err) {
-                error(err);
-            }
+        if (this._url == null) {
+            oops.res.load(url, AudioClip, (err: Error | null, data: AudioClip) => {
+                if (err) {
+                    error(err);
+                }
 
-            if (this.playing) {
-                this._isPlay = false;
-                this.stop();
-            }
+                // 注：事件定义在这里，是为了在播放前设置初始播放位置数据
+                callback && callback();
 
-            if (this._url) {
-                oops.res.release(this._url);
-            }
+                this.playPrepare(url, data);
+            });
+        }
+        else {
+            this.playPrepare(url, this.clip!);
+        }
+    }
 
-            this.enabled = true;
-            this.clip = data;
+    private playPrepare(url: string, data: AudioClip) {
+        if (this.playing) {
+            this._isPlay = false;
+            this.stop();
+        }
 
-            // 注：事件定义在这里，是为了在播放前设置初始播放位置数据
-            callback && callback();
+        if (this._url) {
+            this.clip = null;
+            oops.res.release(this._url);
+        }
 
-            this.play();
+        this.enabled = true;
+        this.clip = data;
 
-            this._url = url;
-        });
+        this.play();
+
+        this._url = url;
     }
 
     /** cc.Component 生命周期方法，验证背景音乐播放完成逻辑，建议不要主动调用 */
@@ -73,7 +83,9 @@ export class AudioMusic extends AudioSource {
 
         if (this._isPlay && this.playing == false && this.progress == 0) {
             this._isPlay = false;
-            this.enabled = false
+            this.enabled = false;
+            this.clip = null;
+            this._url = null!;
             this.onComplete && this.onComplete();
         }
     }
@@ -81,7 +93,7 @@ export class AudioMusic extends AudioSource {
     /** 释放当前背景音乐资源 */
     release() {
         if (this._url) {
-            this.clip?.destroy();
+            this.clip = null;
             oops.res.release(this._url);
             this._url = null!;
         }

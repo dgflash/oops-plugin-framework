@@ -35,14 +35,15 @@ export class AudioManager extends Component {
      * @param callback   音乐播放完成事件
      */
     playMusic(url: string, callback?: Function) {
-        if (this._switch_music) {
-            if (!this.music.playing) this.music.load(url, callback);
+        if (this._switch_music && !this.music.playing) {
+            this.music.loop = false;
+            this.music.load(url, callback);
         }
     }
 
     /** 循环播放背景音乐 */
     playMusicLoop(url: string) {
-        if (this._switch_music) {
+        if (this._switch_music && !this.music.playing) {
             this.music.loop = true;
             this.music.load(url);
         }
