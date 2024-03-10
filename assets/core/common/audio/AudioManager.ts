@@ -37,7 +37,7 @@ export class AudioManager extends Component {
      */
     playMusic(url: string, callback?: Function) {
         if (this._switch_music) {
-            this.music.load(url, callback);
+            if (!this.music.playing) this.music.load(url, callback);
         }
     }
 
@@ -132,23 +132,22 @@ export class AudioManager extends Component {
      */
     set switchEffect(value: boolean) {
         this._switch_effect = value;
-        if (value == false)
-            this.effect.stop();
+        if (value == false) this.effect.stop();
     }
 
     /** 恢复当前暂停的音乐与音效播放 */
     resumeAll() {
         if (this.music) {
-            this.music.play();
-            this.effect.play();
+            if (!this.music.playing && this.music.progress > 0) this.music.play();
+            if (!this.effect.playing && this.effect.progress > 0) this.effect.play();
         }
     }
 
     /** 暂停当前音乐与音效的播放 */
     pauseAll() {
         if (this.music) {
-            this.music.pause();
-            this.effect.pause();
+            if (this.music.playing) this.music.pause();
+            if (this.effect.playing) this.effect.pause();
         }
     }
 

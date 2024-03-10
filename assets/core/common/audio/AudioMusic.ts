@@ -18,7 +18,6 @@ export class AudioMusic extends AudioSource {
     private _url: string = null!;
     private _isPlay: boolean = false;
 
-
     /** 获取音乐播放进度 */
     get progress(): number {
         if (this.duration > 0)
@@ -72,7 +71,7 @@ export class AudioMusic extends AudioSource {
             this._isPlay = true;
         }
 
-        if (this._isPlay && this.playing == false) {
+        if (this._isPlay && this.playing == false && this.progress == 0) {
             this._isPlay = false;
             this.enabled = false
             this.onComplete && this.onComplete();
