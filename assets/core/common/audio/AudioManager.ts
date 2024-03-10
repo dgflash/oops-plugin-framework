@@ -12,11 +12,10 @@ const LOCAL_STORE_KEY = "game_audio";
 oops.audio.playMusic("audios/nocturne");
  */
 export class AudioManager extends Component {
+    music: AudioMusic = null!;
+    effect: AudioEffect = null!;
+
     private local_data: any = {};
-
-    private music!: AudioMusic;
-    private effect!: AudioEffect;
-
     private _volume_music: number = 1;
     private _volume_effect: number = 1;
     private _switch_music: boolean = true;

@@ -73,8 +73,9 @@ export class GameComponent extends Component {
 
     //#region 资源加载管理
     /** 资源路径 */
-    private resPaths: Map<string, string> = new Map();
-    private resPathsDir: Map<string, string> = new Map();
+    private resPaths: Map<string, string> = new Map();                  // 游戏资源
+    private resPathsDir: Map<string, string> = new Map();               // 游戏资源文件夹
+    private resPathsAudioEffect: Map<string, string> = new Map();       // 音效类资源
 
     /**
      * 获取资源
@@ -180,6 +181,15 @@ export class GameComponent extends Component {
         this.resPathsDir.clear();
         this.resPathsDir = null!;
     }
+
+    /** 释放音效资源 */
+    releaseAudioEffect() {
+        this.resPathsAudioEffect.forEach((value: string, key: string) => {
+            oops.audio.effect.release(key);
+        });
+        this.resPathsAudioEffect.clear();
+        this.resPathsAudioEffect = null!;
+    }
     //#endregion
 
     //#region 音频播放管理
@@ -188,7 +198,6 @@ export class GameComponent extends Component {
      * @param url       资源地址
      */
     playMusic(url: string) {
-        this.resPaths.set(url, oops.res.defaultBundleName);
         oops.audio.playMusic(url);
     }
 
@@ -197,7 +206,6 @@ export class GameComponent extends Component {
      * @param url        资源地址
      */
     playMusicLoop(url: string) {
-        this.resPaths.set(url, oops.res.defaultBundleName);
         oops.audio.playMusicLoop(url);
     }
 
@@ -206,7 +214,7 @@ export class GameComponent extends Component {
     * @param url        资源地址
     */
     playEffect(url: string) {
-        this.resPaths.set(url, oops.res.defaultBundleName);
+        this.resPathsAudioEffect.set(url, oops.res.defaultBundleName);
         oops.audio.playEffect(url);
     }
     //#endregion
@@ -329,6 +337,7 @@ export class GameComponent extends Component {
         this.nodes.clear();
 
         // 自动释放资源
+        this.releaseAudioEffect();
         this.release();
         this.releaseDir();
     }
