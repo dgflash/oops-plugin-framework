@@ -81,6 +81,7 @@ export class AudioMusic extends AudioSource {
     /** 释放当前背景音乐资源 */
     release() {
         if (this._url) {
+            this.clip?.destroy();
             oops.res.release(this._url);
             this._url = null!;
         }

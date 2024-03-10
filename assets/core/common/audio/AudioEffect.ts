@@ -64,7 +64,9 @@ export class AudioEffect extends AudioSource {
      */
     release(url: string) {
         if (this.effects.has(url)) {
+            var ac = this.effects.get(url);
             this.effects.delete(url);
+            ac?.destroy();
             oops.res.release(url);
         }
     }
