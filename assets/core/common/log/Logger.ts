@@ -106,7 +106,7 @@ oops.log.table(object);
      * 打印标准日志
      * @param msg       日志消息
      */
-    static trace(msg: any, color: string = "color:#000000;") {
+    static trace(msg: any, color: string = "color:#ffffff;") {
         // 标记没有打开，不打印该日志
         if (!this.isOpen(LogType.Trace)) {
             return;
