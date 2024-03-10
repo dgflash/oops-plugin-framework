@@ -7,7 +7,6 @@
  * getByUuid    : 根据预制件路径获取当前显示的该预制件的所有Node节点数组。
  * has          : 判断当前层是否包含 uuid或预制件路径对应的Node节点。
  * find         : 判断当前层是否包含 uuid或预制件路径对应的Node节点。
- * size         : 当前层上显示的所有Node节点数。
  * clear        : 清除所有Node节点，队列当中未创建的任务也会被清除。
  */
 import { error, instantiate, isValid, Node, Prefab, warn, Widget } from "cc";
