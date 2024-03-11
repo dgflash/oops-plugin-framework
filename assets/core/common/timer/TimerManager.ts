@@ -162,7 +162,9 @@ export class TimerManager extends Component {
                 data.object[data.field] = 0;
                 this.onTimerComplete(data);
             }
-            this.times[key].startTime = null;
+            else {
+                this.times[key].startTime = null;
+            }
         }
     }
-}
+} 
