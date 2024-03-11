@@ -230,6 +230,9 @@ export class GameComponent extends Component {
      * Label2(event: EventTouch) { console.log(event.target.name); }
      */
     protected setButton(...args: string[]) {
+        this.setButtonList(args);
+    }
+    protected setButtonList(args: string[]) {
         this.node.on(Node.EventType.TOUCH_END, (event: EventTouch) => {
             var self: any = this;
             var func = self[event.target.name];
@@ -249,6 +252,9 @@ export class GameComponent extends Component {
      *  onGlobal(event: string, args: any) { console.log(args) };
      */
     protected setEvent(...args: string[]) {
+        this.setButtonList(args);
+    }
+    protected setEventList(args: string[]) {
         var self: any = this;
         for (const name of args) {
             var func = self[name];
