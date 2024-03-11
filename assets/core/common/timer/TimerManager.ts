@@ -12,8 +12,12 @@ import { Timer } from "./Timer";
 export class TimerManager extends Component {
     /** 倒计时数据 */
     private times: any = {};
-    /** 服务器时间与本地时间同步 */
-    private serverTime: number = 0;
+    /** 服务器时间 */
+    private date_s: Date = new Date();
+    /** 服务器初始时间 */
+    private date_s_start: Date = new Date();
+    /** 客户端时间 */
+    private date_c: Date = new Date();
 
     /** 后台管理倒计时完成事件 */
     update(dt: number) {
@@ -103,8 +107,7 @@ export class TimerManager extends Component {
     }
      */
     unRegister(id: string) {
-        if (this.times[id])
-            delete this.times[id];
+        if (this.times[id]) delete this.times[id];
     }
 
     /**
@@ -112,16 +115,29 @@ export class TimerManager extends Component {
      * @param value   服务器时间刻度
      */
     setServerTime(value: number): void {
-        this.serverTime = value;
+        this.date_s_start.setTime(value);
     }
+
     /** 获取写服务器同步的时间刻度 */
     getServerTime(): number {
-        return this.serverTime + this.getTime();
+        return this.date_s_start.getTime() + this.getTime();
+    }
+
+    /** 获取服务器时间对象 */
+    getServerDate(): Date {
+        this.date_s.setTime(this.getServerTime());
+        return this.date_s;
     }
 
     /** 获取本地时间刻度 */
-    getLocalTime(): number {
+    getClientTime(): number {
         return Date.now();
+    }
+
+    /** 获取本地时间对象 */
+    getClientDate(): Date {
+        this.date_c.setTime(this.getClientTime());
+        return this.date_c;
     }
 
     /** 获取游戏开始到现在逝去的时间 */
@@ -130,14 +146,14 @@ export class TimerManager extends Component {
     }
 
     /** 游戏最小化时记录时间数据 */
-    save() {
+    save(): void {
         for (let key in this.times) {
             this.times[key].startTime = this.getTime();
         }
     }
 
     /** 游戏最大化时回复时间数据 */
-    load() {
+    load(): void {
         for (let key in this.times) {
             let interval = Math.floor((this.getTime() - (this.times[key].startTime || this.getTime())) / 1000);
             let data = this.times[key];
