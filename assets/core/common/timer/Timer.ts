@@ -6,7 +6,7 @@
  */
 
 /** 
- * 定时跳动组件 
+ * 定时触发组件 
  * @example
     export class Test extends Component {
         // 创建一个定时跳动组件
@@ -42,6 +42,10 @@ export class Timer {
         return this._elapsedTime / this._step;
     }
 
+    /**
+     * 定时触发组件
+     * @param step  触发间隔时间（秒）
+     */
     constructor(step: number = 0) {
         this.step = step;
     }
