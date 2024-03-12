@@ -10,6 +10,7 @@ import { EventDispatcher } from "../../core/common/event/EventDispatcher";
 import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage";
 import { AssetType, CompleteCallback, ProgressCallback } from "../../core/common/loader/ResLoader";
 import { ViewUtil } from "../../core/utils/ViewUtil";
+import { EventHandler } from "cc";
 
 const { ccclass } = _decorator;
 
@@ -239,7 +240,7 @@ export class GameComponent extends Component {
             var func = self[event.target.name];
             if (func)
                 func.call(this, event);
-            else
+            else if (event.target != this.node)
                 console.error(`名为【${event.target.name}】的按钮事件方法不存在`);
         }, this);
 
@@ -249,8 +250,9 @@ export class GameComponent extends Component {
             var node = b.node;
             var self: any = this;
             var func = self[node.name];
-            if (func)
+            if (func) {
                 node.on(Node.EventType.TOUCH_END, func, this);
+            }
             else
                 console.error(`名为【${node.name}】的按钮事件方法不存在`);
         });
