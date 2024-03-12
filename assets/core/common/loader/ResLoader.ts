@@ -118,21 +118,21 @@ oops.res.load("spine_path", sp.SkeletonData, (err: Error | null, sd: sp.Skeleton
         this.loadByArgs(args);
     }
 
-    loadAsync<T extends Asset>(bundleName: string, paths: string | string[], type: AssetType<T> | null): Promise<Asset>;
-    loadAsync<T extends Asset>(bundleName: string, paths: string | string[]): Promise<Asset>;
-    loadAsync<T extends Asset>(bundleName: string, paths: string | string[]): Promise<Asset>;
-    loadAsync<T extends Asset>(bundleName: string, paths: string | string[], type: AssetType<T> | null): Promise<Asset>;
-    loadAsync<T extends Asset>(paths: string | string[], type: AssetType<T> | null): Promise<Asset>;
-    loadAsync<T extends Asset>(paths: string | string[]): Promise<Asset>;
-    loadAsync<T extends Asset>(paths: string | string[]): Promise<Asset>;
-    loadAsync<T extends Asset>(paths: string | string[], type: AssetType<T> | null): Promise<Asset>;
-    loadAsync<T extends Asset>(bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null, type?: AssetType<T> | ProgressCallback | CompleteCallback | null): Promise<Asset> {
+    loadAsync<T extends Asset>(bundleName: string, paths: string | string[], type: AssetType<T> | null): Promise<T>;
+    loadAsync<T extends Asset>(bundleName: string, paths: string | string[]): Promise<T>;
+    loadAsync<T extends Asset>(bundleName: string, paths: string | string[]): Promise<T>;
+    loadAsync<T extends Asset>(bundleName: string, paths: string | string[], type: AssetType<T> | null): Promise<T>;
+    loadAsync<T extends Asset>(paths: string | string[], type: AssetType<T> | null): Promise<T>;
+    loadAsync<T extends Asset>(paths: string | string[]): Promise<T>;
+    loadAsync<T extends Asset>(paths: string | string[]): Promise<T>;
+    loadAsync<T extends Asset>(paths: string | string[], type: AssetType<T> | null): Promise<T>;
+    loadAsync<T extends Asset>(bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null, type?: AssetType<T> | ProgressCallback | CompleteCallback | null): Promise<T> {
         return new Promise((resolve, reject) => {
-            this.load(bundleName, paths, type, (err: Error | null, asset: Asset) => {
+            this.load(bundleName, paths, type, (err: Error | null, asset: T) => {
                 if (err) {
                     error(err.message);
                 }
-                resolve(asset)
+                resolve(asset);
             });
         });
     }
