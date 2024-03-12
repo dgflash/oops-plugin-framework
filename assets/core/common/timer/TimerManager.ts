@@ -74,7 +74,7 @@ export class TimerManager extends Component {
         }
     }
      */
-    register(object: any, field: string, onSecond: Function, onComplete: Function): any {
+    register(object: any, field: string, onSecond: Function, onComplete: Function): string {
         var timer = new Timer();
         timer.step = 1;
 
