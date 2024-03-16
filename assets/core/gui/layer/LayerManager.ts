@@ -50,8 +50,15 @@ export interface UIConfig {
     layer: LayerType;
     /** 预制资源相对路径 */
     prefab: string;
+    /** 是否触摸非窗口区域关闭 */
+    vacancy?: boolean,
+    /** 是否打开窗口后显示背景遮罩 */
+    mask?: boolean;
+    /** 是否自动施放 */
+    destroy?: boolean;
 }
 
+/** 界面层级管理器 */
 export class LayerManager {
     /** 界面根节点 */
     root!: Node;
@@ -260,16 +267,16 @@ export class LayerManager {
         var result: Node = null!;
         switch (config.layer) {
             case LayerType.UI:
-                result = this.ui.getByPrefabPath(config.prefab);
+                result = this.ui.get(config.prefab);
                 break;
             case LayerType.PopUp:
-                result = this.popup.getByPrefabPath(config.prefab);
+                result = this.popup.get(config.prefab);
                 break;
             case LayerType.Dialog:
-                result = this.dialog.getByPrefabPath(config.prefab);
+                result = this.dialog.get(config.prefab);
                 break;
             case LayerType.System:
-                result = this.system.getByPrefabPath(config.prefab);
+                result = this.system.get(config.prefab);
                 break;
         }
         return result;
@@ -282,7 +289,7 @@ export class LayerManager {
      * @example
      * oops.gui.remove(UIID.Loading);
      */
-    remove(uiId: number, isDestroy: boolean = true) {
+    remove(uiId: number, isDestroy?: boolean) {
         var config = this.configs[uiId];
         if (config == null) {
             warn(`删除编号为【${uiId}】的界面失败，配置信息不存在`);
@@ -308,16 +315,39 @@ export class LayerManager {
     /**
      * 删除一个通过this框架添加进来的节点
      * @param node          窗口节点
-     * @param isDestroy     移除后是否释放
+     * @param isDestroy     移除后是否释放资源
      * @example
      * oops.gui.removeByNode(cc.Node);
      */
-    removeByNode(node: Node, isDestroy: boolean = false) {
+    removeByNode(node: Node, isDestroy?: boolean) {
         if (node instanceof Node) {
             let comp = node.getComponent(DelegateComponent);
-            if (comp && comp.viewParams) {
-                // @ts-ignore 注：不对外使用
-                (node.parent as LayerUI).removeByUuid(comp.viewParams.uuid, isDestroy);
+            if (comp && comp.vp) {
+                // 释放显示的界面
+                if (node.parent) {
+                    (node.parent as LayerUI).remove(comp.vp.config.prefab, isDestroy);
+                }
+                // 释放缓存中的界面
+                else if (isDestroy) {
+                    switch (comp.vp.config.layer) {
+                        case LayerType.UI:
+                            // @ts-ignore 注：不对外使用
+                            this.ui.removeCache(comp.vp.config.prefab);
+                            break;
+                        case LayerType.PopUp:
+                            // @ts-ignore 注：不对外使用
+                            this.popup.removeCache(comp.vp.config.prefab);
+                            break;
+                        case LayerType.Dialog:
+                            // @ts-ignore 注：不对外使用
+                            this.dialog.removeCache(comp.vp.config.prefab);
+                            break;
+                        case LayerType.System:
+                            // @ts-ignore 注：不对外使用
+                            this.system.removeCache(comp.vp.config.prefab);
+                            break;
+                    }
+                }
             }
             else {
                 warn(`当前删除的node不是通过界面管理器添加到舞台上`);

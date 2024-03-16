@@ -4,16 +4,20 @@
  * @LastEditTime: 2022-09-02 13:44:28
  */
 
-import { BlockInputEvents, Layers } from "cc";
-import { PopViewParams } from "./Defines";
+import { BlockInputEvents, EventTouch, Layers, Node } from "cc";
+import { ViewUtil } from "../../utils/ViewUtil";
+import { ViewParams } from "./Defines";
 import { UIConfig } from "./LayerManager";
 import { LayerUI } from "./LayerUI";
 
-/*
- * 弹窗层，允许同时弹出多个窗口，弹框参数可以查看 PopViewParams
- */
+const Mask: string = 'common/prefab/mask';
+
+/* 弹窗层，允许同时弹出多个窗口 */
 export class LayerPopUp extends LayerUI {
+    /** 触摸事件阻挡 */
     protected black!: BlockInputEvents;
+    /** 半透明遮罩资源 */
+    protected mask!: Node;
 
     constructor(name: string) {
         super(name);
@@ -26,34 +30,95 @@ export class LayerPopUp extends LayerUI {
         this.black.enabled = false;
     }
 
-    /**
-     * 添加一个预制件节点到PopUp层容器中，该方法将返回一个唯一uuid来标识该操作节点
-     * @param prefabPath 预制件路径
-     * @param params     传给组件onAdded、onRemoved方法的参数。
-     * @param popParams  弹出界面的设置定义，详情见PopViewParams
-     */
-    add(config: UIConfig, params: any, popParams?: PopViewParams): string {
+    protected showUi(vp: ViewParams) {
+        super.showUi(vp);
+
+        // 界面加载完成显示时，启动触摸非窗口区域关闭
+        this.openVacancyRemove(vp.config);
+
+        // 界面加载完成显示时，层级事件阻挡
         this.black.enabled = true;
-        return super.add(config, params, popParams);
     }
 
-    remove(prefabPath: string, isDestroy: boolean): void {
-        super.remove(prefabPath, isDestroy);
+    protected onHide(vp: ViewParams) {
+        super.onHide(vp);
+
+        // 界面关闭后，关闭触摸事件阻挡、关闭触摸非窗口区域关闭、关闭遮罩
         this.setBlackDisable();
     }
 
-    protected removeByUuid(prefabPath: string, isDestroy: boolean): void {
-        super.removeByUuid(prefabPath, isDestroy);
-        this.setBlackDisable();
-    }
-
+    /** 设置触摸事件阻挡 */
     protected setBlackDisable() {
-        this.black.enabled = false;
+        // 所有弹窗关闭后，关闭事件阻挡功能
+        if (this.ui_nodes.size == 0) {
+            this.black.enabled = false;
+        }
+        this.closeVacancyRemove();
+        this.closeMask();
+    }
+
+    /** 关闭遮罩 */
+    protected closeMask() {
+        var flag = true;
+        for (var value of this.ui_nodes.values()) {
+            if (value.config.mask) {
+                flag = false;
+                break;
+            }
+        }
+
+        if (flag) {
+            this.mask.parent = null;
+        }
+    }
+
+    /** 启动触摸非窗口区域关闭 */
+    protected openVacancyRemove(config: UIConfig) {
+        if (!this.hasEventListener(Node.EventType.TOUCH_END, this.onTouchEnd, this)) {
+            this.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
+        }
+
+        // 背景半透明遮罩
+        if (this.mask == null) {
+            this.mask = ViewUtil.createPrefabNode(Mask);
+        }
+        if (config.mask) {
+            this.mask.parent = this;
+            this.mask.setSiblingIndex(0);
+        }
+    }
+
+    /** 关闭触摸非窗口区域关闭 */
+    protected closeVacancyRemove() {
+        var flag = true;
+        for (var value of this.ui_nodes.values()) {
+            if (value.config.vacancy) {
+                flag = false;
+                break;
+            }
+        }
+
+        if (flag && this.hasEventListener(Node.EventType.TOUCH_END, this.onTouchEnd, this)) {
+            this.off(Node.EventType.TOUCH_END, this.onTouchEnd, this);
+        }
+    }
+
+    private onTouchEnd(event: EventTouch) {
+        if (event.target === this) {
+            this.ui_nodes.forEach(vp => {
+                // 关闭已显示的界面
+                if (vp.valid && vp.config.vacancy) {
+                    this.remove(vp.config.prefab, true);
+                }
+            });
+        }
     }
 
     clear(isDestroy: boolean) {
         super.clear(isDestroy)
         this.black.enabled = false;
         this.active = false;
+        this.closeVacancyRemove();
+        this.closeMask();
     }
 }

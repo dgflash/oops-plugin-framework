@@ -5,6 +5,7 @@
  * @LastEditTime: 2022-03-25 23:43:25
  */
 
+import { Material } from 'cc';
 import { Color, Component, macro, MeshRenderer, Node, renderer, v2, Vec2, Vec3, _decorator } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -32,7 +33,7 @@ export class NavLine extends Component {
     xEuler = true;
 
     /* 材质 */
-    private mat: renderer.MaterialInstance = null!;
+    private mat: Material | renderer.MaterialInstance | null = null!;
 
     /* 导航线是否启动 */
     private inited = false;
@@ -56,7 +57,7 @@ export class NavLine extends Component {
         this.mesh.node.active = true;
         this.frame = 0;
         this.inited = true;
-        this.mat.setProperty("mainColor", this.color);
+        this.mat?.setProperty("mainColor", this.color);
 
         this.start_pos.set(this.player.worldPosition);
         this.target_pos.set(pos);
@@ -76,7 +77,7 @@ export class NavLine extends Component {
         this.node.setScale(this.node.scale.x, this.node.scale.y, this.distance);
         this.node.setWorldPosition(this.player.worldPosition);
         this.tOffset.y = this.distance * this.density;
-        this.mat.setProperty("tilingOffset", this.tOffset);
+        this.mat?.setProperty("tilingOffset", this.tOffset);
 
         if (this.xEuler) this.rotation(this.start_pos, this.target_pos);
     }

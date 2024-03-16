@@ -23,54 +23,53 @@ type DialogParam = {
 export class LayerDialog extends LayerPopUp {
     /** 窗口调用参数队列 */
     private params: Array<DialogParam> = [];
-    /** 当前窗口数据 */
-    private current!: ViewParams;
 
-    add(config: UIConfig, params?: any, callbacks?: UICallbacks): string {
-        this.black.enabled = true;
-
-        if (this.current && this.current.valid) {
-            let uuid = this.getUuid(config.prefab);
+    add(config: UIConfig, params?: any, callbacks?: UICallbacks) {
+        // 控制同一时间只能显示一个模式窗口
+        if (this.ui_nodes.size > 0) {
             this.params.push({
                 config: config,
                 params: params,
                 callbacks: callbacks,
             });
-            return uuid;
+            return;
         }
-        return this.show(config, params, callbacks);
+
+        this.black.enabled = true;
+        this.show(config, params, callbacks);
     }
 
+    /** 显示模式弹窗 */
     private show(config: UIConfig, params?: any, callbacks?: UICallbacks): string {
-        let prefabPath = config.prefab
-        var uuid = this.getUuid(prefabPath);
-        var viewParams = this.ui_nodes.get(uuid);
-        if (viewParams == null) {
-            viewParams = new ViewParams();
-            viewParams.uuid = this.getUuid(prefabPath);
-            viewParams.prefabPath = prefabPath;
-            viewParams.valid = true;
-            this.ui_nodes.set(viewParams.uuid, viewParams);
+        var vp = this.ui_cache.get(config.prefab);
+        if (vp == null) {
+            vp = new ViewParams();
+            vp.config = config
+            vp.valid = true;
         }
+        this.ui_nodes.set(vp.config.prefab, vp);
 
-        viewParams.callbacks = callbacks ?? {};
-        var onRemove_Source = viewParams.callbacks.onRemoved;
-        viewParams.callbacks.onRemoved = (node: Node | null, params: any) => {
+        vp.callbacks = callbacks ?? {};
+        var onRemove_Source = vp.callbacks.onRemoved;
+        vp.callbacks.onRemoved = (node: Node | null, params: any) => {
             if (onRemove_Source) {
                 onRemove_Source(node, params);
             }
             setTimeout(this.next.bind(this), 0);
         };
 
-        viewParams.params = params || {};
-        this.current = viewParams;
-        this.load(viewParams, config.bundle);
+        vp.params = params || {};
+        this.load(vp, config.bundle);
 
-        return uuid;
+        return config.prefab;
     }
 
     protected setBlackDisable() {
-        if (this.params.length == 0) this.black.enabled = false;
+        if (this.params.length == 0) {
+            this.black.enabled = false;
+            this.closeVacancyRemove();
+            this.closeMask()
+        }
     }
 
     private next() {

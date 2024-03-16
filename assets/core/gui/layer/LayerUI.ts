@@ -2,14 +2,11 @@
  * UI基础层，允许添加多个预制件节点
  * add          : 添加一个预制件节点到层容器中，该方法将返回一个唯一uuid来标识该操作Node节点。
  * delete       : 根据uuid删除Node节点，如果节点还在队列中也会被删除, 删除节点可以用gui.delete(node)或this.node.destroy()
- * deleteByUuid : 根据预制件路径删除，预制件如在队列中也会被删除，如果该预制件存在多个也会一起删除。
- * get          : 根据uuid获取Node节点，如果节点不存在或者预制件还在队列中，则返回null 。
- * getByUuid    : 根据预制件路径获取当前显示的该预制件的所有Node节点数组。
+ * get          : 根据预制路径获取已打开界面的节点对象，如果节点不存在或者预制件还在队列中，则返回null 。
  * has          : 判断当前层是否包含 uuid或预制件路径对应的Node节点。
- * find         : 判断当前层是否包含 uuid或预制件路径对应的Node节点。
  * clear        : 清除所有Node节点，队列当中未创建的任务也会被清除。
  */
-import { error, instantiate, isValid, Node, Prefab, warn, Widget } from "cc";
+import { error, instantiate, Node, Prefab, warn, Widget } from "cc";
 import { oops } from "../../Oops";
 import { UICallbacks, ViewParams } from "./Defines";
 import { DelegateComponent } from "./DelegateComponent";
@@ -17,7 +14,7 @@ import { UIConfig } from "./LayerManager";
 
 /** 界面层对象 */
 export class LayerUI extends Node {
-    /** 界面节点集合 */
+    /** 显示界面节点集合 */
     protected ui_nodes = new Map<string, ViewParams>();
     /** 被移除的界面缓存数据 */
     protected ui_cache = new Map<string, ViewParams>();
@@ -37,85 +34,81 @@ export class LayerUI extends Node {
         widget.enabled = true;
     }
 
-    /** 构造一个唯一标识UUID */
-    protected getUuid(prefabPath: string): string {
-        var uuid = `${this.name}_${prefabPath}`;
-        return uuid.replace(/\//g, "_");
-    }
-
     /**
      * 添加一个预制件节点到层容器中，该方法将返回一个唯一`uuid`来标识该操作节点
      * @param prefabPath 预制件路径
      * @param params     自定义参数
      * @param callbacks  回调函数对象，可选
+     * @returns ture为成功,false为失败
      */
-    add(config: UIConfig, params?: any, callbacks?: UICallbacks): string {
-        let prefabPath = config.prefab;
-        var uuid = this.getUuid(prefabPath);
-        var viewParams = this.ui_nodes.get(uuid);
-
-        if (viewParams && viewParams.valid) {
-            warn(`路径为【${prefabPath}】的预制重复加载`);
-            return "";
+    add(config: UIConfig, params?: any, callbacks?: UICallbacks) {
+        if (this.ui_nodes.has(config.prefab)) {
+            warn(`路径为【${config.prefab}】的预制重复加载`);
+            return;
         }
 
-        if (viewParams == null) {
-            viewParams = new ViewParams();
-            viewParams.uuid = uuid;
-            viewParams.prefabPath = prefabPath;
-            this.ui_nodes.set(viewParams.uuid, viewParams);
+        // 检查缓存中是否存界面
+        var vp = this.ui_cache.get(config.prefab);
+        if (vp == null) {
+            vp = new ViewParams();
+            vp.config = config;
         }
+        this.ui_nodes.set(config.prefab, vp);
 
-        viewParams.params = params ?? {};
-        viewParams.callbacks = callbacks ?? {};
-        viewParams.valid = true;
+        vp.params = params ?? {};
+        vp.callbacks = callbacks ?? {};
+        vp.valid = true;
 
-        this.load(viewParams, config.bundle)
-
-        return uuid;
+        this.load(vp, config.bundle)
     }
 
     /**
      * 加载界面资源
-     * @param viewParams 显示参数
+     * @param vp         显示参数
      * @param bundle     远程资源包名，如果为空就是默认本地资源包
      */
-    protected load(viewParams: ViewParams, bundle?: string) {
-        var vp: ViewParams = this.ui_nodes.get(viewParams.uuid)!;
+    protected load(vp: ViewParams, bundle?: string) {
         if (vp && vp.node) {
-            this.createNode(vp);
+            this.showUi(vp);
         }
         else {
             // 优先加载配置的指定资源包中资源，如果没配置则加载默认资源包资源
             bundle = bundle || oops.res.defaultBundleName;
-            oops.res.load(bundle, viewParams.prefabPath, (err: Error | null, res: Prefab) => {
+            oops.res.load(bundle, vp.config.prefab, (err: Error | null, res: Prefab) => {
                 if (err) {
-                    this.ui_nodes.delete(viewParams.uuid);
-                    error(`路径为【${viewParams.prefabPath}】的预制加载失败`);
+                    this.ui_nodes.delete(vp.config.prefab);
+                    error(`路径为【${vp.config.prefab}】的预制加载失败`);
                     return;
                 }
 
                 let childNode: Node = instantiate(res);
-                viewParams.node = childNode;
+                vp.node = childNode;
 
                 let comp = childNode.addComponent(DelegateComponent);
-                comp.viewParams = viewParams;
+                comp.vp = vp;
+                comp.onHide = this.onHide.bind(this);
 
-                this.createNode(viewParams);
+                this.showUi(vp);
             });
         }
     }
 
+    protected onHide(vp: ViewParams) {
+        this.ui_nodes.delete(vp.config.prefab);
+    }
+
     /**
      * 创建界面节点
-     * @param viewParams  视图参数
+     * @param vp  视图参数
      */
-    protected createNode(viewParams: ViewParams) {
-        viewParams.valid = true;
-
-        let comp = viewParams.node.getComponent(DelegateComponent)!;
+    protected showUi(vp: ViewParams) {
+        // 触发窗口添加事件
+        let comp = vp.node.getComponent(DelegateComponent)!;
         comp.add();
-        viewParams.node.parent = this;
+        vp.node.parent = this;
+
+        // 标记界面为使用状态
+        vp.valid = true;
     }
 
     /**
@@ -123,55 +116,40 @@ export class LayerUI extends Node {
      * @param prefabPath   预制路径
      * @param isDestroy    移除后是否释放
      */
-    remove(prefabPath: string, isDestroy: boolean): void {
-        // 验证是否删除后台缓存界面
-        if (isDestroy) this.removeCache(prefabPath);
+    remove(prefabPath: string, isDestroy?: boolean): void {
+        var release = true;
+        // 默认不配置为关闭界面释放资源
+        if (isDestroy == undefined) release = true;
 
         // 界面移出舞台
-        let children = this.__nodes();
-        for (let i = 0; i < children.length; i++) {
-            let viewParams = children[i].viewParams;
-            if (viewParams.prefabPath === prefabPath) {
-                if (isDestroy) {
-                    // 直接释放界面
-                    this.ui_nodes.delete(viewParams.uuid);
-                }
-                else {
-                    // 不释放界面，缓存起来待下次使用
-                    this.ui_cache.set(viewParams.prefabPath, viewParams);
-                }
-
-                children[i].remove(isDestroy);
-                viewParams.valid = false;
+        var vp = this.ui_nodes.get(prefabPath);
+        if (vp) {
+            // 优先使用参数中控制的释放条件，如果未传递参数则用配置中的释放条件
+            if (isDestroy == undefined && vp.config.destroy != undefined) {
+                release = vp.config.destroy;
             }
-        }
-    }
 
-    /**
-     * 根据唯一标识删除节点，如果节点还在队列中也会被删除
-     * @param uuid  唯一标识
-     */
-    protected removeByUuid(uuid: string, isDestroy: boolean): void {
-        var viewParams = this.ui_nodes.get(uuid);
-        if (viewParams) {
-            if (isDestroy)
-                this.ui_nodes.delete(viewParams.uuid);
+            // 不释放界面，缓存起来待下次使用
+            if (!release) {
+                this.ui_cache.set(vp.config.prefab, vp);
+            }
 
-            var childNode = viewParams.node;
+            var childNode = vp.node;
             var comp = childNode.getComponent(DelegateComponent)!;
-            comp.remove(isDestroy);
+            comp.remove(release);
         }
+
+        // 验证是否删除后台缓存界面
+        if (release) this.removeCache(prefabPath);
     }
 
-    /** 
-     * 删除缓存的界面，当缓存界面被移除舞台时，可通过此方法删除缓存界面
-     */
+    /** 删除缓存的界面，当缓存界面被移除舞台时，可通过此方法删除缓存界面 */
     private removeCache(prefabPath: string) {
-        let viewParams = this.ui_cache.get(prefabPath);
-        if (viewParams) {
-            this.ui_nodes.delete(viewParams.uuid);
+        let vp = this.ui_cache.get(prefabPath);
+        if (vp) {
+            this.ui_nodes.delete(vp.config.prefab);
             this.ui_cache.delete(prefabPath);
-            var childNode = viewParams.node;
+            var childNode = vp.node;
             childNode.destroy();
         }
     }
@@ -180,80 +158,19 @@ export class LayerUI extends Node {
      * 根据预制路径获取已打开界面的节点对象
      * @param prefabPath  预制路径
      */
-    getByPrefabPath(prefabPath: string): Node {
-        var uuid = this.getUuid(prefabPath);
-        return this.getByUuid(uuid);
-    }
-
-    /**
-     * 根据唯一标识获取节点，如果节点不存在或者还在队列中，则返回null 
-     * @param uuid  唯一标识
-     */
-    getByUuid(uuid: string): Node {
-        let children = this.__nodes();
-        for (let comp of children) {
-            if (comp.viewParams && comp.viewParams.uuid === uuid) {
-                return comp.node;
-            }
-        }
+    get(prefabPath: string): Node {
+        var vp = this.ui_nodes.get(prefabPath);
+        if (vp)
+            return vp.node;
         return null!;
     }
 
     /**
-     * 根据预制件路径获取当前显示的该预制件的所有Node节点数组
-     * @param prefabPath 
-     */
-    get(prefabPath: string): Array<Node> {
-        let arr: Array<Node> = [];
-        let children = this.__nodes();
-        for (let comp of children) {
-            if (comp.viewParams.prefabPath === prefabPath) {
-                arr.push(comp.node);
-            }
-        }
-        return arr;
-    }
-
-    /**
      * 判断当前层是否包含 uuid或预制件路径对应的Node节点
-     * @param prefabPathOrUUID 预制件路径或者UUID
+     * @param prefabPath 预制件路径或者UUID
      */
-    has(prefabPathOrUUID: string): boolean {
-        let children = this.__nodes();
-        for (let comp of children) {
-            if (comp.viewParams.uuid === prefabPathOrUUID || comp.viewParams.prefabPath === prefabPathOrUUID) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * 获取当前层包含指定正则匹配的Node节点。
-     * @param prefabPathReg 匹配预制件路径的正则表达式对象
-     */
-    find(prefabPathReg: RegExp): Node[] {
-        let arr: Node[] = [];
-        let children = this.__nodes();
-        for (let comp of children) {
-            if (prefabPathReg.test(comp.viewParams.prefabPath)) {
-                arr.push(comp.node);
-            }
-        }
-        return arr;
-    }
-
-    /** 获取当前层所有窗口事件触发组件 */
-    protected __nodes(): Array<DelegateComponent> {
-        let result: Array<DelegateComponent> = [];
-        let children = this.children;
-        for (let i = 0; i < children.length; i++) {
-            let comp = children[i].getComponent(DelegateComponent);
-            if (comp && comp.viewParams && comp.viewParams.valid && isValid(comp)) {
-                result.push(comp);
-            }
-        }
-        return result;
+    has(prefabPath: string): boolean {
+        return this.ui_nodes.has(prefabPath);
     }
 
     /**
@@ -263,7 +180,7 @@ export class LayerUI extends Node {
     clear(isDestroy: boolean): void {
         // 清除所有显示的界面
         this.ui_nodes.forEach((value: ViewParams, key: string) => {
-            this.removeByUuid(value.uuid, isDestroy);
+            this.remove(value.config.prefab, isDestroy);
             value.valid = false;
         });
         this.ui_nodes.clear();

@@ -60,7 +60,7 @@ export class ModuleUtil {
      * @param uiId       界面资源编号
      * @param isDestroy  是否释放界面缓存
      */
-    public static removeView(ent: ecs.Entity, ctor: CompType<ecs.IComp>, uiId: number, isDestroy: boolean = true) {
+    public static removeView(ent: ecs.Entity, ctor: CompType<ecs.IComp>, uiId: number, isDestroy?: boolean) {
         ent.remove(ctor);
         oops.gui.remove(uiId, isDestroy);
     }
