@@ -16,11 +16,13 @@ export class TimerManager extends Component {
     private date_s: Date = new Date();
     /** 服务器初始时间 */
     private date_s_start: Date = new Date();
+    /** 服务器时间后修正时间 */
+    private polymeric_s: number = 0;
     /** 客户端时间 */
     private date_c: Date = new Date();
 
     /** 后台管理倒计时完成事件 */
-    update(dt: number) {
+    protected update(dt: number) {
         for (let key in this.times) {
             let data = this.times[key];
             var timer = data.timer as Timer;
@@ -115,12 +117,13 @@ export class TimerManager extends Component {
      * @param value   服务器时间刻度
      */
     setServerTime(value: number): void {
+        this.polymeric_s = this.getTime();
         this.date_s_start.setTime(value);
     }
 
     /** 获取写服务器同步的时间刻度 */
     getServerTime(): number {
-        return this.date_s_start.getTime() + this.getTime();
+        return this.date_s_start.getTime() + this.getTime() - this.polymeric_s;
     }
 
     /** 获取服务器时间对象 */
