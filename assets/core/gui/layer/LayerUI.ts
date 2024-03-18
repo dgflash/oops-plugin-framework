@@ -1,11 +1,3 @@
-/*
- * UI基础层，允许添加多个预制件节点
- * add          : 添加一个预制件节点到层容器中，该方法将返回一个唯一uuid来标识该操作Node节点。
- * delete       : 根据uuid删除Node节点，如果节点还在队列中也会被删除, 删除节点可以用gui.delete(node)或this.node.destroy()
- * get          : 根据预制路径获取已打开界面的节点对象，如果节点不存在或者预制件还在队列中，则返回null 。
- * has          : 判断当前层是否包含 uuid或预制件路径对应的Node节点。
- * clear        : 清除所有Node节点，队列当中未创建的任务也会被清除。
- */
 import { error, instantiate, Node, Prefab, warn, Widget } from "cc";
 import { oops } from "../../Oops";
 import { UICallbacks, ViewParams } from "./Defines";

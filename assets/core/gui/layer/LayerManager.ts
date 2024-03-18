@@ -44,18 +44,21 @@ export var UIConfigData: { [key: number]: UIConfig } = {
 }
  */
 export interface UIConfig {
+    /** -----公共属性----- */
     /** 远程包名 */
     bundle?: string;
     /** 窗口层级 */
     layer: LayerType;
     /** 预制资源相对路径 */
     prefab: string;
+    /** 是否自动施放 */
+    destroy?: boolean;
+
+    /** -----弹窗属性----- */
     /** 是否触摸非窗口区域关闭 */
     vacancy?: boolean,
     /** 是否打开窗口后显示背景遮罩 */
     mask?: boolean;
-    /** 是否自动施放 */
-    destroy?: boolean;
 }
 
 /** 界面层级管理器 */
