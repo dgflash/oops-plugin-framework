@@ -44,12 +44,12 @@ export class GUI extends Component {
 
     /** 游戏画布尺寸变化 */
     resize() {
-        let dr;
+        var dr;
         if (view.getDesignResolutionSize().width > view.getDesignResolutionSize().height) {
             dr = this.landscapeDrz;
         }
         else {
-            dr = this.portraitDrz
+            dr = this.portraitDrz;
         }
 
         var s = screen.windowSize;
@@ -73,8 +73,8 @@ export class GUI extends Component {
 
         // 手工修改canvas和设计分辨率，这样反复调用也能生效。
         view.setDesignResolutionSize(finalW, finalH, ResolutionPolicy.UNKNOWN);
-        this.transform!.width = finalW;
-        this.transform!.height = finalH;
+        this.transform.width = finalW;
+        this.transform.height = finalH;
 
         oops.log.logView(dr, "设计尺寸");
         oops.log.logView(s, "屏幕尺寸");
