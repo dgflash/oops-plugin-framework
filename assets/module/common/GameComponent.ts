@@ -267,7 +267,7 @@ export class GameComponent extends Component {
      *  onGlobal(event: string, args: any) { console.log(args) };
      */
     protected setEvent(...args: string[]) {
-        this.setButtonList(args);
+        this.setEventList(args);
     }
     protected setEventList(args: string[]) {
         var self: any = this;
