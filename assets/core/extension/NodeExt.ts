@@ -1,3 +1,4 @@
+import { Graphics, Label, RichText, Sprite, Button, Canvas, EditBox, Layout, PageView, ProgressBar, ScrollView, Slider, Toggle, Skeleton, Widget, Mask, js, Vec2, Vec3 } from "cc";
 import { Color, Node, Size, UIOpacity, UIRenderer, UITransform, v3 } from "cc";
 import { EDITOR } from "cc/env";
 
@@ -6,6 +7,26 @@ import { EDITOR } from "cc/env";
 /** 扩展节点属性 */
 declare module "cc" {
     interface Node {
+        graphics: Graphics,
+        label: Label,
+        richText: RichText,
+        sprite: Sprite,
+        button: Button,
+        canvas: Canvas,
+        editBox: EditBox,
+        layout: Layout,
+        pageView: PageView,
+        progressBar: ProgressBar,
+        scrollView: ScrollView,
+        slider: Slider,
+        toggle: Toggle,
+        animation: Animation,
+        skeleton: Skeleton,
+        widget: Widget,
+        uiOpacity: UIOpacity,
+        uiTransform: UITransform,
+        mask: Mask;
+
         /** 获取、设置节点的本地X坐标 */
         x: number;
         /** 获取、设置节点的本地Y坐标 */
@@ -46,6 +67,37 @@ if (!EDITOR) {
     if (!Node.prototype["$__definedProperties__"]) {
         //@ts-ignore
         Node.prototype["$__definedProperties__"] = true;
+
+        let componentMap: any = {
+            "graphics": Graphics,
+            "label": Label,
+            "richText": RichText,
+            "sprite": Sprite,
+            "button": Button,
+            "canvas": Canvas,
+            "editBox": EditBox,
+            "layout": Layout,
+            "pageView": PageView,
+            "progressBar": ProgressBar,
+            "scrollView": ScrollView,
+            "slider": Slider,
+            "toggle": Toggle,
+            "animation": Animation,
+            "skeleton": Skeleton,
+            "widget": Widget,
+            "uiOpacity": UIOpacity,
+            "uiTransform": UITransform,
+            "mask": Mask,
+        };
+
+        for (const key in componentMap) {
+            Object.defineProperty(Node.prototype, key, {
+                get: function () {
+                    return this.getComponent(componentMap[key]);
+                },
+                set: function (value) { }
+            });
+        }
 
         /** 获取、设置节点的 X 欧拉角 */
         Object.defineProperty(Node.prototype, "angle_x", {
