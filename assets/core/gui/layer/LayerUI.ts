@@ -109,20 +109,23 @@ export class LayerUI extends Node {
      * @param isDestroy    移除后是否释放
      */
     remove(prefabPath: string, isDestroy?: boolean): void {
-        var release = true;
-        // 默认不配置为关闭界面释放资源
-        if (isDestroy == undefined) release = true;
+        var release = undefined;
+        if (isDestroy !== undefined) release = isDestroy;
 
         // 界面移出舞台
         var vp = this.ui_nodes.get(prefabPath);
         if (vp) {
             // 优先使用参数中控制的释放条件，如果未传递参数则用配置中的释放条件
-            if (isDestroy == undefined && vp.config.destroy != undefined) {
+            if (release === undefined && vp.config.destroy !== undefined) {
                 release = vp.config.destroy;
+            }
+            // 默认不缓存关闭的界面
+            else {
+                release = true;
             }
 
             // 不释放界面，缓存起来待下次使用
-            if (!release) {
+            if (release === false) {
                 this.ui_cache.set(vp.config.prefab, vp);
             }
 
@@ -132,7 +135,7 @@ export class LayerUI extends Node {
         }
 
         // 验证是否删除后台缓存界面
-        if (release) this.removeCache(prefabPath);
+        if (release === true) this.removeCache(prefabPath);
     }
 
     /** 删除缓存的界面，当缓存界面被移除舞台时，可通过此方法删除缓存界面 */
