@@ -1,5 +1,4 @@
-import { Graphics, Label, RichText, Sprite, Button, Canvas, EditBox, Layout, PageView, ProgressBar, ScrollView, Slider, Toggle, Skeleton, Widget, Mask, js, Vec2, Vec3 } from "cc";
-import { Color, Node, Size, UIOpacity, UIRenderer, UITransform, v3 } from "cc";
+import { Button, Canvas, Color, EditBox, Graphics, Label, Layout, Mask, Node, PageView, ProgressBar, RichText, ScrollView, Size, Skeleton, Slider, Sprite, Toggle, UIOpacity, UIRenderer, UITransform, Widget, v3 } from "cc";
 import { EDITOR } from "cc/env";
 
 // ========= 扩展 cc 提示声明 =========
@@ -7,25 +6,25 @@ import { EDITOR } from "cc/env";
 /** 扩展节点属性 */
 declare module "cc" {
     interface Node {
-        graphics: Graphics,
-        label: Label,
-        richText: RichText,
-        sprite: Sprite,
-        button: Button,
-        canvas: Canvas,
-        editBox: EditBox,
-        layout: Layout,
-        pageView: PageView,
-        progressBar: ProgressBar,
-        scrollView: ScrollView,
-        slider: Slider,
-        toggle: Toggle,
-        animation: Animation,
-        skeleton: Skeleton,
-        widget: Widget,
+        uiGraphics: Graphics,
+        uiLabel: Label,
+        uiRichText: RichText,
+        uiSprite: Sprite,
+        uiButton: Button,
+        uiCanvas: Canvas,
+        uiEditBox: EditBox,
+        uiLayout: Layout,
+        uiPageView: PageView,
+        uiProgressBar: ProgressBar,
+        uiScrollView: ScrollView,
+        uiSlider: Slider,
+        uiToggle: Toggle,
+        uiAnimation: Animation,
+        uiSkeleton: Skeleton,
+        uiWidget: Widget,
         uiOpacity: UIOpacity,
         uiTransform: UITransform,
-        mask: Mask;
+        uiMask: Mask;
 
         /** 获取、设置节点的本地X坐标 */
         x: number;
@@ -69,25 +68,25 @@ if (!EDITOR) {
         Node.prototype["$__definedProperties__"] = true;
 
         let componentMap: any = {
-            "graphics": Graphics,
-            "label": Label,
-            "richText": RichText,
-            "sprite": Sprite,
-            "button": Button,
-            "canvas": Canvas,
-            "editBox": EditBox,
-            "layout": Layout,
-            "pageView": PageView,
-            "progressBar": ProgressBar,
-            "scrollView": ScrollView,
-            "slider": Slider,
-            "toggle": Toggle,
-            "animation": Animation,
-            "skeleton": Skeleton,
-            "widget": Widget,
+            "uiGraphics": Graphics,
+            "uiLabel": Label,
+            "uiRichText": RichText,
+            "uiSprite": Sprite,
+            "uiButton": Button,
+            "uiCanvas": Canvas,
+            "uiEditBox": EditBox,
+            "uiLayout": Layout,
+            "uiPageView": PageView,
+            "uiProgressBar": ProgressBar,
+            "uiScrollView": ScrollView,
+            "uiSlider": Slider,
+            "uiToggle": Toggle,
+            "uiAnimation": Animation,
+            "uiSkeleton": Skeleton,
+            "uiWidget": Widget,
             "uiOpacity": UIOpacity,
-            "uiTransform": UITransform,
-            "mask": Mask,
+            "uITransform": UITransform,
+            "uiMask": Mask,
         };
 
         for (const key in componentMap) {
