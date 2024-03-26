@@ -17,7 +17,7 @@ export class LayerPopUp extends LayerUI {
     /** 触摸事件阻挡 */
     protected black!: BlockInputEvents;
     /** 半透明遮罩资源 */
-    protected translucent!: Node;
+    protected mask!: Node;
 
     constructor(name: string) {
         super(name);
@@ -68,7 +68,7 @@ export class LayerPopUp extends LayerUI {
         }
 
         if (flag) {
-            this.translucent.parent = null;
+            this.mask.parent = null;
         }
     }
 
@@ -80,11 +80,11 @@ export class LayerPopUp extends LayerUI {
 
         // 背景半透明遮罩
         if (this.mask == null) {
-            this.translucent = ViewUtil.createPrefabNode(Mask);
+            this.mask = ViewUtil.createPrefabNode(Mask);
         }
         if (config.mask) {
-            this.translucent.parent = this;
-            this.translucent.setSiblingIndex(0);
+            this.mask.parent = this;
+            this.mask.setSiblingIndex(0);
         }
     }
 
