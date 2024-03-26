@@ -10,7 +10,7 @@ import { EventDispatcher } from "../../core/common/event/EventDispatcher";
 import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage";
 import { AssetType, CompleteCallback, ProgressCallback } from "../../core/common/loader/ResLoader";
 import { ViewUtil } from "../../core/utils/ViewUtil";
-import { EventHandler } from "cc";
+import { ButtonTouchLong } from "../../libs/gui/button/ButtonTouchLong";
 
 const { ccclass } = _decorator;
 
@@ -238,10 +238,13 @@ export class GameComponent extends Component {
         this.node.on(Node.EventType.TOUCH_END, (event: EventTouch) => {
             var self: any = this;
             var func = self[event.target.name];
-            if (func)
+            if (func) {
                 func.call(this, event);
-            else if (event.target != this.node)
+            }
+            // 不触发界面根节点触摸事件、不触发长按钮组件的触摸事件
+            else if (event.target != this.node && event.target.getComponent(ButtonTouchLong) == null) {
                 console.error(`名为【${event.target.name}】的按钮事件方法不存在`);
+            }
         }, this);
 
         // Cocos Creator Button组件批量绑定触摸事件
