@@ -1,4 +1,4 @@
-import { Camera, Component, EventTouch, gfx, Node, RenderTexture, Sprite, SpriteFrame, UITransform, Vec3, _decorator } from 'cc';
+import { Camera, Component, EventTouch, Node, RenderTexture, Sprite, SpriteFrame, UITransform, Vec3, _decorator, gfx } from 'cc';
 const { ccclass, property } = _decorator;
 
 /** 三维模型显示到二维精灵上 */
@@ -67,7 +67,7 @@ export class RtToSprite extends Component {
     refreshRenderTexture(w: number, h: number): void {
         const colorAttachment = new gfx.ColorAttachment();
         const depthStencilAttachment = new gfx.DepthStencilAttachment();
-        const pi = new gfx.RenderPassInfo([colorAttachment], depthStencilAttachment, []);
+        const pi = new gfx.RenderPassInfo([colorAttachment], depthStencilAttachment);
 
         this.rt.reset({
             width: w,
