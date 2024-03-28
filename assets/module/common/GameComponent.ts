@@ -207,6 +207,7 @@ export class GameComponent extends Component {
      * @param url        资源地址
      */
     playMusicLoop(url: string) {
+        oops.audio.stopMusic();
         oops.audio.playMusicLoop(url);
     }
 

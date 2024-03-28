@@ -38,7 +38,7 @@ export class AudioMusic extends AudioSource {
      * @param url          音乐资源地址
      * @param callback     加载完成回调
      */
-    public load(url: string, callback?: Function) {
+    load(url: string, callback?: Function) {
         if (this._url == null) {
             oops.res.load(url, AudioClip, (err: Error | null, data: AudioClip) => {
                 if (err) {
@@ -54,6 +54,12 @@ export class AudioMusic extends AudioSource {
         else {
             this.playPrepare(url, this.clip!);
         }
+    }
+
+    /** 停止音乐播放 */
+    stop() {
+        this._url = null;
+        super.stop();
     }
 
     private playPrepare(url: string, data: AudioClip) {

@@ -49,6 +49,13 @@ export class AudioManager extends Component {
         }
     }
 
+    /** 停止背景音乐播放 */
+    stopMusic() {
+        if (this._switch_music && this.music.playing) {
+            this.music.stop();
+        }
+    }
+
     /**
      * 获取背景音乐播放进度
      */
