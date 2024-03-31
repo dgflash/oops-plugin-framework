@@ -71,7 +71,7 @@ export class GUI extends Component {
             this.portrait = true;
         }
 
-        // 手工修改canvas和设计分辨率，这样反复调用也能生效。
+        // 通过设置设计分辨率和匹配模式来进行游戏画面的屏幕适配
         view.setDesignResolutionSize(finalW, finalH, ResolutionPolicy.UNKNOWN);
         this.transform.width = finalW;
         this.transform.height = finalH;
