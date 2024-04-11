@@ -19,4 +19,8 @@ export class GameManager {
     setTimeScale(scale: number) {
         director.globalGameTimeScale = scale;
     }
+    /** 获取游戏动画速度 */
+    getTimeScale() {
+        return director.globalGameTimeScale;
+    }
 }
