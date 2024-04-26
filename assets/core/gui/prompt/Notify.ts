@@ -18,6 +18,9 @@ export class Notify extends Component {
     @property(Animation)
     private animation: Animation = null!;
 
+    /** 提示动画完成 */
+    onComplete: Function = null!;
+
     onLoad() {
         if (this.animation)
             this.animation.on(Animation.EventType.FINISHED, this.onFinished, this);
@@ -25,6 +28,7 @@ export class Notify extends Component {
 
     private onFinished() {
         this.node.destroy();
+        this.onComplete && this.onComplete();
     }
 
     /**

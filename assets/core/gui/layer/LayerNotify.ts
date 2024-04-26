@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 13:44:12
  */
-import { BlockInputEvents, Layers, Node, Widget } from "cc";
+import { BlockInputEvents, Layers, Node, Widget, find, instantiate } from "cc";
 import { ViewUtil } from "../../utils/ViewUtil";
 import { Notify } from "../prompt/Notify";
 
@@ -15,9 +15,13 @@ const WaitPrefabPath: string = 'common/prefab/wait';
  * 滚动消息提示层
  */
 export class LayerNotify extends Node {
-    /** 游戏运行时永久缓冲资源 */
-    private wait: Node = null!;
     private black!: BlockInputEvents;
+    /** 等待提示资源 */
+    private wait: Node = null!;
+    /** 自定义弹出提示资源 */
+    private notify: Node = null!;
+    /** 自定义弹出提示内容资源 */
+    private notifyItem: Node = null!;
 
     constructor(name: string) {
         super(name);
@@ -59,9 +63,32 @@ export class LayerNotify extends Node {
      * @param useI18n 是否使用多语言
      */
     toast(content: string, useI18n: boolean): void {
-        let childNode = ViewUtil.createPrefabNode(ToastPrefabPath)
-        let toastCom = childNode.getComponent(Notify)!;
-        childNode.parent = this;
-        toastCom.toast(content, useI18n);
+        try {
+            if (this.notify == null) {
+                this.notify = ViewUtil.createPrefabNode(ToastPrefabPath);
+                this.notifyItem = find("item", this.notify)!;
+                this.notifyItem.parent = null;
+            }
+
+            this.notify.parent = this;
+            let childNode = instantiate(this.notifyItem);
+            let toastCom = childNode.getChildByName("prompt")!.getComponent(Notify)!;
+            childNode.parent = this.notify;
+
+            toastCom.onComplete = () => {
+                if (this.notify.children.length == 0) {
+                    this.notify.parent = null;
+                }
+            };
+            toastCom.toast(content, useI18n);
+
+            // 超过3个提示，就施放第一个提示
+            if (this.notify.children.length > 3) {
+                this.notify.children[0].destroy();
+            }
+        }
+        catch {
+            console.error("从oops-game-kit项目中拷贝 assets/bundle/common/prefab/notify.prefab 与 assets/bundle/common/anim/notify.anim 覆盖到本项目中");
+        }
     }
 }
