@@ -103,22 +103,9 @@ export class Root extends Component {
         oops.ecs.init();
 
         // 游戏显示事件
-        game.on(Game.EVENT_SHOW, () => {
-            oops.timer.load();     // 平台不需要在退出时精准计算时间，直接暂时游戏时间
-            oops.audio.resumeAll();
-            director.resume();
-            game.resume();
-            oops.message.dispatchEvent(EventMessage.GAME_SHOW);
-        });
-
+        game.on(Game.EVENT_SHOW, this.onShow, this);
         // 游戏隐藏事件
-        game.on(Game.EVENT_HIDE, () => {
-            oops.timer.save();     // 平台不需要在退出时精准计算时间，直接暂时游戏时间
-            oops.audio.pauseAll();
-            director.pause();
-            game.pause();
-            oops.message.dispatchEvent(EventMessage.GAME_HIDE);
-        });
+        game.on(Game.EVENT_HIDE, this.onHide, this);
 
         // 游戏尺寸修改事件
         var c_gui = this.gui.addComponent(GUI)!;
@@ -136,5 +123,21 @@ export class Root extends Component {
         screen.on("orientation-change", () => {
             oops.message.dispatchEvent(EventMessage.GAME_ORIENTATION);
         }, this);
+    }
+
+    private onShow() {
+        oops.timer.load();     // 平台不需要在退出时精准计算时间，直接暂时游戏时间
+        oops.audio.resumeAll();
+        director.resume();
+        game.resume();
+        oops.message.dispatchEvent(EventMessage.GAME_SHOW);
+    }
+
+    private onHide() {
+        oops.timer.save();     // 平台不需要在退出时精准计算时间，直接暂时游戏时间
+        oops.audio.pauseAll();
+        director.pause();
+        game.pause();
+        oops.message.dispatchEvent(EventMessage.GAME_HIDE);
     }
 }
