@@ -113,7 +113,7 @@ export class StorageManager {
     /** 获取指定关键字的布尔值 */
     getBoolean(key: string): boolean {
         var r = this.get(key);
-        return Boolean(r) || false;
+        return r.toLowerCase() === 'true';
     }
 
     /** 获取指定关键字的JSON对象 */
