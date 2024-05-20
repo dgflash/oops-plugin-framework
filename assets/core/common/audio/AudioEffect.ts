@@ -38,16 +38,23 @@ export class AudioEffect extends AudioSource {
      * @param url           音效资源地址
      * @param callback      资源加载完成并开始播放回调
      */
-    load(url: string, callback?: Function) {
-        oops.res.load(url, AudioClip, (err: Error | null, data: AudioClip) => {
-            if (err) {
-                error(err);
-            }
-
-            this.effects.set(url, data);
-            this.playOneShot(data, this.volume);
+    load(url: string | AudioClip, callback?: Function) {
+        if (url instanceof AudioClip) {
+            this.effects.set(url.uuid, url);
+            this.playOneShot(url, this.volume);
             callback && callback();
-        });
+        }
+        else {
+            oops.res.load(url, AudioClip, (err: Error | null, data: AudioClip) => {
+                if (err) {
+                    error(err);
+                }
+
+                this.effects.set(url, data);
+                this.playOneShot(data, this.volume);
+                callback && callback();
+            });
+        }
     }
 
     /** 释放所有已使用过的音效资源 */
@@ -62,10 +69,18 @@ export class AudioEffect extends AudioSource {
      * 释放指定地址音效资源
      * @param url           音效资源地址
      */
-    release(url: string) {
-        if (this.effects.has(url)) {
-            this.effects.delete(url);
-            oops.res.release(url);
+    release(url: string | AudioClip) {
+        if (url instanceof AudioClip) {
+            if (this.effects.has(url.uuid)) {
+                this.effects.delete(url.uuid);
+                url.decRef();
+            }
+        }
+        else {
+            if (this.effects.has(url)) {
+                this.effects.delete(url);
+                oops.res.release(url);
+            }
         }
     }
 }

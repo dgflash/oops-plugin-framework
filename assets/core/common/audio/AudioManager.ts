@@ -1,4 +1,4 @@
-import { Component } from "cc";
+import { AudioClip, Component } from "cc";
 import { oops } from "../../Oops";
 import { AudioEffect } from "./AudioEffect";
 import { AudioMusic } from "./AudioMusic";
@@ -106,10 +106,15 @@ export class AudioManager extends Component {
      * 播放音效
      * @param url        资源地址
      */
-    playEffect(url: string) {
+    playEffect(url: string | AudioClip) {
         if (this._switch_effect) {
             this.effect.load(url);
         }
+    }
+
+    /** 释放音效资源 */
+    releaseEffect(url: string | AudioClip) {
+        this.effect.release(url);
     }
 
     /** 

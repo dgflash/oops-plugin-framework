@@ -10,6 +10,7 @@ import ButtonSimple from "./ButtonSimple";
 
 const { ccclass, property, menu } = _decorator;
 
+/** 准备废弃，请使用UIButton代替 */
 @ccclass("ButtonEffect")
 @menu('ui/button/ButtonEffect')
 export default class ButtonEffect extends ButtonSimple {

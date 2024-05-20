@@ -9,6 +9,7 @@ import ButtonEffect from "./ButtonEffect";
 
 const { ccclass, property, menu } = _decorator;
 
+/** 准备废弃，请使用UIButton代替 */
 @ccclass("ButtonTouchLong")
 @menu('ui/button/ButtonTouchLong')
 export class ButtonTouchLong extends ButtonEffect {

@@ -2,6 +2,7 @@ import { Component, EventTouch, game, Node, _decorator } from "cc";
 
 const { ccclass, property, menu } = _decorator;
 
+/** 准备废弃，请使用UIButton代替 */
 @ccclass("ButtonSimple")
 @menu('ui/button/ButtonSimple')
 export default class ButtonSimple extends Component {
