@@ -58,7 +58,7 @@ export class AudioMusic extends AudioSource {
 
     /** 停止音乐播放 */
     stop() {
-        this._url = null;
+        this._url = null!;
         super.stop();
     }
 
