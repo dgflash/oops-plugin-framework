@@ -10,7 +10,7 @@
  * @param event      事件名
  * @param args       事件参数
  */
-export type ListenerFunc = (event: string, args: any) => void
+export type ListenerFunc = (event: string, ...args: any) => void
 
 /** 框架内部全局事件  */
 export enum EventMessage {

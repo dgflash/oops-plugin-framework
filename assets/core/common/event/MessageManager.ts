@@ -11,7 +11,7 @@ class EventData {
  * 批量注册、移除全局事件对象
  */
 export class MessageEventData {
-    private events: any = {};
+    private events: Map<string, Array<EventData>> = new Map();
 
     /**
      * 注册全局事件
@@ -20,16 +20,16 @@ export class MessageEventData {
      * @param object     侦听函数绑定的作用域对象
      */
     on(event: string, listener: ListenerFunc, object: object) {
-        let list: Array<EventData> = this.events[event];
-        if (list == null) {
-            list = [];
-            this.events[event] = list;
+        let eds = this.events.get(event);
+        if (eds == null) {
+            eds = [];
+            this.events.set(event, eds);
         }
-        let data: EventData = new EventData();
-        data.event = event;
-        data.listener = listener;
-        data.object = object;
-        list.push(data);
+        let ed: EventData = new EventData();
+        ed.event = event;
+        ed.listener = listener;
+        ed.object = object;
+        eds.push(ed);
 
         MessageManager.Instance.on(event, listener, object);
     }
@@ -39,14 +39,13 @@ export class MessageEventData {
      * @param event     事件名
      */
     off(event: string) {
-        let ebs: Array<EventData> = this.events[event];
-        if (!ebs) {
-            return;
-        }
-        for (let eb of ebs) {
+        let eds = this.events.get(event);
+        if (!eds) return;
+
+        for (let eb of eds) {
             MessageManager.Instance.off(event, eb.listener, eb.object);
         }
-        delete this.events[event];
+        this.events.delete(event);
     }
 
     /** 
@@ -54,8 +53,8 @@ export class MessageEventData {
      * @param event(string)      事件名
      * @param args(any)          事件参数
      */
-    dispatchEvent(event: string, arg: any = null) {
-        MessageManager.Instance.dispatchEvent(event, arg);
+    dispatchEvent(event: string, ...args: any) {
+        MessageManager.Instance.dispatchEvent(event, args);
     }
 
     /** 清除所有的全局事件监听 */
@@ -109,7 +108,7 @@ export class RoleViewComp extends Component{
 export class MessageManager {
     static readonly Instance: MessageManager = new MessageManager();
 
-    private events: any = {};
+    private events: Map<string, Array<EventData>> = new Map();
 
     /**
      * 注册全局事件
@@ -123,15 +122,15 @@ export class MessageManager {
             return;
         }
 
-        let list: Array<EventData> = this.events[event];
-        if (list == null) {
-            list = [];
-            this.events[event] = list;
+        let eds = this.events.get(event);
+        if (eds == null) {
+            eds = [];
+            this.events.set(event, eds);
         }
 
-        let length = list.length;
+        let length = eds.length;
         for (let i = 0; i < length; i++) {
-            let bin = list[i];
+            let bin = eds[i];
             if (bin.listener == listener && bin.object == object) {
                 warn(`名为【${event}】的事件重复注册侦听器`);
             }
@@ -142,7 +141,7 @@ export class MessageManager {
         data.event = event;
         data.listener = listener;
         data.object = object;
-        list.push(data);
+        eds.push(data);
     }
 
     /**
@@ -152,7 +151,7 @@ export class MessageManager {
      * @param object    侦听函数绑定的作用域对象
      */
     once(event: string, listener: ListenerFunc, object: object) {
-        let _listener: any = ($event: string, $args: any) => {
+        let _listener: any = ($event: string, ...$args: any) => {
             this.off(event, _listener, object);
             _listener = null;
             listener.call(object, $event, $args);
@@ -167,24 +166,24 @@ export class MessageManager {
      * @param object    侦听函数绑定的作用域对象
      */
     off(event: string, listener: Function, object: object) {
-        let list: Array<EventData> = this.events[event];
+        let eds = this.events.get(event);
 
-        if (!list) {
+        if (!eds) {
             log(`名为【${event}】的事件不存在`);
             return;
         }
 
-        let length = list.length;
+        let length = eds.length;
         for (let i = 0; i < length; i++) {
-            let bin: EventData = list[i];
+            let bin: EventData = eds[i];
             if (bin.listener == listener && bin.object == object) {
-                list.splice(i, 1);
+                eds.splice(i, 1);
                 break;
             }
         }
 
-        if (list.length == 0) {
-            delete this.events[event];
+        if (eds.length == 0) {
+            this.events.delete(event);
         }
     }
 
@@ -193,14 +192,14 @@ export class MessageManager {
      * @param event(string)      事件名
      * @param args(any)          事件参数
      */
-    dispatchEvent(event: string, args: any = null) {
-        let list: Array<EventData> = this.events[event];
+    dispatchEvent(event: string, ...args: any) {
+        let list = this.events.get(event);
 
         if (list != null) {
-            let temp: Array<EventData> = list.concat();
-            let length = temp.length;
+            let eds: Array<EventData> = list.concat();
+            let length = eds.length;
             for (let i = 0; i < length; i++) {
-                let eventBin = temp[i];
+                let eventBin = eds[i];
                 eventBin.listener.call(eventBin.object, event, args);
             }
         }

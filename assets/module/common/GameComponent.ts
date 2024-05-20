@@ -84,7 +84,7 @@ export class GameComponent extends Component {
      * @param type          资源类型
      * @param bundleName    远程资源包名
      */
-    getRes<T extends Asset>(path: string, type?: __private._types_globals__Constructor<T> | null, bundleName?: string): T | null {
+    getRes<T extends Asset>(path: string, type?: __private.__types_globals__Constructor<T> | null, bundleName?: string): T | null {
         return oops.res.get(path, type, bundleName);
     }
 
