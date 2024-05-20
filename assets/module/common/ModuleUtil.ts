@@ -17,7 +17,7 @@ export class ModuleUtil {
      */
     public static addViewUi<T extends CCVMParentComp | CCComp>(
         ent: ecs.Entity,
-        ctor: __private._types_globals__Constructor<T> | __private._types_globals__AbstractedConstructor<T>,
+        ctor: __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>,
         uiId: number,
         uiArgs: any = null) {
         var uic: UICallbacks = {
@@ -39,7 +39,7 @@ export class ModuleUtil {
      */
     public static addViewUiAsync<T extends CCVMParentComp | CCComp>(
         ent: ecs.Entity,
-        ctor: __private._types_globals__Constructor<T> | __private._types_globals__AbstractedConstructor<T>,
+        ctor: __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>,
         uiId: number,
         uiArgs: any = null): Promise<Node | null> {
         return new Promise<Node | null>((resolve, reject) => {
@@ -75,7 +75,7 @@ export class ModuleUtil {
     */
     public static addView<T extends CCVMParentComp | CCComp>(
         ent: ecs.Entity,
-        ctor: __private._types_globals__Constructor<T> | __private._types_globals__AbstractedConstructor<T>,
+        ctor: __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>,
         parent: Node,
         url: string) {
         var node = ViewUtil.createPrefabNode(url);
