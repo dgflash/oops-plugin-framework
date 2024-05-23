@@ -1,4 +1,4 @@
-import { error, instantiate, Node, Prefab, warn, Widget } from "cc";
+import { instantiate, Node, Prefab, Widget } from "cc";
 import { oops } from "../../Oops";
 import { UICallbacks, ViewParams } from "./Defines";
 import { DelegateComponent } from "./DelegateComponent";
@@ -35,7 +35,7 @@ export class LayerUI extends Node {
      */
     add(config: UIConfig, params?: any, callbacks?: UICallbacks) {
         if (this.ui_nodes.has(config.prefab)) {
-            warn(`路径为【${config.prefab}】的预制重复加载`);
+            console.warn(`路径为【${config.prefab}】的预制重复加载`);
             return;
         }
 
@@ -69,7 +69,8 @@ export class LayerUI extends Node {
             oops.res.load(bundle, vp.config.prefab, (err: Error | null, res: Prefab) => {
                 if (err) {
                     this.ui_nodes.delete(vp.config.prefab);
-                    error(`路径为【${vp.config.prefab}】的预制加载失败`);
+                    console.warn(`路径为【${vp.config.prefab}】的预制加载失败`);
+                    vp.callbacks && vp.callbacks.onLoadFailure && vp.callbacks.onLoadFailure();
                     return;
                 }
 

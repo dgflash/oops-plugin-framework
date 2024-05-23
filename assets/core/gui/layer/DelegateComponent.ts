@@ -37,14 +37,17 @@ export class DelegateComponent extends Component {
             if (typeof this.vp.callbacks.onBeforeRemove === "function") {
                 this.vp.callbacks.onBeforeRemove(
                     this.node,
-                    () => {
-                        this.removed(this.vp, isDestroy);
-                    });
+                    this.onBeforeRemoveNext.bind(this, isDestroy));
             }
             else {
                 this.removed(this.vp, isDestroy);
             }
         }
+    }
+
+    /** 窗口关闭前动画处理完后的回调方法，主要用于释放资源 */
+    private onBeforeRemoveNext(isDestroy?: boolean) {
+        this.removed(this.vp, isDestroy);
     }
 
     /** 窗口组件中触发移除事件与释放窗口对象 */

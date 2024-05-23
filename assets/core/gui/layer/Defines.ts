@@ -30,7 +30,10 @@ export interface UICallbacks {
      * @param node   当前界面节点
      * @param next   回调方法
      */
-    onBeforeRemove?: (node: Node, next: Function) => void
+    onBeforeRemove?: (node: Node, next: Function) => void,
+
+    /** 网络异常时，窗口加载失败回调 */
+    onLoadFailure?: () => void;
 }
 
 /** 本类型仅供gui模块内部使用，请勿在功能逻辑中使用 */

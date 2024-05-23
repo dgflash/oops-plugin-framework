@@ -191,7 +191,10 @@ export class LayerManager {
         return new Promise<Node | null>((resolve, reject) => {
             var callbacks: UICallbacks = {
                 onAdded: (node: Node, params: any) => {
-                    resolve(node)
+                    resolve(node);
+                },
+                onLoadFailure: () => {
+                    resolve(null);
                 }
             };
             this.open(uiId, uiArgs, callbacks);

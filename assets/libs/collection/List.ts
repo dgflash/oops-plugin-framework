@@ -1,5 +1,5 @@
 /** 列表 */
-export class List<T>  {
+export class List<T> {
     private element: Array<T>;
 
     /** 是否保证元素的唯一性 */
@@ -54,9 +54,9 @@ export class List<T>  {
         if (this.element.length > 0) {
             const result = this.element.pop();
             this.count = this.element.length;
-            return result;
+            return result!;
         }
-        return null;
+        return null!;
     }
 
     /**
@@ -67,9 +67,9 @@ export class List<T>  {
         if (this.element.length > 0) {
             const result = this.element.shift();
             this.count = this.element.length;
-            return result;
+            return result!;
         }
-        return null;
+        return null!;
     }
 
     /**
