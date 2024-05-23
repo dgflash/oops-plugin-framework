@@ -48,6 +48,9 @@ export class ModuleUtil {
                     var comp = node.getComponent(ctor) as ecs.Comp;
                     ent.add(comp);
                     resolve(node);
+                },
+                onLoadFailure: () => {
+                    resolve(null);
                 }
             };
             oops.gui.open(uiId, uiArgs, uic);
