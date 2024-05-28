@@ -116,13 +116,18 @@ export class LayerUI extends Node {
         // 界面移出舞台
         var vp = this.ui_nodes.get(prefabPath);
         if (vp) {
-            // 优先使用参数中控制的释放条件，如果未传递参数则用配置中的释放条件
-            if (release === undefined && vp.config.destroy !== undefined) {
-                release = vp.config.destroy;
-            }
-            // 默认不缓存关闭的界面
-            else {
-                release = true;
+            // // 优先使用参数中控制的释放条件，如果未传递参数则用配置中的释放条件
+            // if (release === undefined && vp.config.destroy !== undefined) {
+            //     release = vp.config.destroy;
+            // }
+            // // 默认不缓存关闭的界面
+            // else {
+            //     release = true;
+            // }
+
+            // 优先使用参数中控制的释放条件，如果未传递参数则用配置中的释放条件，默认不缓存关闭的界面
+            if (release === undefined) {
+                release = vp.config.destroy !== undefined ? vp.config.destroy : true;
             }
 
             // 不释放界面，缓存起来待下次使用
