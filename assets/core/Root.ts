@@ -111,7 +111,6 @@ export class Root extends Component {
         var c_gui = this.gui.addComponent(GUI)!;
         if (sys.isMobile == false) {
             screen.on("window-resize", () => {
-                c_gui.resize();
                 oops.message.dispatchEvent(EventMessage.GAME_RESIZE);
             }, this);
 

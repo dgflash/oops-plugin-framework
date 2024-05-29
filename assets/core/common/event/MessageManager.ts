@@ -200,7 +200,7 @@ export class MessageManager {
             let length = eds.length;
             for (let i = 0; i < length; i++) {
                 let eventBin = eds[i];
-                eventBin.listener.call(eventBin.object, event, args);
+                eventBin.listener.call(eventBin.object, event, ...args);
             }
         }
     }
