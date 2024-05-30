@@ -225,16 +225,13 @@ export class GameComponent extends Component {
     /** 
      * 批量设置当前界面按钮事件
      * @example
-     * 注：按钮节点Label1、Label2必须绑定ButtonSimple、ButtonEffect等类型的按钮组件才会生效，方法名必须与节点名一致
-     * this.setButton("Label1", "Label2");
+     * 注：按钮节点Label1、Label2必须绑定UIButton等类型的按钮组件才会生效，方法名必须与节点名一致
+     * this.setButton();
      * 
      * Label1(event: EventTouch) { console.log(event.target.name); }
      * Label2(event: EventTouch) { console.log(event.target.name); }
      */
-    protected setButton(...args: string[]) {
-        this.setButtonList(args);
-    }
-    protected setButtonList(args: string[]) {
+    protected setButton() {
         // 自定义按钮批量绑定触摸事件
         this.node.on(Node.EventType.TOUCH_END, (event: EventTouch) => {
             var self: any = this;

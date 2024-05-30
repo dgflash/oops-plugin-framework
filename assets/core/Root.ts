@@ -108,7 +108,7 @@ export class Root extends Component {
         game.on(Game.EVENT_HIDE, this.onHide, this);
 
         // 游戏尺寸修改事件
-        var c_gui = this.gui.addComponent(GUI)!;
+        // var c_gui = this.gui.addComponent(GUI)!;
         if (sys.isMobile == false) {
             screen.on("window-resize", () => {
                 oops.message.dispatchEvent(EventMessage.GAME_RESIZE);
