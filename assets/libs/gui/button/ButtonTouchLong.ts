@@ -9,7 +9,7 @@ import ButtonEffect from "./ButtonEffect";
 
 const { ccclass, property, menu } = _decorator;
 
-/** 准备废弃，请使用UIButton代替 */
+/** 长按按钮 */
 @ccclass("ButtonTouchLong")
 @menu('ui/button/ButtonTouchLong')
 export class ButtonTouchLong extends ButtonEffect {
@@ -65,7 +65,9 @@ export class ButtonTouchLong extends ButtonEffect {
             if (this._passTime >= this.time) {
                 this._isTouchLong = true;
                 this.clickEvents.forEach(event => {
-                    event.emit([event.customEventData])
+                    event.emit([event.customEventData]);
+                    // 长按触摸音效
+                    this.playEffect();
                 });
                 this.removeTouchLong();
             }

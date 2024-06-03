@@ -4,13 +4,13 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-02-09 10:54:28
  */
-import { Animation, AnimationClip, EventTouch, Sprite, _decorator } from "cc";
+import { Animation, AnimationClip, EventTouch, Node, Sprite, _decorator } from "cc";
 import { oops } from "../../../core/Oops";
 import ButtonSimple from "./ButtonSimple";
 
 const { ccclass, property, menu } = _decorator;
 
-/** 准备废弃，请使用UIButton代替 */
+/** 有特效短按按钮 */
 @ccclass("ButtonEffect")
 @menu('ui/button/ButtonEffect')
 export default class ButtonEffect extends ButtonSimple {
@@ -40,6 +40,8 @@ export default class ButtonEffect extends ButtonSimple {
         this.anim.createState(ac_start, ac_start?.name);
         this.anim.createState(ac_end, ac_end?.name);
 
+        this.node.on(Node.EventType.TOUCH_START, this.onTouchtStart, this);
+
         super.onLoad();
     }
 
@@ -55,5 +57,11 @@ export default class ButtonEffect extends ButtonSimple {
         }
 
         super.onTouchEnd(event);
+    }
+
+
+    onDestroy() {
+        this.node.off(Node.EventType.TOUCH_START, this.onTouchtStart, this);
+        super.onDestroy();
     }
 }
