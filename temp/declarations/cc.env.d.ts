@@ -10,9 +10,49 @@ declare module 'cc/env'{
 	export const NATIVE: boolean;
 
 	/**
+	 * Running in ANDROID platform
+	 */
+	export const ANDROID: boolean;
+
+	/**
+	 * Running in IOS platform
+	 */
+	export const IOS: boolean;
+
+	/**
+	 * Running in MAC platform
+	 */
+	export const MAC: boolean;
+
+	/**
+	 * Running in WINDOWS platform
+	 */
+	export const WINDOWS: boolean;
+
+	/**
+	 * Running in LINUX platform
+	 */
+	export const LINUX: boolean;
+
+	/**
+	 * Running in OHOS platform
+	 */
+	export const OHOS: boolean;
+
+	/**
+	 * Running in OPEN_HARMONY platform
+	 */
+	export const OPEN_HARMONY: boolean;
+
+	/**
 	 * Running in the Wechat's mini game.
 	 */
 	export const WECHAT: boolean;
+
+	/**
+	 * Running in the Wechat's mini program.
+	 */
+	export const WECHAT_MINI_PROGRAM: boolean;
 
 	/**
 	 * Running in the baidu's mini game.
@@ -33,6 +73,11 @@ declare module 'cc/env'{
 	 * Running in the taobao creative app.
 	 */
 	export const TAOBAO: boolean;
+
+	/**
+	 * Running in the taobao mini game.
+	 */
+	export const TAOBAO_MINIGAME: boolean;
 
 	/**
 	 * Running in the ByteDance's mini game.
@@ -73,6 +118,11 @@ declare module 'cc/env'{
 	 * Running in the editor.
 	 */
 	export const EDITOR: boolean;
+
+	/**
+	 * Run in editor but not in editor preview.
+	 */
+	export const EDITOR_NOT_IN_PREVIEW: boolean;
 
 	/**
 	 * Preview in browser or simulator.

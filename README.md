@@ -7,10 +7,13 @@ Oops Framework 基于 Cocos Creator 3.x 开发的一款游戏框架。
     - 热更新配置生成插件([传送门](https://gitee.com/dgflash/oops-plugin-hot-update))
     - 策划Excel配置表生成Json格式与配套ts代码插件([传送门](https://gitee.com/dgflash/oops-plugin-excel-to-json))
 
-### 技术文档
-- [oops-framework](https://dgflash.gitee.io/oops-plugin-framework/)
+### [视频教程](https://www.bilibili.com/video/BV1WV4y1G7Gb/?spm_id_from=333.337.search-card.all.click&vd_source=2ecab277f9fb79c5e11c909bf0affd34)
+
+#### 技术文档
+- [oops-framework](https://oops-1255342636.cos.ap-shanghai.myqcloud.com/doc/oops-framework/index.html)
 - [ecs](https://gitee.com/dgflash/oops-framework/tree/master/doc/ecs/ecs.md)
 - [mvvm](https://gitee.com/dgflash/oops-framework/tree/master/doc/mvvm)
+- [animator](https://github.com/LeeYip/cocos-animator/blob/master/README.md)
 
 ### 学习部署说明
 1. 下载教程项目
@@ -83,8 +86,7 @@ module             - 游戏通用模块
 - 628575875（3群）
 - 226524184（4群）
 
-### QQ频道扫码加入，提供教程，持续更新
-![](http://dgflash.gitee.io/oops-full-stack-web/doc/img/qq.png)
+### QQ频道提供教程，持续更新（频道号：q366856bf5）
 
 
 ### 在线演示

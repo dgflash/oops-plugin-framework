@@ -22,7 +22,7 @@ export class EffectFinishedRelease extends Component {
         let spine = this.getComponent(sp.Skeleton);
         if (spine) {
             // 播放第一个动画
-            let json = (spine.skeletonData.skeletonJson as any).animations;
+            let json = (spine.skeletonData!.skeletonJson! as any).animations;
             for (var name in json) {
                 spine.setCompleteListener(this.onRecovery.bind(this));
                 spine.setAnimation(0, name, false);

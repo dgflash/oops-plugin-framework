@@ -22,8 +22,6 @@ export * from './assets/core/common/timer/TimerManager';
 export * from './assets/core/common/timer/Timer';
 export * from './assets/core/common/storage/StorageManager';
 /** core/game */
-export * from './assets/core/game/GameCollision';
-export * from './assets/core/game/GameComponent';
 export * from './assets/core/game/GameManager';
 /** core/gui */
 export * from './assets/core/gui/GUI';
@@ -80,11 +78,10 @@ export * from './assets/libs/network/WebSock';
 /** module/ecs */
 export * from './assets/module/common/CCComp';
 export * from './assets/module/common/CCVMParentComp';
+export * from './assets/module/common/GameCollision';
+export * from './assets/module/common/GameComponent';
+export * from './assets/module/common/ModuleUtil';
 /** module/config */
 export * from './assets/module/config/Config';
 export * from './assets/module/config/GameConfig';
 export * from './assets/module/config/GameQueryConfig';
-
-
-
-
