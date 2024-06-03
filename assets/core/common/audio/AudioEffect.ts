@@ -6,7 +6,7 @@
  */
 import { AudioClip, AudioSource, _decorator, error } from 'cc';
 import { oops } from '../../Oops';
-const { ccclass, menu } = _decorator;
+const { ccclass } = _decorator;
 
 /**
  * 注：用playOneShot播放的音乐效果，在播放期间暂时没办法即时关闭音乐
@@ -39,21 +39,31 @@ export class AudioEffect extends AudioSource {
      * @param callback      资源加载完成并开始播放回调
      */
     load(url: string | AudioClip, callback?: Function) {
+        // 资源播放音乐对象
         if (url instanceof AudioClip) {
             this.effects.set(url.uuid, url);
             this.playOneShot(url, this.volume);
             callback && callback();
         }
         else {
-            oops.res.load(url, AudioClip, (err: Error | null, data: AudioClip) => {
-                if (err) {
-                    error(err);
-                }
+            // 地址加载音乐资源后播放
+            if (this.effects.has(url) == false) {
+                oops.res.load(url, AudioClip, (err: Error | null, data: AudioClip) => {
+                    if (err) {
+                        error(err);
+                    }
 
-                this.effects.set(url, data);
-                this.playOneShot(data, this.volume);
+                    this.effects.set(url, data);
+                    this.playOneShot(data, this.volume);
+                    callback && callback();
+                });
+            }
+            // 播放缓存中音效
+            else {
+                const ac = this.effects.get(url)!;
+                this.playOneShot(ac, this.volume);
                 callback && callback();
-            });
+            }
         }
     }
 
@@ -70,14 +80,17 @@ export class AudioEffect extends AudioSource {
      * @param url           音效资源地址
      */
     release(url: string | AudioClip) {
+        var ac: AudioClip | undefined = undefined;
         if (url instanceof AudioClip) {
-            if (this.effects.has(url.uuid)) {
-                this.effects.delete(url.uuid);
-                url.decRef();
+            ac = url;
+            if (this.effects.has(ac.uuid)) {
+                this.effects.delete(ac.uuid);
+                ac.decRef();
             }
         }
         else {
-            if (this.effects.has(url)) {
+            ac = this.effects.get(url);
+            if (ac) {
                 this.effects.delete(url);
                 oops.res.release(url);
             }
