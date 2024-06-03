@@ -12,13 +12,20 @@ const LOCAL_STORE_KEY = "game_audio";
 oops.audio.playMusic("audios/nocturne");
  */
 export class AudioManager extends Component {
+    /** 背景音乐管理对象 */
     music: AudioMusic = null!;
+    /** 音效管理对象 */
     effect: AudioEffect = null!;
 
+    /** 音乐管理状态数据 */
     private local_data: any = {};
+    /** 背景音乐音量值 */
     private _volume_music: number = 1;
+    /** 音效音量值 */
     private _volume_effect: number = 1;
+    /** 背景音乐播放开关 */
     private _switch_music: boolean = true;
+    /** 音效果播放开关 */
     private _switch_effect: boolean = true;
 
     /**
