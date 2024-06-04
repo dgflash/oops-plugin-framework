@@ -8,7 +8,7 @@ const { ccclass, property, menu } = _decorator;
 @menu('ui/button/ButtonSimple')
 export default class ButtonSimple extends Component {
     @property({
-        tooltip: "是否只能触发一次"
+        tooltip: "是否只触发一次"
     })
     private once: boolean = false;
 

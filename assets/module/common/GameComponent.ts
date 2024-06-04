@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-12-13 11:36:00
  */
-import { Asset, Button, Component, EventKeyboard, EventTouch, Input, Node, __private, _decorator, input } from "cc";
+import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, __private, _decorator, input } from "cc";
 import { oops } from "../../core/Oops";
 import { EventDispatcher } from "../../core/common/event/EventDispatcher";
 import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage";
@@ -245,14 +245,19 @@ export class GameComponent extends Component {
             }
         }, this);
 
-        // Cocos Creator Button组件批量绑定触摸事件
+        // Cocos Creator Button组件批量绑定触摸事件（使用UIButton支持放连点功能）
+        const regex = /<([^>]+)>/;
         var buttons = this.node.getComponentsInChildren<Button>(Button);
         buttons.forEach((b: Button) => {
             var node = b.node;
             var self: any = this;
             var func = self[node.name];
             if (func) {
-                node.on(Node.EventType.TOUCH_END, func, this);
+                var event = new EventHandler();
+                event.target = this.node;
+                event.handler = b.node.name;
+                event.component = this.name.match(regex)![1];
+                b.clickEvents.push(event);
             }
             else
                 console.error(`名为【${node.name}】的按钮事件方法不存在`);
