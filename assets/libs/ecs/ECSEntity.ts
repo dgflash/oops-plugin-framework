@@ -241,15 +241,19 @@ export class ECSEntity {
             comp.ent = null;
             if (isRecycle) {
                 comp.reset();
+
+                // 回收组件到指定缓存池中
                 if (comp.canRecycle) {
-                    ECSModel.compPools.get(componentTypeId)!.push(comp);
+                    const compPoolsType = ECSModel.compPools.get(componentTypeId)!;
+                    compPoolsType.push(comp);
                 }
             }
             else {
-                this.compTid2Obj.set(componentTypeId, comp);
+                this.compTid2Obj.set(componentTypeId, comp);        // 用于缓存显示对象组件
             }
         }
 
+        // 删除实体上的组件逻辑
         if (hasComp) {
             //@ts-ignore
             this[compName] = null;

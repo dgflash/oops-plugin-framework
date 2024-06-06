@@ -42,7 +42,7 @@ export class ECSModel {
     static compTid = 0;
     /** 组件缓存池 */
     static compPools: Map<number, ecs.IComp[]> = new Map();
-    /** 组件构造函数 */
+    /** 组件构造函数，用于ecs.register注册时，记录不同类型的组件 */
     static compCtors: (CompCtor<any> | number)[] = [];
     /**
      * 每个组件的添加和删除的动作都要派送到“关心”它们的group上。goup对当前拥有或者之前（删除前）拥有该组件的实体进行组件规则判断。判断该实体是否满足group

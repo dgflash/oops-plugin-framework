@@ -4,6 +4,11 @@ import { ECSMatcher } from "./ECSMatcher";
 import { CompCtor, CompType, ECSModel, EntityCtor } from "./ECSModel";
 import { ECSComblockSystem, ECSRootSystem, ECSSystem } from "./ECSSystem";
 
+/** 
+ * ECSEntity对象在destroy后，会回收到ECSModel.entityPool实体对象池中
+ * ECSComp对象从ECSEntity.remove后，数据组件会回收到ECSModel.compPools组件对象池中
+ */
+
 /** Entity-Component-System（实体-组件-系统）框架 */
 export module ecs {
     /** 实体 - 一个概念上的定义，指的是游戏世界中的一个独特物体，是一系列组件的集合 */
@@ -138,7 +143,7 @@ export module ecs {
                     ctor.tid = ECSModel.compTid++;
                     ctor.compName = name;
                     if (canNew) {
-                        ECSModel.compCtors.push(ctor);
+                        ECSModel.compCtors.push(ctor);              // 注册不同类型的组件
                         ECSModel.compPools.set(ctor.tid, []);
                     }
                     else {
