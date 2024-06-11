@@ -54,7 +54,7 @@ export class MessageEventData {
      * @param args(any)          事件参数
      */
     dispatchEvent(event: string, ...args: any) {
-        MessageManager.Instance.dispatchEvent(event, args);
+        MessageManager.Instance.dispatchEvent(event, ...args);
     }
 
     /** 清除所有的全局事件监听 */

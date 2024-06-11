@@ -52,8 +52,8 @@ export class GameComponent extends Component {
      * @param event      事件名
      * @param args       事件参数
      */
-    dispatchEvent(event: string, args: any = null) {
-        this.event.dispatchEvent(event, args);
+    dispatchEvent(event: string, ...args: any) {
+        this.event.dispatchEvent(event, ...args);
     }
     //#endregion
 

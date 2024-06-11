@@ -39,11 +39,11 @@ export class EventDispatcher {
      * @param event      事件名
      * @param args       事件参数
      */
-    dispatchEvent(event: string, args: any = null) {
+    dispatchEvent(event: string, ...args: any) {
         if (this._msg == null) {
             this._msg = new MessageEventData();
         }
-        this._msg.dispatchEvent(event, args);
+        this._msg.dispatchEvent(event, ...args);
     }
 
     /**
