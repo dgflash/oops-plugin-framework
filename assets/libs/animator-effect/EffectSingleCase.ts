@@ -59,13 +59,11 @@ export class EffectSingleCase {
     private res: Map<string, boolean> = new Map();
 
     constructor() {
-        oops.message.on(EffectEvent.Put, this.onHandler, this);
+        oops.message.on(EffectEvent.Put, this.onPut, this);
     }
 
-    private onHandler(event: string, args: any) {
-        if (event == EffectEvent.Put) {
-            this.put(args as Node);
-        }
+    private onPut(event: string, node: Node) {
+        this.put(node);
     }
 
     /** 
