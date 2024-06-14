@@ -49,12 +49,3 @@ export class ViewParams {
     /** 界面根节点 */
     node: Node = null!;
 }
-
-/** 弹框层回调对象定义（废弃） */
-export interface PopViewParams extends UICallbacks {
-    /** 是否触摸背景关闭弹窗 */
-    touchClose?: boolean,
-
-    /** 控制暗色背景的透明度 默认为190*/
-    opacity?: number;
-}
