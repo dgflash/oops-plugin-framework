@@ -45,23 +45,32 @@ export class Root extends Component {
 
             console.log(`Oops Framework v${version}`);
             this.enabled = false;
-
-            let config_name = "config";
-            oops.res.load(config_name, JsonAsset, () => {
-                var config = oops.res.get(config_name);
-                // oops.config.btc = new BuildTimeConstants();
-                oops.config.query = new GameQueryConfig();
-                oops.config.game = new GameConfig(config);
-                oops.http.server = oops.config.game.httpServer;                                      // Http 服务器地址
-                oops.http.timeout = oops.config.game.httpTimeout;                                    // Http 请求超时时间
-                oops.storage.init(oops.config.game.localDataKey, oops.config.game.localDataIv);      // 初始化本地存储加密
-                game.frameRate = oops.config.game.frameRate;                                         // 初始化每秒传输帧数
-
-                this.enabled = true;
-                this.init();
-                this.run();
-            });
+            this.loadConfig();
         }
+    }
+
+    private loadConfig() {
+        const config_name = "config";
+        oops.res.load(config_name, JsonAsset, () => {
+            var config = oops.res.get(config_name);
+            if (config == null) {
+                this.loadConfig();
+                return;
+            }
+            // oops.config.btc = new BuildTimeConstants();
+            oops.config.query = new GameQueryConfig();
+            oops.config.game = new GameConfig(config);
+            oops.http.server = oops.config.game.httpServer;                                      // Http 服务器地址
+            oops.http.timeout = oops.config.game.httpTimeout;                                    // Http 请求超时时间
+            oops.storage.init(oops.config.game.localDataKey, oops.config.game.localDataIv);      // 初始化本地存储加密
+            game.frameRate = oops.config.game.frameRate;                                         // 初始化每秒传输帧数
+
+            this.enabled = true;
+            this.init();
+            this.run();
+
+            oops.res.release(config_name);
+        });
     }
 
     update(dt: number) {

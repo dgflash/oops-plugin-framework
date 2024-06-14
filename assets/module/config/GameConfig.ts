@@ -75,8 +75,7 @@ export class GameConfig {
     }
 
     constructor(config: any) {
-        let data = config.json;
-        this._data = Object.freeze(data);
+        this._data = Object.freeze(config.json);
 
         oops.log.logConfig(this._data, "游戏配置");
     }
