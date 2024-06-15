@@ -79,14 +79,14 @@ export class LayerUI extends Node {
 
                 let comp = childNode.addComponent(DelegateComponent);
                 comp.vp = vp;
-                comp.onHide = this.onHide.bind(this);
+                comp.onCloseWindow = this.onCloseWindow.bind(this);
 
                 this.showUi(vp);
             });
         }
     }
 
-    protected onHide(vp: ViewParams) {
+    protected onCloseWindow(vp: ViewParams) {
         this.ui_nodes.delete(vp.config.prefab);
     }
 

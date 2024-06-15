@@ -1,4 +1,4 @@
-import { Component, EventTouch, _decorator } from "cc";
+import { Component, _decorator } from "cc";
 import { LanguageLabel } from "../../../libs/gui/language/LanguageLabel";
 import { oops } from "../../Oops";
 
@@ -24,19 +24,6 @@ export class CommonPrompt extends Component {
     private lab_cancel: LanguageLabel | null = null;
 
     private config: any = {};
-
-    private onTouchEnd(event: EventTouch, data: any) {
-        switch (event.target.name) {
-            case "btn_ok":
-                this.onOk();
-                break;
-            case "btn_cancel":
-                this.onCancel();
-                break;
-            default:
-                break;
-        }
-    }
 
     /**
      * 

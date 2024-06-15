@@ -40,8 +40,8 @@ export class LayerPopUp extends LayerUI {
         this.black.enabled = true;
     }
 
-    protected onHide(vp: ViewParams) {
-        super.onHide(vp);
+    protected onCloseWindow(vp: ViewParams) {
+        super.onCloseWindow(vp);
 
         // 界面关闭后，关闭触摸事件阻挡、关闭触摸非窗口区域关闭、关闭遮罩
         this.setBlackDisable();
@@ -108,7 +108,7 @@ export class LayerPopUp extends LayerUI {
             this.ui_nodes.forEach(vp => {
                 // 关闭已显示的界面
                 if (vp.valid && vp.config.vacancy) {
-                    this.remove(vp.config.prefab, true);
+                    this.remove(vp.config.prefab, vp.config.destroy);
                 }
             });
         }

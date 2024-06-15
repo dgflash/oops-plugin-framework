@@ -5,7 +5,6 @@
  * @LastEditTime: 2023-07-24 17:14:57
  */
 
-import { Node } from "cc";
 import { UICallbacks, ViewParams } from "./Defines";
 import { UIConfig } from "./LayerManager";
 import { LayerPopUp } from "./LayerPopup";
@@ -44,24 +43,22 @@ export class LayerDialog extends LayerPopUp {
         var vp = this.ui_cache.get(config.prefab);
         if (vp == null) {
             vp = new ViewParams();
-            vp.config = config
             vp.valid = true;
+            vp.config = config;
         }
-        this.ui_nodes.set(vp.config.prefab, vp);
-
-        vp.callbacks = callbacks ?? {};
-        var onRemove_Source = vp.callbacks.onRemoved;
-        vp.callbacks.onRemoved = (node: Node | null, params: any) => {
-            if (onRemove_Source) {
-                onRemove_Source(node, params);
-            }
-            setTimeout(this.next.bind(this), 0);
-        };
 
         vp.params = params || {};
+        vp.callbacks = callbacks ?? {};
+        this.ui_nodes.set(vp.config.prefab, vp);
+
         this.load(vp, config.bundle);
 
         return config.prefab;
+    }
+
+    protected onCloseWindow(vp: ViewParams) {
+        super.onCloseWindow(vp);
+        setTimeout(this.next.bind(this), 0);
     }
 
     protected setBlackDisable() {

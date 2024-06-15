@@ -15,8 +15,8 @@ const { ccclass } = _decorator;
 export class DelegateComponent extends Component {
     /** 视图参数 */
     vp: ViewParams = null!;
-    /** 界面关闭回调 - 包括关闭动画播放完 */
-    onHide: Function = null!;
+    /** 界面关闭回调 - 包括关闭动画播放完（辅助框架内存业务流程使用） */
+    onCloseWindow: Function = null!;
 
     /** 窗口添加 */
     add() {
@@ -54,12 +54,12 @@ export class DelegateComponent extends Component {
     private removed(vp: ViewParams, isDestroy?: boolean) {
         vp.valid = false;
 
-        if (typeof vp.callbacks.onRemoved === "function") {
-            vp.callbacks!.onRemoved(this.node, vp.params);
+        if (vp.callbacks && typeof vp.callbacks.onRemoved === "function") {
+            vp.callbacks.onRemoved(this.node, vp.params);
         }
 
         // 界面移除舞台事件
-        this.onHide && this.onHide(vp);
+        this.onCloseWindow && this.onCloseWindow(vp);
 
         if (isDestroy) {
             // 释放界面显示对象
