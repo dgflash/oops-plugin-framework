@@ -88,7 +88,7 @@ export class ViewUtil {
     }
 
     /**
-     * 从资源缓存中找到预制资源名并创建一个显示对象
+     * 从资源缓存中找到预制资源名并创建一个显示对象（建议使用GameComponent里的同名方法，能自动管理内存施放）
      * @param path 资源路径
      */
     static createPrefabNode(path: string): Node {
@@ -98,7 +98,7 @@ export class ViewUtil {
     }
 
     /**
-     * 加载预制并创建预制节点
+     * 加载预制并创建预制节点（建议使用GameComponent里的同名方法，能自动管理内存施放）
      * @param path 资源路径
      */
     static createPrefabNodeAsync(path: string): Promise<Node> {
@@ -112,23 +112,6 @@ export class ViewUtil {
                 var node = this.createPrefabNode(path);
                 resolve(node);
             });
-        });
-    }
-
-    /**
-     * 加载预制节点
-     * @param path          资源路径
-     * @param callback      资源加载完成回调
-     */
-    static loadPrefabNode(path: string, callback: Function) {
-        oops.res.load(path, Prefab, (err: Error | null, content: Prefab) => {
-            if (err) {
-                console.error(`名为【${path}】的资源加载失败`);
-                return;
-            }
-
-            var node = this.createPrefabNode(path);
-            callback(node);
         });
     }
 
