@@ -3,48 +3,24 @@
 /** 随机管理 */
 export class RandomManager {
     private static _instance: RandomManager;
-
-    /** 是否运行在客户端环境 */
-    isClient: boolean = true;
-    /** 是否为全局伪随机 */
-    isGlobal: boolean = false;
-
-    private random: any = null;
+    private random: any = null!;
 
     /** 随机数管理单例对象 */
     static get instance(): RandomManager {
         if (this._instance == null) {
             this._instance = new RandomManager();
-            this._instance.random = Math.random;
+            this._instance.setRandom(Math.random);
         }
         return this._instance;
     }
 
-    private getRandom(): number {
-        return this.isGlobal ? Math.random() : this.random();
+    /** 设置第三方随机库 */
+    setRandom(random: any) {
+        this.random = random;
     }
 
-    /** 设置随机种子 */
-    setSeed(seed: number) {
-        if (this.isClient) {
-            //注：seedrandom.min.js文件在Cocos Creator中导入为插件生效
-            //@ts-ignore
-            if (Math.seedrandom) {
-                if (this.isGlobal)
-                    //@ts-ignore
-                    new Math.seedrandom(seed, { global: true });
-                else
-                    //@ts-ignore
-                    this.random = new Math.seedrandom(seed);
-            }
-        }
-        else {
-            var seedrandom = require('seedrandom');
-            if (this.isGlobal)
-                new seedrandom(seed, { global: true });
-            else
-                this.random = new seedrandom(seed);
-        }
+    private getRandom(): number {
+        return this.random();
     }
 
     /**
