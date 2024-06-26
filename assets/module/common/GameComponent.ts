@@ -59,18 +59,22 @@ export class GameComponent extends Component {
 
     //#region 预制节点管理
 
-    // /** 摊平的节点集合（不能重名） */
-    // private nodes: Map<string, Node> = new Map();
+    /** 摊平的节点集合（所有节点不能重名） */
+    private nodes: Map<string, Node> = null!;
 
-    // /** 通过节点名获取预制上的节点，整个预制不能有重名节点 */
-    // getNode(name: string): Node | undefined {
-    //     return this.nodes.get(name);
-    // }
+    /** 通过节点名获取预制上的节点，整个预制不能有重名节点 */
+    getNode(name: string): Node | undefined {
+        if (this.nodes) {
+            return this.nodes.get(name);
+        }
+        return undefined;
+    }
 
-    // /** 平摊所有节点存到Map<string, Node>中通过get(name: string)方法获取 */
-    // nodeTreeInfoLite() {
-    //     ViewUtil.nodeTreeInfoLite(this.node, this.nodes);
-    // }
+    /** 平摊所有节点存到Map<string, Node>中通过get(name: string)方法获取 */
+    nodeTreeInfoLite() {
+        this.nodes = new Map();
+        ViewUtil.nodeTreeInfoLite(this.node, this.nodes);
+    }
 
     /**
      * 从资源缓存中找到预制资源名并创建一个显示对象
@@ -104,9 +108,9 @@ export class GameComponent extends Component {
 
     //#region 资源加载管理
     /** 资源路径 */
-    private resPaths: Map<string, string> = new Map();                  // 游戏资源
-    private resPathsDir: Map<string, string> = new Map();               // 游戏资源文件夹
-    private resPathsAudioEffect: Map<string, string> = new Map();       // 音效类资源
+    private resPaths: Map<string, string> = null!;                      // 游戏资源
+    private resPathsDir: Map<string, string> = null!;                   // 游戏资源文件夹
+    private resPathsAudioEffect: Map<string, string> = null!;           // 音效类资源
 
     /**
      * 获取资源
@@ -132,6 +136,8 @@ export class GameComponent extends Component {
         paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null,
         type?: AssetType<T> | ProgressCallback | CompleteCallback | null,
     ) {
+        if (this.resPaths == null) this.resPaths = new Map();
+
         if (paths instanceof Array) {
             paths.forEach(path => {
                 this.resPaths.set(path, oops.res.defaultBundleName);
@@ -159,6 +165,8 @@ export class GameComponent extends Component {
         onProgress?: ProgressCallback | CompleteCallback | null,
         onComplete?: CompleteCallback | null,
     ) {
+        if (this.resPaths == null) this.resPaths = new Map();
+
         if (paths instanceof Array) {
             paths.forEach(path => {
                 this.resPaths.set(path, oops.res.defaultBundleName);
@@ -186,6 +194,8 @@ export class GameComponent extends Component {
         onProgress?: ProgressCallback | CompleteCallback | null,
         onComplete?: CompleteCallback | null,
     ) {
+        if (this.resPathsDir == null) this.resPathsDir = new Map();
+
         if (typeof dir === "string") {
             this.resPathsDir.set(dir, oops.res.defaultBundleName);
         }
@@ -197,29 +207,35 @@ export class GameComponent extends Component {
 
     /** 释放一个资源 */
     release() {
-        this.resPaths.forEach((value: string, key: string) => {
-            oops.res.release(key, value);
-        });
-        this.resPaths.clear();
-        this.resPaths = null!;
+        if (this.resPaths) {
+            this.resPaths.forEach((value: string, key: string) => {
+                oops.res.release(key, value);
+            });
+            this.resPaths.clear();
+            this.resPaths = null!;
+        }
     }
 
     /** 释放一个文件夹的资源 */
     releaseDir() {
-        this.resPathsDir.forEach((value: string, key: string) => {
-            oops.res.releaseDir(key, value);
-        });
-        this.resPathsDir.clear();
-        this.resPathsDir = null!;
+        if (this.resPathsDir) {
+            this.resPathsDir.forEach((value: string, key: string) => {
+                oops.res.releaseDir(key, value);
+            });
+            this.resPathsDir.clear();
+            this.resPathsDir = null!;
+        }
     }
 
     /** 释放音效资源 */
     releaseAudioEffect() {
-        this.resPathsAudioEffect.forEach((value: string, key: string) => {
-            oops.audio.effect.release(key);
-        });
-        this.resPathsAudioEffect.clear();
-        this.resPathsAudioEffect = null!;
+        if (this.resPathsAudioEffect) {
+            this.resPathsAudioEffect.forEach((value: string, key: string) => {
+                oops.audio.effect.release(key);
+            });
+            this.resPathsAudioEffect.clear();
+            this.resPathsAudioEffect = null!;
+        }
     }
     //#endregion
 
@@ -246,6 +262,8 @@ export class GameComponent extends Component {
     * @param url        资源地址
     */
     playEffect(url: string) {
+        if (this.resPathsAudioEffect == null) this.resPathsAudioEffect = new Map<string, string>();
+
         this.resPathsAudioEffect.set(url, oops.res.defaultBundleName);
         oops.audio.playEffect(url);
     }
@@ -388,7 +406,10 @@ export class GameComponent extends Component {
         }
 
         // 节点引用数据清除
-        // this.nodes.clear();
+        if (this.nodes) {
+            this.nodes.clear();
+            this.nodes = null!;
+        }
 
         // 自动释放资源
         this.releaseAudioEffect();
