@@ -136,7 +136,7 @@ export class GameComponent extends Component {
 
         if (paths instanceof Array) {
             paths.forEach(path => {
-                this.resPaths.set(path, oops.res.defaultBundleName);
+                this.resPaths.set(path, bundleName);
             });
         }
         else {
@@ -165,7 +165,7 @@ export class GameComponent extends Component {
 
         if (paths instanceof Array) {
             paths.forEach(path => {
-                this.resPaths.set(path, oops.res.defaultBundleName);
+                this.resPaths.set(path, bundleName);
             });
         }
         else {
@@ -193,7 +193,7 @@ export class GameComponent extends Component {
         if (this.resPathsDir == null) this.resPathsDir = new Map();
 
         if (typeof dir === "string") {
-            this.resPathsDir.set(dir, oops.res.defaultBundleName);
+            this.resPathsDir.set(dir, bundleName);
         }
         else {
             this.resPathsDir.set(bundleName, oops.res.defaultBundleName);
