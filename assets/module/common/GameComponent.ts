@@ -108,8 +108,8 @@ export class GameComponent extends Component {
 
     //#region 资源加载管理
     /** 资源路径 */
-    private resPaths: Map<string, string> = null!;                      // 游戏资源
-    private resPathsDir: Map<string, string> = null!;                   // 游戏资源文件夹
+    private resPathArray: Array<{bundle: string, path: string}> = null;      // 游戏资源
+    private resPathDirArray: Array<{bundle: string, path: string}> = null;
     private resPathsAudioEffect: Map<string, string> = null!;           // 音效类资源
 
     /**
@@ -122,6 +122,41 @@ export class GameComponent extends Component {
         return oops.res.get(path, type, bundleName);
     }
 
+    private fetchPath(arr: any[], realBundle: string, realDir: string){
+        for (let index = 0; index < this.resPathDirArray.length; index++){
+            let data = this.resPathDirArray[index];
+            if (data.bundle == realBundle && data.path == realDir){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private addPathToRecord<T>(bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null){
+        if (this.resPathArray == null) this.resPathArray = new Array();
+        if (paths instanceof Array) {
+            let realBundle = bundleName;
+            for (let index = 0; index < paths.length; index++){
+                let realPath = paths[index];
+                if (!this.fetchPath(this.resPathArray, realBundle, realPath)){
+                    this.resPathArray.push({path: realPath, bundle: realBundle});
+                }
+            }
+        }else if (typeof paths === "string"){
+            let realBundle = bundleName;
+            let realPath = paths;
+            if (!this.fetchPath(this.resPathArray, realBundle, realPath)){
+                this.resPathArray.push({path: realPath, bundle: realBundle});
+            }
+        }else {
+            let realBundle = oops.res.defaultBundleName;
+            let realPath = bundleName;
+            if (!this.fetchPath(this.resPathArray, realBundle, realPath)){
+                this.resPathArray.push({path: realPath, bundle: realBundle});
+            }
+        }
+    }
+
     /** 异步加载资源 */
     loadAsync<T extends Asset>(bundleName: string, paths: string | string[], type: AssetType<T> | null): Promise<T>;
     loadAsync<T extends Asset>(bundleName: string, paths: string | string[]): Promise<T>;
@@ -132,16 +167,7 @@ export class GameComponent extends Component {
     loadAsync<T extends Asset>(paths: string | string[]): Promise<T>;
     loadAsync<T extends Asset>(paths: string | string[], type: AssetType<T> | null): Promise<T>;
     loadAsync<T extends Asset>(bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null, type?: AssetType<T> | ProgressCallback | CompleteCallback | null): Promise<T> {
-        if (this.resPaths == null) this.resPaths = new Map();
-
-        if (paths instanceof Array) {
-            paths.forEach(path => {
-                this.resPaths.set(path, bundleName);
-            });
-        }
-        else {
-            this.resPaths.set(bundleName, oops.res.defaultBundleName);
-        }
+        this.addPathToRecord(bundleName, paths);
         return oops.res.loadAsync(bundleName, paths, type);
     }
 
@@ -161,16 +187,7 @@ export class GameComponent extends Component {
         onProgress?: ProgressCallback | CompleteCallback | null,
         onComplete?: CompleteCallback | null,
     ) {
-        if (this.resPaths == null) this.resPaths = new Map();
-
-        if (paths instanceof Array) {
-            paths.forEach(path => {
-                this.resPaths.set(path, bundleName);
-            });
-        }
-        else {
-            this.resPaths.set(bundleName, oops.res.defaultBundleName);
-        }
+        this.addPathToRecord(bundleName, paths);
         oops.res.load(bundleName, paths, type, onProgress, onComplete);
     }
 
@@ -190,36 +207,44 @@ export class GameComponent extends Component {
         onProgress?: ProgressCallback | CompleteCallback | null,
         onComplete?: CompleteCallback | null,
     ) {
-        if (this.resPathsDir == null) this.resPathsDir = new Map();
+        if (this.resPathDirArray == null) this.resPathDirArray = new Array();
 
+        let realDir: string;
+        let realBundle: string;
         if (typeof dir === "string") {
-            this.resPathsDir.set(dir, bundleName);
+            realDir = dir;
+            realBundle = bundleName;
+        } else {
+            realDir = bundleName;
+            realBundle = oops.res.defaultBundleName;
         }
-        else {
-            this.resPathsDir.set(bundleName, oops.res.defaultBundleName);
+        if (!this.fetchPath(this.resPathDirArray, realBundle, realDir)){
+            this.resPathDirArray.push({bundle: realBundle, path: realDir});
         }
         oops.res.loadDir(bundleName, dir, type, onProgress, onComplete);
     }
 
     /** 释放一个资源 */
     release() {
-        if (this.resPaths) {
-            this.resPaths.forEach((value: string, key: string) => {
-                oops.res.release(key, value);
-            });
-            this.resPaths.clear();
-            this.resPaths = null!;
+        if (this.resPathArray) {
+            for (let index = 0; index < this.resPathArray.length; index++){
+                let data = this.resPathArray[index];
+                oops.res.release(data.path, data.bundle);
+            }
+            this.resPathArray.splice(0);
+            this.resPathArray = null!;
         }
     }
 
     /** 释放一个文件夹的资源 */
     releaseDir() {
-        if (this.resPathsDir) {
-            this.resPathsDir.forEach((value: string, key: string) => {
-                oops.res.releaseDir(key, value);
-            });
-            this.resPathsDir.clear();
-            this.resPathsDir = null!;
+        if (this.resPathDirArray) {
+            for (let index = 0; index < this.resPathDirArray.length; index++){
+                let data = this.resPathDirArray[index];
+                oops.res.releaseDir(data.path, data.bundle);
+            }
+            this.resPathDirArray.splice(0);
+            this.resPathDirArray = null!;
         }
     }
 
