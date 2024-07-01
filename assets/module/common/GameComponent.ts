@@ -14,6 +14,19 @@ import { ButtonTouchLong } from "../../libs/gui/button/ButtonTouchLong";
 
 const { ccclass } = _decorator;
 
+/** 加载资源类型 */
+enum ResType {
+    Load,
+    LoadDir,
+    Audio
+}
+
+/** 资源加载记录 */
+interface ResRecord {
+    bundle: string,
+    path: string
+}
+
 /** 
  * 游戏显示对象组件模板
  * 1、当前对象加载的资源，会在对象释放时，自动释放引用的资源
@@ -108,9 +121,8 @@ export class GameComponent extends Component {
 
     //#region 资源加载管理
     /** 资源路径 */
-    private resPathArray: Array<{bundle: string, path: string}> = null;      // 游戏资源
-    private resPathDirArray: Array<{bundle: string, path: string}> = null;
-    private resPathsAudioEffect: Map<string, string> = null!;           // 音效类资源
+    private resPathsAudioEffect: Map<string, string> = null!;                   // 音效类资源
+    private resPaths: Map<ResType, Map<string, ResRecord>> = null!;             // 资源使用记录
 
     /**
      * 获取资源
@@ -122,37 +134,45 @@ export class GameComponent extends Component {
         return oops.res.get(path, type, bundleName);
     }
 
-    private fetchPath(arr: any[], realBundle: string, realDir: string){
-        for (let index = 0; index < this.resPathDirArray.length; index++){
-            let data = this.resPathDirArray[index];
-            if (data.bundle == realBundle && data.path == realDir){
-                return true;
-            }
-        }
-        return false;
-    }
+    /**
+     * 添加资源使用记录
+     * @param type          资源类型
+     * @param bundleName    资源包名
+     * @param paths         资源路径
+     */
+    private addPathToRecord<T>(type: ResType, bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null) {
+        if (this.resPaths == null) this.resPaths = new Map();
 
-    private addPathToRecord<T>(bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null){
-        if (this.resPathArray == null) this.resPathArray = new Array();
+        var rps = this.resPaths.get(type);
+        if (rps == null) {
+            rps = new Map();
+            this.resPaths.set(type, rps);
+        }
+
         if (paths instanceof Array) {
             let realBundle = bundleName;
-            for (let index = 0; index < paths.length; index++){
+            for (let index = 0; index < paths.length; index++) {
                 let realPath = paths[index];
-                if (!this.fetchPath(this.resPathArray, realBundle, realPath)){
-                    this.resPathArray.push({path: realPath, bundle: realBundle});
+                let key = `${realBundle}:${realPath}`;
+                if (!rps.has(key)) {
+                    rps.set(key, { path: realPath, bundle: realBundle })
                 }
             }
-        }else if (typeof paths === "string"){
+        }
+        else if (typeof paths === "string") {
             let realBundle = bundleName;
             let realPath = paths;
-            if (!this.fetchPath(this.resPathArray, realBundle, realPath)){
-                this.resPathArray.push({path: realPath, bundle: realBundle});
+            let key = `${realBundle}:${realPath}`;
+            if (!rps.has(key)) {
+                rps.set(key, { path: realPath, bundle: realBundle })
             }
-        }else {
+        }
+        else {
             let realBundle = oops.res.defaultBundleName;
             let realPath = bundleName;
-            if (!this.fetchPath(this.resPathArray, realBundle, realPath)){
-                this.resPathArray.push({path: realPath, bundle: realBundle});
+            let key = `${realBundle}:${realPath}`;
+            if (!rps.has(key)) {
+                rps.set(key, { path: realPath, bundle: realBundle })
             }
         }
     }
@@ -167,7 +187,7 @@ export class GameComponent extends Component {
     loadAsync<T extends Asset>(paths: string | string[]): Promise<T>;
     loadAsync<T extends Asset>(paths: string | string[], type: AssetType<T> | null): Promise<T>;
     loadAsync<T extends Asset>(bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null, type?: AssetType<T> | ProgressCallback | CompleteCallback | null): Promise<T> {
-        this.addPathToRecord(bundleName, paths);
+        this.addPathToRecord(ResType.Load, bundleName, paths);
         return oops.res.loadAsync(bundleName, paths, type);
     }
 
@@ -187,7 +207,7 @@ export class GameComponent extends Component {
         onProgress?: ProgressCallback | CompleteCallback | null,
         onComplete?: CompleteCallback | null,
     ) {
-        this.addPathToRecord(bundleName, paths);
+        this.addPathToRecord(ResType.Load, bundleName, paths);
         oops.res.load(bundleName, paths, type, onProgress, onComplete);
     }
 
@@ -207,44 +227,43 @@ export class GameComponent extends Component {
         onProgress?: ProgressCallback | CompleteCallback | null,
         onComplete?: CompleteCallback | null,
     ) {
-        if (this.resPathDirArray == null) this.resPathDirArray = new Array();
-
         let realDir: string;
         let realBundle: string;
         if (typeof dir === "string") {
             realDir = dir;
             realBundle = bundleName;
-        } else {
+        }
+        else {
             realDir = bundleName;
             realBundle = oops.res.defaultBundleName;
         }
-        if (!this.fetchPath(this.resPathDirArray, realBundle, realDir)){
-            this.resPathDirArray.push({bundle: realBundle, path: realDir});
-        }
+
+        this.addPathToRecord(ResType.LoadDir, realBundle, realDir);
         oops.res.loadDir(bundleName, dir, type, onProgress, onComplete);
     }
 
     /** 释放一个资源 */
     release() {
-        if (this.resPathArray) {
-            for (let index = 0; index < this.resPathArray.length; index++){
-                let data = this.resPathArray[index];
-                oops.res.release(data.path, data.bundle);
+        if (this.resPaths) {
+            var rps = this.resPaths.get(ResType.Load);
+            if (rps) {
+                rps.forEach((value: ResRecord) => {
+                    oops.res.release(value.path, value.bundle);
+                });
+                rps.clear();
             }
-            this.resPathArray.splice(0);
-            this.resPathArray = null!;
         }
     }
 
     /** 释放一个文件夹的资源 */
     releaseDir() {
-        if (this.resPathDirArray) {
-            for (let index = 0; index < this.resPathDirArray.length; index++){
-                let data = this.resPathDirArray[index];
-                oops.res.releaseDir(data.path, data.bundle);
+        if (this.resPaths) {
+            var rps = this.resPaths.get(ResType.LoadDir);
+            if (rps) {
+                rps.forEach((value: ResRecord) => {
+                    oops.res.releaseDir(value.path, value.bundle);
+                });
             }
-            this.resPathDirArray.splice(0);
-            this.resPathDirArray = null!;
         }
     }
 
@@ -436,5 +455,10 @@ export class GameComponent extends Component {
         this.releaseAudioEffect();
         this.release();
         this.releaseDir();
+
+        if (this.resPaths) {
+            this.resPaths.clear();
+            this.resPaths = null!;
+        }
     }
 }
