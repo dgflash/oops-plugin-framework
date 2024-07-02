@@ -62,6 +62,7 @@ export class AudioEffect extends AudioSource {
                 oops.res.load(bundleName, url, AudioClip, (err: Error | null, data: AudioClip) => {
                     if (err) {
                         error(err);
+                        return;
                     }
 
                     let key = `${bundleName}:${url}`;

@@ -50,6 +50,7 @@ export class AudioMusic extends AudioSource {
             oops.res.load(bundleName, url, AudioClip, (err: Error | null, data: AudioClip) => {
                 if (err) {
                     error(err);
+                    return;
                 }
 
                 // 注：事件定义在这里，是为了在播放前设置初始播放位置数据
