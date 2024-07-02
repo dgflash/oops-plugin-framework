@@ -456,11 +456,10 @@ export class GameComponent extends Component {
         }
 
         // 自动释放资源
-        this.releaseAudioEffect();
-        this.release();
-        this.releaseDir();
-
         if (this.resPaths) {
+            this.releaseAudioEffect();
+            this.release();
+            this.releaseDir();
             this.resPaths.clear();
             this.resPaths = null!;
         }
