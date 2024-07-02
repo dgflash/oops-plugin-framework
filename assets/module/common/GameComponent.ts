@@ -121,7 +121,6 @@ export class GameComponent extends Component {
 
     //#region 资源加载管理
     /** 资源路径 */
-    private resPathsAudioEffect: Map<string, string> = null!;                   // 音效类资源
     private resPaths: Map<ResType, Map<string, ResRecord>> = null!;             // 资源使用记录
 
     /**
@@ -269,43 +268,48 @@ export class GameComponent extends Component {
 
     /** 释放音效资源 */
     releaseAudioEffect() {
-        if (this.resPathsAudioEffect) {
-            this.resPathsAudioEffect.forEach((value: string, key: string) => {
-                oops.audio.effect.release(key);
-            });
-            this.resPathsAudioEffect.clear();
-            this.resPathsAudioEffect = null!;
+        if (this.resPaths) {
+            var rps = this.resPaths.get(ResType.Audio);
+            if (rps) {
+                rps.forEach((value: ResRecord) => {
+                    oops.audio.releaseEffect(value.path, value.bundle);
+                });
+            }
         }
     }
     //#endregion
 
     //#region 音频播放管理
     /**
-     * 播放背景音乐
-     * @param url       资源地址
+     * 播放背景音乐（不受自动释放资源管理）
+     * @param url           资源地址
+     * @param callback      资源加载完成回调
+     * @param bundleName    资源包名
      */
-    playMusic(url: string) {
-        oops.audio.playMusic(url);
+    playMusic(url: string, callback?: Function, bundleName?: string) {
+        oops.audio.playMusic(url, callback, bundleName);
     }
 
     /**
-     * 循环播放背景音乐
-     * @param url        资源地址
+     * 循环播放背景音乐（不受自动释放资源管理）
+     * @param url           资源地址
+     * @param bundleName    资源包名
      */
-    playMusicLoop(url: string) {
+    playMusicLoop(url: string, bundleName?: string) {
         oops.audio.stopMusic();
-        oops.audio.playMusicLoop(url);
+        oops.audio.playMusicLoop(url, bundleName);
     }
 
     /**
-    * 播放音效
-    * @param url        资源地址
-    */
-    playEffect(url: string) {
-        if (this.resPathsAudioEffect == null) this.resPathsAudioEffect = new Map<string, string>();
-
-        this.resPathsAudioEffect.set(url, oops.res.defaultBundleName);
-        oops.audio.playEffect(url);
+     * 播放音效
+     * @param url           资源地址
+     * @param callback      资源加载完成回调
+     * @param bundleName    资源包名
+     */
+    playEffect(url: string, callback?: Function, bundleName?: string) {
+        if (bundleName == null) bundleName = oops.res.defaultBundleName;
+        this.addPathToRecord(ResType.Audio, bundleName, url);
+        oops.audio.playEffect(url, callback, bundleName);
     }
     //#endregion
 

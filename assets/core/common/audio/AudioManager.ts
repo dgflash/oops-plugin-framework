@@ -41,18 +41,18 @@ export class AudioManager extends Component {
      * @param url        资源地址
      * @param callback   音乐播放完成事件
      */
-    playMusic(url: string, callback?: Function) {
+    playMusic(url: string, callback?: Function, bundleName?: string) {
         if (this._switch_music && !this.music.playing) {
             this.music.loop = false;
-            this.music.load(url, callback);
+            this.music.load(url, callback, bundleName);
         }
     }
 
     /** 循环播放背景音乐 */
-    playMusicLoop(url: string) {
+    playMusicLoop(url: string, bundleName?: string) {
         if (this._switch_music && !this.music.playing) {
             this.music.loop = true;
-            this.music.load(url);
+            this.music.load(url, null!, bundleName);
         }
     }
 
@@ -113,15 +113,15 @@ export class AudioManager extends Component {
      * 播放音效
      * @param url        资源地址
      */
-    playEffect(url: string | AudioClip) {
+    playEffect(url: string | AudioClip, callback?: Function, bundleName?: string) {
         if (this._switch_effect) {
-            this.effect.load(url);
+            this.effect.load(url, callback, bundleName);
         }
     }
 
     /** 释放音效资源 */
-    releaseEffect(url: string | AudioClip) {
-        this.effect.release(url);
+    releaseEffect(url: string | AudioClip, bundleName?: string) {
+        this.effect.release(url, bundleName);
     }
 
     /** 

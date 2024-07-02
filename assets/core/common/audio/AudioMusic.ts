@@ -6,17 +6,22 @@
  */
 import { AudioClip, AudioSource, _decorator, error } from 'cc';
 import { oops } from '../../Oops';
+
 const { ccclass, menu } = _decorator;
 
-/** 背景音乐 */
+/** 
+ * 背景音乐 
+ * 1、播放一个新背景音乐时，先加载音乐资源，然后停止正在播放的背景资源同时施放当前背景音乐资源，最后播放新的背景音乐
+ */
 @ccclass('AudioMusic')
 export class AudioMusic extends AudioSource {
     /** 背景音乐播放完成回调 */
     onComplete: Function | null = null;
 
     private _progress: number = 0;
-    private _url: string = null!;
     private _isPlay: boolean = false;
+    private _bundleName: string = null!;
+    private _url: string = null!;
 
     /** 获取音乐播放进度 */
     get progress(): number {
@@ -38,31 +43,33 @@ export class AudioMusic extends AudioSource {
      * @param url          音乐资源地址
      * @param callback     加载完成回调
      */
-    load(url: string, callback?: Function) {
+    load(url: string, callback?: Function, bundleName?: string) {
+        if (bundleName == null) bundleName = oops.res.defaultBundleName;
+
         if (this._url == null) {
-            oops.res.load(url, AudioClip, (err: Error | null, data: AudioClip) => {
+            oops.res.load(bundleName, url, AudioClip, (err: Error | null, data: AudioClip) => {
                 if (err) {
                     error(err);
                 }
 
                 // 注：事件定义在这里，是为了在播放前设置初始播放位置数据
                 callback && callback();
-
-                this.playPrepare(url, data);
+                this.playPrepare(bundleName, url, data);
             });
         }
         else {
-            this.playPrepare(url, this.clip!);
+            this.playPrepare(bundleName, url, this.clip!);
         }
     }
 
     /** 停止音乐播放 */
     stop() {
+        this._bundleName = null!;
         this._url = null!;
         super.stop();
     }
 
-    private playPrepare(url: string, data: AudioClip) {
+    private playPrepare(bundleName: string, url: string, data: AudioClip) {
         if (this.playing) {
             this._isPlay = false;
             this.stop();
@@ -70,7 +77,7 @@ export class AudioMusic extends AudioSource {
 
         if (this._url) {
             this.clip = null;
-            oops.res.release(this._url);
+            oops.res.release(this._url, this._bundleName);
         }
 
         this.enabled = true;
@@ -78,6 +85,8 @@ export class AudioMusic extends AudioSource {
 
         this.play();
 
+        // 记录新的资源包与资源名数据
+        this._bundleName = bundleName;
         this._url = url;
     }
 
@@ -100,7 +109,8 @@ export class AudioMusic extends AudioSource {
     release() {
         if (this._url) {
             this.clip = null;
-            oops.res.release(this._url);
+            oops.res.release(this._url, this._bundleName);
+            this._bundleName = null!;
             this._url = null!;
         }
     }
