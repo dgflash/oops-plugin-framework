@@ -136,18 +136,18 @@ export class Root extends Component {
     }
 
     private onShow() {
-        oops.timer.load();     // 平台不需要在退出时精准计算时间，直接暂时游戏时间
-        oops.audio.resumeAll();
-        director.resume();
-        game.resume();
+        oops.timer.load();              // 处理回到游戏时减去逝去时间
+        oops.audio.resumeAll();         // 恢复所有暂停的音乐播放
+        director.resume();              // 恢复暂停场景的游戏逻辑，如果当前场景没有暂停将没任何事情发生
+        game.resume();                  // 恢复游戏主循环。包含：游戏逻辑，渲染，事件处理，背景音乐和所有音效
         oops.message.dispatchEvent(EventMessage.GAME_SHOW);
     }
 
     private onHide() {
-        oops.timer.save();     // 平台不需要在退出时精准计算时间，直接暂时游戏时间
-        oops.audio.pauseAll();
-        director.pause();
-        game.pause();
+        oops.timer.save();             // 处理切到后台后记录切出时间
+        oops.audio.pauseAll();         // 暂停所有音乐播放
+        director.pause();              // 暂停正在运行的场景，该暂停只会停止游戏逻辑执行，但是不会停止渲染和 UI 响应。 如果想要更彻底得暂停游戏，包含渲染，音频和事件
+        game.pause();                  // 暂停游戏主循环。包含：游戏逻辑、渲染、输入事件派发（Web 和小游戏平台除外）
         oops.message.dispatchEvent(EventMessage.GAME_HIDE);
     }
 }
