@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-05-16 09:11:30
  */
-import { AudioClip, AudioSource, _decorator, error } from 'cc';
+import { AudioClip, AudioSource, _decorator } from 'cc';
 import { oops } from '../../Oops';
 
 const { ccclass, menu } = _decorator;
@@ -21,8 +21,8 @@ export class AudioMusic extends AudioSource {
     private _progress: number = 0;
     private _isLoading: boolean = false;
     private _bundleName: string = null!;        // 当前音乐资源包
-    private _bundleName_next: string = null!;   // 下一个音乐资源包
     private _url: string = null!;               // 当前播放音乐
+    private _bundleName_next: string = null!;   // 下一个音乐资源包
     private _url_next: string = null!;          // 下一个播放音乐
 
     /** 获取音乐播放进度 */
@@ -45,11 +45,8 @@ export class AudioMusic extends AudioSource {
      * @param url          音乐资源地址
      * @param callback     加载完成回调
      */
-    load(url: string, callback?: Function, bundleName?: string) {
+    async load(url: string, callback?: Function, bundleName?: string) {
         if (bundleName == null) bundleName = oops.res.defaultBundleName;
-
-        // 同一个音乐不重复播放
-        if (this._url == url && this._bundleName == bundleName) return;
 
         // 下一个加载的背景音乐资源
         if (this._isLoading) {
@@ -59,11 +56,8 @@ export class AudioMusic extends AudioSource {
         }
 
         this._isLoading = true;
-        oops.res.load(bundleName, url, AudioClip, (err: Error | null, data: AudioClip) => {
-            if (err) {
-                error(err);
-                return;
-            }
+        var data: AudioClip = await oops.res.loadAsync(bundleName, url, AudioClip);
+        if (data) {
             this._isLoading = false;
 
             // 处理等待加载的背景音乐
@@ -79,7 +73,7 @@ export class AudioMusic extends AudioSource {
                 callback && callback();
                 this.playPrepare(bundleName, url, data);
             }
-        });
+        }
     }
 
     private playPrepare(bundleName: string, url: string, data: AudioClip) {
@@ -115,6 +109,7 @@ export class AudioMusic extends AudioSource {
     /** 释放当前背景音乐资源 */
     release() {
         if (this._url) {
+            this.stop();
             this.clip = null;
             oops.res.release(this._url, this._bundleName);
         }

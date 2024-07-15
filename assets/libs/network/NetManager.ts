@@ -7,6 +7,11 @@
 import { CallbackObject, IRequestProtocol, NetData } from "./NetInterface";
 import { NetConnectOptions, NetNode } from "./NetNode";
 
+/**
+ * 使用流程文档可参考、简化与服务器对接、使用新版API体验，可进入下面地址获取新版本，替换network目录中的内容
+ * https://store.cocos.com/app/detail/5877
+ */
+
 /*
  * 网络节点管理类
  */
