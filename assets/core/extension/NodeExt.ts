@@ -81,7 +81,7 @@ if (!EDITOR) {
             "uiToggle": Toggle,
             "uiWidget": Widget,
             "uiOpacity": UIOpacity,
-            "uITransform": UITransform,
+            "uiTransform": UITransform,
             "uiMask": Mask,
         };
 

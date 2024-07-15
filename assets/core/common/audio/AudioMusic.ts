@@ -19,9 +19,11 @@ export class AudioMusic extends AudioSource {
     onComplete: Function | null = null;
 
     private _progress: number = 0;
-    private _isPlay: boolean = false;
-    private _bundleName: string = null!;
-    private _url: string = null!;
+    private _isLoading: boolean = false;
+    private _bundleName: string = null!;        // 当前音乐资源包
+    private _bundleName_next: string = null!;   // 下一个音乐资源包
+    private _url: string = null!;               // 当前播放音乐
+    private _url_next: string = null!;          // 下一个播放音乐
 
     /** 获取音乐播放进度 */
     get progress(): number {
@@ -46,44 +48,52 @@ export class AudioMusic extends AudioSource {
     load(url: string, callback?: Function, bundleName?: string) {
         if (bundleName == null) bundleName = oops.res.defaultBundleName;
 
-        if (this._url == null) {
-            oops.res.load(bundleName, url, AudioClip, (err: Error | null, data: AudioClip) => {
-                if (err) {
-                    error(err);
-                    return;
-                }
+        // 同一个音乐不重复播放
+        if (this._url == url && this._bundleName == bundleName) return;
 
-                // 注：事件定义在这里，是为了在播放前设置初始播放位置数据
+        // 下一个加载的背景音乐资源
+        if (this._isLoading) {
+            this._bundleName_next = bundleName;
+            this._url_next = url;
+            return;
+        }
+
+        this._isLoading = true;
+        oops.res.load(bundleName, url, AudioClip, (err: Error | null, data: AudioClip) => {
+            if (err) {
+                error(err);
+                return;
+            }
+            this._isLoading = false;
+
+            // 处理等待加载的背景音乐
+            if (this._url_next != null) {
+                // 删除之前加载的音乐资源
+                this.release();
+
+                // 加载等待播放的背景音乐
+                this.load(this._url_next, callback, this._bundleName_next);
+                this._bundleName_next = this._url_next = null!;
+            }
+            else {
                 callback && callback();
                 this.playPrepare(bundleName, url, data);
-            });
-        }
-        else {
-            this.playPrepare(bundleName, url, this.clip!);
-        }
-    }
-
-    /** 停止音乐播放 */
-    stop() {
-        this._bundleName = null!;
-        this._url = null!;
-        super.stop();
+            }
+        });
     }
 
     private playPrepare(bundleName: string, url: string, data: AudioClip) {
+        // 正在播放的时候先关闭
         if (this.playing) {
-            this._isPlay = false;
             this.stop();
         }
 
-        if (this._url) {
-            this.clip = null;
-            oops.res.release(this._url, this._bundleName);
-        }
+        // 删除当前正在播放的音乐
+        this.release();
 
+        // 播放背景音乐
         this.enabled = true;
         this.clip = data;
-
         this.play();
 
         // 记录新的资源包与资源名数据
@@ -93,15 +103,11 @@ export class AudioMusic extends AudioSource {
 
     /** cc.Component 生命周期方法，验证背景音乐播放完成逻辑，建议不要主动调用 */
     update(dt: number) {
-        if (this.currentTime > 0) {
-            this._isPlay = true;
-        }
-
-        if (this._isPlay && this.playing == false && this.progress == 0) {
-            this._isPlay = false;
+        // 背景资源播放完成事件
+        if (this.playing == false && this.progress == 0) {
             this.enabled = false;
             this.clip = null;
-            this._url = null!;
+            this._bundleName = this._url = null!;
             this.onComplete && this.onComplete();
         }
     }
@@ -111,8 +117,8 @@ export class AudioMusic extends AudioSource {
         if (this._url) {
             this.clip = null;
             oops.res.release(this._url, this._bundleName);
-            this._bundleName = null!;
-            this._url = null!;
         }
+
+        this._bundleName = this._url = null!;
     }
 }

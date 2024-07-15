@@ -42,7 +42,7 @@ export class AudioManager extends Component {
      * @param callback   音乐播放完成事件
      */
     playMusic(url: string, callback?: Function, bundleName?: string) {
-        if (this._switch_music && !this.music.playing) {
+        if (this._switch_music) {
             this.music.loop = false;
             this.music.load(url, callback, bundleName);
         }
@@ -50,7 +50,7 @@ export class AudioManager extends Component {
 
     /** 循环播放背景音乐 */
     playMusicLoop(url: string, bundleName?: string) {
-        if (this._switch_music && !this.music.playing) {
+        if (this._switch_music) {
             this.music.loop = true;
             this.music.load(url, null!, bundleName);
         }
