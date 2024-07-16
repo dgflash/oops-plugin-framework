@@ -6,8 +6,8 @@
  */
 
 import { Animation, Component, ParticleSystem, _decorator, sp } from 'cc';
-import { oops } from '../../core/Oops';
 import { EffectEvent } from './EffectEvent';
+import { message } from '../../core/common/event/MessageManager';
 
 const { ccclass, property } = _decorator;
 
@@ -63,6 +63,6 @@ export class EffectFinishedRelease extends Component {
     }
 
     private onRecovery() {
-        if (this.node.parent) oops.message.dispatchEvent(EffectEvent.Put, this.node);
+        if (this.node.parent) message.dispatchEvent(EffectEvent.Put, this.node);
     }
 }

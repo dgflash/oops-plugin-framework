@@ -1,17 +1,10 @@
-import { EventDispatcher } from "../../../core/common/event/EventDispatcher";
 import { Logger } from "../../../core/common/log/Logger";
 import { LanguageData } from "./LanguageData";
 import { LanguagePack } from "./LanguagePack";
 
-export enum LanguageEvent {
-    /** 语种变化事件 */
-    CHANGE = 'LanguageEvent.CHANGE',
-    /** 语种资源释放事件 */
-    RELEASE_RES = "LanguageEvent.RELEASE_RES"
-}
-
-export class LanguageManager extends EventDispatcher {
-    private _languages: Array<string> = ["zh", "en", "tr"];        // 支持的语言
+/** 多语言管理器 */
+export class LanguageManager {
+    private _languages: Array<string> = ["zh", "en", "tr"];      // 支持的语言
     private _languagePack: LanguagePack = new LanguagePack();    // 语言包
     private _defaultLanguage: string = "zh";                     // 默认语言
 
@@ -38,13 +31,16 @@ export class LanguageManager extends EventDispatcher {
         return this._languagePack;
     }
 
+    /**
+     * 是否存在指定语言
+     * @param lang  语言名
+     * @returns 存在返回true,则否false
+     */
     isExist(lang: string): boolean {
         return this.languages.indexOf(lang) > -1;
     }
 
-    /**
-     * 获取下一个语种
-     */
+    /** 获取下一个语种 */
     getNextLang(): string {
         let supportLangs = this.languages;
         let index = supportLangs.indexOf(LanguageData.current);
@@ -53,8 +49,9 @@ export class LanguageManager extends EventDispatcher {
     }
 
     /**
-     * 改变语种，会自动下载对应的语种，下载完成回调
-     * @param language 
+     * 改变语种，会自动下载对应的语种
+     * @param language 语言名
+     * @param callback 多语言资源数据加载完成回调
      */
     setLanguage(language: string, callback: (success: boolean) => void) {
         if (language == null || language == "") {
@@ -77,9 +74,10 @@ export class LanguageManager extends EventDispatcher {
 
         this.loadLanguageAssets(language, (lang: string) => {
             Logger.logConfig(`当前语言为【${language}】`);
+            var oldLanguage = LanguageData.current;
             LanguageData.current = language;
             this._languagePack.updateLanguage(language);
-            this.dispatchEvent(LanguageEvent.CHANGE, lang);
+            this._languagePack.releaseLanguageAssets(oldLanguage);
             callback(true);
         });
     }
@@ -111,6 +109,5 @@ export class LanguageManager extends EventDispatcher {
     releaseLanguageAssets(lang: string) {
         lang = lang.toLowerCase();
         this._languagePack.releaseLanguageAssets(lang);
-        this.dispatchEvent(LanguageEvent.RELEASE_RES, lang);
     }
 }

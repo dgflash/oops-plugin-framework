@@ -6,7 +6,7 @@
  */
 import { CCString, Component, _decorator, sp } from "cc";
 import { EDITOR } from "cc/env";
-import { oops } from "../../../core/Oops";
+import { resLoader } from "../../../core/common/loader/ResLoader";
 import { LanguageData } from "./LanguageData";
 
 const { ccclass, property, menu } = _decorator;
@@ -47,7 +47,7 @@ export class LanguageSpine extends Component {
     private updateSpine() {
         // 获取语言标记
         let path = `language/spine/${LanguageData.current}/${this.dataID}`;
-        let res: sp.SkeletonData | null = oops.res.get(path, sp.SkeletonData);
+        let res: sp.SkeletonData | null = resLoader.get(path, sp.SkeletonData);
         if (res) {
             let spine: sp.Skeleton = this.getComponent(sp.Skeleton)!;
             spine.skeletonData = res;

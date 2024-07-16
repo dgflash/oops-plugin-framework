@@ -4,8 +4,9 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-03-06 14:40:34
  */
-import { Animation, Component, Node, NodePool, ParticleSystem, Prefab, Vec3, sp } from 'cc';
-import { oops } from '../../core/Oops';
+import { Animation, Component, Node, NodePool, ParticleSystem, Prefab, sp, Vec3 } from 'cc';
+import { message } from '../../core/common/event/MessageManager';
+import { resLoader } from '../../core/common/loader/ResLoader';
 import { ViewUtil } from '../../core/utils/ViewUtil';
 import { EffectEvent } from './EffectEvent';
 import { EffectFinishedRelease } from './EffectFinishedRelease';
@@ -59,7 +60,7 @@ export class EffectSingleCase {
     private res: Map<string, boolean> = new Map();
 
     constructor() {
-        oops.message.on(EffectEvent.Put, this.onPut, this);
+        message.on(EffectEvent.Put, this.onPut, this);
     }
 
     private onPut(event: string, node: Node) {
@@ -72,25 +73,19 @@ export class EffectSingleCase {
      * @param parent  父节点
      * @param pos     位置
      */
-    loadAndShow(path: string, parent?: Node, params?: IEffectParams): Promise<Node> {
+    async loadAndShow(path: string, parent?: Node, params?: IEffectParams): Promise<Node> {
         return new Promise(async (resolve, reject) => {
             var np = this.effects.get(path);
             if (np == undefined) {
                 // 记录显示对象资源
                 this.res.set(path, true);
 
-                oops.res.load(path, Prefab, (err: Error | null, prefab: Prefab) => {
-                    if (err) {
-                        console.error(`名为【${path}】的特效资源加载失败`);
-                        return;
-                    }
-
-                    var node = this.show(path, parent, params);
-                    resolve(node);
-                });
+                await resLoader.loadAsync(path, Prefab);
+                const node = this.show(path, parent, params);
+                resolve(node);
             }
             else {
-                var node = this.show(path, parent, params);
+                const node = this.show(path, parent, params);
                 resolve(node);
             }
         });
@@ -180,12 +175,12 @@ export class EffectSingleCase {
     release(path?: string) {
         if (path) {
             this.clear(path);
-            oops.res.release(path);
+            resLoader.release(path);
         }
         else {
             this.clear();
             this.res.forEach((value: boolean, path: string) => {
-                oops.res.release(path);
+                resLoader.release(path);
             });
         }
     }

@@ -5,6 +5,7 @@
  * @LastEditTime: 2023-08-21 15:19:56
  */
 import { DEBUG } from "cc/env";
+import { EffectSingleCase } from "../libs/animator-effect/EffectSingleCase";
 import { ecs } from "../libs/ecs/ECS";
 import { ECSRootSystem } from "../libs/ecs/ECSSystem";
 import { LanguageManager } from "../libs/gui/language/Language";
@@ -33,12 +34,14 @@ export class oops {
     static log = Logger;
     /** 游戏配置 */
     static config = new Config();
+    /** 本地存储 */
+    static storage: StorageManager;
+    /** 资源管理 */
+    static res: ResLoader;
     /** 全局消息 */
-    static message: MessageManager = MessageManager.Instance;
+    static message: MessageManager;
     /** 随机工具 */
     static random = RandomManager.instance;
-    /** 本地存储 */
-    static storage: StorageManager = new StorageManager();
     /** 游戏时间管理 */
     static timer: TimerManager;
     /** 游戏音乐管理 */
@@ -47,21 +50,21 @@ export class oops {
     static gui: LayerManager;
     /** 三维游戏世界管理 */
     static game: GameManager;
-    /** 资源管理 */
-    static res = new ResLoader();
 
     /** ----------可选模块---------- */
 
     /** 多语言模块 */
-    static language: LanguageManager;
+    static language: LanguageManager = new LanguageManager();
     /** HTTP */
-    static http: HttpRequest = new HttpRequest();
+    static http: HttpRequest = new HttpRequest();           // 使用流程文档可参考、简化与服务器对接、使用新版API体验，可进入下面地址获取新版本，替换network目录中的内容(https://store.cocos.com/app/detail/5877)
     /** WebSocket */
-    static tcp: NetManager = new NetManager();
+    static tcp: NetManager = new NetManager();              // 使用流程文档可参考、简化与服务器对接、使用新版API体验，可进入下面地址获取新版本，替换network目录中的内容(https://store.cocos.com/app/detail/5877)
     /** ECS */
     static ecs: ECSRootSystem = new ecs.RootSystem();
     /** MVVM */
     static mvvm = VM;
+    /** 对象池 */
+    static pool = EffectSingleCase.instance;
 }
 
 // 引入oops全局变量以方便调试

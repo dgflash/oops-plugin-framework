@@ -5,7 +5,7 @@
  * @LastEditTime: 2023-01-19 14:52:12
  */
 import { Animation, AnimationClip, EventTouch, instantiate, Node, Prefab, Size, UITransform, v3, Vec3 } from "cc";
-import { oops } from "../Oops";
+import { resLoader } from "../common/loader/ResLoader";
 
 /** 显示对象工具 */
 export class ViewUtil {
@@ -92,7 +92,7 @@ export class ViewUtil {
      * @param path 资源路径
      */
     static createPrefabNode(path: string): Node {
-        var p: Prefab = oops.res.get(path, Prefab)!;
+        var p: Prefab = resLoader.get(path, Prefab)!;
         var n = instantiate(p);
         return n;
     }
@@ -103,7 +103,7 @@ export class ViewUtil {
      */
     static createPrefabNodeAsync(path: string): Promise<Node> {
         return new Promise(async (resolve, reject) => {
-            oops.res.load(path, Prefab, (err: Error | null, content: Prefab) => {
+            resLoader.load(path, Prefab, (err: Error | null, content: Prefab) => {
                 if (err) {
                     console.error(`名为【${path}】的资源加载失败`);
                     return;
@@ -132,7 +132,7 @@ export class ViewUtil {
             anim = node.addComponent(Animation);
         }
 
-        var clip = oops.res.get(path, AnimationClip) as AnimationClip;
+        var clip = resLoader.get(path, AnimationClip) as AnimationClip;
         if (!clip) {
             return;
         }

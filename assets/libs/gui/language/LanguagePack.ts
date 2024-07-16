@@ -4,9 +4,9 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-08-22 16:34:28
  */
-import { director, error, JsonAsset, TTFFont, warn } from "cc";
+import { director, error, JsonAsset, TTFFont } from "cc";
+import { resLoader } from "../../../core/common/loader/ResLoader";
 import { Logger } from "../../../core/common/log/Logger";
-import { oops } from "../../../core/Oops";
 import { JsonUtil } from "../../../core/utils/JsonUtil";
 import { LanguageData } from "./LanguageData";
 import { LanguageLabel } from "./LanguageLabel";
@@ -14,13 +14,6 @@ import { LanguageSpine } from "./LanguageSpine";
 import { LanguageSprite } from "./LanguageSprite";
 
 export class LanguagePack {
-    /** JSON资源目录 */
-    json: string = "language/json";
-    /** 纹理资源目录 */
-    texture: string = "language/texture";
-    /** SPINE资源目录 */
-    spine: string = "language/spine";
-
     /**
      * 刷新语言文字
      * @param lang 
@@ -76,8 +69,8 @@ export class LanguagePack {
     /** 纹理多语言资源 */
     private loadTexture(lang: string) {
         return new Promise((resolve, reject) => {
-            let path = `${this.texture}/${lang}`;
-            oops.res.loadDir(path, (err: any, assets: any) => {
+            const path = `${LanguageData.path_texture}/${lang}`;
+            resLoader.loadDir(path, (err: any, assets: any) => {
                 if (err) {
                     error(err);
                     resolve(null);
@@ -85,38 +78,37 @@ export class LanguagePack {
                 }
                 Logger.logConfig(path, "下载语言包 textures 资源");
                 resolve(null);
-            })
+            });
         });
     }
 
     /** Json格式多语言资源 */
     private loadJson(lang: string) {
-        return new Promise((resolve, reject) => {
-            let path = `${this.json}/${lang}`;
-            oops.res.load(path, JsonAsset, (err: Error | null, asste: JsonAsset) => {
-                if (err) {
-                    error(err);
-                    resolve(null);
-                    return;
-                }
-
-                LanguageData.json = asste.json;
+        return new Promise(async (resolve, reject) => {
+            const path = `${LanguageData.path_json}/${lang}`;
+            const jsonAsset = await resLoader.loadAsync(path, JsonAsset);
+            if (jsonAsset) {
+                LanguageData.json = jsonAsset.json;
                 Logger.logConfig(path, "下载语言包 json 资源");
+            }
+            else {
+                resolve(null);
+                return;
+            }
 
-                oops.res.load(path, TTFFont, (err: Error | null) => {
-                    if (err == null) Logger.logConfig(path, "下载语言包 ttf 资源");
-
-                    resolve(null);
-                });
-            })
+            resLoader.load(path, TTFFont, (err: Error | null, font: TTFFont) => {
+                if (err == null) Logger.logConfig(path, "下载语言包 ttf 资源");
+                LanguageData.font = font;
+                resolve(null);
+            });
         });
     }
 
     /** SPINE动画多语言资源 */
     private loadSpine(lang: string) {
-        return new Promise((resolve, reject) => {
-            let path = `${this.spine}/${lang}`;
-            oops.res.loadDir(path, (err: any, assets: any) => {
+        return new Promise(async (resolve, reject) => {
+            const path = `${LanguageData.path_spine}/${lang}`;
+            resLoader.loadDir(path, (err: any, assets: any) => {
                 if (err) {
                     error(err);
                     resolve(null);
@@ -133,16 +125,21 @@ export class LanguagePack {
      * @param lang 
      */
     releaseLanguageAssets(lang: string) {
-        let langTexture = `${this.texture}/${lang}`;
-        oops.res.releaseDir(langTexture);
-        Logger.logView(langTexture, "释放语言 texture 资源");
+        let langTexture = `${LanguageData.path_texture}/${lang}`;
+        resLoader.releaseDir(langTexture);
 
-        let langJson = `${this.json}/${lang}`;
-        oops.res.release(langJson);
-        Logger.logView(langJson, "释放语言文字资源");
+        let langJson = `${LanguageData.path_json}/${lang}`;
+        let json = resLoader.get(langJson, JsonAsset);
+        if (json) {
+            json.decRef();
+        }
 
-        let langSpine = `${this.spine}/${lang}`;
-        oops.res.release(langSpine);
-        Logger.logView(langSpine, "释放语言 spine 资源");
+        let font = resLoader.get(langJson, TTFFont);
+        if (font) {
+            font.decRef();
+        }
+
+        let langSpine = `${LanguageData.path_spine}/${lang}`;
+        resLoader.release(langSpine);
     }
 }

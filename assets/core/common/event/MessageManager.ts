@@ -7,9 +7,7 @@ class EventData {
     public object: any;
 }
 
-/**
- * 批量注册、移除全局事件对象
- */
+/** 批量注册、移除全局事件对象 */
 export class MessageEventData {
     private events: Map<string, Array<EventData>> = new Map();
 
@@ -31,7 +29,7 @@ export class MessageEventData {
         ed.object = object;
         eds.push(ed);
 
-        MessageManager.Instance.on(event, listener, object);
+        message.on(event, listener, object);
     }
 
     /**
@@ -43,7 +41,7 @@ export class MessageEventData {
         if (!eds) return;
 
         for (let eb of eds) {
-            MessageManager.Instance.off(event, eb.listener, eb.object);
+            message.off(event, eb.listener, eb.object);
         }
         this.events.delete(event);
     }
@@ -54,7 +52,7 @@ export class MessageEventData {
      * @param args(any)          事件参数
      */
     dispatchEvent(event: string, ...args: any) {
-        MessageManager.Instance.dispatchEvent(event, ...args);
+        message.dispatchEvent(event, ...args);
     }
 
     /** 清除所有的全局事件监听 */
@@ -106,8 +104,6 @@ export class RoleViewComp extends Component{
 }
  */
 export class MessageManager {
-    static readonly Instance: MessageManager = new MessageManager();
-
     private events: Map<string, Array<EventData>> = new Map();
 
     /**
@@ -205,3 +201,5 @@ export class MessageManager {
         }
     }
 }
+
+export const message = new MessageManager();

@@ -6,7 +6,7 @@
  */
 
 import { JsonAsset } from "cc";
-import { oops } from "../Oops";
+import { resLoader } from "../common/loader/ResLoader";
 
 /** 资源路径 */
 var path: string = "config/game/";
@@ -35,7 +35,7 @@ export class JsonUtil {
             callback(data.get(name));
         else {
             var url = path + name;
-            oops.res.load(url, JsonAsset, (err: Error | null, content: JsonAsset) => {
+            resLoader.load(url, JsonAsset, (err: Error | null, content: JsonAsset) => {
                 if (err) {
                     console.warn(err.message);
                     callback(null);
@@ -59,7 +59,7 @@ export class JsonUtil {
             }
             else {
                 var url = path + name;
-                oops.res.load(url, JsonAsset, (err: Error | null, content: JsonAsset) => {
+                resLoader.load(url, JsonAsset, (err: Error | null, content: JsonAsset) => {
                     if (err) {
                         console.warn(err.message);
                         resolve(null);
@@ -80,6 +80,6 @@ export class JsonUtil {
     static release(name: string) {
         var url = path + name;
         data.delete(name);
-        oops.res.release(url);
+        resLoader.release(url);
     }
 }

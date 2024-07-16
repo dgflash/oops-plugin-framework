@@ -6,7 +6,7 @@
  */
 import { CCString, Component, Size, Sprite, SpriteFrame, UITransform, _decorator } from "cc";
 import { EDITOR } from "cc/env";
-import { oops } from "../../../core/Oops";
+import { resLoader } from "../../../core/common/loader/ResLoader";
 import { LanguageData } from "./LanguageData";
 
 const { ccclass, property, menu } = _decorator;
@@ -44,7 +44,7 @@ export class LanguageSprite extends Component {
     private updateSprite() {
         // 获取语言标记
         let path = `language/texture/${LanguageData.current}/${this.dataID}/spriteFrame`;
-        let res: SpriteFrame | null = oops.res.get(path, SpriteFrame);
+        let res: SpriteFrame | null = resLoader.get(path, SpriteFrame);
         if (res) {
             let spcomp: Sprite = this.getComponent(Sprite)!;
             spcomp.spriteFrame = res;

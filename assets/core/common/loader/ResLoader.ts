@@ -1,4 +1,4 @@
-import { Asset, AssetManager, Constructor, __private, assetManager, error, js, resources } from "cc";
+import { Asset, AssetManager, Constructor, __private, assetManager, error, js, resources, warn } from "cc";
 
 export type ProgressCallback = __private._cocos_asset_asset_manager_deprecated__LoadProgressCallback;
 export type CompleteCallback<T = any> = any;       // (error: Error | null, asset: T) => void;  (error: Error | null, asset: T[], urls: string[]) => void;
@@ -130,7 +130,7 @@ oops.res.load("spine_path", sp.SkeletonData, (err: Error | null, sd: sp.Skeleton
         return new Promise((resolve, reject) => {
             this.load(bundleName, paths, type, (err: Error | null, asset: T) => {
                 if (err) {
-                    error(err.message);
+                    warn(err.message);
                 }
                 resolve(asset);
             });
@@ -334,3 +334,5 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
         }
     }
 }
+
+export const resLoader = new ResLoader();

@@ -5,12 +5,14 @@
  * @LastEditTime: 2023-08-28 10:02:57
  */
 import { Component, Game, JsonAsset, Node, _decorator, director, game, screen, sys } from "cc";
-import { LanguageManager } from "../libs/gui/language/Language";
 import { GameConfig } from "../module/config/GameConfig";
 import { GameQueryConfig } from "../module/config/GameQueryConfig";
 import { oops, version } from "./Oops";
 import { AudioManager } from "./common/audio/AudioManager";
 import { EventMessage } from "./common/event/EventMessage";
+import { message } from "./common/event/MessageManager";
+import { resLoader } from "./common/loader/ResLoader";
+import { StorageManager } from "./common/storage/StorageManager";
 import { TimerManager } from "./common/timer/TimerManager";
 import { GameManager } from "./game/GameManager";
 import { GUI } from "./gui/GUI";
@@ -49,20 +51,45 @@ export class Root extends Component {
         }
     }
 
-    private loadConfig() {
+    private async loadConfig() {
+        // 创建持久根节点
+        this.persistRootNode = new Node("PersistRootNode");
+        director.addPersistRootNode(this.persistRootNode);
+
+        // 资源管理模块
+        oops.res = resLoader;
+
         const config_name = "config";
-        oops.res.load(config_name, JsonAsset, () => {
-            var config = oops.res.get(config_name);
-            if (config == null) {
-                this.loadConfig();
-                return;
-            }
+        const config = await oops.res.loadAsync(config_name, JsonAsset);
+        if (config) {
             // oops.config.btc = new BuildTimeConstants();
             oops.config.query = new GameQueryConfig();
             oops.config.game = new GameConfig(config);
+
+            // 本地存储模块
+            oops.storage = new StorageManager();
+            oops.storage.init(oops.config.game.localDataKey, oops.config.game.localDataIv);      // 初始化本地存储加密
+
+            // 全局消息
+            oops.message = message;
+
+            // 创建音频模块
+            oops.audio = this.persistRootNode.addComponent(AudioManager);
+            oops.audio.load();
+
+            // 创建时间模块
+            oops.timer = this.persistRootNode.addComponent(TimerManager)!;
+
+            // 游戏场景管理
+            oops.game = new GameManager(this.game);
+
+            // 游戏界面管理
+            oops.gui = new LayerManager(this.gui);
+
+            // 网络模块
             oops.http.server = oops.config.game.httpServer;                                      // Http 服务器地址
             oops.http.timeout = oops.config.game.httpTimeout;                                    // Http 请求超时时间
-            oops.storage.init(oops.config.game.localDataKey, oops.config.game.localDataIv);      // 初始化本地存储加密
+
             game.frameRate = oops.config.game.frameRate;                                         // 初始化每秒传输帧数
 
             this.enabled = true;
@@ -70,7 +97,10 @@ export class Root extends Component {
             this.run();
 
             oops.res.release(config_name);
-        });
+        }
+        else {
+            this.loadConfig();
+        }
     }
 
     update(dt: number) {
@@ -93,20 +123,6 @@ export class Root extends Component {
     }
 
     protected init() {
-        // 创建持久根节点
-        this.persistRootNode = new Node("PersistRootNode");
-        director.addPersistRootNode(this.persistRootNode);
-
-        // 创建音频模块
-        oops.audio = this.persistRootNode.addComponent(AudioManager);
-        oops.audio.load();
-
-        // 创建时间模块
-        oops.timer = this.persistRootNode.addComponent(TimerManager)!;
-
-        oops.language = new LanguageManager();
-        oops.game = new GameManager(this.game);
-        oops.gui = new LayerManager(this.gui);
         this.initGui();
         this.initEcsSystem();
         oops.ecs.init();

@@ -1,6 +1,5 @@
 import { CCString, Component, Label, RichText, TTFFont, _decorator, warn } from "cc";
 import { EDITOR } from "cc/env";
-import { oops } from "../../../core/Oops";
 import { LanguageData } from "./LanguageData";
 
 const { ccclass, property, menu } = _decorator;
@@ -109,8 +108,7 @@ export class LanguageLabel extends Component {
     updateContent() {
         var label = this.getComponent(Label);
         var richtext = this.getComponent(RichText);
-        var path = oops.language.pack.json + "/" + oops.language.current;
-        var font: TTFFont | null = oops.res.get(path, TTFFont);
+        var font: TTFFont | null = LanguageData.font
 
         if (label) {
             if (font && !label.useSystemFont) {
