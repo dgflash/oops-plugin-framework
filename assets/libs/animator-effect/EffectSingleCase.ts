@@ -18,11 +18,13 @@ class EffectData extends Component {
 }
 
 /** 特效参数 */
-interface IEffectParams {
+export interface IEffectParams {
     /** 初始位置 */
     pos?: Vec3,
     /** 是否播放完成后删除 */
-    isPlayFinishedRelease?: boolean
+    isPlayFinishedRelease?: boolean,
+    /** 资源包名 */
+    bundleName?: string
 }
 
 /** 
@@ -57,7 +59,7 @@ export class EffectSingleCase {
     /** 正在使用中的显示对象集合 */
     private effects_use: Map<Node, boolean> = new Map();
     /** 对象池中用到的资源 - 这里只管理本对象加载的资源，预加载资源由其它对象自己施放 */
-    private res: Map<string, boolean> = new Map();
+    private res: Map<string, string> = new Map();
 
     constructor() {
         message.on(EffectEvent.Put, this.onPut, this);
@@ -68,7 +70,7 @@ export class EffectSingleCase {
     }
 
     /** 
-     * 加载资源并现实特效 
+     * 加载资源并生成节点对象
      * @param path    预制资源路径
      * @param parent  父节点
      * @param pos     位置
@@ -78,9 +80,16 @@ export class EffectSingleCase {
             var np = this.effects.get(path);
             if (np == undefined) {
                 // 记录显示对象资源
-                this.res.set(path, true);
 
-                await resLoader.loadAsync(path, Prefab);
+                if (params && params.bundleName) {
+                    this.res.set(path, params.bundleName);
+                    await resLoader.loadAsync(params.bundleName, path, Prefab);
+                }
+                else {
+                    this.res.set(path, resLoader.defaultBundleName);
+                    await resLoader.loadAsync(path, Prefab);
+                }
+
                 const node = this.show(path, parent, params);
                 resolve(node);
             }
@@ -89,6 +98,18 @@ export class EffectSingleCase {
                 resolve(node);
             }
         });
+    }
+
+    /**
+     * 获取指定资源池中对象数量
+     * @param path  预制资源路径
+     */
+    getCount(path: string): number {
+        var np = this.effects.get(path);
+        if (np) {
+            return np.size();
+        }
+        return 0;
     }
 
     /** 
@@ -169,19 +190,25 @@ export class EffectSingleCase {
     }
 
     /**
-     * 施放对象池中显示对象的资源内存
+     * 释放对象池中显示对象的资源内存
      * @param path 资源路径 
      */
     release(path?: string) {
         if (path) {
             this.clear(path);
-            resLoader.release(path);
+            const bundleName = this.res.get(path);
+            resLoader.release(path, bundleName);
+            this.res.delete(path);
         }
         else {
+            // 施放池中对象内存
             this.clear();
-            this.res.forEach((value: boolean, path: string) => {
-                resLoader.release(path);
+
+            // 施放对象资源内存
+            this.res.forEach((bundleName: string, path: string) => {
+                resLoader.release(path, bundleName);
             });
+            this.res.clear()
         }
     }
 
@@ -194,7 +221,7 @@ export class EffectSingleCase {
         }
         else {
             // COCOS动画
-            let anims: Animation[] = node.getComponentsInChildren(Animation);
+            var anims: Animation[] = node.getComponentsInChildren(Animation);
             if (anims.length > 0) {
                 anims.forEach(animator => {
                     let aniName = animator.defaultClip?.name;
@@ -208,7 +235,7 @@ export class EffectSingleCase {
             }
             // 粒子动画
             else if (ParticleSystem) {
-                let particles: ParticleSystem[] = node.getComponentsInChildren(ParticleSystem);
+                var particles: ParticleSystem[] = node.getComponentsInChildren(ParticleSystem);
                 particles.forEach(particle => {
                     particle.simulationSpeed = this.speed;
                 });
