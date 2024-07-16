@@ -69,6 +69,18 @@ export class EffectSingleCase {
         this.put(node);
     }
 
+    /**
+     * 获取指定资源池中对象数量
+     * @param path  预制资源路径
+     */
+    getCount(path: string): number {
+        var np = this.effects.get(path);
+        if (np) {
+            return np.size();
+        }
+        return 0;
+    }
+
     /** 
      * 加载资源并生成节点对象
      * @param path    预制资源路径
@@ -79,8 +91,6 @@ export class EffectSingleCase {
         return new Promise(async (resolve, reject) => {
             var np = this.effects.get(path);
             if (np == undefined) {
-                // 记录显示对象资源
-
                 if (params && params.bundleName) {
                     this.res.set(path, params.bundleName);
                     await resLoader.loadAsync(params.bundleName, path, Prefab);
@@ -100,25 +110,13 @@ export class EffectSingleCase {
         });
     }
 
-    /**
-     * 获取指定资源池中对象数量
-     * @param path  预制资源路径
-     */
-    getCount(path: string): number {
-        var np = this.effects.get(path);
-        if (np) {
-            return np.size();
-        }
-        return 0;
-    }
-
     /** 
      * 显示预制对象
      * @param path    预制资源路径
      * @param parent  父节点
      * @param pos     位置
      */
-    show(path: string, parent?: Node, params?: IEffectParams): Node {
+    private show(path: string, parent?: Node, params?: IEffectParams): Node {
         var np = this.effects.get(path);
         if (np == null) {
             np = new NodePool();
