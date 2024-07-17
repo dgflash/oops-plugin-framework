@@ -264,7 +264,7 @@ export class ECSEntity {
     }
 
     private _remove(comp: CompType<ecs.IComp>) {
-        this.remove(comp, false);
+        this.remove(comp, true);
     }
 
     /** 销毁实体，实体会被回收到实体缓存池中 */
