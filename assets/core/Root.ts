@@ -38,8 +38,8 @@ export class Root extends Component {
     })
     gui: Node = null!;
 
-    /** 持久根节点 */
-    private persistRootNode: Node = null!
+    /** 框架常驻节点 */
+    private persist: Node = null!
 
     onLoad() {
         if (!isInited) {
@@ -53,8 +53,8 @@ export class Root extends Component {
 
     private async loadConfig() {
         // 创建持久根节点
-        this.persistRootNode = new Node("PersistRootNode");
-        director.addPersistRootNode(this.persistRootNode);
+        this.persist = new Node("OopsFrameworkPersistNode");
+        director.addPersistRootNode(this.persist);
 
         // 资源管理模块
         oops.res = resLoader;
@@ -74,11 +74,11 @@ export class Root extends Component {
             oops.message = message;
 
             // 创建音频模块
-            oops.audio = this.persistRootNode.addComponent(AudioManager);
+            oops.audio = this.persist.addComponent(AudioManager);
             oops.audio.load();
 
             // 创建时间模块
-            oops.timer = this.persistRootNode.addComponent(TimerManager)!;
+            oops.timer = this.persist.addComponent(TimerManager)!;
 
             // 游戏场景管理
             oops.game = new GameManager(this.game);
