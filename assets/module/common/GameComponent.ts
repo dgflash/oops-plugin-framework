@@ -101,11 +101,12 @@ export class GameComponent extends Component {
 
     /**
      * 加载预制并创建预制节点
-     * @param path 资源路径
+     * @param path       资源路径
+     * @param bundleName 资源包名
      */
-    createPrefabNodeAsync(path: string): Promise<Node> {
+    createPrefabNodeAsync(path: string, bundleName: string = oops.res.defaultBundleName): Promise<Node> {
         return new Promise((resolve, reject) => {
-            this.load(path, Prefab, (err: Error | null, content: Prefab) => {
+            this.load(bundleName, path, Prefab, (err: Error | null, content: Prefab) => {
                 if (err) {
                     console.error(`名为【${path}】的资源加载失败`);
                     resolve(null!);
