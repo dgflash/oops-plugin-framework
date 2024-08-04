@@ -51,13 +51,13 @@ export interface UIConfig {
     layer: LayerType;
     /** 预制资源相对路径 */
     prefab: string;
-    /** 是否自动施放 */
+    /** 是否自动施放（默认不自动释放） */
     destroy?: boolean;
 
     /** -----弹窗属性----- */
-    /** 是否触摸非窗口区域关闭 */
+    /** 是否触摸非窗口区域关闭（默认关闭） */
     vacancy?: boolean,
-    /** 是否打开窗口后显示背景遮罩 */
+    /** 是否打开窗口后显示背景遮罩（默认关闭） */
     mask?: boolean;
 }
 
