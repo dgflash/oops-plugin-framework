@@ -52,7 +52,7 @@ export class JsonUtil {
      * 异步加载Json数据表
      * @param name 资源名
      */
-    static loadAsync(name: string) {
+    static loadAsync(name: string): Promise<any> {
         return new Promise((resolve, reject) => {
             if (data.has(name)) {
                 resolve(data.get(name))
