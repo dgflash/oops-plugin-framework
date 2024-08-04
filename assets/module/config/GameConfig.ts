@@ -68,6 +68,11 @@ export class GameConfig {
         return this._data.bundle.version;
     }
 
+    /** 加载界面资源超时提示 */
+    get loadingTimeoutGui(): number {
+        return this._data.config.loadingTimeoutGui || 1000;
+    }
+
     private _data: any = null;
     /** 游戏配置数据 */
     public get data(): any {

@@ -51,7 +51,7 @@ export class LayerNotify extends Node {
 
     /** 关闭等待提示 */
     waitClose() {
-        if (this.wait.parent) {
+        if (this.wait && this.wait.parent) {
             this.wait.parent = null;
             this.black.enabled = false;
         }

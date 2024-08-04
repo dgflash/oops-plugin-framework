@@ -39,13 +39,14 @@ export class CommonPrompt extends Component {
      *     needCancel: 是否需要取消按钮
      * }
      */
-    onAdded(params: any = {}) {
+    onAdded(params: any): boolean {
         this.config = params || {};
         this.setTitle();
         this.setContent();
         this.setBtnOkLabel();
         this.setBtnCancelLabel();
         this.node.active = true;
+        return true;
     }
 
     private setTitle() {

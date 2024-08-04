@@ -30,8 +30,8 @@ export class LayerPopUp extends LayerUI {
         this.black.enabled = false;
     }
 
-    protected showUi(vp: ViewParams) {
-        super.showUi(vp);
+    protected async showUi(vp: ViewParams) {
+        await super.showUi(vp);
 
         // 界面加载完成显示时，启动触摸非窗口区域关闭
         this.openVacancyRemove(vp.config);

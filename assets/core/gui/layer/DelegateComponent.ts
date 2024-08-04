@@ -19,12 +19,17 @@ export class DelegateComponent extends Component {
     onCloseWindow: Function = null!;
 
     /** 窗口添加 */
-    add() {
-        // 触发窗口组件上添加到父节点后的事件
-        this.applyComponentsFunction(this.node, "onAdded", this.vp.params);
-        if (typeof this.vp.callbacks.onAdded === "function") {
-            this.vp.callbacks.onAdded(this.node, this.vp.params);
-        }
+    add(): Promise<boolean> {
+        return new Promise(async (resolve, reject) => {
+            // 触发窗口组件上添加到父节点后的事件
+            const r = await this.applyComponentsFunction(this.node, "onAdded", this.vp.params);
+
+            // 触发外部窗口显示前的事件（辅助实现自定义动画逻辑）
+            if (typeof this.vp.callbacks.onAdded === "function") {
+                this.vp.callbacks.onAdded(this.node, this.vp.params);
+            }
+            resolve(r);
+        });
     }
 
     /** 删除节点，该方法只能调用一次，将会触发onBeforeRemoved回调 */
@@ -81,13 +86,20 @@ export class DelegateComponent extends Component {
         this.vp = null!;
     }
 
-    protected applyComponentsFunction(node: Node, funName: string, params: any) {
-        for (let i = 0; i < node.components.length; i++) {
-            let component: any = node.components[i];
-            let func = component[funName];
-            if (func) {
-                func.call(component, params);
+    protected applyComponentsFunction(node: Node, funName: string, params: any): Promise<boolean> {
+        return new Promise(async (resolve, reject) => {
+            var r = true;
+            for (let i = 0; i < node.components.length; i++) {
+                const component: any = node.components[i];
+                const func = component[funName];
+                if (func) {
+                    r = await func.call(component, params);
+                    if (r == false) {
+                        break;
+                    }
+                }
             }
-        }
+            resolve(r);
+        });
     }
 }

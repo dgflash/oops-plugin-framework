@@ -59,33 +59,45 @@ export class LayerUI extends Node {
      * @param vp         显示参数
      * @param bundle     远程资源包名，如果为空就是默认本地资源包
      */
-    protected load(vp: ViewParams, bundle?: string) {
+    protected async load(vp: ViewParams, bundle?: string) {
+        // 加载界面资源超时提示
+        const timerId = setTimeout(this.onLoadingTimeoutGui, oops.config.game.loadingTimeoutGui);
         if (vp && vp.node) {
-            this.showUi(vp);
+            await this.showUi(vp);
         }
         else {
             // 优先加载配置的指定资源包中资源，如果没配置则加载默认资源包资源
             bundle = bundle || oops.res.defaultBundleName;
-            oops.res.load(bundle, vp.config.prefab, (err: Error | null, res: Prefab) => {
-                if (err) {
-                    this.ui_nodes.delete(vp.config.prefab);
-                    console.warn(`路径为【${vp.config.prefab}】的预制加载失败`);
-                    vp.callbacks && vp.callbacks.onLoadFailure && vp.callbacks.onLoadFailure();
-                    return;
-                }
+            const res = await oops.res.loadAsync(bundle, vp.config.prefab, Prefab);
+            if (res) {
+                const ui = instantiate(res);
+                vp.node = ui;
 
-                let childNode: Node = instantiate(res);
-                vp.node = childNode;
+                // 窗口事件委托
+                const dc = ui.addComponent(DelegateComponent);
+                dc.vp = vp;
+                dc.onCloseWindow = this.onCloseWindow.bind(this);
 
-                let comp = childNode.addComponent(DelegateComponent);
-                comp.vp = vp;
-                comp.onCloseWindow = this.onCloseWindow.bind(this);
-
-                this.showUi(vp);
-            });
+                // 显示界面
+                await this.showUi(vp);
+            }
+            else {
+                console.warn(`路径为【${vp.config.prefab}】的预制加载失败`);
+                this.failure(vp);
+            }
         }
+
+        // 关闭界面资源超时提示
+        oops.gui.waitClose();
+        clearTimeout(timerId);
     }
 
+    /** 加载超时事件*/
+    private onLoadingTimeoutGui() {
+        oops.gui.waitOpen();
+    }
+
+    /** 窗口关闭事件 */
     protected onCloseWindow(vp: ViewParams) {
         this.ui_nodes.delete(vp.config.prefab);
     }
@@ -94,14 +106,24 @@ export class LayerUI extends Node {
      * 创建界面节点
      * @param vp  视图参数
      */
-    protected showUi(vp: ViewParams) {
+    protected async showUi(vp: ViewParams) {
         // 触发窗口添加事件
-        let comp = vp.node.getComponent(DelegateComponent)!;
-        comp.add();
-        vp.node.parent = this;
+        const comp = vp.node.getComponent(DelegateComponent)!;
+        if (await comp.add()) {
+            vp.node.parent = this;
 
-        // 标记界面为使用状态
-        vp.valid = true;
+            // 标记界面为使用状态
+            vp.valid = true;
+        }
+        else {
+            console.warn(`路径为【${vp.config.prefab}】的自定义预处理逻辑异常.检查预制上绑定的组件中 onAdded 方法,返回true才能正确完成窗口显示流程`);
+            this.failure(vp);
+        }
+    }
+
+    private failure(vp: ViewParams) {
+        this.ui_nodes.delete(vp.config.prefab);
+        vp.callbacks && vp.callbacks.onLoadFailure && vp.callbacks.onLoadFailure();
     }
 
     /**
@@ -116,15 +138,6 @@ export class LayerUI extends Node {
         // 界面移出舞台
         var vp = this.ui_nodes.get(prefabPath);
         if (vp) {
-            // // 优先使用参数中控制的释放条件，如果未传递参数则用配置中的释放条件
-            // if (release === undefined && vp.config.destroy !== undefined) {
-            //     release = vp.config.destroy;
-            // }
-            // // 默认不缓存关闭的界面
-            // else {
-            //     release = true;
-            // }
-
             // 优先使用参数中控制的释放条件，如果未传递参数则用配置中的释放条件，默认不缓存关闭的界面
             if (release === undefined) {
                 release = vp.config.destroy !== undefined ? vp.config.destroy : true;
