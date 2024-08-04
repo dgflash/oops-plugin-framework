@@ -30,14 +30,16 @@ export class LayerPopUp extends LayerUI {
         this.black.enabled = false;
     }
 
-    protected async showUi(vp: ViewParams) {
-        await super.showUi(vp);
+    protected async showUi(vp: ViewParams): Promise<boolean> {
+        var r = await super.showUi(vp);
+        if (r) {
+            // 界面加载完成显示时，启动触摸非窗口区域关闭
+            this.openVacancyRemove(vp.config);
 
-        // 界面加载完成显示时，启动触摸非窗口区域关闭
-        this.openVacancyRemove(vp.config);
-
-        // 界面加载完成显示时，层级事件阻挡
-        this.black.enabled = true;
+            // 界面加载完成显示时，层级事件阻挡
+            this.black.enabled = true;
+        }
+        return r;
     }
 
     protected onCloseWindow(vp: ViewParams) {
@@ -59,6 +61,8 @@ export class LayerPopUp extends LayerUI {
 
     /** 关闭遮罩 */
     protected closeMask() {
+        if (this.mask == null) return;
+        
         var flag = true;
         for (var value of this.ui_nodes.values()) {
             if (value.config.mask) {

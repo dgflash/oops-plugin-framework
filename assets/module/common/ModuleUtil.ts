@@ -58,19 +58,7 @@ export class ModuleUtil {
     }
 
     /**
-     * 业务实体上移除界面组件
-     * @param ent        模块实体
-     * @param ctor       界面逻辑组件
-     * @param uiId       界面资源编号
-     * @param isDestroy  是否释放界面缓存（默认为释放界面缓存）
-     */
-    public static removeViewUi(ent: ecs.Entity, ctor: CompType<ecs.IComp>, uiId: number, isDestroy: boolean = true) {
-        ent.remove(ctor, isDestroy);
-        oops.gui.remove(uiId, isDestroy);
-    }
-
-    /**
-    * 添加界面组件
+    * 通过资源内存中获取预制上的组件添加到ECS实体中
     * @param ent      模块实体
     * @param ctor     界面逻辑组件
     * @param parent   显示对象父级
@@ -85,5 +73,17 @@ export class ModuleUtil {
         var comp = node.getComponent(ctor)!;
         ent.add(comp);
         node.parent = parent;
+    }
+
+    /**
+     * 业务实体上移除界面组件
+     * @param ent        模块实体
+     * @param ctor       界面逻辑组件
+     * @param uiId       界面资源编号
+     * @param isDestroy  是否释放界面缓存（默认为释放界面缓存）
+     */
+    public static removeViewUi(ent: ecs.Entity, ctor: CompType<ecs.IComp>, uiId: number, isDestroy: boolean = true) {
+        ent.remove(ctor, isDestroy);
+        oops.gui.remove(uiId, isDestroy);
     }
 }

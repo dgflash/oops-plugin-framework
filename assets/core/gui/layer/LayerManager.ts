@@ -6,7 +6,6 @@ import { LayerDialog } from "./LayerDialog";
 import { LayerNotify } from "./LayerNotify";
 import { LayerPopUp } from "./LayerPopup";
 import { LayerUI } from "./LayerUI";
-import { UIMap } from "./UIMap";
 
 /** 界面层类型 */
 export enum LayerType {
@@ -71,8 +70,6 @@ export class LayerManager {
     game!: Node;
     /** 新手引导层 */
     guide!: Node;
-    /** 界面地图 */
-    uiMap!: UIMap;
 
     /** 界面层 */
     private ui!: LayerUI;
@@ -98,6 +95,14 @@ export class LayerManager {
      */
     init(configs: { [key: number]: UIConfig }): void {
         this.configs = configs;
+    }
+
+    /**
+     * 设置窗口打开失败回调
+     * @param callback  回调方法
+     */
+    setOpenFailure(callback: Function) {
+        this.ui.onOpenFailure = this.popup.onOpenFailure = this.dialog.onOpenFailure = this.system.onOpenFailure = callback;
     }
 
     /**
@@ -128,17 +133,6 @@ export class LayerManager {
      */
     setConfig(uiId: number, config: UIConfig): void {
         this.configs[uiId] = config;
-    }
-
-    /**
-     * 设置界面地图配置
-     * @param data 界面地图数据
-     */
-    setUIMap(data: any) {
-        if (this.uiMap == null) {
-            this.uiMap = new UIMap();
-        }
-        this.uiMap.init(this, data);
     }
 
     /**
@@ -221,8 +215,13 @@ export class LayerManager {
     replaceAsync(removeUiId: number, openUiId: number, uiArgs: any = null): Promise<Node | null> {
         return new Promise<Node | null>(async (resolve, reject) => {
             var node = await this.openAsync(openUiId, uiArgs);
-            this.remove(removeUiId);
-            resolve(node);
+            if (node) {
+                this.remove(removeUiId);
+                resolve(node);
+            }
+            else {
+                resolve(null);
+            }
         });
     }
 
@@ -254,6 +253,7 @@ export class LayerManager {
                 result = this.system.has(config.prefab);
                 break;
         }
+
         return result;
     }
 

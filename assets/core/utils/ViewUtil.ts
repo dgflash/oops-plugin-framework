@@ -103,15 +103,14 @@ export class ViewUtil {
      */
     static createPrefabNodeAsync(path: string): Promise<Node> {
         return new Promise(async (resolve, reject) => {
-            resLoader.load(path, Prefab, (err: Error | null, content: Prefab) => {
-                if (err) {
-                    console.error(`名为【${path}】的资源加载失败`);
-                    return;
-                }
-
+            var prefab = await resLoader.loadAsync(path, Prefab)
+            if (prefab) {
                 var node = this.createPrefabNode(path);
                 resolve(node);
-            });
+            }
+            else {
+                resolve(null!);
+            }
         });
     }
 

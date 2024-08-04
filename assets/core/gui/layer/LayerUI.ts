@@ -6,6 +6,8 @@ import { UIConfig } from "./LayerManager";
 
 /** 界面层对象 */
 export class LayerUI extends Node {
+    /** 全局窗口打开失败 */
+    onOpenFailure: Function = null!;
     /** 显示界面节点集合 */
     protected ui_nodes = new Map<string, ViewParams>();
     /** 被移除的界面缓存数据 */
@@ -62,6 +64,7 @@ export class LayerUI extends Node {
     protected async load(vp: ViewParams, bundle?: string) {
         // 加载界面资源超时提示
         const timerId = setTimeout(this.onLoadingTimeoutGui, oops.config.game.loadingTimeoutGui);
+
         if (vp && vp.node) {
             await this.showUi(vp);
         }
@@ -106,10 +109,11 @@ export class LayerUI extends Node {
      * 创建界面节点
      * @param vp  视图参数
      */
-    protected async showUi(vp: ViewParams) {
+    protected async showUi(vp: ViewParams): Promise<boolean> {
         // 触发窗口添加事件
         const comp = vp.node.getComponent(DelegateComponent)!;
-        if (await comp.add()) {
+        const r: boolean = await comp.add();
+        if (r) {
             vp.node.parent = this;
 
             // 标记界面为使用状态
@@ -119,11 +123,14 @@ export class LayerUI extends Node {
             console.warn(`路径为【${vp.config.prefab}】的自定义预处理逻辑异常.检查预制上绑定的组件中 onAdded 方法,返回true才能正确完成窗口显示流程`);
             this.failure(vp);
         }
+        return r;
     }
 
-    private failure(vp: ViewParams) {
-        this.ui_nodes.delete(vp.config.prefab);
+    /** 打开窗口失败逻辑 */
+    protected failure(vp: ViewParams) {
+        this.onCloseWindow(vp);
         vp.callbacks && vp.callbacks.onLoadFailure && vp.callbacks.onLoadFailure();
+        this.onOpenFailure && this.onOpenFailure();
     }
 
     /**
@@ -161,7 +168,7 @@ export class LayerUI extends Node {
     private removeCache(prefabPath: string) {
         let vp = this.ui_cache.get(prefabPath);
         if (vp) {
-            this.ui_nodes.delete(vp.config.prefab);
+            this.onCloseWindow(vp);
             this.ui_cache.delete(prefabPath);
             var childNode = vp.node;
             childNode.destroy();
