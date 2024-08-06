@@ -111,14 +111,14 @@ export class LanguageLabel extends Component {
         var font: TTFFont | null = LanguageData.font
 
         if (label) {
-            if (font && !label.useSystemFont) {
+            if (font) {
                 label.font = font;
             }
             label.string = this.string;
             this.initFontSize = label.fontSize;
         }
         else if (richtext) {
-            if (font && !richtext.useSystemFont) {
+            if (font) {
                 richtext.font = font;
             }
             this.initFontSize = richtext.fontSize;
