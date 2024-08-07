@@ -9,10 +9,10 @@ import { JsonAsset } from "cc";
 import { resLoader } from "../common/loader/ResLoader";
 
 /** 资源路径 */
-var path: string = "config/game/";
+const path: string = "config/game/";
 
 /** 数据缓存 */
-var data: Map<string, any> = new Map();
+const data: Map<string, any> = new Map();
 
 /** JSON数据表工具 */
 export class JsonUtil {
@@ -42,6 +42,7 @@ export class JsonUtil {
                 }
                 else {
                     data.set(name, content.json);
+                    resLoader.release(url);
                     callback(content.json);
                 }
             });
@@ -66,6 +67,7 @@ export class JsonUtil {
                     }
                     else {
                         data.set(name, content.json);
+                        resLoader.release(url);
                         resolve(content.json);
                     }
                 });
@@ -73,13 +75,35 @@ export class JsonUtil {
         });
     }
 
+    /** 加载所有配置表数据到缓存中 */
+    static loadDirAsync(): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            resLoader.loadDir(path, (err: Error | null, assets: JsonAsset[]) => {
+                if (err) {
+                    console.warn(err.message);
+                    resolve(false);
+                }
+                else {
+                    assets.forEach(asset => {
+                        data.set(asset.name, asset.json);
+                    });
+                    resLoader.releaseDir(path);
+                    resolve(true);
+                }
+            });
+        });
+    }
+
     /**
-     * 通过指定资源名释放资源
+     * 通过指定资源名释放资源内存
      * @param name 资源名
      */
     static release(name: string) {
-        var url = path + name;
         data.delete(name);
-        resLoader.release(url);
+    }
+
+    /** 清理所有数据 */
+    static clear() {
+        data.clear();
     }
 }
