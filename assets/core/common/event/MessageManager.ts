@@ -57,8 +57,9 @@ export class MessageEventData {
 
     /** 清除所有的全局事件监听 */
     clear() {
-        for (let event in this.events) {
-            this.off(event);
+        const keys = Array.from(this.events.keys());
+        for (let event of keys) {
+            this.off(event)
         }
     }
 }
