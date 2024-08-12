@@ -1,47 +1,53 @@
 
 declare global {
     interface Array<T> {
+        /** 删除指定条件的数据 */
         remove(filter: (v: T, i: number, arr: Array<T>) => boolean): Array<T>;
         remove(filter: T): Array<T>;
 
+        /** 找到第一个满足回调条件的元素并将其移除 */
         removeOne(filter: (v: T, i: number, arr: Array<T>) => boolean): Array<T>;
         removeOne(filter: T): Array<T>;
 
         random(): T;
 
+        /** 获取数组中第一条数据 */
         first(): T;
+        /** 获取数组中最后条数据 */
         last(): T;
 
+        /** 获取数组中最大数据 */
         max(): T;
         max<P>(mapper: (v: T, i: number, arr: this) => P): P | null;
 
+        /** 获取数组中最小数据 */
         min(): T;
         min<P>(mapper: (v: T, i: number, arr: this) => P): P | null;
 
+        /** 返回没有重复数据的新数组 */
         distinct(): Array<T>;
         filterIndex(filter: (v: T, i: number, arr: this) => boolean): Array<number>;
 
+        /** 过滤出有效记录数量 */
         count(filter: (v: T, i: number, arr: this) => boolean): number;
+        /** 数组求和 */
         sum(mapper?: (v: T, i: number, arr: this) => number): number;
+        /** 数组平均值 */
         average(mapper?: (v: T, i: number, arr: this) => number): number;
 
-
-        // 移除指定位置的元素 返回移除的元素
+        /** 移除指定位置的元素 返回移除的元素 */
         fastRemoveAt(index: number): T;
+        /** 移除数组中指定数据 */
         fastRemove(value: T): boolean;
 
-        /**
-         * 同find，但返回整个Array<T>中最后一个匹配元素
-         */
+        /** 同find，但返回整个Array<T>中最后一个匹配元素 */
         findLast(predicate: (value: T, index: number, obj: Array<T>) => boolean): T | undefined;
-        /**
-         * 同find，但返回整个Array<T>中最后一个匹配元素的index
-         */
+        /** 同find，但返回整个Array<T>中最后一个匹配元素的index */
         findLastIndex(predicate: (value: T, index: number, obj: Array<T>) => boolean): number;
 
-        //排序升序 返回新的数组
+        /** 排序升序，返回新的数组 */
         orderBy(...mappers: ((v: T) => any)[]): Array<T>;
-        // 排序 降序
+        /** 排序降序，返回新的数组  */
         orderByDesc(...mappers: ((v: T) => any)[]): Array<T>;
 
         /**
@@ -65,7 +71,7 @@ declare global {
          * @param keyMapper 二分查找时要查找的值的mapper方法（默认为查找数组元素本身）
          */
         binaryDistinct(keyMapper?: (v: T) => (number | string)): Array<T>;
-
+        /** 指定字段分组 */
         groupBy(grouper: (v: T) => any): (T[] & { key: any })[];
     }
 }
@@ -73,7 +79,7 @@ declare global {
 // @ts-ignore
 !Array.prototype.__cc_extended && Object.defineProperties(Array.prototype, {
     remove: {
-        value: function (filter) {
+        value: function (filter: any) {
             if (typeof (filter) == 'function') {
                 for (let i = this.length - 1; i > -1; --i) {
                     filter(this[i], i, this) && this.splice(i, 1);
@@ -88,7 +94,7 @@ declare global {
         }
     },
     removeOne: {
-        value: function (filter) {
+        value: function (filter: any) {
             if (typeof (filter) == 'function') {
                 for (let i = 0; i < this.length; ++i) {
                     if (filter(this[i], i, this)) {
@@ -115,7 +121,7 @@ declare global {
         }
     },
     fastRemoveAt: {
-        value: function (index) {
+        value: function (index: number) {
             const length = this.length;
             if (index < 0 || index >= length) {
                 return null;
@@ -127,7 +133,7 @@ declare global {
         }
     },
     fastRemove: {
-        value: function (value) {
+        value: function (value: any) {
             const index = this.indexOf(value);
             if (index >= 0) {
                 this[index] = this[this.length - 1];
@@ -148,11 +154,11 @@ declare global {
         }
     },
     max: {
-        value: function (mapper) {
+        value: function (mapper: any) {
             if (!this.length) {
                 return null;
             }
-            function _max(a, b) {
+            function _max(a: number, b: number) {
                 return a > b ? a : b;
             }
             if (typeof (mapper) == 'function') {
@@ -164,16 +170,16 @@ declare global {
                 return max;
             }
             else {
-                return this.reduce(function (prev, cur) { return _max(prev, cur); });
+                return this.reduce(function (prev: any, cur: any) { return _max(prev, cur); });
             }
         }
     },
     min: {
-        value: function (mapper) {
+        value: function (mapper: any) {
             if (!this.length) {
                 return null;
             }
-            function _min(a, b) {
+            function _min(a: number, b: number) {
                 return a < b ? a : b;
             }
             if (typeof (mapper) == 'function') {
@@ -185,17 +191,17 @@ declare global {
                 return min;
             }
             else {
-                return this.reduce(function (prev, cur) { return _min(prev, cur); });
+                return this.reduce(function (prev: any, cur: any) { return _min(prev, cur); });
             }
         }
     },
     distinct: {
         value: function () {
-            return this.filter(function (v, i, arr) { return arr.indexOf(v) === i; });
+            return this.filter(function (v: any, i: number, arr: any[]) { return arr.indexOf(v) === i; });
         }
     },
     filterIndex: {
-        value: function (filter) {
+        value: function (filter: any) {
             let output = [];
             for (let i = 0; i < this.length; ++i) {
                 if (filter(this[i], i, this)) {
@@ -206,7 +212,7 @@ declare global {
         }
     },
     count: {
-        value: function (filter) {
+        value: function (filter: any) {
             let result = 0;
             for (let i = 0; i < this.length; ++i) {
                 if (filter(this[i], i, this)) {
@@ -217,7 +223,7 @@ declare global {
         }
     },
     sum: {
-        value: function (mapper) {
+        value: function (mapper: any) {
             let result = 0;
             for (let i = 0; i < this.length; ++i) {
                 result += mapper ? mapper(this[i], i, this) : this[i];
@@ -226,7 +232,7 @@ declare global {
         }
     },
     average: {
-        value: function (mapper) {
+        value: function (mapper: any) {
             return this.sum(mapper) / this.length;
         }
     },
@@ -236,7 +242,7 @@ declare global {
             for (let _i = 0; _i < arguments.length; _i++) {
                 mappers[_i] = arguments[_i];
             }
-            return this.slice().sort(function (a, b) {
+            return this.slice().sort(function (a: any, b: any) {
                 for (let i = 0; i < mappers.length; ++i) {
                     let va = mappers[i](a);
                     let vb = mappers[i](b);
@@ -257,7 +263,7 @@ declare global {
             for (let _i = 0; _i < arguments.length; _i++) {
                 mappers[_i] = arguments[_i];
             }
-            return this.slice().sort(function (a, b) {
+            return this.slice().sort(function (a: any, b: any) {
                 for (let i = 0; i < mappers.length; ++i) {
                     let va = mappers[i](a);
                     let vb = mappers[i](b);
@@ -273,7 +279,7 @@ declare global {
         }
     },
     binarySearch: {
-        value: function (value, keyMapper) {
+        value: function (value: any, keyMapper: any) {
             let low = 0, high = this.length - 1;
             while (low <= high) {
                 let mid = ((high + low) / 2) | 0;
@@ -292,7 +298,7 @@ declare global {
         }
     },
     binaryInsert: {
-        value: function (item, keyMapper, unique) {
+        value: function (item: any, keyMapper: any, unique: any) {
             if (typeof (keyMapper) == 'boolean') {
                 unique = keyMapper;
                 keyMapper = undefined;
@@ -324,12 +330,12 @@ declare global {
         }
     },
     binaryDistinct: {
-        value: function (keyMapper) {
-            return this.filter(function (v, i, arr) { return arr.binarySearch(v, keyMapper) === i; });
+        value: function (keyMapper: any) {
+            return this.filter(function (v: any, i: number, arr: any[]) { return arr.binarySearch(v, keyMapper) === i; });
         }
     },
     findLast: {
-        value: function (predicate) {
+        value: function (predicate: any) {
             for (let i = this.length - 1; i > -1; --i) {
                 if (predicate(this[i], i, this)) {
                     return this[i];
@@ -339,7 +345,7 @@ declare global {
         }
     },
     findLastIndex: {
-        value: function (predicate) {
+        value: function (predicate: any) {
             for (let i = this.length - 1; i > -1; --i) {
                 if (predicate(this[i], i, this)) {
                     return i;
@@ -349,8 +355,8 @@ declare global {
         }
     },
     groupBy: {
-        value: function (grouper) {
-            let group = this.reduce(function (prev, next) {
+        value: function (grouper: any) {
+            let group = this.reduce(function (prev: any, next: any) {
                 let groupKey = grouper(next);
                 if (!prev[groupKey]) {
                     prev[groupKey] = [];
@@ -371,3 +377,4 @@ declare global {
 });
 
 export { };
+
