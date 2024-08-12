@@ -41,6 +41,14 @@ export class MoveTo extends Component {
     /** 终点备份 */
     private end: Vec3 | null = null;
 
+    protected onLoad(): void {
+        this.enabled = false;
+    }
+
+    move() {
+        this.enabled = true;
+    }
+
     update(dt: number) {
         let end: Vec3;
 
@@ -111,6 +119,6 @@ export class MoveTo extends Component {
 
     private exit() {
         this.onComplete?.call(this);
-        this.destroy();
+        this.enabled = false;
     }
 }
