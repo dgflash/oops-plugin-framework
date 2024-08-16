@@ -122,7 +122,7 @@ export class Root extends Component {
 
     }
 
-    protected init() {
+    private init() {
         this.initGui();
         this.initEcsSystem();
         oops.ecs.init();
