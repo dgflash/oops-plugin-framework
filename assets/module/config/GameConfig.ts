@@ -50,6 +50,10 @@ export class GameConfig {
     get languagePathTexture(): string {
         return this._data.language.path.texture || "language/texture";
     }
+    /** 默认语言 */
+    get languageDefault(): string {
+        return this._data.language.default || "zh";
+    }
 
     /** 是否启用远程资源 */
     get bundleEnable(): string {
