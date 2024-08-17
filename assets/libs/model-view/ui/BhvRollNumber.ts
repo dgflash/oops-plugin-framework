@@ -1,4 +1,4 @@
-import { Component, Enum, Label, lerp, _decorator } from "cc";
+import { _decorator, Component, Enum, Label, lerp } from "cc";
 
 const { ccclass, property, menu } = _decorator;
 
@@ -84,7 +84,7 @@ export class BhvRollNumber extends Component {
     private valueType: VALUE_TYPE = VALUE_TYPE.INTEGER;
 
     /** 自定义string 处理函数 */
-    private _custom_callback: CustomCallback | null = null;
+    onCustom: CustomCallback | null = null;
 
     private isScrolling: boolean = false;
 
@@ -171,8 +171,8 @@ export class BhvRollNumber extends Component {
                 }
                 break;
             case VALUE_TYPE.CUSTOMER: // 自定义设置模式 (通过给定的自定义函数..处理)
-                if (this._custom_callback) {
-                    string = this._custom_callback(this.value, this.targetValue);
+                if (this.onCustom) {
+                    string = this.onCustom(this.value, this.targetValue);
                 }
                 break;
             default:
