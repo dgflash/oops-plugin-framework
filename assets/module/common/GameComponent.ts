@@ -370,7 +370,7 @@ export class GameComponent extends Component {
         for (const name of args) {
             var func = self[name];
             if (func)
-                this.on(name, self[name], this);
+                this.on(name, func, this);
             else
                 console.error(`名为【${name}】的全局事方法不存在`);
         }
