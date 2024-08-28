@@ -353,7 +353,7 @@ export class GameComponent extends Component {
                 b.clickEvents.push(event);
             }
             else
-                console.error(`名为【${node.name}】的按钮事件方法不存在`);
+                console.warn(`名为【${node.name}】的按钮事件方法不存在`);
         });
     }
 
