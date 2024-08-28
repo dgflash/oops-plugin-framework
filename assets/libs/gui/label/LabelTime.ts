@@ -1,4 +1,6 @@
 import { Label, _decorator } from "cc";
+import { oops } from "../../../core/Oops";
+import { EventMessage } from "../../../core/common/event/EventMessage";
 
 const { ccclass, property, menu } = _decorator;
 
@@ -25,8 +27,9 @@ export default class LabelTime extends Label {
     })
     zeroize: boolean = true;
 
-    private dateDisable!: boolean;
-    private result!: string;
+    private backStartTime: number = 0;      // 进入后台开始时间
+    private dateDisable!: boolean;          // 时间能否由天数显示
+    private result!: string;                // 时间结果字符串
 
     /** 每秒触发事件 */
     onSecond: Function = null!;
@@ -115,7 +118,27 @@ export default class LabelTime extends Label {
     }
 
     start() {
+        oops.message.on(EventMessage.GAME_SHOW, this.onGameShow, this);
+        oops.message.on(EventMessage.GAME_HIDE, this.onGameHide, this);
         this.timing_start();
+    }
+
+    onDestroy() {
+        oops.message.off(EventMessage.GAME_SHOW, this.onGameShow, this);
+        oops.message.off(EventMessage.GAME_HIDE, this.onGameHide, this);
+    }
+
+    private onGameShow() {
+        var interval = Math.floor((oops.timer.getTime() - (this.backStartTime || oops.timer.getTime())) / 1000);
+        this.countDown -= interval;
+        if (this.countDown < 0) {
+            this.countDown = 0;
+            this.onScheduleComplete();
+        }
+    }
+
+    private onGameHide() {
+        this.backStartTime = oops.timer.getTime();
     }
 
     private onScheduleSecond() {
