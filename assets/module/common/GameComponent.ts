@@ -333,9 +333,9 @@ export class GameComponent extends Component {
                 func.call(this, event);
             }
             // 不触发界面根节点触摸事件、不触发长按钮组件的触摸事件
-            else if (event.target != this.node && event.target.getComponent(ButtonTouchLong) == null) {
-                console.error(`名为【${event.target.name}】的按钮事件方法不存在`);
-            }
+            // else if (event.target != this.node && event.target.getComponent(ButtonTouchLong) == null) {
+            //     console.warn(`名为【${event.target.name}】的按钮事件方法不存在`);
+            // }
         }, this);
 
         // Cocos Creator Button组件批量绑定触摸事件（使用UIButton支持放连点功能）
@@ -352,8 +352,9 @@ export class GameComponent extends Component {
                 event.component = this.name.match(regex)![1];
                 b.clickEvents.push(event);
             }
-            else
-                console.warn(`名为【${node.name}】的按钮事件方法不存在`);
+            // else {
+            //     console.warn(`名为【${node.name}】的按钮事件方法不存在`);
+            // }
         });
     }
 
