@@ -1,6 +1,7 @@
 import { Label, _decorator } from "cc";
 import { oops } from "../../../core/Oops";
 import { EventMessage } from "../../../core/common/event/EventMessage";
+import { TimeUtil } from "../../../core/utils/TimeUtils";
 
 const { ccclass, property, menu } = _decorator;
 
@@ -110,17 +111,33 @@ export default class LabelTime extends Label {
         this.dateDisable = flag;
     }
 
-    /** 设置倒计时时间 */
+    /**
+     * 设置倒计时时间
+     * @param second        倒计时时间（单位秒）
+     */
     setTime(second: number) {
         this.countDown = second;                                             // 倒计时，初始化显示字符串
         this.timing_end();
         this.timing_start();
+        this.format();
+    }
+
+    /**
+     * 设置结束时间戳倒计时
+     * @param timeStamp     时间戳
+     */
+    setTimeStamp(timeStamp: number) {
+        this.countDown = TimeUtil.secsBetween(oops.timer.getServerTime(), timeStamp);
+        this.timing_end();
+        this.timing_start();
+        this.format();
     }
 
     start() {
         oops.message.on(EventMessage.GAME_SHOW, this.onGameShow, this);
         oops.message.on(EventMessage.GAME_HIDE, this.onGameHide, this);
         this.timing_start();
+        this.format();
     }
 
     onDestroy() {
@@ -153,17 +170,16 @@ export default class LabelTime extends Label {
 
     private onScheduleComplete() {
         this.timing_end();
+        this.format();
         if (this.onComplete) this.onComplete(this.node);
     }
 
     /** 开始计时 */
     private timing_start() {
         this.schedule(this.onScheduleSecond, 1);
-        this.format();
     }
 
     private timing_end() {
         this.unscheduleAllCallbacks();
-        this.format();
     }
 }

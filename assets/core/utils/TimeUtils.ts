@@ -1,6 +1,11 @@
 /** 时间工具 */
 export class TimeUtil {
-    /** 间隔天数 */
+    /**
+     * 间隔天数
+     * @param time1 开始时间
+     * @param time2 结束时间
+     * @returns 
+     */
     public static daysBetween(time1: number | string | Date, time2: number | string | Date): number {
         if (time2 == undefined || time2 == null) {
             time2 = +new Date();
@@ -13,12 +18,10 @@ export class TimeUtil {
         return dates;
     }
 
-    /** 间隔秒数 */
+    /** 间隔秒数，时间顺序无要求，最后会获取绝对值 */
     public static secsBetween(time1: number, time2: number) {
-        if (time2 == undefined || time2 == null) {
-            time2 = +new Date();
-        }
         let dates = Math.abs((time2 - time1)) / (1000);
+        dates = Math.floor(dates) + 1;
         return dates;
     }
 
