@@ -7,13 +7,8 @@ Oops Framework 基于 Cocos Creator 3.x 开发的一款游戏框架。
     - 热更新配置生成插件([传送门](https://gitee.com/dgflash/oops-plugin-hot-update))
     - 策划Excel配置表生成Json格式与配套ts代码插件([传送门](https://gitee.com/dgflash/oops-plugin-excel-to-json))
 
-### [视频教程](https://www.bilibili.com/video/BV1WV4y1G7Gb/?spm_id_from=333.337.search-card.all.click&vd_source=2ecab277f9fb79c5e11c909bf0affd34)
-
-#### 技术文档
-- [oops-framework](https://oops-1255342636.cos.ap-shanghai.myqcloud.com/doc/oops-framework/index.html)
-- [ecs](https://gitee.com/dgflash/oops-framework/tree/master/doc/ecs/ecs.md)
-- [mvvm](https://gitee.com/dgflash/oops-framework/tree/master/doc/mvvm)
-- [animator](https://github.com/LeeYip/cocos-animator/blob/master/README.md)
+#### 框架介绍与文档
+- [传送门](https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12002375&doc_id=2873565)
 
 ### 学习部署说明
 1. 下载教程项目
@@ -41,52 +36,13 @@ git clone https://gitee.com/dgflash/oops-game-kit.git
     #### mac
     项目下载后执行 update-oops-plugin-framework.sh 下载最新版本框架插件
 
-### 框架目录结构
-```
-core               - 框加核心技术库
-    common             - 游戏公共模块
-        audio              - 音频模块
-        event              - 全局事件
-        loader             - 加载模块
-        log                - 日志模块
-        random             - 随机管理
-        storage            - 本地存储
-        timer              - 时间管理
-    game               - 游戏世界类
-    gui                - 游戏界面类
-        layer              - 多层界面、窗口管理
-        prompt             - 公共提示窗口
-    utils              - 游戏各类工具库
-    Oops.ts            - 框架功能访问接口
-    Root.ts            - 框架视图层根节点管理组件
-libs               - 框架中可选技术库
-    animator           - 动画状态机
-    animator-effect    - 动画特效组件
-    animator-move      - 动画移动组件
-    behavior-tree      - 行为树框架
-    camera             - 三维摄像机控制组件
-    collection         - 数据集合处理
-    ecs                - ECS框架
-    gui                - 界面组件
-        badge              - 红点提示组件
-        button             - 按钮组件
-        label              - 标签组件
-        language           - 多语言组件
-    model-view         - MVVM框架
-    network            - 网络模块
-    render-texture     - 渲染纹理组件
-module             - 游戏通用模块
-    common             - 公共模块
-    config             - 配置模块
-```
-
 ### QQ群
-- 798575969（1群） 
-- 621415300（2群）
-- 628575875（3群）
-- 226524184（4群）
+- 798575969（1群 - 满） 
+- 621415300（2群 - 满）
+- 628575875（3群 - 满）
+- 226524184（4群 - 推荐）
 
-### QQ频道提供教程，持续更新（频道号：q366856bf5）
+### QQ频道号：q366856bf5
 
 
 ### 在线演示
