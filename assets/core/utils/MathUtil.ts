@@ -54,15 +54,15 @@ export class MathUtil {
 
     /**
      * 角度插值
-     * @param angle1 角度1
-     * @param angle2 角度2
-     * @param t      时间
+     * @param current 当前角度
+     * @param target  目标角度
+     * @param t       时间
      */
     static lerpAngle(current: number, target: number, t: number): number {
         current %= 360;
         target %= 360;
 
-        var dAngle: number = target - current;
+        const dAngle: number = target - current;
 
         if (dAngle > 180) {
             target = current - (360 - dAngle);
@@ -84,7 +84,7 @@ export class MathUtil {
         current %= 360;
         target %= 360;
 
-        var dAngle: number = target - current;
+        const dAngle: number = target - current;
 
         if (dAngle > 180) {
             target = current - (360 - dAngle);
@@ -93,7 +93,7 @@ export class MathUtil {
             target = current + (360 + dAngle);
         }
 
-        var dir = target - current;
+        const dir = target - current;
 
         if (speed > Math.abs(dir)) {
             return target;

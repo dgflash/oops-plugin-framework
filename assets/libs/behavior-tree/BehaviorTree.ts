@@ -1,14 +1,14 @@
 import { BTreeNode } from './BTreeNode';
 import { IControl } from './IControl';
 
-var countUnnamed = 0;
+let countUnnamed = 0;
 
 /** 行为树 */
 export class BehaviorTree implements IControl {
-    private title: string;
+    private readonly title: string;
 
     /** 根节点 */
-    private _root: BTreeNode;
+    private readonly _root: BTreeNode;
     /** 当前执行节点 */
     private _current!: BTreeNode;
     /** 是否已开始执行 */
@@ -45,7 +45,7 @@ export class BehaviorTree implements IControl {
         }
 
         this._started = true;
-        var node = BehaviorTree.getNode(this._root);
+        const node = BehaviorTree.getNode(this._root);
         this._current = node;
         node.setControl(this);
         node.start(this._blackboard);
@@ -75,7 +75,7 @@ export class BehaviorTree implements IControl {
     }
 
     static getNode(name: string | BTreeNode): BTreeNode {
-        var node = name instanceof BTreeNode ? name : this._registeredNodes.get(name);
+        const node = name instanceof BTreeNode ? name : this._registeredNodes.get(name);
         if (!node) {
             throw new Error(`无法找到节点【${name}】，可能它没有注册过`);
         }

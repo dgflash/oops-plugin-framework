@@ -37,9 +37,9 @@ export class Collection<K, V> extends Map<K, V>{
      * @param key       关键字
      */
     delete(key: K): boolean {
-        var value = this.get(key);
+        const value = this.get(key);
         if (value) {
-            var index = this._array.indexOf(value);
+            const index = this._array.indexOf(value);
             if (index > -1) this._array.splice(index, 1);
             return super.delete(key);
         }

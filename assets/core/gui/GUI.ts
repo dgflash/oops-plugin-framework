@@ -44,7 +44,7 @@ export class GUI extends Component {
 
     /** 游戏画布尺寸变化 */
     resize() {
-        var dr;
+        let dr;
         if (view.getDesignResolutionSize().width > view.getDesignResolutionSize().height) {
             dr = this.landscapeDrz;
         }
@@ -52,11 +52,11 @@ export class GUI extends Component {
             dr = this.portraitDrz;
         }
 
-        var s = screen.windowSize;
-        var rw = s.width;
-        var rh = s.height;
-        var finalW = rw;
-        var finalH = rh;
+        const s = screen.windowSize;
+        const rw = s.width;
+        const rh = s.height;
+        let finalW = rw;
+        let finalH = rh;
 
         if ((rw / rh) > (dr.width / dr.height)) {
             // 如果更长，则用定高

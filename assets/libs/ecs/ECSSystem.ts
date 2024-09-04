@@ -122,9 +122,10 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
      * @returns 
      */
     private execute1(dt: number): void {
+        let entities;
         if (this.removedEntities.size > 0) {
             if (this.hasEntityRemove) {
-                var entities = this.removedEntities.values();
+                entities = this.removedEntities.values();
                 for (let entity of entities) {
                     (this as unknown as ecs.IEntityRemoveSystem).entityRemove(entity);
                 }
@@ -139,7 +140,7 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
         // 处理刚进来的实体
         if (this.enteredEntities!.size > 0) {
             if (this.hasEntityEnter) {
-                var entities = this.enteredEntities!.values();
+                entities = this.enteredEntities!.values();
                 for (let entity of entities) {
                     (this as unknown as ecs.IEntityEnterSystem).entityEnter(entity);
                 }

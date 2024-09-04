@@ -7,15 +7,14 @@ export class TimeUtil {
      * @returns 
      */
     public static daysBetween(time1: number | string | Date, time2: number | string | Date): number {
-        if (time2 == undefined || time2 == null) {
+        if (time2 == undefined) {
             time2 = +new Date();
         }
         let startDate = new Date(time1).toLocaleDateString()
         let endDate = new Date(time2).toLocaleDateString()
         let startTime = new Date(startDate).getTime();
         let endTime = new Date(endDate).getTime();
-        let dates = Math.abs((startTime - endTime)) / (1000 * 60 * 60 * 24);
-        return dates;
+        return Math.abs((startTime - endTime)) / (1000 * 60 * 60 * 24);
     }
 
     /** 间隔秒数，时间顺序无要求，最后会获取绝对值 */

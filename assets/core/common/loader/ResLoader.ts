@@ -78,8 +78,8 @@ oops.res.loadRemote<ImageAsset>(this.url, opt, onComplete);
     loadRemote<T extends Asset>(url: string, options: IRemoteOptions | null, onComplete?: CompleteCallback<T> | null): void;
     loadRemote<T extends Asset>(url: string, onComplete?: CompleteCallback<T> | null): void;
     loadRemote<T extends Asset>(url: string, ...args: any): void {
-        var options: IRemoteOptions | null = null;
-        var onComplete: CompleteCallback<T> | null = null;
+        let options: IRemoteOptions | null = null;
+        let onComplete: CompleteCallback<T> | null = null;
         if (args.length == 2) {
             options = args[0];
             onComplete = args[1];
@@ -93,7 +93,6 @@ oops.res.loadRemote<ImageAsset>(this.url, opt, onComplete);
     /**
      * 加载资源包
      * @param url       资源地址
-     * @param complete  完成事件
      * @param v         资源MD5版本号
      * @example
 var serverUrl = "http://192.168.1.8:8080/";         // 服务器地址
@@ -224,9 +223,9 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
     release(path: string, bundleName?: string) {
         if (bundleName == null) bundleName = this.defaultBundleName;
 
-        var bundle = assetManager.getBundle(bundleName);
+        const bundle = assetManager.getBundle(bundleName);
         if (bundle) {
-            var asset = bundle.get(path);
+            const asset = bundle.get(path);
             if (asset) {
                 this.releasePrefabtDepsRecursively(asset);
             }
@@ -241,7 +240,7 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
     releaseDir(path: string, bundleName?: string) {
         if (bundleName == null) bundleName = this.defaultBundleName;
 
-        var bundle: AssetManager.Bundle | null = assetManager.getBundle(bundleName);
+        const bundle: AssetManager.Bundle | null = assetManager.getBundle(bundleName);
         if (bundle) {
             var infos = bundle.getDirWithPath(path);
             if (infos) {
@@ -263,7 +262,7 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
             // assetManager.releaseAsset(uuid);
         }
         else {
-            var asset = assetManager.assets.get(uuid);
+            const asset = assetManager.assets.get(uuid);
             if (asset) {
                 asset.decRef();
                 // assetManager.releaseAsset(asset);

@@ -17,5 +17,4 @@ export interface IControl {
     
     /** 正在处理中 */
     running(blackboard?: any): void;
-
 }

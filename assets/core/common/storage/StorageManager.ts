@@ -35,7 +35,7 @@ export class StorageManager {
      * @returns 
      */
     set(key: string, value: any) {
-        var keywords = this.getKey(key);
+        let keywords = this.getKey(key);
 
         if (null == key) {
             console.error("存储的key不能为空");
@@ -103,7 +103,7 @@ export class StorageManager {
 
     /** 获取指定关键字的数值 */
     getNumber(key: string, defaultValue: number = 0): number {
-        var r = this.get(key);
+        const r = this.get(key);
         if (r == "0") {
             return Number(r);
         }
@@ -112,13 +112,13 @@ export class StorageManager {
 
     /** 获取指定关键字的布尔值 */
     getBoolean(key: string): boolean {
-        var r = this.get(key);
+        const r = this.get(key);
         return r.toLowerCase() === 'true';
     }
 
     /** 获取指定关键字的JSON对象 */
     getJson(key: string, defaultValue?: any): any {
-        var r = this.get(key);
+        const r = this.get(key);
         return (r && JSON.parse(r)) || defaultValue;
     }
 
@@ -133,7 +133,7 @@ export class StorageManager {
             return;
         }
 
-        var keywords = this.getKey(key);
+        let keywords = this.getKey(key);
 
         if (this.encrypted) {
             keywords = EncryptUtil.md5(keywords);

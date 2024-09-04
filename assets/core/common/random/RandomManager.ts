@@ -27,7 +27,6 @@ export class RandomManager {
      * 生成指定范围的随机浮点数
      * @param min   最小值
      * @param max   最大值
-     * @param type  类型
      */
     getRandomFloat(min: number = 0, max: number = 1): number {
         return this.getRandom() * (max - min) + min;
@@ -69,7 +68,6 @@ export class RandomManager {
      * @param min   最小值
      * @param max   最大值
      * @param n     随机个数
-     * @param type  类型
      * @example
     var a = RandomManager.instance.getRandomByMinMaxList(50, 100, 5)
     console.log("随机的数字", a);
@@ -111,9 +109,9 @@ export class RandomManager {
     console.log("定和随机分配", c);
      */
     getRandomBySumList(n: number, sum: number): number[] {
-        var residue = sum;
-        var value = 0;
-        var result: Array<number> = [];
+        let residue = sum;
+        let value = 0;
+        const result: Array<number> = [];
         for (let i = 0; i < n; i++) {
             value = this.getRandomInt(0, residue, 3);
             if (i == n - 1) {

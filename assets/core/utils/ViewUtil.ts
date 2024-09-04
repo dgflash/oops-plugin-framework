@@ -4,8 +4,8 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-01-19 14:52:12
  */
-import { Animation, AnimationClip, EventTouch, instantiate, Node, Prefab, Size, UITransform, v3, Vec3 } from "cc";
-import { resLoader } from "../common/loader/ResLoader";
+import {Animation, AnimationClip, EventTouch, instantiate, Node, Prefab, Size, UITransform, v3, Vec3} from "cc";
+import {resLoader} from "../common/loader/ResLoader";
 
 /** 显示对象工具 */
 export class ViewUtil {
@@ -54,9 +54,8 @@ export class ViewUtil {
      * @param aPos      A节点空间中的相对位置
      */
     static calculateASpaceToBSpacePos(a: Node, b: Node, aPos: Vec3): Vec3 {
-        var world: Vec3 = a.getComponent(UITransform)!.convertToWorldSpaceAR(aPos);
-        var space: Vec3 = b.getComponent(UITransform)!.convertToNodeSpaceAR(world);
-        return space;
+        const world: Vec3 = a.getComponent(UITransform)!.convertToWorldSpaceAR(aPos);
+        return b.getComponent(UITransform)!.convertToNodeSpaceAR(world);
     }
 
     /**
@@ -65,10 +64,9 @@ export class ViewUtil {
      * @param space 转到此节点的坐标空间
      */
     static calculateScreenPosToSpacePos(event: EventTouch, space: Node): Vec3 {
-        let uil = event.getUILocation();
-        let worldPos: Vec3 = v3(uil.x, uil.y);
-        let mapPos: Vec3 = space.getComponent(UITransform)!.convertToNodeSpaceAR(worldPos);
-        return mapPos;
+        const uil = event.getUILocation();
+        const worldPos: Vec3 = v3(uil.x, uil.y);
+        return space.getComponent(UITransform)!.convertToNodeSpaceAR(worldPos);
     }
 
     /**
@@ -79,12 +77,11 @@ export class ViewUtil {
      * @param defaultHeight     默认高
      */
     static uniformScale(targetWidth: number, targetHeight: number, defaultWidth: number, defaultHeight: number) {
-        var widthRatio = defaultWidth / targetWidth;
-        var heightRatio = defaultHeight / targetHeight;
-        var ratio;
+        const widthRatio = defaultWidth / targetWidth;
+        const heightRatio = defaultHeight / targetHeight;
+        let ratio;
         widthRatio < heightRatio ? ratio = widthRatio : ratio = heightRatio;
-        var size = new Size(Math.floor(targetWidth * ratio), Math.floor(targetHeight * ratio));
-        return size;
+        return new Size(Math.floor(targetWidth * ratio), Math.floor(targetHeight * ratio));
     }
 
     /**
@@ -92,9 +89,8 @@ export class ViewUtil {
      * @param path 资源路径
      */
     static createPrefabNode(path: string): Node {
-        var p: Prefab = resLoader.get(path, Prefab)!;
-        var n = instantiate(p);
-        return n;
+        const p: Prefab = resLoader.get(path, Prefab)!;
+        return instantiate(p);
     }
 
     /**
@@ -103,9 +99,9 @@ export class ViewUtil {
      */
     static createPrefabNodeAsync(path: string): Promise<Node> {
         return new Promise(async (resolve, reject) => {
-            var prefab = await resLoader.loadAsync(path, Prefab)
+            const prefab = await resLoader.loadAsync(path, Prefab);
             if (prefab) {
-                var node = this.createPrefabNode(path);
+                const node = this.createPrefabNode(path);
                 resolve(node);
             }
             else {
@@ -126,12 +122,12 @@ export class ViewUtil {
             return;
         }
 
-        var anim = node.getComponent(Animation);
+        let anim = node.getComponent(Animation);
         if (anim == null) {
             anim = node.addComponent(Animation);
         }
 
-        var clip = resLoader.get(path, AnimationClip) as AnimationClip;
+        const clip = resLoader.get(path, AnimationClip) as AnimationClip;
         if (!clip) {
             return;
         }

@@ -245,7 +245,7 @@ export class GameComponent extends Component {
     /** 释放一个资源 */
     release() {
         if (this.resPaths) {
-            var rps = this.resPaths.get(ResType.Load);
+            const rps = this.resPaths.get(ResType.Load);
             if (rps) {
                 rps.forEach((value: ResRecord) => {
                     oops.res.release(value.path, value.bundle);
@@ -258,7 +258,7 @@ export class GameComponent extends Component {
     /** 释放一个文件夹的资源 */
     releaseDir() {
         if (this.resPaths) {
-            var rps = this.resPaths.get(ResType.LoadDir);
+            const rps = this.resPaths.get(ResType.LoadDir);
             if (rps) {
                 rps.forEach((value: ResRecord) => {
                     oops.res.releaseDir(value.path, value.bundle);
@@ -270,7 +270,7 @@ export class GameComponent extends Component {
     /** 释放音效资源 */
     releaseAudioEffect() {
         if (this.resPaths) {
-            var rps = this.resPaths.get(ResType.Audio);
+            const rps = this.resPaths.get(ResType.Audio);
             if (rps) {
                 rps.forEach((value: ResRecord) => {
                     oops.audio.releaseEffect(value.path, value.bundle);
@@ -327,8 +327,8 @@ export class GameComponent extends Component {
     protected setButton() {
         // 自定义按钮批量绑定触摸事件
         this.node.on(Node.EventType.TOUCH_END, (event: EventTouch) => {
-            var self: any = this;
-            var func = self[event.target.name];
+            const self: any = this;
+            const func = self[event.target.name];
             if (func) {
                 func.call(this, event);
             }
@@ -340,13 +340,13 @@ export class GameComponent extends Component {
 
         // Cocos Creator Button组件批量绑定触摸事件（使用UIButton支持放连点功能）
         const regex = /<([^>]+)>/;
-        var buttons = this.node.getComponentsInChildren<Button>(Button);
+        const buttons = this.node.getComponentsInChildren<Button>(Button);
         buttons.forEach((b: Button) => {
-            var node = b.node;
-            var self: any = this;
-            var func = self[node.name];
+            const node = b.node;
+            const self: any = this;
+            const func = self[node.name];
             if (func) {
-                var event = new EventHandler();
+                const event = new EventHandler();
                 event.target = this.node;
                 event.handler = b.node.name;
                 event.component = this.name.match(regex)![1];
@@ -369,7 +369,7 @@ export class GameComponent extends Component {
     protected setEvent(...args: string[]) {
         const self: any = this;
         for (const name of args) {
-            var func = self[name];
+            const func = self[name];
             if (func)
                 this.on(name, func, this);
             else

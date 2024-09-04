@@ -26,7 +26,7 @@ export class LayerNotify extends Node {
     constructor(name: string) {
         super(name);
 
-        var widget: Widget = this.addComponent(Widget);
+        const widget: Widget = this.addComponent(Widget);
         widget.isAlignLeft = widget.isAlignRight = widget.isAlignTop = widget.isAlignBottom = true;
         widget.left = widget.right = widget.top = widget.bottom = 0;
         widget.alignMode = 2;

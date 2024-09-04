@@ -46,6 +46,7 @@ export class AudioEffect extends AudioSource {
      * 加载音效并播放
      * @param url           音效资源地址
      * @param callback      资源加载完成并开始播放回调
+     * @param bundleName    资源包名
      */
     load(url: string | AudioClip, callback?: Function, bundleName?: string) {
         if (bundleName == null) bundleName = oops.res.defaultBundleName;
@@ -58,7 +59,7 @@ export class AudioEffect extends AudioSource {
         }
         else {
             // 地址加载音乐资源后播放
-            if (this.effects.has(url) == false) {
+            if (!this.effects.has(url)) {
                 oops.res.load(bundleName, url, AudioClip, (err: Error | null, data: AudioClip) => {
                     if (err) {
                         error(err);
@@ -102,7 +103,7 @@ export class AudioEffect extends AudioSource {
     release(url: string | AudioClip, bundleName?: string) {
         if (bundleName == null) bundleName = oops.res.defaultBundleName;
 
-        var ac: AudioClip | undefined = undefined;
+        let ac: AudioClip | undefined = undefined;
         if (url instanceof AudioClip) {
             ac = url;
             if (this.effects.has(ac.uuid)) {

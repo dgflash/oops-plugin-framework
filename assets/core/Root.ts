@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-08-28 10:02:57
  */
-import { Component, Game, JsonAsset, Node, _decorator, director, game, screen, sys } from "cc";
+import { _decorator, Component, director, Game, game, JsonAsset, Node, screen, sys } from "cc";
 import { GameConfig } from "../module/config/GameConfig";
 import { GameQueryConfig } from "../module/config/GameQueryConfig";
 import { oops, version } from "./Oops";
@@ -20,7 +20,7 @@ import { LayerManager } from "./gui/layer/LayerManager";
 
 const { property } = _decorator;
 
-var isInited = false;
+let isInited = false;
 
 /** 框架显示层根节点 */
 export class Root extends Component {
@@ -47,7 +47,7 @@ export class Root extends Component {
 
             console.log(`Oops Framework v${version}`);
             this.enabled = false;
-            this.loadConfig();
+            this.loadConfig().then();
         }
     }
 
@@ -99,7 +99,7 @@ export class Root extends Component {
             oops.res.release(config_name);
         }
         else {
-            this.loadConfig();
+            this.loadConfig().then();
         }
     }
 
@@ -133,10 +133,10 @@ export class Root extends Component {
         game.on(Game.EVENT_HIDE, this.onHide, this);
 
         // 添加游戏界面屏幕自适应管理组件
-        this.gui.addComponent(GUI)!;
+        this.gui.addComponent(GUI);
 
         // 游戏尺寸修改事件
-        if (sys.isMobile == false) {
+        if (!sys.isMobile) {
             screen.on("window-resize", () => {
                 oops.message.dispatchEvent(EventMessage.GAME_RESIZE);
             }, this);

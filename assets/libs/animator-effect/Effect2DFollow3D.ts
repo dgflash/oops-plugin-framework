@@ -5,9 +5,9 @@
  * @LastEditTime: 2022-09-22 14:53:47
  */
 
-import { Camera, Component, Node, Vec3, _decorator } from "cc";
-import { oops } from "../../core/Oops";
-import { MathUtil } from "../../core/utils/MathUtil";
+import {_decorator, Camera, Component, Node, Vec3} from "cc";
+import {oops} from "../../core/Oops";
+import {MathUtil} from "../../core/utils/MathUtil";
 
 const { ccclass, property } = _decorator;
 
@@ -40,12 +40,12 @@ export class Effect2DFollow3D extends Component {
     }
 
     start() {
-        var scale = this.zoom();
+        const scale = this.zoom();
         this.node.setScale(scale, scale, 1);
     }
 
     protected lateUpdate(dt: number) {
-        var scale = this.zoom();
+        let scale = this.zoom();
         scale = MathUtil.lerp(this.node.scale.x, scale, 0.1);
         this.node.setScale(scale, scale, 1);
     }
@@ -56,9 +56,8 @@ export class Effect2DFollow3D extends Component {
 
         // @ts-ignore
         Vec3.transformMat4(this.pos, this.node3d.worldPosition, this.camera._camera!.matView);
-        var ratio = this.distance / Math.abs(this.pos.z);
-        var value = Math.floor(ratio * 100) / 100;
-        return value;
+        const ratio = this.distance / Math.abs(this.pos.z);
+        return Math.floor(ratio * 100) / 100;
     }
 }
 

@@ -106,9 +106,9 @@ export class LanguageLabel extends Component {
     }
 
     updateContent() {
-        var label = this.getComponent(Label);
-        var richtext = this.getComponent(RichText);
-        var font: TTFFont | null = LanguageData.font
+        const label = this.getComponent(Label);
+        const richtext = this.getComponent(RichText);
+        const font: TTFFont | null = LanguageData.font;
 
         if (label) {
             if (font) {

@@ -25,7 +25,7 @@ export class TimerManager extends Component {
     protected update(dt: number) {
         for (let key in this.times) {
             let data = this.times[key];
-            var timer = data.timer as Timer;
+            let timer = data.timer as Timer;
             if (timer.update(dt)) {
                 if (data.object[data.field] > 0) {
                     data.object[data.field]--;
@@ -77,7 +77,7 @@ export class TimerManager extends Component {
     }
      */
     register(object: any, field: string, onSecond: Function, onComplete: Function): string {
-        var timer = new Timer();
+        const timer = new Timer();
         timer.step = 1;
 
         let data: any = {};

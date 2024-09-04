@@ -44,6 +44,7 @@ export class AudioMusic extends AudioSource {
      * 加载音乐并播放
      * @param url          音乐资源地址
      * @param callback     加载完成回调
+     * @param bundleName   资源包名
      */
     async load(url: string, callback?: Function, bundleName?: string) {
         if (bundleName == null) bundleName = oops.res.defaultBundleName;

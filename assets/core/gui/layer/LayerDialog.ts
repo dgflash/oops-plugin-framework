@@ -40,7 +40,7 @@ export class LayerDialog extends LayerPopUp {
 
     /** 显示模式弹窗 */
     private show(config: UIConfig, params?: any, callbacks?: UICallbacks) {
-        var vp = this.ui_cache.get(config.prefab);
+        let vp = this.ui_cache.get(config.prefab);
         if (vp == null) {
             vp = new ViewParams();
             vp.valid = true;

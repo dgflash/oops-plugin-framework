@@ -31,7 +31,7 @@ export class LayerPopUp extends LayerUI {
     }
 
     protected async showUi(vp: ViewParams): Promise<boolean> {
-        var r = await super.showUi(vp);
+        const r = await super.showUi(vp);
         if (r) {
             // 界面加载完成显示时，启动触摸非窗口区域关闭
             this.openVacancyRemove(vp.config);
@@ -62,9 +62,9 @@ export class LayerPopUp extends LayerUI {
     /** 关闭遮罩 */
     protected closeMask() {
         if (this.mask == null) return;
-        
-        var flag = true;
-        for (var value of this.ui_nodes.values()) {
+
+        let flag = true;
+        for (let value of this.ui_nodes.values()) {
             if (value.config.mask) {
                 flag = false;
                 break;
@@ -94,8 +94,8 @@ export class LayerPopUp extends LayerUI {
 
     /** 关闭触摸非窗口区域关闭 */
     protected closeVacancyRemove() {
-        var flag = true;
-        for (var value of this.ui_nodes.values()) {
+        let flag = true;
+        for (let value of this.ui_nodes.values()) {
             if (value.config.vacancy) {
                 flag = false;
                 break;

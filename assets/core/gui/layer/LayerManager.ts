@@ -72,15 +72,15 @@ export class LayerManager {
     guide!: Node;
 
     /** 界面层 */
-    private ui!: LayerUI;
+    private readonly ui!: LayerUI;
     /** 弹窗层 */
-    private popup!: LayerPopUp;
+    private readonly popup!: LayerPopUp;
     /** 只能弹出一个的弹窗 */
-    private dialog!: LayerDialog;
+    private readonly dialog!: LayerDialog;
     /** 游戏系统提示弹窗  */
-    private system!: LayerDialog;
+    private readonly system!: LayerDialog;
     /** 消息提示控制器，请使用show方法来显示 */
-    private notify!: LayerNotify;
+    private readonly notify!: LayerNotify;
     /** UI配置 */
     private configs: { [key: number]: UIConfig } = {};
 
@@ -152,7 +152,7 @@ export class LayerManager {
     oops.gui.open(UIID.Loading, null, uic);
      */
     open(uiId: number, uiArgs: any = null, callbacks?: UICallbacks): void {
-        var config = this.configs[uiId];
+        const config = this.configs[uiId];
         if (config == null) {
             warn(`打开编号为【${uiId}】的界面失败，配置信息不存在`);
             return;
@@ -183,7 +183,7 @@ export class LayerManager {
      */
     async openAsync(uiId: number, uiArgs: any = null): Promise<Node | null> {
         return new Promise<Node | null>((resolve, reject) => {
-            var callbacks: UICallbacks = {
+            const callbacks: UICallbacks = {
                 onAdded: (node: Node, params: any) => {
                     resolve(node);
                 },
@@ -214,7 +214,7 @@ export class LayerManager {
      */
     replaceAsync(removeUiId: number, openUiId: number, uiArgs: any = null): Promise<Node | null> {
         return new Promise<Node | null>(async (resolve, reject) => {
-            var node = await this.openAsync(openUiId, uiArgs);
+            const node = await this.openAsync(openUiId, uiArgs);
             if (node) {
                 this.remove(removeUiId);
                 resolve(node);
@@ -232,7 +232,7 @@ export class LayerManager {
      * oops.gui.has(UIID.Loading);
      */
     has(uiId: number): boolean {
-        var config = this.configs[uiId];
+        const config = this.configs[uiId];
         if (config == null) {
             warn(`编号为【${uiId}】的界面配置不存在，配置信息不存在`);
             return false;
@@ -264,13 +264,13 @@ export class LayerManager {
      * oops.gui.has(UIID.Loading);
      */
     get(uiId: number): Node {
-        var config = this.configs[uiId];
+        const config = this.configs[uiId];
         if (config == null) {
             warn(`编号为【${uiId}】的界面配置不存在，配置信息不存在`);
             return null!;
         }
 
-        var result: Node = null!;
+        let result: Node = null!;
         switch (config.layer) {
             case LayerType.UI:
                 result = this.ui.get(config.prefab);
@@ -296,7 +296,7 @@ export class LayerManager {
      * oops.gui.remove(UIID.Loading);
      */
     remove(uiId: number, isDestroy?: boolean) {
-        var config = this.configs[uiId];
+        const config = this.configs[uiId];
         if (config == null) {
             warn(`删除编号为【${uiId}】的界面失败，配置信息不存在`);
             return;
@@ -403,9 +403,9 @@ export class LayerManager {
     }
 
     private create_node(name: string) {
-        var node = new Node(name);
+        const node = new Node(name);
         node.layer = Layers.Enum.UI_2D;
-        var w: Widget = node.addComponent(Widget);
+        const w: Widget = node.addComponent(Widget);
         w.isAlignLeft = w.isAlignRight = w.isAlignTop = w.isAlignBottom = true;
         w.left = w.right = w.top = w.bottom = 0;
         w.alignMode = 2;

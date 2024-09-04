@@ -77,9 +77,9 @@ export class GameConfig {
         return this._data.config.loadingTimeoutGui || 1000;
     }
 
-    private _data: any = null;
+    private readonly _data: any = null;
     /** 游戏配置数据 */
-    public get data(): any {
+    get data(): any {
         return this._data;
     }
 

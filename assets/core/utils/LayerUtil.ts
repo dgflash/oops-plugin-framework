@@ -8,12 +8,12 @@ import { Node } from "cc";
 
 /** 游戏摄像机层数据 */
 export class LayerItem {
-    private _value: number;
+    private readonly _value: number;
     get value(): number {
         return this._value;
     }
 
-    private _name!: string;
+    private readonly _name!: string;
     get name(): string {
         return this._name;
     }

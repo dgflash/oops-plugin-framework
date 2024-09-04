@@ -199,8 +199,8 @@ oops.log.table(object);
             return;
 
         }
-        var backLog = console.log || log;
-        var type = names[tag];
+        const backLog = console.log || log;
+        const type = names[tag];
         if (describe) {
             backLog.call(null, "%c%s%s%s:%s%o", color, this.getDateString(), '[' + type + ']', this.stack(5), describe, msg);
         }
@@ -210,9 +210,9 @@ oops.log.table(object);
     }
 
     private static stack(index: number): string {
-        var e = new Error();
-        var lines = e.stack!.split("\n");
-        var result: Array<any> = [];
+        const e = new Error();
+        const lines = e.stack!.split("\n");
+        const result: Array<any> = [];
         lines.forEach((line) => {
             line = line.substring(7);
             var lineBreak = line.split(" ");
@@ -224,22 +224,22 @@ oops.log.table(object);
             }
         });
 
-        var list: string[] = [];
-        var splitList: Array<string> = [];
+        let list: string[] = [];
+        let splitList: Array<string> = [];
         if (index < result.length - 1) {
-            var value: string;
-            for (var a in result[index]) {
-                var splitList = a.split(".");
+            let value: string;
+            for (let a in result[index]) {
+                splitList = a.split(".");
 
                 if (splitList.length == 2) {
                     list = splitList.concat();
                 }
                 else {
                     value = result[index][a];
-                    var start = value!.lastIndexOf("/");
-                    var end = value!.lastIndexOf(".");
+                    const start = value!.lastIndexOf("/");
+                    const end = value!.lastIndexOf(".");
                     if (start > -1 && end > -1) {
-                        var r = value!.substring(start + 1, end);
+                        const r = value!.substring(start + 1, end);
                         list.push(r);
                     }
                     else {

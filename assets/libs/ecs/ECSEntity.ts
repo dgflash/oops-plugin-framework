@@ -25,7 +25,7 @@ function broadcastCompAddOrRemove(entity: ECSEntity, componentTypeId: number) {
  * @param ctor
  */
 function createComp<T extends ecs.IComp>(ctor: CompCtor<T>): T {
-    var cct = ECSModel.compCtors[ctor.tid];
+    const cct = ECSModel.compCtors[ctor.tid];
     if (!cct) {
         throw Error(`没有找到该组件的构造函数，检查${ctor.compName}是否为不可构造的组件`);
     }
@@ -42,7 +42,7 @@ function createComp<T extends ecs.IComp>(ctor: CompCtor<T>): T {
  */
 function destroyEntity(entity: ECSEntity) {
     if (ECSModel.eid2Entity.has(entity.eid)) {
-        var entitys = ECSModel.entityPool.get(entity.name);
+        let entitys = ECSModel.entityPool.get(entity.name);
         if (entitys == null) {
             entitys = [];
             ECSModel.entityPool.set(entity.name, entitys);

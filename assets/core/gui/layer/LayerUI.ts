@@ -16,12 +16,11 @@ export class LayerUI extends Node {
     /**
      * UI基础层，允许添加多个预制件节点
      * @param name 该层名
-     * @param container 容器Node
      */
     constructor(name: string) {
         super(name);
 
-        var widget: Widget = this.addComponent(Widget);
+        const widget: Widget = this.addComponent(Widget);
         widget.isAlignLeft = widget.isAlignRight = widget.isAlignTop = widget.isAlignBottom = true;
         widget.left = widget.right = widget.top = widget.bottom = 0;
         widget.alignMode = 2;
@@ -30,7 +29,7 @@ export class LayerUI extends Node {
 
     /**
      * 添加一个预制件节点到层容器中，该方法将返回一个唯一`uuid`来标识该操作节点
-     * @param prefabPath 预制件路径
+     * @param config     界面配置数据
      * @param params     自定义参数
      * @param callbacks  回调函数对象，可选
      * @returns ture为成功,false为失败
@@ -42,7 +41,7 @@ export class LayerUI extends Node {
         }
 
         // 检查缓存中是否存界面
-        var vp = this.ui_cache.get(config.prefab);
+        let vp = this.ui_cache.get(config.prefab);
         if (vp == null) {
             vp = new ViewParams();
             vp.config = config;
@@ -139,11 +138,11 @@ export class LayerUI extends Node {
      * @param isDestroy    移除后是否释放
      */
     remove(prefabPath: string, isDestroy?: boolean): void {
-        var release = undefined;
+        let release = undefined;
         if (isDestroy !== undefined) release = isDestroy;
 
         // 界面移出舞台
-        var vp = this.ui_nodes.get(prefabPath);
+        const vp = this.ui_nodes.get(prefabPath);
         if (vp) {
             // 优先使用参数中控制的释放条件，如果未传递参数则用配置中的释放条件，默认不缓存关闭的界面
             if (release === undefined) {
@@ -155,8 +154,8 @@ export class LayerUI extends Node {
                 this.ui_cache.set(vp.config.prefab, vp);
             }
 
-            var childNode = vp.node;
-            var comp = childNode.getComponent(DelegateComponent)!;
+            const childNode = vp.node;
+            const comp = childNode.getComponent(DelegateComponent)!;
             comp.remove(release);
         }
 
@@ -170,7 +169,7 @@ export class LayerUI extends Node {
         if (vp) {
             this.onCloseWindow(vp);
             this.ui_cache.delete(prefabPath);
-            var childNode = vp.node;
+            const childNode = vp.node;
             childNode.destroy();
         }
     }
@@ -180,7 +179,7 @@ export class LayerUI extends Node {
      * @param prefabPath  预制路径
      */
     get(prefabPath: string): Node {
-        var vp = this.ui_nodes.get(prefabPath);
+        const vp = this.ui_nodes.get(prefabPath);
         if (vp)
             return vp.node;
         return null!;

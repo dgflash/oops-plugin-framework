@@ -16,7 +16,7 @@ export class RotateUtil {
      * @param rad        旋转弧度
      */
     static rotateAround(target: Node, axis: Vec3, rad: number) {
-        var quat = new Quat();
+        const quat = new Quat();
         Quat.rotateAround(quat, target.getRotation(), axis.normalize(), rad);
         target.setRotation(quat);
     }
@@ -27,17 +27,17 @@ export class RotateUtil {
      * 2、通过旋转中心点或当前目标点向量相减计算出移动方向
      * 3、计算起始向量旋转后的向量
      * 4、计算旋转后的坐标点
-     * @param lookAt  瞄准目标
+     * @param lookAt        瞄准目标
      * @param target        旋转目标
      * @param axis          围绕旋转的轴(例：Vec3.UP为Y轴)
      * @param rad           旋转弧度(例：delta.x * 1e-2)
      */
     static rotateAroundTarget(lookAt: Node, target: Node, axis: Vec3, rad: number) {
         // 计算坐标
-        var point_lookAt = lookAt.worldPosition;               // 锚点坐标
-        var point_target = target.worldPosition;               // 目标坐标
-        var quat = new Quat();
-        var vec3 = new Vec3();
+        const point_lookAt = lookAt.worldPosition;               // 锚点坐标
+        const point_target = target.worldPosition;               // 目标坐标
+        const quat = new Quat();
+        const vec3 = new Vec3();
 
         // 算出坐标点的旋转四元数
         Quat.fromAxisAngle(quat, axis, rad);
@@ -62,10 +62,10 @@ export class RotateUtil {
      * @param angle     角度
      */
     static circularEdgePosition(center: Vec3, radius: number, angle: number): Vec3 {
-        let edge = Vec3Util.z.multiplyScalar(radius);                  // 距离圆心Z抽的距离
-        let dir = Vec3Util.sub(edge, center);                          // 初始圆心与目标位置的方向
-        let vec3 = new Vec3();
-        var quat = new Quat();
+        const edge = Vec3Util.z.multiplyScalar(radius);                  // 距离圆心Z抽的距离
+        const dir = Vec3Util.sub(edge, center);                          // 初始圆心与目标位置的方向
+        const vec3 = new Vec3();
+        const quat = new Quat();
 
         // 算出坐标点的旋转四元数
         Quat.fromAxisAngle(quat, Vec3.UP, toRadian(angle));

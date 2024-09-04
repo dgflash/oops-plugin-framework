@@ -48,8 +48,8 @@ export class MessageEventData {
 
     /** 
      * 触发全局事件 
-     * @param event(string)      事件名
-     * @param args(any)          事件参数
+     * @param event      事件名
+     * @param args       事件参数
      */
     dispatchEvent(event: string, ...args: any) {
         message.dispatchEvent(event, ...args);
@@ -186,8 +186,8 @@ export class MessageManager {
 
     /** 
      * 触发全局事件 
-     * @param event(string)      事件名
-     * @param args(any)          事件参数
+     * @param event      事件名
+     * @param args       事件参数
      */
     dispatchEvent(event: string, ...args: any) {
         let list = this.events.get(event);

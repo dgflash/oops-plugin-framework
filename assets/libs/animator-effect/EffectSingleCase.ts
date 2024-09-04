@@ -27,7 +27,7 @@ export interface IEffectParams {
     bundleName?: string
 }
 
-/** 
+/**
  * 动画特效对象池管理器，加载动画后自动播放，播放完后自动回收到池中
  * 1、支持Spine动画
  * 2、支持Cocos Animation动画
@@ -81,11 +81,11 @@ export class EffectSingleCase {
         return 0;
     }
 
-    /** 
+    /**
      * 加载资源并生成节点对象
      * @param path    预制资源路径
      * @param parent  父节点
-     * @param pos     位置
+     * @param params  显示参数
      */
     async loadAndShow(path: string, parent?: Node, params?: IEffectParams): Promise<Node> {
         return new Promise(async (resolve, reject) => {
@@ -110,11 +110,11 @@ export class EffectSingleCase {
         });
     }
 
-    /** 
+    /**
      * 显示预制对象
      * @param path    预制资源路径
      * @param parent  父节点
-     * @param pos     位置
+     * @param params  显示参数
      */
     private show(path: string, parent?: Node, params?: IEffectParams): Node {
         var np = this.effects.get(path);
@@ -189,7 +189,7 @@ export class EffectSingleCase {
 
     /**
      * 释放对象池中显示对象的资源内存
-     * @param path 资源路径 
+     * @param path 资源路径
      */
     release(path?: string) {
         if (path) {
@@ -219,7 +219,7 @@ export class EffectSingleCase {
         }
         else {
             // COCOS动画
-            var anims: Animation[] = node.getComponentsInChildren(Animation);
+            const anims: Animation[] = node.getComponentsInChildren(Animation);
             if (anims.length > 0) {
                 anims.forEach(animator => {
                     let aniName = animator.defaultClip?.name;
@@ -233,7 +233,7 @@ export class EffectSingleCase {
             }
             // 粒子动画
             else if (ParticleSystem) {
-                var particles: ParticleSystem[] = node.getComponentsInChildren(ParticleSystem);
+                const particles: ParticleSystem[] = node.getComponentsInChildren(ParticleSystem);
                 particles.forEach(particle => {
                     particle.simulationSpeed = this.speed;
                 });

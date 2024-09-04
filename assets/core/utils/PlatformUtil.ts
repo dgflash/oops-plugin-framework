@@ -11,18 +11,16 @@ export class PlatformUtil {
     static isNativeAndroid() {
         if (typeof native == "undefined")
             return false
-        if (sys.isNative && sys.platform === sys.Platform.ANDROID)
-            return true
-        return false
+        return sys.isNative && sys.platform === sys.Platform.ANDROID;
+
     }
 
     /** 是否为苹果系统 */
     static isNativeIOS() {
         if (typeof native == "undefined")
             return false
-        if (sys.isNative && sys.os === sys.OS.IOS)
-            return true
-        return false
+        return sys.isNative && sys.os === sys.OS.IOS;
+
     }
 
     /** 获取平台名 */

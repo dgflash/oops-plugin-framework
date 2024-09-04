@@ -8,13 +8,13 @@ import { Node } from "cc";
 
 /** 物理分组数据 */
 export class GroupItem {
-    private _value: number;
+    private readonly _value: number;
     /** 分组值 */
     get value(): number {
         return this._value;
     }
 
-    private _name!: string;
+    private readonly _name!: string;
     /** 分组名 */
     get name(): string {
         return this._name;

@@ -146,7 +146,7 @@ export default class LabelTime extends Label {
     }
 
     private onGameShow() {
-        var interval = Math.floor((oops.timer.getTime() - (this.backStartTime || oops.timer.getTime())) / 1000);
+        const interval = Math.floor((oops.timer.getTime() - (this.backStartTime || oops.timer.getTime())) / 1000);
         this.countDown -= interval;
         if (this.countDown < 0) {
             this.countDown = 0;

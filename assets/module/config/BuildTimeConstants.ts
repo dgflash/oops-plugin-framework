@@ -12,7 +12,7 @@ const keys = (Object.keys(buildTimeConstants) as (keyof typeof buildTimeConstant
 export class BuildTimeConstants {
     constructor() {
         const keyNameMaxLen = keys.reduce((len, key) => Math.max(len, key.length), 0);
-        var enviroment = `${keys.map((key) => {
+        const enviroment = `${keys.map((key) => {
             const value = buildTimeConstants[key];
             const valueRep = typeof value === 'boolean' ? (value ? 'true' : 'false') : value;
             return `\n${key.padStart(keyNameMaxLen, ' ')} : ${valueRep}`;

@@ -1,15 +1,15 @@
-import { AudioClip, Component } from "cc";
-import { oops } from "../../Oops";
-import { AudioEffect } from "./AudioEffect";
-import { AudioMusic } from "./AudioMusic";
+import {AudioClip, Component} from "cc";
+import {oops} from "../../Oops";
+import {AudioEffect} from "./AudioEffect";
+import {AudioMusic} from "./AudioMusic";
 
 const LOCAL_STORE_KEY = "game_audio";
 
-/** 
+/**
  * 音频管理
- * @example 
-// 模块功能通过 oops.audio 调用
-oops.audio.playMusic("audios/nocturne");
+ * @example
+ // 模块功能通过 oops.audio 调用
+ oops.audio.playMusic("audios/nocturne");
  */
 export class AudioManager extends Component {
     /** 背景音乐管理对象 */
@@ -40,11 +40,12 @@ export class AudioManager extends Component {
      * 播放背景音乐
      * @param url        资源地址
      * @param callback   音乐播放完成事件
+     * @param bundleName 资源包名
      */
     playMusic(url: string, callback?: Function, bundleName?: string) {
         if (this._switch_music) {
             this.music.loop = false;
-            this.music.load(url, callback, bundleName);
+            this.music.load(url, callback, bundleName).then();
         }
     }
 
@@ -52,7 +53,7 @@ export class AudioManager extends Component {
     playMusicLoop(url: string, bundleName?: string) {
         if (this._switch_music) {
             this.music.loop = true;
-            this.music.load(url, null!, bundleName);
+            this.music.load(url, null!, bundleName).then();
         }
     }
 
@@ -69,6 +70,7 @@ export class AudioManager extends Component {
     get progressMusic(): number {
         return this.music.progress;
     }
+
     /**
      * 设置背景乐播放进度
      * @param value     播放进度值
@@ -83,7 +85,8 @@ export class AudioManager extends Component {
     get volumeMusic(): number {
         return this._volume_music;
     }
-    /** 
+
+    /**
      * 设置背景音乐音量
      * @param value     音乐音量值
      */
@@ -92,26 +95,29 @@ export class AudioManager extends Component {
         this.music.volume = value;
     }
 
-    /** 
-     * 获取背景音乐开关值 
+    /**
+     * 获取背景音乐开关值
      */
     get switchMusic(): boolean {
         return this._switch_music;
     }
-    /** 
+
+    /**
      * 设置背景音乐开关值
      * @param value     开关值
      */
     set switchMusic(value: boolean) {
         this._switch_music = value;
 
-        if (value == false)
+        if (!value)
             this.music.stop();
     }
 
     /**
      * 播放音效
      * @param url        资源地址
+     * @param callback   加载完成回调
+     * @param bundleName 资源包名
      */
     playEffect(url: string | AudioClip, callback?: Function, bundleName?: string) {
         if (this._switch_effect) {
@@ -124,12 +130,13 @@ export class AudioManager extends Component {
         this.effect.release(url, bundleName);
     }
 
-    /** 
-     * 获取音效音量 
+    /**
+     * 获取音效音量
      */
     get volumeEffect(): number {
         return this._volume_effect;
     }
+
     /**
      * 设置获取音效音量
      * @param value     音效音量值
@@ -139,19 +146,20 @@ export class AudioManager extends Component {
         this.effect.volume = value;
     }
 
-    /** 
-     * 获取音效开关值 
+    /**
+     * 获取音效开关值
      */
     get switchEffect(): boolean {
         return this._switch_effect;
     }
+
     /**
      * 设置音效开关值
      * @param value     音效开关值
      */
     set switchEffect(value: boolean) {
         this._switch_effect = value;
-        if (value == false) this.effect.stop();
+        if (!value) this.effect.stop();
     }
 
     /** 恢复当前暂停的音乐与音效播放 */
@@ -198,12 +206,10 @@ export class AudioManager extends Component {
         if (this.local_data) {
             try {
                 this.setState();
-            }
-            catch (e) {
+            } catch (e) {
                 this.setStateDefault();
             }
-        }
-        else {
+        } else {
             this.setStateDefault();
         }
 

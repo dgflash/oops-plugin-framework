@@ -35,13 +35,13 @@ export class LanguageData {
      * 3、config/game/Language配置表使用oops-plugin-excel-to-json插件生成，点击项目根目录下载update-oops-plugin-framework.bat或update-oops-plugin-framework.sh脚本下载插件
      */
     public static getLangByID(labId: string): string {
-        var text = this.json[labId];
+        const text = this.json[labId];
         if (text) {
             return text;
         }
 
         if (this.excel) {
-            var record = this.excel[labId];
+            const record = this.excel[labId];
             if (record) {
                 return record[this.current];
             }

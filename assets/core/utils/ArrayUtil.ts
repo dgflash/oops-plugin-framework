@@ -12,10 +12,10 @@ export class ArrayUtil {
      * @param arr  源数组
      */
     static noRepeated(arr: any[]) {
-        var res = [arr[0]];
-        for (var i = 1; i < arr.length; i++) {
-            var repeat = false;
-            for (var j = 0; j < res.length; j++) {
+        const res = [arr[0]];
+        for (let i = 1; i < arr.length; i++) {
+            let repeat = false;
+            for (let j = 0; j < res.length; j++) {
                 if (arr[i] == res[j]) {
                     repeat = true;
                     break;
@@ -61,8 +61,7 @@ export class ArrayUtil {
      * @param array 目标数组
      */
     static confound(array: []): any[] {
-        let result = array.slice().sort(() => Math.random() - .5);
-        return result;
+        return array.slice().sort(() => Math.random() - .5);
     }
 
     /**
@@ -78,7 +77,7 @@ export class ArrayUtil {
 
     /** 删除数组中指定项 */
     static removeItem(array: any[], item: any) {
-        var temp = array.concat();
+        const temp = array.concat();
         for (let i = 0; i < temp.length; i++) {
             const value = temp[i];
             if (item == value) {
@@ -94,8 +93,7 @@ export class ArrayUtil {
      * @param array2 目标数组2
      */
     static combineArrays(array1: any[], array2: any[]): any[] {
-        let newArray = [...array1, ...array2];
-        return newArray;
+        return [...array1, ...array2];
     }
 
     /**
@@ -103,7 +101,6 @@ export class ArrayUtil {
      * @param array 目标数组
      */
     static getRandomValueInArray(array: any[]): any {
-        let newArray = array[Math.floor(Math.random() * array.length)];
-        return newArray;
+        return array[Math.floor(Math.random() * array.length)];
     }
 }

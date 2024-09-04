@@ -61,12 +61,12 @@ export default class AnimatorSpine extends AnimatorBase {
     /** ---------- 后续扩展代码 开始 ---------- */
 
     public getBone(name: string): any {
-        var bone = this._spine.findBone(name);
+        const bone = this._spine.findBone(name);
         return bone
     }
 
     private onSpineEvent(trackEntry: any, event: any) {
-        var animationName = trackEntry.animation ? event.data.name : "";
+        const animationName = trackEntry.animation ? event.data.name : "";
         this._animationPlayer?.onFrameEventCallback(animationName, this);
     }
 

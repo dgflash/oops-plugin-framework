@@ -1,6 +1,5 @@
-
-import { Mat4, Vec3 } from "cc";
-import { MathUtil } from "./MathUtil";
+import {Mat4, Vec3} from "cc";
+import {MathUtil} from "./MathUtil";
 
 /** 向量工具 */
 export class Vec3Util {
@@ -88,7 +87,7 @@ export class Vec3Util {
      * @param t      进度[0，1]
      */
     static progress(start: Vec3, end: Vec3, t: number): Vec3 {
-        var current = new Vec3();
+        const current = new Vec3();
         current.x = MathUtil.progress(start.x, end.x, t);
         current.y = MathUtil.progress(start.y, end.y, t);
         current.z = MathUtil.progress(start.z, end.z, t);
@@ -101,7 +100,7 @@ export class Vec3Util {
      * @param pos2  向量2
      */
     static add(pos1: Vec3, pos2: Vec3): Vec3 {
-        var outPos: Vec3 = new Vec3();
+        const outPos: Vec3 = new Vec3();
         Vec3.add(outPos, pos1, pos2);
         return outPos;
     }
@@ -112,7 +111,7 @@ export class Vec3Util {
      * @param pos2  向量2
      */
     static sub(pos1: Vec3, pos2: Vec3): Vec3 {
-        var outPos: Vec3 = new Vec3();
+        const outPos: Vec3 = new Vec3();
         Vec3.subtract(outPos, pos1, pos2);
         return outPos;
     }
@@ -123,7 +122,7 @@ export class Vec3Util {
      * @param scalar  常量
      */
     static mul(pos: Vec3, scalar: number): Vec3 {
-        var outPos: Vec3 = new Vec3();
+        const outPos: Vec3 = new Vec3();
         Vec3.multiplyScalar(outPos, pos, scalar);
         return outPos;
     }
@@ -134,7 +133,7 @@ export class Vec3Util {
      * @param scalar  常量
      */
     static div(pos: Vec3, scalar: number): Vec3 {
-        var outPos: Vec3 = new Vec3();
+        const outPos: Vec3 = new Vec3();
 
         outPos.x = pos.x / scalar;
         outPos.y = pos.y / scalar;
@@ -149,11 +148,7 @@ export class Vec3Util {
      * @param pos2  向量2
      */
     static equals(pos1: Vec3, pos2: Vec3): boolean {
-        if (pos1.x == pos2.x && pos1.y == pos2.y && pos1.z == pos2.z) {
-            return true;
-        }
-
-        return false;
+        return pos1.x == pos2.x && pos1.y == pos2.y && pos1.z == pos2.z;
     }
 
     /**
@@ -169,7 +164,7 @@ export class Vec3Util {
      * @param pos  向量
      */
     static normalize(pos: Vec3): Vec3 {
-        var outPos: Vec3 = new Vec3(pos.x, pos.y, pos.z);
+        const outPos: Vec3 = new Vec3(pos.x, pos.y, pos.z);
         return outPos.normalize();
     }
 
@@ -179,7 +174,7 @@ export class Vec3Util {
      * @param pos2  向量2
      */
     static direction(pos1: Vec3, pos2: Vec3): Vec3 {
-        var outPos: Vec3 = new Vec3();
+        const outPos: Vec3 = new Vec3();
         Vec3.subtract(outPos, pos2, pos1)
         return outPos.normalize();
     }
@@ -212,8 +207,7 @@ export class Vec3Util {
     static slerp(from: Vec3, to: Vec3, t: number): Vec3 {
         if (t <= 0) {
             return from;
-        }
-        else if (t >= 1) {
+        } else if (t >= 1) {
             return to;
         }
 
@@ -235,12 +229,12 @@ export class Vec3Util {
             return to;
         }
 
-        var axis: Vec3 = new Vec3()                 // 获得旋转轴
+        const axis: Vec3 = new Vec3();                 // 获得旋转轴
         Vec3.cross(axis, from, to);
         axis.normalize();
 
-        var radian: number = angle * Math.PI / 180; // 获得弧度
-        var rotateMatrix: Mat4 = new Mat4();
+        const radian: number = angle * Math.PI / 180; // 获得弧度
+        const rotateMatrix: Mat4 = new Mat4();
         rotateMatrix.rotate(radian, axis);
 
         return new Vec3(
@@ -252,16 +246,15 @@ export class Vec3Util {
 
     /**
      * 一次贝塞尔即为线性插值函数
-     * @param t 
-     * @param posStart 
-     * @param posEnd 
-     * @returns 
+     * @param t
+     * @param posStart
+     * @param posEnd
+     * @returns
      */
     static bezierOne(t: number, posStart: Vec3, posEnd: Vec3): Vec3 {
         if (t > 1) {
             t = 1;
-        }
-        else if (t < 0) {
+        } else if (t < 0) {
             t = 0
         }
 
@@ -273,28 +266,27 @@ export class Vec3Util {
 
     /**
      * 二次贝塞尔曲线
-     * @param t 
-     * @param posStart 
-     * @param posCon 
-     * @param posEnd 
-     * @returns 
+     * @param t
+     * @param posStart
+     * @param posCon
+     * @param posEnd
+     * @returns
      */
     static bezierTwo(t: number, posStart: Vec3, posCon: Vec3, posEnd: Vec3): Vec3 {
         if (t > 1) {
             t = 1;
-        }
-        else if (t < 0) {
+        } else if (t < 0) {
             t = 0
         }
 
-        var n = (1 - t);
-        var tt = t * t;
+        const n = (1 - t);
+        const tt = t * t;
 
-        var pStart: Vec3 = posStart.clone();
-        var pos = new Vec3();
+        const pStart: Vec3 = posStart.clone();
+        const pos = new Vec3();
 
-        var pCon: Vec3 = posCon.clone();
-        var pEnd: Vec3 = posEnd.clone();
+        const pCon: Vec3 = posCon.clone();
+        const pEnd: Vec3 = posEnd.clone();
 
         pos.add(pStart.multiplyScalar(n * n));
         pos.add(pCon.multiplyScalar(2 * n * t));
@@ -305,33 +297,32 @@ export class Vec3Util {
 
     /**
      * 三次贝塞尔
-     * @param t 
-     * @param posStart 
-     * @param posCon1 
-     * @param posCon2 
-     * @param posEnd 
-     * @returns 
+     * @param t
+     * @param posStart
+     * @param posCon1
+     * @param posCon2
+     * @param posEnd
+     * @returns
      */
     static bezierThree(t: number, posStart: Vec3, posCon1: Vec3, posCon2: Vec3, posEnd: Vec3): Vec3 {
         if (t > 1) {
             t = 1;
-        }
-        else if (t < 0) {
+        } else if (t < 0) {
             t = 0
         }
 
-        var n = (1 - t);
-        var nn = n * n;
-        var nnn = nn * n;
-        var tt = t * t;
-        var ttt = tt * t;
+        const n = (1 - t);
+        const nn = n * n;
+        const nnn = nn * n;
+        const tt = t * t;
+        const ttt = tt * t;
 
-        var pStart: Vec3 = posStart.clone();
-        var pos = posStart.clone();
+        const pStart: Vec3 = posStart.clone();
+        const pos = posStart.clone();
 
-        var pCon1: Vec3 = posCon1.clone();
-        var pCon2: Vec3 = posCon2.clone();
-        var pEnd: Vec3 = posEnd.clone();
+        const pCon1: Vec3 = posCon1.clone();
+        const pCon2: Vec3 = posCon2.clone();
+        const pEnd: Vec3 = posEnd.clone();
 
         pos.add(pStart.multiplyScalar(nnn));
         pos.add(pCon1.multiplyScalar(3 * nn * t));
@@ -347,8 +338,8 @@ export class Vec3Util {
      * @param dir2 方向量2
      */
     static dot(dir1: Vec3, dir2: Vec3): number {
-        var tempDir1: Vec3 = dir1;
-        var tempDir2: Vec3 = dir2;
+        const tempDir1: Vec3 = dir1;
+        const tempDir2: Vec3 = dir2;
 
         return tempDir1.x * tempDir2.x + tempDir1.y * tempDir2.y + tempDir1.z * tempDir2.z;
     }
@@ -359,16 +350,16 @@ export class Vec3Util {
      * @param dir2 方向量2
      */
     static cross(dir1: Vec3, dir2: Vec3): Vec3 {
-        var i: Vec3 = new Vec3(1, 0, 0);
-        var j: Vec3 = new Vec3(0, 1, 0);
-        var k: Vec3 = new Vec3(0, 0, 1);
+        const i: Vec3 = new Vec3(1, 0, 0);
+        const j: Vec3 = new Vec3(0, 1, 0);
+        const k: Vec3 = new Vec3(0, 0, 1);
 
-        var tempDir1: Vec3 = new Vec3(dir1.x, dir1.y, dir1.z);
-        var tempDir2: Vec3 = new Vec3(dir2.x, dir2.y, dir2.z);
+        const tempDir1: Vec3 = new Vec3(dir1.x, dir1.y, dir1.z);
+        const tempDir2: Vec3 = new Vec3(dir2.x, dir2.y, dir2.z);
 
-        var iv: Vec3 = i.multiplyScalar(tempDir1.y * tempDir2.z - tempDir2.y * tempDir1.z);
-        var jv: Vec3 = j.multiplyScalar(tempDir2.x * tempDir1.z - tempDir1.x * tempDir2.z);
-        var kv: Vec3 = k.multiplyScalar(tempDir1.x * tempDir2.y - tempDir2.x * tempDir1.y);
+        const iv: Vec3 = i.multiplyScalar(tempDir1.y * tempDir2.z - tempDir2.y * tempDir1.z);
+        const jv: Vec3 = j.multiplyScalar(tempDir2.x * tempDir1.z - tempDir1.x * tempDir2.z);
+        const kv: Vec3 = k.multiplyScalar(tempDir1.x * tempDir2.y - tempDir2.x * tempDir1.y);
 
         return iv.add(jv).add(kv);
     }
@@ -379,7 +370,7 @@ export class Vec3Util {
      * @param dir2 方向量2
      */
     static angle(dir1: Vec3, dir2: Vec3): number {
-        var dotValue = this.dot(dir1.clone().normalize(), dir2.clone().normalize());
+        const dotValue = this.dot(dir1.clone().normalize(), dir2.clone().normalize());
         return Math.acos(dotValue) / Math.PI * 180 * Math.sign(dotValue);
     }
 
@@ -389,10 +380,10 @@ export class Vec3Util {
      * @param b 角度b
      */
     static dirAngle(a: Vec3, b: Vec3): number {
-        var c: Vec3 = Vec3Util.cross(a, b);
-        var angle: number = Vec3Util.angle(a, b);
+        const c: Vec3 = Vec3Util.cross(a, b);
+        const angle: number = Vec3Util.angle(a, b);
         // a 到 b 的夹角
-        var sign = Math.sign(Vec3Util.dot(c.normalize(), Vec3Util.cross(b.normalize(), a.normalize())));
+        const sign = Math.sign(Vec3Util.dot(c.normalize(), Vec3Util.cross(b.normalize(), a.normalize())));
 
         return angle * sign;
     }

@@ -1,6 +1,6 @@
-import { Logger } from "../../../core/common/log/Logger";
-import { LanguageData } from "./LanguageData";
-import { LanguagePack } from "./LanguagePack";
+import {Logger} from "../../../core/common/log/Logger";
+import {LanguageData} from "./LanguageData";
+import {LanguagePack} from "./LanguagePack";
 
 /** 多语言管理器 */
 export class LanguageManager {
@@ -44,8 +44,7 @@ export class LanguageManager {
     getNextLang(): string {
         let supportLangs = this.languages;
         let index = supportLangs.indexOf(LanguageData.current);
-        let newLanguage = supportLangs[(index + 1) % supportLangs.length];
-        return newLanguage;
+        return supportLangs[(index + 1) % supportLangs.length];
     }
 
     /**
@@ -74,7 +73,7 @@ export class LanguageManager {
 
         this.loadLanguageAssets(language, (lang: string) => {
             Logger.logConfig(`当前语言为【${language}】`);
-            var oldLanguage = LanguageData.current;
+            const oldLanguage = LanguageData.current;
             LanguageData.current = language;
             this._languagePack.updateLanguage(language);
             this._languagePack.releaseLanguageAssets(oldLanguage);

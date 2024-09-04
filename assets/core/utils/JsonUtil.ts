@@ -34,7 +34,7 @@ export class JsonUtil {
         if (data.has(name))
             callback(data.get(name));
         else {
-            var url = path + name;
+            const url = path + name;
             resLoader.load(url, JsonAsset, (err: Error | null, content: JsonAsset) => {
                 if (err) {
                     console.warn(err.message);
@@ -59,7 +59,7 @@ export class JsonUtil {
                 resolve(data.get(name))
             }
             else {
-                var url = path + name;
+                const url = path + name;
                 resLoader.load(url, JsonAsset, (err: Error | null, content: JsonAsset) => {
                     if (err) {
                         console.warn(err.message);

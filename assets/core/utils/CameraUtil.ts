@@ -14,21 +14,18 @@ export class CameraUtil {
      * @param worldPos  坐标
      */
     static isInView(camera: Camera, worldPos: Vec3) {
-        var cameraPos = camera.node.getWorldPosition();
-        var viewPos = camera.worldToScreen(worldPos);
-        var dir = Vec3.normalize(new Vec3(), worldPos.subtract(cameraPos));
-        var forward = camera.node.forward;
-        var dot = Vec3.dot(forward, dir);
+        const cameraPos = camera.node.getWorldPosition();
+        const viewPos = camera.worldToScreen(worldPos);
+        const dir = Vec3.normalize(new Vec3(), worldPos.subtract(cameraPos));
+        const forward = camera.node.forward;
+        const dot = Vec3.dot(forward, dir);
 
         const viewportRect = view.getViewportRect();
 
         // 判断物体是否在相机前面
-        if (dot > 0
+        return dot > 0
             // 判断物体是否在视窗内
             && (viewPos.x <= viewportRect.width) && (viewPos.x >= 0)
-            && (viewPos.y <= viewportRect.height) && (viewPos.y >= 0))
-            return true;
-        else
-            return false;
+            && (viewPos.y <= viewportRect.height) && (viewPos.y >= 0);
     }
 }

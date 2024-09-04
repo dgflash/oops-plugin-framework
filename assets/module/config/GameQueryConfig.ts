@@ -15,23 +15,23 @@ import { StringUtil } from "../../core/utils/StringUtil";
  */
 export class GameQueryConfig {
     /** 调试模式开关 */
-    public get debug(): string {
+    get debug(): string {
         return this._data["debug"];
     }
 
     /** 玩家帐号名 */
-    public get username(): string {
+    get username(): string {
         return this._data["username"];
     }
 
     /** 语言 */
-    public get lang(): string {
+    get lang(): string {
         return this._data["lang"] || "zh";
     }
 
     private _data: any = null;
     /** 浏览器地址栏原始参数 */
-    public get data(): any {
+    get data(): any {
         return this._data;
     }
 

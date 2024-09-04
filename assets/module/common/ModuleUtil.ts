@@ -1,11 +1,11 @@
-import { Node, __private } from "cc";
-import { oops } from "../../core/Oops";
-import { UICallbacks } from "../../core/gui/layer/Defines";
-import { ViewUtil } from "../../core/utils/ViewUtil";
-import { ecs } from "../../libs/ecs/ECS";
-import { CompType } from "../../libs/ecs/ECSModel";
-import { CCComp } from "./CCComp";
-import { CCVMParentComp } from "./CCVMParentComp";
+import {Node, __private} from "cc";
+import {oops} from "../../core/Oops";
+import {UICallbacks} from "../../core/gui/layer/Defines";
+import {ViewUtil} from "../../core/utils/ViewUtil";
+import {ecs} from "../../libs/ecs/ECS";
+import {CompType} from "../../libs/ecs/ECSModel";
+import {CCComp} from "./CCComp";
+import {CCVMParentComp} from "./CCVMParentComp";
 
 export class ModuleUtil {
     /**
@@ -20,9 +20,9 @@ export class ModuleUtil {
         ctor: __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>,
         uiId: number,
         uiArgs: any = null) {
-        var uic: UICallbacks = {
+        const uic: UICallbacks = {
             onAdded: (node: Node, params: any) => {
-                var comp = node.getComponent(ctor) as ecs.Comp;
+                const comp = node.getComponent(ctor) as ecs.Comp;
                 ent.add(comp);
             }
         };
@@ -43,9 +43,9 @@ export class ModuleUtil {
         uiId: number,
         uiArgs: any = null): Promise<Node | null> {
         return new Promise<Node | null>((resolve, reject) => {
-            var uic: UICallbacks = {
+            const uic: UICallbacks = {
                 onAdded: (node: Node, params: any) => {
-                    var comp = node.getComponent(ctor) as ecs.Comp;
+                    const comp = node.getComponent(ctor) as ecs.Comp;
                     ent.add(comp);
                     resolve(node);
                 },
@@ -58,19 +58,19 @@ export class ModuleUtil {
     }
 
     /**
-    * 通过资源内存中获取预制上的组件添加到ECS实体中
-    * @param ent      模块实体
-    * @param ctor     界面逻辑组件
-    * @param parent   显示对象父级
-    * @param url      显示资源地址
-    */
+     * 通过资源内存中获取预制上的组件添加到ECS实体中
+     * @param ent      模块实体
+     * @param ctor     界面逻辑组件
+     * @param parent   显示对象父级
+     * @param url      显示资源地址
+     */
     public static addView<T extends CCVMParentComp | CCComp>(
         ent: ecs.Entity,
         ctor: __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>,
         parent: Node,
         url: string) {
-        var node = ViewUtil.createPrefabNode(url);
-        var comp = node.getComponent(ctor)!;
+        const node = ViewUtil.createPrefabNode(url);
+        const comp = node.getComponent(ctor)!;
         ent.add(comp);
         node.parent = parent;
     }
