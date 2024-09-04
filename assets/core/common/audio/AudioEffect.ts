@@ -58,6 +58,7 @@ export class AudioEffect extends AudioSource {
             callback && callback();
         }
         else {
+            const key = `${bundleName}:${url}`;
             // 地址加载音乐资源后播放
             if (!this.effects.has(url)) {
                 oops.res.load(bundleName, url, AudioClip, (err: Error | null, data: AudioClip) => {
@@ -66,7 +67,6 @@ export class AudioEffect extends AudioSource {
                         return;
                     }
 
-                    let key = `${bundleName}:${url}`;
                     this.effects.set(key, { source: false, bundle: bundleName, path: url, ac: data });
                     this.playOneShot(data, this.volume);
                     callback && callback();
@@ -74,7 +74,7 @@ export class AudioEffect extends AudioSource {
             }
             // 播放缓存中音效
             else {
-                const rr = this.effects.get(url)!;
+                const rr = this.effects.get(key)!;
                 this.playOneShot(rr.ac, this.volume);
                 callback && callback();
             }
