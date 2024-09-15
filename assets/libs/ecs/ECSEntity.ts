@@ -37,7 +37,7 @@ function createComp<T extends ecs.IComp>(ctor: CompCtor<T>): T {
 /**
  * 销毁实体
  * 
- * 缓存销毁的实体，下次新建实体时会优先从缓存中拿。
+ * 缓存销毁的实体，下次新建实体时会优先从缓存中拿
  * @param entity 
  */
 function destroyEntity(entity: ECSEntity) {
@@ -271,6 +271,13 @@ export class ECSEntity {
 
     /** 销毁实体，实体会被回收到实体缓存池中 */
     destroy() {
+        // 如果有父模块，则移除父模块上记录的子模块
+        if (this._parent) {
+            this._parent.removeChild(this, false);
+            this._parent = null;
+        }
+
+        // 移除模块上所有子模块
         if (this._children) {
             this._children.forEach(e => {
                 this.removeChild(e);
@@ -278,6 +285,7 @@ export class ECSEntity {
             });
         }
 
+        // 移除实体上所有组件
         this.compTid2Ctor.forEach(this._remove, this);
         destroyEntity(this);
         this.compTid2Obj.clear();
