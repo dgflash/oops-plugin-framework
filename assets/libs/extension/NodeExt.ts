@@ -1,4 +1,5 @@
 import { Button, Canvas, Color, EditBox, Graphics, Label, Layout, Mask, Node, PageView, ProgressBar, RichText, ScrollView, Size, Slider, Sprite, Toggle, UIOpacity, UIRenderer, UITransform, Widget, v3 } from "cc";
+import { EDITOR_NOT_IN_PREVIEW } from "cc/env";
 
 // ========= 扩展 cc 提示声明 =========
 
@@ -58,72 +59,124 @@ declare module "cc" {
     }
 }
 
-//@ts-ignore
-if (!Node.prototype["$__definedProperties__"]) {
-    //@ts-ignore
-    Node.prototype["$__definedProperties__"] = true;
-
-    let componentMap: any = {
-        "uiGraphics": Graphics,
-        "uiLabel": Label,
-        "uiRichText": RichText,
-        "uiSprite": Sprite,
-        "uiButton": Button,
-        "uiCanvas": Canvas,
-        "uiEditBox": EditBox,
-        "uiLayout": Layout,
-        "uiPageView": PageView,
-        "uiProgressBar": ProgressBar,
-        "uiScrollView": ScrollView,
-        "uiSlider": Slider,
-        "uiToggle": Toggle,
-        "uiWidget": Widget,
-        "uiOpacity": UIOpacity,
-        "uiTransform": UITransform,
-        "uiMask": Mask,
-    };
-
-    for (const key in componentMap) {
-        Object.defineProperty(Node.prototype, key, {
-            get: function () {
-                return this.getComponent(componentMap[key]);
-            },
-            set: function (value) { }
-        });
-    }
-
-    /** 获取、设置节点的 X 欧拉角 */
-    Object.defineProperty(Node.prototype, "angle_x", {
+if (!EDITOR_NOT_IN_PREVIEW) {
+    Object.defineProperty(Node.prototype, "uiGraphics", {
         get: function () {
-            let self: Node = this;
-            return self.eulerAngles.x;
+            return this.getComponent(Graphics)!;
         },
-        set: function (value: number) {
-            let self: Node = this;
-            self.setRotationFromEuler(value, self.eulerAngles.y, self.eulerAngles.z);
-        }
+        set: function (value) { }
     });
 
-    /** 获取、设置节点的 Y 欧拉角 */
-    Object.defineProperty(Node.prototype, "angle_y", {
+    Object.defineProperty(Node.prototype, "uiLabel", {
         get: function () {
-            return this.eulerAngles.y;
+            return this.getComponent(Label)!;
         },
-        set: function (value: number) {
-            let self: Node = this;
-            self.setRotationFromEuler(self.eulerAngles.x, value, self.eulerAngles.z);
-        }
+        set: function (value) { }
     });
 
-    /** 获取、设置节点的 Z 欧拉角 */
-    Object.defineProperty(Node.prototype, "angle_z", {
+    Object.defineProperty(Node.prototype, "uiRichText", {
         get: function () {
-            return this.eulerAngles.y;
+            return this.getComponent(RichText)!;
         },
-        set: function (value: number) {
-            let self: Node = this;
-            self.setRotationFromEuler(self.eulerAngles.x, self.eulerAngles.y, value);
-        }
+        set: function (value) { }
+    });
+
+    Object.defineProperty(Node.prototype, "uiSprite", {
+        get: function () {
+            return this.getComponent(Sprite)!;
+        },
+        set: function (value) { }
+    });
+
+    Object.defineProperty(Node.prototype, "uiButton", {
+        get: function () {
+            return this.getComponent(Button)!;
+        },
+        set: function (value) { }
+    });
+
+    Object.defineProperty(Node.prototype, "uiCanvas", {
+        get: function () {
+            return this.getComponent(Canvas)!;
+        },
+        set: function (value) { }
+    });
+
+    Object.defineProperty(Node.prototype, "uiEditBox", {
+        get: function () {
+            return this.getComponent(EditBox)!;
+        },
+        set: function (value) { }
+    });
+
+    Object.defineProperty(Node.prototype, "uiLayout", {
+        get: function () {
+            return this.getComponent(Layout)!;
+        },
+        set: function (value) { }
+    });
+
+    Object.defineProperty(Node.prototype, "uiPageView", {
+        get: function () {
+            return this.getComponent(PageView)!;
+        },
+        set: function (value) { }
+    });
+
+    Object.defineProperty(Node.prototype, "uiProgressBar", {
+        get: function () {
+            return this.getComponent(ProgressBar)!;
+        },
+        set: function (value) { }
+    });
+
+    Object.defineProperty(Node.prototype, "uiScrollView", {
+        get: function () {
+            return this.getComponent(ScrollView)!;
+        },
+        set: function (value) { }
+    });
+
+    Object.defineProperty(Node.prototype, "uiSlider", {
+        get: function () {
+            return this.getComponent(Slider)!;
+        },
+        set: function (value) { }
+    });
+
+    Object.defineProperty(Node.prototype, "uiToggle", {
+        get: function () {
+            return this.getComponent(Toggle)!;
+        },
+        set: function (value) { }
+    });
+
+    Object.defineProperty(Node.prototype, "uiWidget", {
+        get: function () {
+            return this.getComponent(Widget)!;
+        },
+        set: function (value) { }
+    });
+
+    Object.defineProperty(Node.prototype, "uiOpacity", {
+        get: function () {
+            return this.getComponent(UIOpacity)!;
+        },
+        set: function (value) { }
+    });
+
+    Object.defineProperty(Node.prototype, "uiTransform", {
+        get: function () {
+            return this.getComponent(UITransform)!;
+        },
+        set: function (value) { }
+    });
+
+    Object.defineProperty(Node.prototype, "uiMask", {
+        get: function () {
+            return this.getComponent(Mask)!;
+        },
+        set: function (value) { }
     });
 
     /** 获取、设置节点的 X 坐标 */
@@ -200,30 +253,6 @@ if (!Node.prototype["$__definedProperties__"]) {
             let uiTransform = self.getComponent(UITransform) || self.addComponent(UITransform);
             uiTransform.width = value.width;
             uiTransform.height = value.height;
-        }
-    });
-
-    /** 获取、设置节点的水平锚点 */
-    Object.defineProperty(Node.prototype, "anchor_x", {
-        get: function () {
-            let self: Node = this;
-            return self.getComponent(UITransform)?.anchorX ?? 0.5;
-        },
-        set: function (value: number) {
-            let self: Node = this;
-            (self.getComponent(UITransform) || self.addComponent(UITransform)).anchorX = value;
-        }
-    });
-
-    /** 获取、设置节点的垂直锚点 */
-    Object.defineProperty(Node.prototype, "anchor_y", {
-        get: function () {
-            let self: Node = this;
-            return self.getComponent(UITransform)?.anchorY ?? 0.5;
-        },
-        set: function (value: number) {
-            let self: Node = this;
-            (self.getComponent(UITransform) || self.addComponent(UITransform)).anchorY = value;
         }
     });
 
@@ -318,6 +347,64 @@ if (!Node.prototype["$__definedProperties__"]) {
         set: function (value: number) {
             let self: Node = this;
             self.scale = v3(self.scale.x, self.scale.y, value);
+        }
+    });
+
+    /** 获取、设置节点的水平锚点 */
+    Object.defineProperty(Node.prototype, "anchor_x", {
+        get: function () {
+            let self: Node = this;
+            return self.getComponent(UITransform)?.anchorX ?? 0.5;
+        },
+        set: function (value: number) {
+            let self: Node = this;
+            (self.getComponent(UITransform) || self.addComponent(UITransform)).anchorX = value;
+        }
+    });
+
+    /** 获取、设置节点的垂直锚点 */
+    Object.defineProperty(Node.prototype, "anchor_y", {
+        get: function () {
+            let self: Node = this;
+            return self.getComponent(UITransform)?.anchorY ?? 0.5;
+        },
+        set: function (value: number) {
+            let self: Node = this;
+            (self.getComponent(UITransform) || self.addComponent(UITransform)).anchorY = value;
+        }
+    });
+
+    /** 获取、设置节点的 X 欧拉角 */
+    Object.defineProperty(Node.prototype, "angle_x", {
+        get: function () {
+            let self: Node = this;
+            return self.eulerAngles.x;
+        },
+        set: function (value: number) {
+            let self: Node = this;
+            self.setRotationFromEuler(value, self.eulerAngles.y, self.eulerAngles.z);
+        }
+    });
+
+    /** 获取、设置节点的 Y 欧拉角 */
+    Object.defineProperty(Node.prototype, "angle_y", {
+        get: function () {
+            return this.eulerAngles.y;
+        },
+        set: function (value: number) {
+            let self: Node = this;
+            self.setRotationFromEuler(self.eulerAngles.x, value, self.eulerAngles.z);
+        }
+    });
+
+    /** 获取、设置节点的 Z 欧拉角 */
+    Object.defineProperty(Node.prototype, "angle_z", {
+        get: function () {
+            return this.eulerAngles.y;
+        },
+        set: function (value: number) {
+            let self: Node = this;
+            self.setRotationFromEuler(self.eulerAngles.x, self.eulerAngles.y, value);
         }
     });
 }
