@@ -47,6 +47,7 @@ export class Root extends Component {
 
             console.log(`Oops Framework v${version}`);
             this.enabled = false;
+            this.iniStart();
             this.loadConfig().then();
         }
     }
@@ -105,6 +106,11 @@ export class Root extends Component {
 
     update(dt: number) {
         oops.ecs.execute(dt);
+    }
+
+    /** 初始化开始 */
+    protected iniStart() {
+
     }
 
     /** 初始化游戏界面 */
