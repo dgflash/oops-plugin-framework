@@ -10,7 +10,6 @@ import { EventDispatcher } from "../../core/common/event/EventDispatcher";
 import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage";
 import { AssetType, CompleteCallback, ProgressCallback } from "../../core/common/loader/ResLoader";
 import { ViewUtil } from "../../core/utils/ViewUtil";
-import { ButtonTouchLong } from "../../libs/gui/button/ButtonTouchLong";
 
 const { ccclass } = _decorator;
 
@@ -317,6 +316,7 @@ export class GameComponent extends Component {
     //#region 游戏逻辑事件
     /** 
      * 批量设置当前界面按钮事件
+     * @param bindRootEvent  是否对预制根节点绑定触摸事件
      * @example
      * 注：按钮节点Label1、Label2必须绑定UIButton等类型的按钮组件才会生效，方法名必须与节点名一致
      * this.setButton();
@@ -324,19 +324,21 @@ export class GameComponent extends Component {
      * Label1(event: EventTouch) { console.log(event.target.name); }
      * Label2(event: EventTouch) { console.log(event.target.name); }
      */
-    protected setButton() {
+    protected setButton(bindRootEvent: boolean = true) {
         // 自定义按钮批量绑定触摸事件
-        this.node.on(Node.EventType.TOUCH_END, (event: EventTouch) => {
-            const self: any = this;
-            const func = self[event.target.name];
-            if (func) {
-                func.call(this, event);
-            }
-            // 不触发界面根节点触摸事件、不触发长按钮组件的触摸事件
-            // else if (event.target != this.node && event.target.getComponent(ButtonTouchLong) == null) {
-            //     console.warn(`名为【${event.target.name}】的按钮事件方法不存在`);
-            // }
-        }, this);
+        if (bindRootEvent) {
+            this.node.on(Node.EventType.TOUCH_END, (event: EventTouch) => {
+                const self: any = this;
+                const func = self[event.target.name];
+                if (func) {
+                    func.call(this, event);
+                }
+                // 不触发界面根节点触摸事件、不触发长按钮组件的触摸事件
+                // else if (event.target != this.node && event.target.getComponent(ButtonTouchLong) == null) {
+                //     console.warn(`名为【${event.target.name}】的按钮事件方法不存在`);
+                // }
+            }, this);
+        }
 
         // Cocos Creator Button组件批量绑定触摸事件（使用UIButton支持放连点功能）
         const regex = /<([^>]+)>/;
