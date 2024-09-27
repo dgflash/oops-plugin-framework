@@ -4,8 +4,9 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-01-19 14:52:12
  */
-import {Animation, AnimationClip, EventTouch, instantiate, Node, Prefab, Size, UITransform, v3, Vec3} from "cc";
-import {resLoader} from "../common/loader/ResLoader";
+import { Animation, AnimationClip, EventTouch, instantiate, Node, Prefab, Size, UITransform, v3, Vec3 } from "cc";
+import { resLoader } from "../common/loader/ResLoader";
+import { oops } from "../Oops";
 
 /** 显示对象工具 */
 export class ViewUtil {
@@ -86,25 +87,30 @@ export class ViewUtil {
 
     /**
      * 从资源缓存中找到预制资源名并创建一个显示对象（建议使用GameComponent里的同名方法，能自动管理内存施放）
-     * @param path 资源路径
+     * @param path        资源路径
+     * @param bundleName  资源包名
      */
-    static createPrefabNode(path: string): Node {
-        const p: Prefab = resLoader.get(path, Prefab)!;
-        return instantiate(p);
+    static createPrefabNode(path: string, bundleName: string = oops.res.defaultBundleName): Node {
+        const p = resLoader.get(path, Prefab, bundleName);
+        if (p) {
+            return instantiate(p);
+        }
+        return null!;
     }
 
     /**
      * 加载预制并创建预制节点（建议使用GameComponent里的同名方法，能自动管理内存施放）
-     * @param path 资源路径
+     * @param path        资源路径
+     * @param bundleName  资源包名
      */
-    static createPrefabNodeAsync(path: string): Promise<Node> {
+    static createPrefabNodeAsync(path: string, bundleName: string = oops.res.defaultBundleName): Promise<Node> {
         return new Promise(async (resolve, reject) => {
-            const prefab = await resLoader.loadAsync(path, Prefab);
-            if (prefab) {
-                const node = this.createPrefabNode(path);
-                resolve(node);
+            const p = await resLoader.loadAsync(bundleName, path, Prefab);
+            if (p) {
+                resolve(instantiate(p));
             }
             else {
+                console.error(`名为【${path}】的资源加载失败`);
                 resolve(null!);
             }
         });

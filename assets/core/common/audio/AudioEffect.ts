@@ -116,7 +116,7 @@ export class AudioEffect extends AudioSource {
             const rr = this.effects.get(key);
             if (rr) {
                 this.effects.delete(key);
-                oops.res.release(rr.path!, rr.bundle!);
+                rr.ac.decRef();
             }
         }
     }

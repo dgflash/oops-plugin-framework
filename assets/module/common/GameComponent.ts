@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-12-13 11:36:00
  */
-import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, Prefab, __private, _decorator, input, instantiate } from "cc";
+import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, __private, _decorator, input } from "cc";
 import { oops } from "../../core/Oops";
 import { EventDispatcher } from "../../core/common/event/EventDispatcher";
 import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage";
@@ -92,10 +92,8 @@ export class GameComponent extends Component {
      * 从资源缓存中找到预制资源名并创建一个显示对象
      * @param path 资源路径
      */
-    createPrefabNode(path: string): Node {
-        var p: Prefab = oops.res.get(path, Prefab)!;
-        var n = instantiate(p);
-        return n;
+    createPrefabNode(path: string, bundleName: string = oops.res.defaultBundleName): Node {
+        return ViewUtil.createPrefabNode(path, bundleName);
     }
 
     /**
@@ -104,18 +102,7 @@ export class GameComponent extends Component {
      * @param bundleName 资源包名
      */
     createPrefabNodeAsync(path: string, bundleName: string = oops.res.defaultBundleName): Promise<Node> {
-        return new Promise((resolve, reject) => {
-            this.load(bundleName, path, Prefab, (err: Error | null, content: Prefab) => {
-                if (err) {
-                    console.error(`名为【${path}】的资源加载失败`);
-                    resolve(null!);
-                }
-                else {
-                    var node = instantiate(content);
-                    resolve(node);
-                }
-            });
-        });
+        return ViewUtil.createPrefabNodeAsync(path, bundleName);
     }
     //#endregion
 
