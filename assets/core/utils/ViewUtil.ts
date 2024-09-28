@@ -6,7 +6,6 @@
  */
 import { Animation, AnimationClip, EventTouch, instantiate, Node, Prefab, Size, UITransform, v3, Vec3 } from "cc";
 import { resLoader } from "../common/loader/ResLoader";
-import { oops } from "../Oops";
 
 /** 显示对象工具 */
 export class ViewUtil {
@@ -90,7 +89,7 @@ export class ViewUtil {
      * @param path        资源路径
      * @param bundleName  资源包名
      */
-    static createPrefabNode(path: string, bundleName: string = oops.res.defaultBundleName): Node {
+    static createPrefabNode(path: string, bundleName: string = resLoader.defaultBundleName): Node {
         const p = resLoader.get(path, Prefab, bundleName);
         if (p) {
             return instantiate(p);
@@ -103,7 +102,7 @@ export class ViewUtil {
      * @param path        资源路径
      * @param bundleName  资源包名
      */
-    static createPrefabNodeAsync(path: string, bundleName: string = oops.res.defaultBundleName): Promise<Node> {
+    static createPrefabNodeAsync(path: string, bundleName: string = resLoader.defaultBundleName): Promise<Node> {
         return new Promise(async (resolve, reject) => {
             const p = await resLoader.loadAsync(bundleName, path, Prefab);
             if (p) {

@@ -1,5 +1,6 @@
 import { AudioClip, Component, EventTouch, Node, _decorator, game } from "cc";
 import { oops } from "../../../core/Oops";
+import { resLoader } from "../../../core/common/loader/ResLoader";
 
 const { ccclass, property, menu } = _decorator;
 
@@ -22,7 +23,7 @@ export default class ButtonSimple extends Component {
         type: AudioClip
     })
     private effect: AudioClip = null!;
-
+    private effectIds: number[] = [];
     private touchCount = 0;
     private touchtEndTime = 0;
 
@@ -54,14 +55,24 @@ export default class ButtonSimple extends Component {
     }
 
     /** 短按触摸音效 */
-    protected playEffect() {
-        if (this.effect) oops.audio.playEffect(this.effect);
+    protected async playEffect() {
+        if (this.effect) {
+            const effectId = await oops.audio.playEffect(this.effect, resLoader.defaultBundleName, () => {
+                this.effectIds.remove(effectId);
+            });
+            if (effectId > 0) this.effectIds.push(effectId);
+        }
     }
 
     onDestroy() {
         this.node.off(Node.EventType.TOUCH_END, this.onTouchEnd, this);
         this.node.off(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
 
-        if (this.effect) oops.audio.releaseEffect(this.effect);
+        if (this.effect) {
+            this.effectIds.forEach(effectId => {
+                console.log(effectId);
+                oops.audio.putEffect(effectId, this.effect);
+            });
+        }
     }
 }

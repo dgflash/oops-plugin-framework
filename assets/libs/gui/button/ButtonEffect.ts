@@ -59,7 +59,6 @@ export default class ButtonEffect extends ButtonSimple {
         super.onTouchEnd(event);
     }
 
-
     onDestroy() {
         this.node.off(Node.EventType.TOUCH_START, this.onTouchtStart, this);
         super.onDestroy();

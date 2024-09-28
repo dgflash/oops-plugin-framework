@@ -22,8 +22,12 @@ enum ResType {
 
 /** 资源加载记录 */
 interface ResRecord {
+    /** 资源包名 */
     bundle: string,
-    path: string
+    /** 资源路径 */
+    path: string,
+    /** 资源编号 */
+    resId?: number
 }
 
 /** 
@@ -126,7 +130,7 @@ export class GameComponent extends Component {
      * @param bundleName    资源包名
      * @param paths         资源路径
      */
-    private addPathToRecord<T>(type: ResType, bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null) {
+    private addPathToRecord<T>(type: ResType, bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null, resId?: number) {
         if (this.resPaths == null) this.resPaths = new Map();
 
         var rps = this.resPaths.get(type);
@@ -139,28 +143,34 @@ export class GameComponent extends Component {
             let realBundle = bundleName;
             for (let index = 0; index < paths.length; index++) {
                 let realPath = paths[index];
-                let key = `${realBundle}:${realPath}`;
+                let key = this.getResKey(realBundle, realPath, resId);
                 if (!rps.has(key)) {
-                    rps.set(key, { path: realPath, bundle: realBundle })
+                    rps.set(key, { path: realPath, bundle: realBundle, resId: resId });
                 }
             }
         }
         else if (typeof paths === "string") {
             let realBundle = bundleName;
             let realPath = paths;
-            let key = `${realBundle}:${realPath}`;
+            let key = this.getResKey(realBundle, realPath, resId);
             if (!rps.has(key)) {
-                rps.set(key, { path: realPath, bundle: realBundle })
+                rps.set(key, { path: realPath, bundle: realBundle, resId: resId });
             }
         }
         else {
             let realBundle = oops.res.defaultBundleName;
             let realPath = bundleName;
-            let key = `${realBundle}:${realPath}`;
+            let key = this.getResKey(realBundle, realPath, resId);
             if (!rps.has(key)) {
-                rps.set(key, { path: realPath, bundle: realBundle })
+                rps.set(key, { path: realPath, bundle: realBundle, resId: resId });
             }
         }
+    }
+
+    private getResKey(realBundle: string, realPath: string, resId?: number) {
+        let key = `${realBundle}:${realPath}`;
+        if (resId != null) key += ":" + resId;
+        return key;
     }
 
     /** 异步加载资源 */
@@ -259,7 +269,7 @@ export class GameComponent extends Component {
             const rps = this.resPaths.get(ResType.Audio);
             if (rps) {
                 rps.forEach((value: ResRecord) => {
-                    oops.audio.releaseEffect(value.path, value.bundle);
+                    oops.audio.putEffect(value.resId!, value.path, value.bundle);
                 });
             }
         }
@@ -293,10 +303,16 @@ export class GameComponent extends Component {
      * @param callback      资源加载完成回调
      * @param bundleName    资源包名
      */
-    playEffect(url: string, callback?: Function, bundleName?: string) {
+    async playEffect(url: string, bundleName?: string) {
         if (bundleName == null) bundleName = oops.res.defaultBundleName;
-        this.addPathToRecord(ResType.Audio, bundleName, url);
-        oops.audio.playEffect(url, callback, bundleName);
+        const id = await oops.audio.playEffect(url, bundleName, () => {
+            const rps = this.resPaths.get(ResType.Audio);
+            if (rps) {
+                const key = this.getResKey(bundleName, url, id);
+                rps.delete(key);
+            }
+        });
+        this.addPathToRecord(ResType.Audio, bundleName, url, id);
     }
     //#endregion
 

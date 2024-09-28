@@ -1,7 +1,7 @@
-import {AudioClip, Component} from "cc";
-import {oops} from "../../Oops";
-import {AudioEffect} from "./AudioEffect";
-import {AudioMusic} from "./AudioMusic";
+import { AudioClip, Component } from "cc";
+import { oops } from "../../Oops";
+import { AudioEffectPool } from "./AudioEffectPool";
+import { AudioMusic } from "./AudioMusic";
 
 const LOCAL_STORE_KEY = "game_audio";
 
@@ -15,7 +15,7 @@ export class AudioManager extends Component {
     /** 背景音乐管理对象 */
     music: AudioMusic = null!;
     /** 音效管理对象 */
-    effect: AudioEffect = null!;
+    effect: AudioEffectPool = new AudioEffectPool();
 
     /** 音乐管理状态数据 */
     private local_data: any = {};
@@ -109,8 +109,7 @@ export class AudioManager extends Component {
     set switchMusic(value: boolean) {
         this._switch_music = value;
 
-        if (!value)
-            this.music.stop();
+        if (!value) this.music.stop();
     }
 
     /**
@@ -119,15 +118,16 @@ export class AudioManager extends Component {
      * @param callback   加载完成回调
      * @param bundleName 资源包名
      */
-    playEffect(url: string | AudioClip, callback?: Function, bundleName?: string) {
+    playEffect(url: string | AudioClip, bundleName?: string, onPlayComplete?: Function): Promise<number> {
         if (this._switch_effect) {
-            this.effect.load(url, callback, bundleName);
+            return this.effect.loadAndPlay(url, bundleName, onPlayComplete);
         }
+        return Promise.resolve(-1);
     }
 
     /** 释放音效资源 */
-    releaseEffect(url: string | AudioClip, bundleName?: string) {
-        this.effect.release(url, bundleName);
+    putEffect(aeid: number, url: string | AudioClip, bundleName?: string) {
+        this.effect.put(aeid, url, bundleName);
     }
 
     /**
@@ -143,7 +143,7 @@ export class AudioManager extends Component {
      */
     set volumeEffect(value: number) {
         this._volume_effect = value;
-        this.effect.volume = value;
+        this.effect.setVolume(value);
     }
 
     /**
@@ -164,26 +164,20 @@ export class AudioManager extends Component {
 
     /** 恢复当前暂停的音乐与音效播放 */
     resumeAll() {
-        if (this.music) {
-            if (!this.music.playing && this.music.progress > 0) this.music.play();
-            if (!this.effect.playing && this.effect.progress > 0) this.effect.play();
-        }
+        if (!this.music.playing && this.music.progress > 0) this.music.play();
+        this.effect.play();
     }
 
     /** 暂停当前音乐与音效的播放 */
     pauseAll() {
-        if (this.music) {
-            if (this.music.playing) this.music.pause();
-            if (this.effect.playing) this.effect.pause();
-        }
+        if (this.music.playing) this.music.pause();
+        this.effect.pause();
     }
 
     /** 停止当前音乐与音效的播放 */
     stopAll() {
-        if (this.music) {
-            this.music.stop();
-            this.effect.stop();
-        }
+        this.music.stop();
+        this.effect.stop();
     }
 
     /** 保存音乐音效的音量、开关配置数据到本地 */
@@ -196,25 +190,25 @@ export class AudioManager extends Component {
         oops.storage.set(LOCAL_STORE_KEY, this.local_data);
     }
 
-
     /** 本地加载音乐音效的音量、开关配置数据并设置到游戏中 */
     load() {
         this.music = this.getComponent(AudioMusic) || this.addComponent(AudioMusic)!;
-        this.effect = this.getComponent(AudioEffect) || this.addComponent(AudioEffect)!;
 
         this.local_data = oops.storage.getJson(LOCAL_STORE_KEY);
         if (this.local_data) {
             try {
                 this.setState();
-            } catch (e) {
+            }
+            catch {
                 this.setStateDefault();
             }
-        } else {
+        }
+        else {
             this.setStateDefault();
         }
 
         if (this.music) this.music.volume = this._volume_music;
-        if (this.effect) this.effect.volume = this._volume_effect;
+        this.effect.setVolume(this._volume_effect);
     }
 
     private setState() {
