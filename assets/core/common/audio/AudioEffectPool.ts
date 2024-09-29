@@ -7,15 +7,37 @@ const AE_ID_MAX = 30000;
 
 /** 音效池 */
 export class AudioEffectPool {
+    private _switch: boolean = true;
+    /** 音效开关 */
+    public get switch(): boolean {
+        return this._switch;
+    }
+    public set switch(value: boolean) {
+        this._switch = value;
+        if (value) this.stop();
+    }
+
+    private _volume: number = 1;
+    /** 所有音效音量 */
+    get volume(): number {
+        return this._volume;
+    }
+    set volume(value: number) {
+        this._volume = value;
+
+        this.effects.forEach(ae => {
+            ae.volume = value;
+        });
+    }
+
     /** 音效播放器对象池 */
     private pool: NodePool = new NodePool();
     /** 对象池集合 */
     private effects: Map<string, AudioEffect> = new Map();
     /** 用过的音效资源记录 */
     private res: Map<string, string> = new Map();
-    /** 音效播放器唯一编号 */
-    private _aeId: number = 0;
 
+    private _aeId: number = 0;
     /** 获取请求唯一编号 */
     private getAeId() {
         if (this._aeId == AE_ID_MAX) this._aeId = 1;
@@ -23,8 +45,17 @@ export class AudioEffectPool {
         return this._aeId;
     }
 
-    async loadAndPlay(url: string | AudioClip, bundleName: string = resLoader.defaultBundleName, onPlayComplete?: Function): Promise<number> {
+    /**
+     * 加载与播放音效
+     * @param url                  音效资源地址与音效资源
+     * @param bundleName           资源包名
+     * @param onPlayComplete       播放完成回调
+     * @returns 
+     */
+    async load(url: string | AudioClip, bundleName: string = resLoader.defaultBundleName, onPlayComplete?: Function): Promise<number> {
         return new Promise(async (resolve, reject) => {
+            if (!this.switch) return resolve(-1);
+
             let aeid = this.getAeId();
             let key: string;
             if (url instanceof AudioClip) {
@@ -70,6 +101,7 @@ export class AudioEffectPool {
             // 记录正在播放的音效播放器
             this.effects.set(key, ae);
 
+            ae.volume = this.volume;
             ae.clip = clip;
             ae.play();
 
@@ -118,13 +150,6 @@ export class AudioEffectPool {
         this.pool.clear();
     }
 
-    /** 设置音量 */
-    setVolume(volume: number) {
-        this.effects.forEach(ae => {
-            ae.volume = volume;
-        });
-    }
-
     /** 停止播放所有音效 */
     stop() {
         this.effects.forEach(ae => {
@@ -134,6 +159,8 @@ export class AudioEffectPool {
 
     /** 恢复所有音效 */
     play() {
+        if (!this.switch) return;
+
         this.effects.forEach(ae => {
             ae.play();
         });
@@ -141,6 +168,8 @@ export class AudioEffectPool {
 
     /** 暂停所有音效 */
     pause() {
+        if (!this.switch) return;
+
         this.effects.forEach(ae => {
             ae.pause();
         });

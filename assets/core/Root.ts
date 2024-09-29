@@ -13,6 +13,7 @@ import { EventMessage } from "./common/event/EventMessage";
 import { message } from "./common/event/MessageManager";
 import { resLoader } from "./common/loader/ResLoader";
 import { StorageManager } from "./common/storage/StorageManager";
+import { StorageSecuritySimple } from "./common/storage/StorageSecuritySimple";
 import { TimerManager } from "./common/timer/TimerManager";
 import { GameManager } from "./game/GameManager";
 import { GUI } from "./gui/GUI";
@@ -69,7 +70,8 @@ export class Root extends Component {
 
             // 本地存储模块
             oops.storage = new StorageManager();
-            oops.storage.init(oops.config.game.localDataKey, oops.config.game.localDataIv);      // 初始化本地存储加密
+            oops.storage.init(new StorageSecuritySimple);
+            // oops.storage.init(new StorageSecurityCrypto);
 
             // 全局消息
             oops.message = message;

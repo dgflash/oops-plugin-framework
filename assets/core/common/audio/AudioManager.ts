@@ -19,14 +19,6 @@ export class AudioManager extends Component {
 
     /** 音乐管理状态数据 */
     private local_data: any = {};
-    /** 背景音乐音量值 */
-    private _volume_music: number = 1;
-    /** 音效音量值 */
-    private _volume_effect: number = 1;
-    /** 背景音乐播放开关 */
-    private _switch_music: boolean = true;
-    /** 音效果播放开关 */
-    private _switch_effect: boolean = true;
 
     /**
      * 设置背景音乐播放完成回调
@@ -43,7 +35,7 @@ export class AudioManager extends Component {
      * @param bundleName 资源包名
      */
     playMusic(url: string, callback?: Function, bundleName?: string) {
-        if (this._switch_music) {
+        if (this.music.switch) {
             this.music.loop = false;
             this.music.load(url, callback, bundleName).then();
         }
@@ -51,7 +43,7 @@ export class AudioManager extends Component {
 
     /** 循环播放背景音乐 */
     playMusicLoop(url: string, bundleName?: string) {
-        if (this._switch_music) {
+        if (this.music.switch) {
             this.music.loop = true;
             this.music.load(url, null!, bundleName).then();
         }
@@ -59,7 +51,7 @@ export class AudioManager extends Component {
 
     /** 停止背景音乐播放 */
     stopMusic() {
-        if (this._switch_music && this.music.playing) {
+        if (this.music.switch && this.music.playing) {
             this.music.stop();
         }
     }
@@ -83,7 +75,7 @@ export class AudioManager extends Component {
      * 获取背景音乐音量
      */
     get volumeMusic(): number {
-        return this._volume_music;
+        return this.music.volume;
     }
 
     /**
@@ -91,15 +83,15 @@ export class AudioManager extends Component {
      * @param value     音乐音量值
      */
     set volumeMusic(value: number) {
-        this._volume_music = value;
         this.music.volume = value;
+        this.save();
     }
 
     /**
      * 获取背景音乐开关值
      */
     get switchMusic(): boolean {
-        return this._switch_music;
+        return this.music.switch;
     }
 
     /**
@@ -107,9 +99,9 @@ export class AudioManager extends Component {
      * @param value     开关值
      */
     set switchMusic(value: boolean) {
-        this._switch_music = value;
-
+        this.music.switch = value;
         if (!value) this.music.stop();
+        this.save();
     }
 
     /**
@@ -119,22 +111,17 @@ export class AudioManager extends Component {
      * @param bundleName 资源包名
      */
     playEffect(url: string | AudioClip, bundleName?: string, onPlayComplete?: Function): Promise<number> {
-        if (this._switch_effect) {
-            return this.effect.loadAndPlay(url, bundleName, onPlayComplete);
-        }
-        return Promise.resolve(-1);
+        return this.effect.load(url, bundleName, onPlayComplete);
     }
 
-    /** 释放音效资源 */
+    /** 回收音效播放器 */
     putEffect(aeid: number, url: string | AudioClip, bundleName?: string) {
         this.effect.put(aeid, url, bundleName);
     }
 
-    /**
-     * 获取音效音量
-     */
+    /** 获取音效音量 */
     get volumeEffect(): number {
-        return this._volume_effect;
+        return this.effect.volume;
     }
 
     /**
@@ -142,15 +129,13 @@ export class AudioManager extends Component {
      * @param value     音效音量值
      */
     set volumeEffect(value: number) {
-        this._volume_effect = value;
-        this.effect.setVolume(value);
+        this.effect.volume = value;
+        this.save();
     }
 
-    /**
-     * 获取音效开关值
-     */
+    /** 获取音效开关值 */
     get switchEffect(): boolean {
-        return this._switch_effect;
+        return this.effect.switch;
     }
 
     /**
@@ -158,8 +143,9 @@ export class AudioManager extends Component {
      * @param value     音效开关值
      */
     set switchEffect(value: boolean) {
-        this._switch_effect = value;
+        this.effect.switch = value;
         if (!value) this.effect.stop();
+        this.save();
     }
 
     /** 恢复当前暂停的音乐与音效播放 */
@@ -182,10 +168,10 @@ export class AudioManager extends Component {
 
     /** 保存音乐音效的音量、开关配置数据到本地 */
     save() {
-        this.local_data.volume_music = this._volume_music;
-        this.local_data.volume_effect = this._volume_effect;
-        this.local_data.switch_music = this._switch_music;
-        this.local_data.switch_effect = this._switch_effect;
+        this.local_data.volume_music = this.music.volume;
+        this.local_data.volume_effect = this.effect.volume;
+        this.local_data.switch_music = this.music.switch;
+        this.local_data.switch_effect = this.effect.switch;
 
         oops.storage.set(LOCAL_STORE_KEY, this.local_data);
     }
@@ -206,23 +192,20 @@ export class AudioManager extends Component {
         else {
             this.setStateDefault();
         }
-
-        if (this.music) this.music.volume = this._volume_music;
-        this.effect.setVolume(this._volume_effect);
     }
 
     private setState() {
-        this._volume_music = this.local_data.volume_music;
-        this._volume_effect = this.local_data.volume_effect;
-        this._switch_music = this.local_data.switch_music;
-        this._switch_effect = this.local_data.switch_effect;
+        this.music.volume = this.local_data.volume_music;
+        this.effect.volume = this.local_data.volume_effect;
+        this.music.switch = this.local_data.switch_music;
+        this.effect.switch = this.local_data.switch_effect;
     }
 
     private setStateDefault() {
         this.local_data = {};
-        this._volume_music = 1;
-        this._volume_effect = 1;
-        this._switch_music = true;
-        this._switch_effect = true;
+        this.music.volume = 1;
+        this.effect.volume = 1;
+        this.music.switch = true;
+        this.effect.switch = true;
     }
 }

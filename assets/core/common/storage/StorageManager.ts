@@ -1,23 +1,25 @@
 import { sys } from "cc";
 import { PREVIEW } from "cc/env";
-import { EncryptUtil } from "../../utils/EncryptUtil";
+
+export interface IStorageSecurity {
+    decrypt(str: string): string;
+    encrypt(str: string): string;
+    encryptKey(str: string): string;
+}
 
 /** 本地存储 */
 export class StorageManager {
-    private _key: string | null = null;
-    private _iv: string | null = null;
-    private _id: string = null!;
+    private id: string = null!;
+    private iss: IStorageSecurity = null!;
 
-    /**
-     * 初始化密钥
-     * @param key aes加密的key 
-     * @param iv  aes加密的iv
-     */
-    init(key: string, iv: string) {
-        EncryptUtil.initCrypto(key, iv);
+    /** 数据加密开关 */
+    private get encrypted(): boolean {
+        return !PREVIEW;
+    }
 
-        this._key = EncryptUtil.md5(key);
-        this._iv = EncryptUtil.md5(iv);
+    /** 本地存储数据加密方式初始化 */
+    init(iis: IStorageSecurity) {
+        this.iss = iis;
     }
 
     /**
@@ -25,7 +27,7 @@ export class StorageManager {
      * @param id 
      */
     setUser(id: string) {
-        this._id = id;
+        this.id = id;
     }
 
     /**
@@ -42,7 +44,7 @@ export class StorageManager {
             return;
         }
         if (this.encrypted) {
-            keywords = EncryptUtil.md5(keywords);
+            keywords = this.iss.encryptKey(keywords);
         }
         if (null == value) {
             console.warn("存储的值为空，则直接移除该存储");
@@ -66,8 +68,8 @@ export class StorageManager {
             value = value + "";
         }
 
-        if (this.encrypted && null != this._key && null != this._iv) {
-            value = EncryptUtil.aesEncrypt(`${value}`, this._key, this._iv);
+        if (this.encrypted) {
+            value = this.iss.encrypt(value);
         }
         sys.localStorage.setItem(keywords, value);
     }
@@ -87,12 +89,12 @@ export class StorageManager {
         key = this.getKey(key);
 
         if (this.encrypted) {
-            key = EncryptUtil.md5(key);
+            key = this.iss.encryptKey(key);
         }
 
         let str: string | null = sys.localStorage.getItem(key);
-        if (null != str && '' !== str && this.encrypted && null != this._key && null != this._iv) {
-            str = EncryptUtil.aesDecrypt(str, this._key, this._iv);
+        if (null != str && '' !== str && this.encrypted) {
+            str = this.iss.decrypt(str);
         }
 
         if (null === str) {
@@ -136,7 +138,7 @@ export class StorageManager {
         let keywords = this.getKey(key);
 
         if (this.encrypted) {
-            keywords = EncryptUtil.md5(keywords);
+            keywords = this.iss.encryptKey(keywords);
         }
         sys.localStorage.removeItem(keywords);
     }
@@ -148,14 +150,9 @@ export class StorageManager {
 
     /** 获取数据分组关键字 */
     private getKey(key: string): string {
-        if (this._id == null || this._id == "") {
+        if (this.id == null || this.id == "") {
             return key;
         }
-        return `${this._id}_${key}`;
-    }
-
-    /** 数据加密开关 */
-    private get encrypted(): boolean {
-        return !PREVIEW
+        return `${this.id}_${key}`;
     }
 }
