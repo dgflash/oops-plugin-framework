@@ -119,8 +119,6 @@ export class ECSEntity {
      * @param isReAdd           true-表示用户指定这个实体可能已经存在了该组件，那么再次add组件的时候会先移除该组件然后再添加一遍。false-表示不重复添加组件
      */
     add<T extends ecs.IComp>(obj: T): ECSEntity;
-    add(ctor: number, isReAdd?: boolean): ECSEntity;
-    add<T extends ecs.IComp>(ctor: CompCtor<T>, isReAdd?: boolean): T;
     add<T extends ecs.IComp>(ctor: CompType<T>, isReAdd?: boolean): T;
     add<T extends ecs.IComp>(ctor: CompType<T> | T, isReAdd: boolean = false): T | ECSEntity {
         if (typeof ctor === 'function') {
