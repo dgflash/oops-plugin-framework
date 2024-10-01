@@ -64,14 +64,12 @@ export class Root extends Component {
         const config_name = "config";
         const config = await oops.res.loadAsync(config_name, JsonAsset);
         if (config) {
-            // oops.config.btc = new BuildTimeConstants();
             oops.config.query = new GameQueryConfig();
             oops.config.game = new GameConfig(config);
 
             // 本地存储模块
             oops.storage = new StorageManager();
             oops.storage.init(new StorageSecuritySimple);
-            // oops.storage.init(new StorageSecurityCrypto);
 
             // 全局消息
             oops.message = message;
@@ -88,10 +86,6 @@ export class Root extends Component {
 
             // 游戏界面管理
             oops.gui = new LayerManager(this.gui);
-
-            // 网络模块
-            oops.http.server = oops.config.game.httpServer;                                      // Http 服务器地址
-            oops.http.timeout = oops.config.game.httpTimeout;                                    // Http 请求超时时间
 
             game.frameRate = oops.config.game.frameRate;                                         // 初始化每秒传输帧数
 
