@@ -4,8 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 10:22:36
  */
-import { AudioClip, AudioSource, _decorator } from 'cc';
-import { oops } from '../../Oops';
+import { AudioSource, _decorator } from 'cc';
 const { ccclass } = _decorator;
 
 /** 游戏音效 */
