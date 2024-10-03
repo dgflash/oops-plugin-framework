@@ -64,12 +64,12 @@ export class GameConfig {
         return this._data.bundle.server;
     }
     /** 远程资源名 */
-    get bundleName(): string {
-        return this._data.bundle.name;
+    get bundleDefault(): string {
+        return this._data.bundle.default;
     }
-    /** 远程资源版本号 */
-    get bundleVersion(): string {
-        return this._data.bundle.version;
+    /** 远程所有资源包配置 */
+    get bundlePackages(): string {
+        return this._data.bundle.packages;
     }
 
     /** 加载界面资源超时提示 */

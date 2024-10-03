@@ -4,11 +4,11 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-12-13 11:36:00
  */
-import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, __private, _decorator, input } from "cc";
+import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, Sprite, SpriteFrame, __private, _decorator, input, isValid } from "cc";
 import { oops } from "../../core/Oops";
 import { EventDispatcher } from "../../core/common/event/EventDispatcher";
 import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage";
-import { AssetType, CompleteCallback, ProgressCallback } from "../../core/common/loader/ResLoader";
+import { AssetType, CompleteCallback, Paths, ProgressCallback, resLoader } from "../../core/common/loader/ResLoader";
 import { ViewUtil } from "../../core/utils/ViewUtil";
 
 const { ccclass } = _decorator;
@@ -173,55 +173,72 @@ export class GameComponent extends Component {
         return key;
     }
 
-    /** 异步加载资源 */
-    loadAsync<T extends Asset>(bundleName: string, paths: string | string[], type: AssetType<T> | null): Promise<T>;
-    loadAsync<T extends Asset>(bundleName: string, paths: string | string[]): Promise<T>;
-    loadAsync<T extends Asset>(bundleName: string, paths: string | string[]): Promise<T>;
-    loadAsync<T extends Asset>(bundleName: string, paths: string | string[], type: AssetType<T> | null): Promise<T>;
-    loadAsync<T extends Asset>(paths: string | string[], type: AssetType<T> | null): Promise<T>;
-    loadAsync<T extends Asset>(paths: string | string[]): Promise<T>;
-    loadAsync<T extends Asset>(paths: string | string[]): Promise<T>;
-    loadAsync<T extends Asset>(paths: string | string[], type: AssetType<T> | null): Promise<T>;
-    loadAsync<T extends Asset>(bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null, type?: AssetType<T> | ProgressCallback | CompleteCallback | null): Promise<T> {
-        this.addPathToRecord(ResType.Load, bundleName, paths);
-        return oops.res.loadAsync(bundleName, paths, type);
-    }
-
-    /** 加载资源 */
-    load<T extends Asset>(bundleName: string, paths: string | string[], type: AssetType<T> | null, onProgress: ProgressCallback | null, onComplete: CompleteCallback<T> | null): void;
-    load<T extends Asset>(bundleName: string, paths: string | string[], onProgress: ProgressCallback | null, onComplete: CompleteCallback<T> | null): void;
-    load<T extends Asset>(bundleName: string, paths: string | string[], onComplete?: CompleteCallback<T> | null): void;
-    load<T extends Asset>(bundleName: string, paths: string | string[], type: AssetType<T> | null, onComplete?: CompleteCallback<T> | null): void;
-    load<T extends Asset>(paths: string | string[], type: AssetType<T> | null, onProgress: ProgressCallback | null, onComplete: CompleteCallback<T> | null): void;
-    load<T extends Asset>(paths: string | string[], onProgress: ProgressCallback | null, onComplete: CompleteCallback<T> | null): void;
-    load<T extends Asset>(paths: string | string[], onComplete?: CompleteCallback<T> | null): void;
-    load<T extends Asset>(paths: string | string[], type: AssetType<T> | null, onComplete?: CompleteCallback<T> | null): void;
+    /**
+     * 加载一个资源
+     * @param bundleName    远程包名
+     * @param paths         资源路径
+     * @param type          资源类型
+     * @param onProgress    加载进度回调
+     * @param onComplete    加载完成回调
+     */
+    load<T extends Asset>(bundleName: string, paths: Paths, type: AssetType<T>, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
+    load<T extends Asset>(bundleName: string, paths: Paths, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
+    load<T extends Asset>(bundleName: string, paths: Paths, onComplete?: CompleteCallback): void;
+    load<T extends Asset>(bundleName: string, paths: Paths, type: AssetType<T>, onComplete?: CompleteCallback): void;
+    load<T extends Asset>(paths: Paths, type: AssetType<T>, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
+    load<T extends Asset>(paths: Paths, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
+    load<T extends Asset>(paths: Paths, onComplete?: CompleteCallback): void;
+    load<T extends Asset>(paths: Paths, type: AssetType<T>, onComplete?: CompleteCallback): void;
     load<T extends Asset>(
         bundleName: string,
-        paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null,
-        type?: AssetType<T> | ProgressCallback | CompleteCallback | null,
-        onProgress?: ProgressCallback | CompleteCallback | null,
-        onComplete?: CompleteCallback | null,
+        paths?: Paths | AssetType<T> | ProgressCallback | CompleteCallback,
+        type?: AssetType<T> | ProgressCallback | CompleteCallback,
+        onProgress?: ProgressCallback | CompleteCallback,
+        onComplete?: CompleteCallback,
     ) {
         this.addPathToRecord(ResType.Load, bundleName, paths);
         oops.res.load(bundleName, paths, type, onProgress, onComplete);
     }
 
-    /** 加载文件名中资源 */
-    loadDir<T extends Asset>(bundleName: string, dir: string, type: AssetType<T> | null, onProgress: ProgressCallback | null, onComplete: CompleteCallback<T[]> | null): void;
-    loadDir<T extends Asset>(bundleName: string, dir: string, onProgress: ProgressCallback | null, onComplete: CompleteCallback<T[]> | null): void;
-    loadDir<T extends Asset>(bundleName: string, dir: string, onComplete?: CompleteCallback<T[]> | null): void;
-    loadDir<T extends Asset>(bundleName: string, dir: string, type: AssetType<T> | null, onComplete?: CompleteCallback<T[]> | null): void;
-    loadDir<T extends Asset>(dir: string, type: AssetType<T> | null, onProgress: ProgressCallback | null, onComplete: CompleteCallback<T[]> | null): void;
-    loadDir<T extends Asset>(dir: string, onProgress: ProgressCallback | null, onComplete: CompleteCallback<T[]> | null): void;
-    loadDir<T extends Asset>(dir: string, onComplete?: CompleteCallback<T[]> | null): void;
-    loadDir<T extends Asset>(dir: string, type: AssetType<T> | null, onComplete?: CompleteCallback<T[]> | null): void;
+    /**
+     * 异步加载一个资源
+     * @param bundleName    远程包名
+     * @param paths         资源路径
+     * @param type          资源类型
+     */
+    loadAsync<T extends Asset>(bundleName: string, paths: Paths, type: AssetType<T>): Promise<T>;
+    loadAsync<T extends Asset>(bundleName: string, paths: Paths): Promise<T>;
+    loadAsync<T extends Asset>(paths: Paths, type: AssetType<T>): Promise<T>;
+    loadAsync<T extends Asset>(paths: Paths): Promise<T>;
+    loadAsync<T extends Asset>(bundleName: string,
+        paths?: Paths | AssetType<T> | ProgressCallback | CompleteCallback,
+        type?: AssetType<T> | ProgressCallback | CompleteCallback): Promise<T> {
+        this.addPathToRecord(ResType.Load, bundleName, paths);
+        return oops.res.loadAsync(bundleName, paths, type);
+    }
+
+    /**
+     * 加载文件夹中的资源
+     * @param bundleName    远程包名
+     * @param dir           文件夹名
+     * @param type          资源类型
+     * @param onProgress    加载进度回调
+     * @param onComplete    加载完成回调
+     */
+    loadDir<T extends Asset>(bundleName: string, dir: string, type: AssetType<T>, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
+    loadDir<T extends Asset>(bundleName: string, dir: string, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
+    loadDir<T extends Asset>(bundleName: string, dir: string, onComplete?: CompleteCallback): void;
+    loadDir<T extends Asset>(bundleName: string, dir: string, type: AssetType<T>, onComplete?: CompleteCallback): void;
+    loadDir<T extends Asset>(dir: string, type: AssetType<T>, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
+    loadDir<T extends Asset>(dir: string, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
+    loadDir<T extends Asset>(dir: string, onComplete?: CompleteCallback): void;
+    loadDir<T extends Asset>(dir: string, type: AssetType<T>, onComplete?: CompleteCallback): void;
     loadDir<T extends Asset>(
         bundleName: string,
-        dir?: string | AssetType<T> | ProgressCallback | CompleteCallback | null,
-        type?: AssetType<T> | ProgressCallback | CompleteCallback | null,
-        onProgress?: ProgressCallback | CompleteCallback | null,
-        onComplete?: CompleteCallback | null,
+        dir?: string | AssetType<T> | ProgressCallback | CompleteCallback,
+        type?: AssetType<T> | ProgressCallback | CompleteCallback,
+        onProgress?: ProgressCallback | CompleteCallback,
+        onComplete?: CompleteCallback,
     ) {
         let realDir: string;
         let realBundle: string;
@@ -238,7 +255,7 @@ export class GameComponent extends Component {
         oops.res.loadDir(bundleName, dir, type, onProgress, onComplete);
     }
 
-    /** 释放一个资源 */
+    /** 释放资源 */
     release() {
         if (this.resPaths) {
             const rps = this.resPaths.get(ResType.Load);
@@ -251,7 +268,7 @@ export class GameComponent extends Component {
         }
     }
 
-    /** 释放一个文件夹的资源 */
+    /** 释放文件夹的资源 */
     releaseDir() {
         if (this.resPaths) {
             const rps = this.resPaths.get(ResType.LoadDir);
@@ -273,6 +290,26 @@ export class GameComponent extends Component {
                 });
             }
         }
+    }
+
+    /**
+     * 设置图片资源
+     * @param target  目标精灵对象
+     * @param path    图片资源地址
+     * @param bundle  资源包名
+     */
+    async setSprite(target: Sprite, path: string, bundle: string = resLoader.defaultBundleName) {
+        const spriteFrame = await this.loadAsync(bundle, path, SpriteFrame);
+        if (!spriteFrame || !isValid(target)) {
+            const rps = this.resPaths.get(ResType.Load);
+            if (rps) {
+                const key = this.getResKey(bundle, path);
+                rps.delete(key);
+                oops.res.release(path, bundle);
+            }
+            return;
+        }
+        target.spriteFrame = spriteFrame;
     }
     //#endregion
 

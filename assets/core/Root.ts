@@ -67,6 +67,10 @@ export class Root extends Component {
             oops.config.query = new GameQueryConfig();
             oops.config.game = new GameConfig(config);
 
+            // 设置默认资源包
+            oops.res.defaultBundleName = oops.config.game.bundleDefault;
+            oops.res.init(oops.config.game.bundlePackages);
+
             // 本地存储模块
             oops.storage = new StorageManager();
             oops.storage.init(new StorageSecuritySimple);
