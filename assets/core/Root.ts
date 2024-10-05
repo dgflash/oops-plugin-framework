@@ -16,7 +16,6 @@ import { StorageManager } from "./common/storage/StorageManager";
 import { StorageSecuritySimple } from "./common/storage/StorageSecuritySimple";
 import { TimerManager } from "./common/timer/TimerManager";
 import { GameManager } from "./game/GameManager";
-import { GUI } from "./gui/GUI";
 import { LayerManager } from "./gui/layer/LayerManager";
 
 const { property } = _decorator;
@@ -143,9 +142,6 @@ export class Root extends Component {
         game.on(Game.EVENT_SHOW, this.onShow, this);
         // 游戏隐藏事件
         game.on(Game.EVENT_HIDE, this.onHide, this);
-
-        // 添加游戏界面屏幕自适应管理组件
-        this.gui.addComponent(GUI);
 
         // 游戏尺寸修改事件
         if (!sys.isMobile) {
