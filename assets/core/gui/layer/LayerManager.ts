@@ -1,11 +1,21 @@
-import { Camera, Layers, Node, warn, Widget } from "cc";
-import { GUI } from "../GUI";
+import { Camera, Layers, Node, ResolutionPolicy, Widget, macro, screen, view, warn } from "cc";
+import { oops } from "../../Oops";
 import { UICallbacks } from "./Defines";
 import { DelegateComponent } from "./DelegateComponent";
 import { LayerDialog } from "./LayerDialog";
 import { LayerNotify } from "./LayerNotify";
 import { LayerPopUp } from "./LayerPopup";
 import { LayerUI } from "./LayerUI";
+
+/** 屏幕适配类型 */
+export enum ScreenAdapterType {
+    /** 自动适配 */
+    Auto,
+    /** 横屏适配 */
+    Landscape,
+    /** 竖屏适配 */
+    Portrait
+}
 
 /** 界面层类型 */
 export enum LayerType {
@@ -71,6 +81,9 @@ export class LayerManager {
     /** 新手引导层 */
     guide!: Node;
 
+    /** 是否自动设置固定宽或高适配 */
+    autoFixedWidthOrHeight: boolean = true;
+
     /** 界面层 */
     private readonly ui!: LayerUI;
     /** 弹窗层 */
@@ -84,9 +97,67 @@ export class LayerManager {
     /** UI配置 */
     private configs: { [key: number]: UIConfig } = {};
 
-    /** 是否为竖屏显示 */
-    get portrait() {
-        return this.root.getComponent(GUI)!.portrait;
+    private initScreenAdapter() {
+        const drs = view.getDesignResolutionSize();
+        const ws = screen.windowSize;
+        const windowAspectRatio = ws.width / ws.height;
+        const designAspectRatio = drs.width / drs.height;
+
+        // 自动设置固定宽或高适配屏幕
+        if (this.autoFixedWidthOrHeight) {
+            if (windowAspectRatio > designAspectRatio) {
+                view.setResolutionPolicy(ResolutionPolicy.FIXED_HEIGHT);
+                view.setOrientation(macro.ORIENTATION_LANDSCAPE);
+                oops.log.logView("自动适配屏幕高度", "【横屏】");
+            }
+            else if (windowAspectRatio < designAspectRatio) {
+                view.setResolutionPolicy(ResolutionPolicy.FIXED_WIDTH);
+                view.setOrientation(macro.ORIENTATION_PORTRAIT);
+                oops.log.logView("自动适配屏幕宽度", "【竖屏】");
+            }
+        }
+        // 手动设置屏幕适配
+        else {
+            let finalW: number = 0;
+            let finalH: number = 0;
+            if (windowAspectRatio > designAspectRatio) {
+                finalH = drs.height;
+                finalW = finalH * ws.width / ws.height;
+                oops.log.logView("自动适配屏幕高度", "【横屏】");
+            }
+            else {
+                finalW = drs.width;
+                finalH = finalW * ws.height / ws.width;
+                oops.log.logView("自动适配屏幕宽度", "【竖屏】");
+            }
+            view.setDesignResolutionSize(finalW, finalH, ResolutionPolicy.UNKNOWN);
+        }
+    }
+
+    /**
+     * 构造函数
+     * @param root  界面根节点
+     */
+    constructor(root: Node) {
+        this.root = root;
+        this.initScreenAdapter();
+        this.camera = this.root.getComponentInChildren(Camera)!;
+        this.game = this.create_node(LayerType.Game);
+
+        this.ui = new LayerUI(LayerType.UI);
+        this.popup = new LayerPopUp(LayerType.PopUp);
+        this.dialog = new LayerDialog(LayerType.Dialog);
+        this.system = new LayerDialog(LayerType.System);
+        this.notify = new LayerNotify(LayerType.Notify);
+        this.guide = this.create_node(LayerType.Guide);
+
+        root.addChild(this.game);
+        root.addChild(this.ui);
+        root.addChild(this.popup);
+        root.addChild(this.dialog);
+        root.addChild(this.system);
+        root.addChild(this.notify);
+        root.addChild(this.guide);
     }
 
     /**
@@ -373,33 +444,6 @@ export class LayerManager {
         this.popup.clear(isDestroy);
         this.dialog.clear(isDestroy);
         this.system.clear(isDestroy);
-    }
-
-    /**
-     * 构造函数
-     * @param root  界面根节点
-     */
-    constructor(root: Node) {
-        this.root = root;
-        this.camera = this.root.getComponentInChildren(Camera)!;
-
-        this.game = this.create_node(LayerType.Game);
-
-        this.ui = new LayerUI(LayerType.UI);
-        this.popup = new LayerPopUp(LayerType.PopUp);
-        this.dialog = new LayerDialog(LayerType.Dialog);
-        this.system = new LayerDialog(LayerType.System);
-        this.notify = new LayerNotify(LayerType.Notify);
-
-        this.guide = this.create_node(LayerType.Guide);
-
-        root.addChild(this.game);
-        root.addChild(this.ui);
-        root.addChild(this.popup);
-        root.addChild(this.dialog);
-        root.addChild(this.system);
-        root.addChild(this.notify);
-        root.addChild(this.guide);
     }
 
     private create_node(name: string) {
