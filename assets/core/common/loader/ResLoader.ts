@@ -1,5 +1,4 @@
 import { Asset, AssetManager, __private, assetManager, error, js, resources, warn } from "cc";
-import { oops } from "../../Oops";
 
 export type AssetType<T = Asset> = __private.__types_globals__Constructor<T> | null;
 export type Paths = string | string[];
@@ -480,7 +479,7 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
             }
             // 自动加载资源包
             else {
-                const v = oops.config.game.bundleEnable ? this.bundles.get(args.bundle) : "";
+                const v = this.cdn ? this.bundles.get(args.bundle) : "";
                 bundle = await this.loadBundle(args.bundle, v);
                 if (bundle) this.loadByBundleAndArgs(bundle, args);
             }
