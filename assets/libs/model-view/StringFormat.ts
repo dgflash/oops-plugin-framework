@@ -9,7 +9,7 @@ class StringFormat {
 
         format = format.toLowerCase().trim();               // 不区分大小
         let match_func = format.match(/^[a-z|A-Z]+/gi);     // 匹配到 format 中的 函数名
-        let match_num = format.match(/\d+$/gi);             //匹配到 format 中的参数
+        let match_num = format.match(/\d+$/gi);             // 匹配到 format 中的参数
         let func: string = '';
         let num: number = 0;
         let res: number | string = '';

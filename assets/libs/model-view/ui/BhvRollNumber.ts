@@ -20,11 +20,11 @@ enum VALUE_TYPE {
 type CustomCallback = (curValue: number, targetValue: number) => string;
 
 /**
- * [滚动数字] ver 0.5.0
+ * 滚动数字
  * 将会使用 lerp 自动滚动数字到目标数值
  */
 @ccclass
-@menu("添加特殊行为/UI/Roll Number (滚动数字)")
+@menu("OopsFramework/UI/Roll Number （滚动数字）")
 export class BhvRollNumber extends Component {
     @property({
         type: Label,

@@ -11,7 +11,7 @@ const { ccclass, property, menu } = _decorator;
 
 /** 数值变化动画标签组件 */
 @ccclass("LabelChange")
-@menu('ui/label/LabelChange')
+@menu('OopsFramework/Label/LabelChange （数值变化动画标签）')
 export class LabelChange extends LabelNumber {
     @property
     isInteger: boolean = false;

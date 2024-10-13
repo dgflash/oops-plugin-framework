@@ -25,8 +25,8 @@ const COMP_ARRAY_CHECK = [
  */
 @ccclass
 @executeInEditMode
-@menu('ModelViewer/VM-Custom (自定义VM)')
-@help('https://gitee.com/dgflash/oops-framework/blob/master/doc/mvvm/VMCustom.md')
+@menu('OopsFramework/Mvvm/VM-Custom （自定义）')
+@help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037634&doc_id=2873565')
 export class VMCustom extends VMBase {
     @property({
         tooltip: '激活controller,以开启双向绑定，否则只能接收消息',

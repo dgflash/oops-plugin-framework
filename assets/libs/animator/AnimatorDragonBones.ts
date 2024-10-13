@@ -1,8 +1,8 @@
-import { dragonBones, _decorator } from "cc";
+import { _decorator, dragonBones } from "cc";
 import AnimatorBase, { AnimationPlayer } from "./core/AnimatorBase";
 import { AnimatorStateLogic } from "./core/AnimatorStateLogic";
 
-const { ccclass, property, requireComponent, disallowMultiple } = _decorator;
+const { ccclass, property, requireComponent, disallowMultiple, menu, help } = _decorator;
 
 /** 
  * DragonBones状态机组件
@@ -10,6 +10,8 @@ const { ccclass, property, requireComponent, disallowMultiple } = _decorator;
 @ccclass
 @disallowMultiple
 @requireComponent(dragonBones.ArmatureDisplay)
+@menu('OopsFramework/Animator/AnimatorDragonBones （龙骨状态机）')
+@help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12036279&doc_id=2873565')
 export default class AnimatorDragonBones extends AnimatorBase {
     /** DragonBones组件 */
     private _dragonBones: dragonBones.ArmatureDisplay = null!;

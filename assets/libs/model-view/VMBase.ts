@@ -16,7 +16,7 @@ const { ccclass, help } = _decorator;
  * watchPath 的基础，只提供绑定功能 和 对应的数据更新函数
  */
 @ccclass
-@help('https://gitee.com/dgflash/oops-framework/blob/master/doc/mvvm/VMBase.md')
+@help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037631&doc_id=2873565')
 export class VMBase extends Component {
     /**VM管理 */
     VM = VM;

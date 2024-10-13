@@ -27,6 +27,7 @@ var names = {
 
 /** 
  * 日志管理 
+ * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037904&doc_id=2873565
  * @example
 oops.log.trace("默认标准日志");
 oops.log.logConfig("灰色配置日志");

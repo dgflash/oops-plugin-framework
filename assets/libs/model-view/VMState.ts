@@ -35,8 +35,8 @@ enum CHILD_MODE_TYPE {
  * 监听数值状态,根据数值条件设置节点是否激活
  */
 @ccclass
-@menu('ModelViewer/VM-State (VM状态控制)')
-@help('https://github.com/wsssheep/cocos_creator_mvvm_tools/blob/master/docs/VMState.md')
+@menu('OopsFramework/Mvvm/VM-State （状态控制）')
+@help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037846&doc_id=2873565')
 export default class VMState extends VMBase {
     @property
     watchPath: string = "";

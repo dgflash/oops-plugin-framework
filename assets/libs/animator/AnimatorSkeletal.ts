@@ -8,12 +8,13 @@
 import { CCFloat, game, SkeletalAnimation, _decorator } from 'cc';
 import AnimatorAnimation from './AnimatorAnimation';
 
-const { ccclass, property, requireComponent, disallowMultiple, menu } = _decorator;
+const { ccclass, property, requireComponent, disallowMultiple, menu, help } = _decorator;
 
 @ccclass
 @disallowMultiple
 @requireComponent(SkeletalAnimation)
-@menu('animator/AnimatorSkeletal')
+@menu('OopsFramework/Animator/AnimatorSkeletal （骨骼动画状态机）')
+@help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12036279&doc_id=2873565')
 export class AnimatorSkeletal extends AnimatorAnimation {
     @property({
         type: CCFloat,

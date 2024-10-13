@@ -1,6 +1,9 @@
 /** 引擎 utils.ts 中有一些基础数学方法 */
 
-/** 随机管理 */
+/** 
+ * 随机管理 
+ * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037911&doc_id=2873565
+ */
 export class RandomManager {
     private static _instance: RandomManager;
     private random: any = null!;

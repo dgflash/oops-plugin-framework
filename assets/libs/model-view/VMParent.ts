@@ -13,7 +13,7 @@ const { ccclass, help, executionOrder } = _decorator;
  */
 @ccclass
 @executionOrder(-1)
-@help('https://gitee.com/dgflash/oops-framework/blob/master/doc/mvvm/VMParent.md')
+@help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037729&doc_id=2873565')
 export default class VMParent extends GameComponent {
     /** 绑定的标签，可以通过这个tag 获取 当前的 vm 实例 */
     protected tag: string = '_temp';

@@ -28,6 +28,8 @@ interface ILoadResArgs<T extends Asset> {
  * 1、加载默认resources文件夹中资源
  * 2、加载默认bundle远程资源
  * 3、主动传递bundle名时，优先加载传递bundle名资源包中的资源
+ * 
+ * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037901&doc_id=2873565
  */
 export class ResLoader {
     //#region 资源配置数据

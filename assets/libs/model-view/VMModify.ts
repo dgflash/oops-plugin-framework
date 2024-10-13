@@ -16,8 +16,8 @@ enum CLAMP_MODE {
  * 修改 Model 的值
  */
 @ccclass
-@menu('ModelViewer/VM-Modify(修改Model)')
-@help('https://gitee.com/dgflash/oops-framework/blob/master/doc/mvvm/VMModify.md')
+@menu('OopsFramework/Mvvm/VM-Modify （修改数据）')
+@help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037642&doc_id=2873565')
 export default class VMModify extends VMBase {
     @property({
         tooltip: "监视对象路径"

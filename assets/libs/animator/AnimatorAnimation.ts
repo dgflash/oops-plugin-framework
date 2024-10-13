@@ -2,7 +2,7 @@ import { Animation, AnimationState, _decorator } from "cc";
 import AnimatorBase, { AnimationPlayer } from "./core/AnimatorBase";
 import { AnimatorStateLogic } from "./core/AnimatorStateLogic";
 
-const { ccclass, property, requireComponent, disallowMultiple, menu } = _decorator;
+const { ccclass, property, requireComponent, disallowMultiple, menu, help } = _decorator;
 
 /** 
  * Cocos Animation状态机组件
@@ -10,7 +10,8 @@ const { ccclass, property, requireComponent, disallowMultiple, menu } = _decorat
 @ccclass
 @disallowMultiple
 @requireComponent(Animation)
-@menu('animator/AnimatorAnimation')
+@menu('OopsFramework/Animator/AnimatorAnimation （动画状态机）')
+@help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12036279&doc_id=2873565')
 export default class AnimatorAnimation extends AnimatorBase {
     /** Animation组件 */
     protected _animation: Animation = null!;

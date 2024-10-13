@@ -12,7 +12,7 @@ enum PARAM_TYPE {
  * 将该组件的所处节点的所有子节点，绑定相同的回调对象，并将组件名设置到customEventData属性中
  */
 @ccclass
-@menu("添加特殊行为/UI/Button Group(一组按钮控制)")
+@menu("OopsFramework/UI/Button Group （按钮组控制）")
 export class BhvButtonGroup extends Component {
     @property({
         type: Enum(Button.Transition)

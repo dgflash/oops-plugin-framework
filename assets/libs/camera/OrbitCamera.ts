@@ -1,6 +1,6 @@
-import { Component, EventMouse, EventTouch, input, Input, lerp, Node, Quat, Vec2, Vec3, _decorator } from 'cc';
+import { _decorator, Component, EventMouse, EventTouch, input, Input, lerp, Node, Quat, Vec2, Vec3 } from 'cc';
 import { EDITOR } from 'cc/env';
-const { ccclass, property } = _decorator;
+const { ccclass, property, menu } = _decorator;
 
 let tempVec3 = new Vec3;
 let tempVec3_2 = new Vec3;
@@ -14,6 +14,7 @@ const DeltaFactor = 1 / 200;
  * 3、固定为第三人称摄像机
  */
 @ccclass('OrbitCamera')
+@menu('OopsFramework/Camera/OrbitCamera （轨道摄影机）')
 export class OrbitCamera extends Component {
     @property({
         tooltip: "是否启动触摸控制"

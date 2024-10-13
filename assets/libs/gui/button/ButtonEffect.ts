@@ -10,9 +10,9 @@ import ButtonSimple from "./ButtonSimple";
 
 const { ccclass, property, menu } = _decorator;
 
-/** 有特效短按按钮 */
+/** 有特效按钮 */
 @ccclass("ButtonEffect")
-@menu('ui/button/ButtonEffect')
+@menu('OopsFramework/Button/ButtonEffect （有特效按钮）')
 export default class ButtonEffect extends ButtonSimple {
     @property({
         tooltip: "是否开启"

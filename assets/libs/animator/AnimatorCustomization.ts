@@ -2,18 +2,19 @@ import { _decorator } from "cc";
 import AnimatorBase, { AnimationPlayer } from "./core/AnimatorBase";
 import { AnimatorStateLogic } from "./core/AnimatorStateLogic";
 
-const { ccclass, property, menu, disallowMultiple } = _decorator;
+const { ccclass, property, disallowMultiple, menu, help } = _decorator;
 
 /** 
  * 自定义动画控制的状态机组件
  */
 @ccclass
 @disallowMultiple
-@menu('animator/AnimatorCustomization')
+@menu('OopsFramework/Animator/AnimatorCustomization （自定义状态机）')
+@help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12036279&doc_id=2873565')
 export default class AnimatorCustomization extends AnimatorBase {
     /** 此组件必须主动调用onInit初始化 */
     @property({ override: true, visible: false })
-    protected PlayOnStart: boolean = false;
+    PlayOnStart: boolean = false;
 
     /**
      * 手动初始化状态机，可传入0-3个参数，类型如下

@@ -2,10 +2,11 @@ import { CCInteger, Component, error, Sprite, SpriteFrame, _decorator } from "cc
 
 const { ccclass, property, executeInEditMode, requireComponent, menu } = _decorator;
 
+/** 图片切换 */
 @ccclass
 @executeInEditMode
 @requireComponent(Sprite)
-@menu("添加特殊行为/UI/Frame Index(帧图改变)")
+@menu("OopsFramework/UI/Frame Index （图片切换）")
 export class BhvFrameIndex extends Component {
     @property({
         type: [SpriteFrame],

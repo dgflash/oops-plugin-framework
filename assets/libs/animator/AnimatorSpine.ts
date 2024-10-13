@@ -1,9 +1,9 @@
-import { sp, _decorator } from "cc";
+import { _decorator, sp } from "cc";
 import AnimatorSpineSecondary from "./AnimatorSpineSecondary";
 import AnimatorBase, { AnimationPlayer } from "./core/AnimatorBase";
 import { AnimatorStateLogic } from "./core/AnimatorStateLogic";
 
-const { ccclass, property, requireComponent, disallowMultiple } = _decorator;
+const { ccclass, property, requireComponent, disallowMultiple, menu, help } = _decorator;
 
 /** 
  * Spine状态机组件（主状态机），trackIndex为0
@@ -11,6 +11,8 @@ const { ccclass, property, requireComponent, disallowMultiple } = _decorator;
 @ccclass
 @disallowMultiple
 @requireComponent(sp.Skeleton)
+@menu('OopsFramework/Animator/AnimatorSpine（Spine 状态机）')
+@help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12036279&doc_id=2873565')
 export default class AnimatorSpine extends AnimatorBase {
     /** spine组件 */
     protected _spine: sp.Skeleton = null!;

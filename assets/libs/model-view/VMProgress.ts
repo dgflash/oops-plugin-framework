@@ -12,8 +12,8 @@ import { VMEnv } from "./VMEnv";
 const { ccclass, property, menu, help } = _decorator;
 
 @ccclass
-@menu('ModelViewer/VM-Progress (VM-进度条)')
-@help('https://gitee.com/dgflash/oops-framework/blob/master/doc/mvvm/VMProgress.md')
+@menu('OopsFramework/Mvvm/VM-Progress （进度条）')
+@help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037843&doc_id=2873565')
 export default class VMProgress extends VMCustom {
     @property({
         visible: false,

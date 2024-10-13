@@ -11,7 +11,7 @@ const { ccclass, property, menu } = _decorator;
 
 /** 长按按钮 */
 @ccclass("ButtonTouchLong")
-@menu('ui/button/ButtonTouchLong')
+@menu('OopsFramework/Button/ButtonTouchLong （长按按钮）')
 export class ButtonTouchLong extends ButtonEffect {
     @property({
         tooltip: "长按时间（秒）"

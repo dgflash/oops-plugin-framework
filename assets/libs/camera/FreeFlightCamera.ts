@@ -29,7 +29,7 @@ const KEYCODE = {
 };
 
 @ccclass("FreeFlightCamera")
-@menu('oops/camera/FreeFlightCamera')
+@menu('OopsFramework/Camera/FreeFlightCamera （自由飞行摄像机）')
 export class FreeFlightCamera extends Component {
     @property({
         type: CCFloat,
