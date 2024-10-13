@@ -29,8 +29,8 @@ enum FILTER_MODE {
  */
 @ccclass
 @executeInEditMode
-@menu('ModelViewer/VM-EventCall(调用函数)')
-@help('https://gitee.com/dgflash/oops-framework/blob/master/doc/mvvm/VMEvent.md')
+@menu('OopsFramework/Mvvm/VM-EventCall （调用函数）')
+@help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037640&doc_id=2873565')
 export default class VMEvent extends VMBase {
     @property({
         tooltip: '使用模板模式，可以使用多路径监听'

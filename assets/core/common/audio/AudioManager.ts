@@ -7,6 +7,7 @@ const LOCAL_STORE_KEY = "game_audio";
 
 /**
  * 音频管理
+ * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037893&doc_id=2873565
  * @example
  // 模块功能通过 oops.audio 调用
  oops.audio.playMusic("audios/nocturne");

@@ -10,7 +10,7 @@ const { ccclass, property, menu } = _decorator;
  * 2、按钮点击触发音效
  */
 @ccclass("UIButton")
-@menu('ui/button/UIButton')
+@menu('OopsFramework/Button/UIButton （通用按钮）')
 export default class UIButton extends Button {
     @property({
         tooltip: "每次触发间隔"

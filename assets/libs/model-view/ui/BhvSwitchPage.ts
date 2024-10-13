@@ -3,9 +3,10 @@ import { VMEnv } from "../VMEnv";
 
 const { ccclass, property, executeInEditMode, menu } = _decorator;
 
+/** 页面切换 */
 @ccclass
 @executeInEditMode
-@menu("添加特殊行为/UI/Switch Page (切换页面)")
+@menu("OopsFramework/UI/Switch Page （页面切换）")
 export class BhvSwitchPage extends Component {
     @property
     isLoopPage: boolean = false;

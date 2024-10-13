@@ -4,9 +4,9 @@ import { resLoader } from "../../../core/common/loader/ResLoader";
 
 const { ccclass, property, menu } = _decorator;
 
-/** 短按按钮 */
+/** 节点按钮 */
 @ccclass("ButtonSimple")
-@menu('ui/button/ButtonSimple')
+@menu('OopsFramework/Button/ButtonSimple （节点按钮）')
 export default class ButtonSimple extends Component {
     @property({
         tooltip: "是否只触发一次"

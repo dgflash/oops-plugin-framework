@@ -7,7 +7,10 @@ export interface IStorageSecurity {
     encryptKey(str: string): string;
 }
 
-/** 本地存储 */
+/** 
+ * 本地存储 
+ * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037957&doc_id=2873565
+ */
 export class StorageManager {
     private id: string = null!;
     private iss: IStorageSecurity = null!;

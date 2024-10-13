@@ -16,8 +16,8 @@ enum ACTION_MODE {
  */
 @ccclass
 @executeInEditMode
-@menu('ModelViewer/Edit-Comps (快速组件操作)')
-@help('https://gitee.com/dgflash/oops-framework/blob/master/doc/mvvm/VMCompsEdit.md')
+@menu('OopsFramework/Mvvm/Edit-Comps （快速组件操作）')
+@help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037632&doc_id=2873565')
 export default class MVCompsEdit extends Component {
     @property({
         type: [CCString]

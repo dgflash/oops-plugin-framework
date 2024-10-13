@@ -10,7 +10,7 @@ const {ccclass, property, menu} = _decorator;
 
 /** 只能显示数字的标签组件 */
 @ccclass("LabelNumber")
-@menu('ui/label/LabelNumber')
+@menu('OopsFramework/Label/LabelNumber （只显示数字的标签）')
 export default class LabelNumber extends Label {
     @property({tooltip: "数字"})
     _num: number = 0;

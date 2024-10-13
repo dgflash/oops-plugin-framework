@@ -12,8 +12,9 @@ export class LangLabelParamsItem {
     value: string = "";
 }
 
+/** 文本多语言 */
 @ccclass("LanguageLabel")
-@menu('ui/language/LanguageLabel')
+@menu('OopsFramework/Language/LanguageLabel （文本多语言）')
 export class LanguageLabel extends Component {
     @property({
         type: LangLabelParamsItem,

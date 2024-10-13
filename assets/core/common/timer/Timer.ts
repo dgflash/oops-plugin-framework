@@ -7,6 +7,7 @@
 
 /** 
  * 定时触发组件 
+ * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037964&doc_id=2873565
  * @example
     export class Test extends Component {
         // 创建一个定时跳动组件

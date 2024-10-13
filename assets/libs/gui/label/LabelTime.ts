@@ -5,8 +5,9 @@ import { TimeUtil } from "../../../core/utils/TimeUtils";
 
 const { ccclass, property, menu } = _decorator;
 
+/** 倒计时标签 */
 @ccclass("LabelTime")
-@menu('ui/label/LabelTime')
+@menu('OopsFramework/Label/LabelTime （倒计时标签）')
 export default class LabelTime extends Label {
     @property({
         tooltip: "到计时间总时间（单位秒）"

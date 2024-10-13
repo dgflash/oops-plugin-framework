@@ -11,8 +11,9 @@ import { LanguageData } from "./LanguageData";
 
 const { ccclass, property, menu } = _decorator;
 
+/** Spine 动画多语言 */
 @ccclass("LanguageSpine")
-@menu('ui/language/LanguageSpine')
+@menu('OopsFramework/Language/LanguageSpine （Spine 动画多语言）')
 export class LanguageSpine extends Component {
     @property({ serializable: true })
     private _dataID: string = "";

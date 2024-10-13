@@ -11,8 +11,9 @@ import { LanguageData } from "./LanguageData";
 
 const { ccclass, property, menu } = _decorator;
 
+/** 图片多语言 */
 @ccclass("LanguageSprite")
-@menu('ui/language/LanguageSprite')
+@menu('OopsFramework/Language/LanguageSprite （图片多语言）')
 export class LanguageSprite extends Component {
     @property({ serializable: true })
     private _dataID: string = "";

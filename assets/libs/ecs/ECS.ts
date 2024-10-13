@@ -9,8 +9,11 @@ import { ECSComblockSystem, ECSRootSystem, ECSSystem } from "./ECSSystem";
  * ECSComp对象从ECSEntity.remove后，数据组件会回收到ECSModel.compPools组件对象池中
  */
 
-/** Entity-Component-System（实体-组件-系统）框架 */
-export module ecs {
+/** 
+ * Entity-Component-System（实体-组件-系统）框架
+ * 文档：https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12033388&doc_id=2873565
+ */
+export namespace ecs {
     /** 实体 - 一个概念上的定义，指的是游戏世界中的一个独特物体，是一系列组件的集合 */
     export type Entity = ECSEntity;
     /** 组件 - 一堆数据的集合，即不存在任何的行为，只用来存储状态 */

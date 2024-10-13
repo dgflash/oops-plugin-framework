@@ -66,6 +66,7 @@ export class MessageEventData {
 
 /** 
  * 全局消息管理
+ * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037894&doc_id=2873565
  * @example 
 // 注册持续监听的全局事件
 export class RoleViewComp extends Component{
