@@ -1,4 +1,4 @@
-import { Camera, Layers, Node, ResolutionPolicy, Widget, macro, screen, view, warn } from "cc";
+import { Camera, Layers, Node, ResolutionPolicy, Widget, screen, view, warn } from "cc";
 import { oops } from "../../Oops";
 import { UICallbacks } from "./Defines";
 import { DelegateComponent } from "./DelegateComponent";
@@ -82,9 +82,6 @@ export class LayerManager {
     /** 新手引导层 */
     guide!: Node;
 
-    /** 是否自动设置固定宽或高适配 */
-    autoFixedWidthOrHeight: boolean = true;
-
     /** 界面层 */
     private readonly ui!: LayerUI;
     /** 弹窗层 */
@@ -104,35 +101,20 @@ export class LayerManager {
         const windowAspectRatio = ws.width / ws.height;
         const designAspectRatio = drs.width / drs.height;
 
-        // 自动设置固定宽或高适配屏幕
-        if (this.autoFixedWidthOrHeight) {
-            if (windowAspectRatio > designAspectRatio) {
-                view.setResolutionPolicy(ResolutionPolicy.FIXED_HEIGHT);
-                view.setOrientation(macro.ORIENTATION_LANDSCAPE);
-                oops.log.logView("自动适配屏幕高度", "【横屏】");
-            }
-            else if (windowAspectRatio < designAspectRatio) {
-                view.setResolutionPolicy(ResolutionPolicy.FIXED_WIDTH);
-                view.setOrientation(macro.ORIENTATION_PORTRAIT);
-                oops.log.logView("自动适配屏幕宽度", "【竖屏】");
-            }
+        let finalW: number = 0;
+        let finalH: number = 0;
+        
+        if (windowAspectRatio > designAspectRatio) {
+            finalH = drs.height;
+            finalW = finalH * ws.width / ws.height;
+            oops.log.logView("适配屏幕高度", "【横屏】");
         }
-        // 手动设置屏幕适配
         else {
-            let finalW: number = 0;
-            let finalH: number = 0;
-            if (windowAspectRatio > designAspectRatio) {
-                finalH = drs.height;
-                finalW = finalH * ws.width / ws.height;
-                oops.log.logView("自动适配屏幕高度", "【横屏】");
-            }
-            else {
-                finalW = drs.width;
-                finalH = finalW * ws.height / ws.width;
-                oops.log.logView("自动适配屏幕宽度", "【竖屏】");
-            }
-            view.setDesignResolutionSize(finalW, finalH, ResolutionPolicy.UNKNOWN);
+            finalW = drs.width;
+            finalH = finalW * ws.height / ws.width;
+            oops.log.logView("适配屏幕宽度", "【竖屏】");
         }
+        view.setDesignResolutionSize(finalW, finalH, ResolutionPolicy.UNKNOWN);
     }
 
     /**
