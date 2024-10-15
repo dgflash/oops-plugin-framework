@@ -68,7 +68,8 @@ if (!Node.prototype["__$NodeDragExt$__"]) {
                 let delta = event.getUIDelta();
                 // /** 这里除以 世界缩放，在有缩放的时候拖拽不至于很怪 */
                 // this.position = this.position.add(v3(delta.x / this.worldScale.x, delta.y / this.worldScale.y, 0));
-                this.position = this.position.add(v3(delta.x, delta.y, 0));
+                let newPos = v3(delta.x, delta.y, 0).add(this.position);
+                this.position = newPos;
                 this.emit(Node.DragEvent.DRAG_MOVE, event);
             }
         },
