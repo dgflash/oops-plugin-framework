@@ -37,25 +37,11 @@ git clone https://gitee.com/dgflash/oops-game-kit.git
     项目下载后执行 update-oops-plugin-framework.sh 下载最新版本框架插件
 
 ### QQ群
-- 798575969（1群 - 满） 
-- 621415300（2群 - 满）
-- 628575875（3群 - 满）
-- 226524184（4群 - 推荐）
+- 798575969（1群）
+- 621415300（2群）
+- 628575875（3群）    
+- 226524184（4群）
 
-### QQ频道号：q366856bf5
+QQ频道号：q366856bf5
 
-
-### 在线演示
-[网络游戏全栈解决方案](https://store.cocos.com/app/detail/3814)
-
-[角色扮演游戏解决方案 - 2D角色](https://store.cocos.com/app/detail/3675)
-
-[角色扮演游戏解决方案 - 3D角色](https://store.cocos.com/app/detail/4139)
-
-[新手引导解决方案](https://store.cocos.com/app/detail/3653)
-
-[Tiledmap地图类游戏解决方案](https://store.cocos.com/app/detail/4428)
-
-[开源框架 oops-framework gitee](https://gitee.com/dgflash/oops-framework)
-
-[开源框架 oops-framework github](https://github.com/dgflash/oops-framework)
+## [点击了解作者其它产品](https://store.cocos.com/app/search?name=oops)
