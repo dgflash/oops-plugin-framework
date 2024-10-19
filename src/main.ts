@@ -46,5 +46,5 @@ export const methods: { [key: string]: (...any: any) => any } = {
     /** 点亮 Github 星星 */
     github() {
         shell.openExternal('https://github.com/dgflash/oops-framework');
-    },
+    }
 };

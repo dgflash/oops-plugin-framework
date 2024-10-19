@@ -46,5 +46,5 @@ exports.methods = {
     /** 点亮 Github 星星 */
     github() {
         electron_1.shell.openExternal('https://github.com/dgflash/oops-framework');
-    },
+    }
 };
