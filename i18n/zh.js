@@ -16,7 +16,7 @@ module.exports = {
     createModel: "创建 ECS 数据层脚本",
     createBll: "创建 ECS 业务层脚本",
     createView: "创建 ECS 视图层脚本",
-    createViewMvvm: "创建 ECS 视图层脚本 - MVVM ",
+    createViewMvvm: "创建 ECS 视图层脚本 - MVVM",
     tools: "工具",
     tools_compress: "图片压缩",
     panel_create_file: "创建框架模板"
