@@ -75,6 +75,9 @@ export class ECSEntity {
     get parent(): ECSEntity | null {
         return this._parent;
     }
+    set parent(value: ECSEntity | null) {
+        this._parent = value;
+    }
 
     private _children: Map<number, ECSEntity> | null = null;
     /** 子实体集合 */
@@ -103,12 +106,9 @@ export class ECSEntity {
     removeChild(entity: ECSEntity, isDestroy = true) {
         if (this.children == null) return;
 
+        entity.parent = null;
         this.children.delete(entity.eid);
         if (isDestroy) entity.destroy();
-
-        if (this.children.size == 0) {
-            this._children = null;
-        }
     }
 
     /**
@@ -263,10 +263,6 @@ export class ECSEntity {
         }
     }
 
-    private _remove(comp: CompType<ecs.IComp>) {
-        this.remove(comp, true);
-    }
-
     /** 销毁实体，实体会被回收到实体缓存池中 */
     destroy() {
         // 如果有父模块，则移除父模块上记录的子模块
@@ -279,13 +275,17 @@ export class ECSEntity {
         if (this._children) {
             this._children.forEach(e => {
                 this.removeChild(e);
-                e.destroy();
             });
+            this._children = null;
         }
 
         // 移除实体上所有组件
         this.compTid2Ctor.forEach(this._remove, this);
         destroyEntity(this);
         this.compTid2Obj.clear();
+    }
+
+    private _remove(comp: CompType<ecs.IComp>) {
+        this.remove(comp, true);
     }
 }
