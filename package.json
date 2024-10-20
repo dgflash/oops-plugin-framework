@@ -25,6 +25,13 @@
         }
     },
     "contributions": {
+        "inspector": {
+            "section": {
+                "asset": {
+                    "directory": "./dist/asset-directory.js"
+                }
+            }
+        },
         "scene": {
             "script": "./dist/scene.js"
         },

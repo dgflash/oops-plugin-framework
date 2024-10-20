@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.methods = exports.config = exports.unload = exports.load = void 0;
+const child_process_1 = require("child_process");
 const electron_1 = require("electron");
 /**
  * @en Hooks triggered after extension loading is complete
@@ -46,5 +47,20 @@ exports.methods = {
     /** 点亮 Github 星星 */
     github() {
         electron_1.shell.openExternal('https://github.com/dgflash/oops-framework');
+    },
+    update() {
+        let path = __dirname.replace("extensions\\oops-plugin-framework\\dist", "") + "update-oops-plugin-framework.bat";
+        console.log(path);
+        (0, child_process_1.exec)(path, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`执行批处理文件时出错: ${error}`);
+                return;
+            }
+            if (stderr) {
+                console.error(`批处理文件的错误输出: ${stderr}`);
+                return;
+            }
+            console.log(`批处理文件的输出: ${stdout}`);
+        });
     }
 };
