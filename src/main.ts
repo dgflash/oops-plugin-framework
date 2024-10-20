@@ -1,3 +1,4 @@
+import { exec } from "child_process";
 import { shell } from "electron";
 
 /**
@@ -46,5 +47,21 @@ export const methods: { [key: string]: (...any: any) => any } = {
     /** 点亮 Github 星星 */
     github() {
         shell.openExternal('https://github.com/dgflash/oops-framework');
+    },
+    update() {
+        let path = __dirname.replace("extensions\\oops-plugin-framework\\dist", "") + "update-oops-plugin-framework.bat";
+        console.log(path);
+
+        exec(path, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`执行批处理文件时出错: ${error}`);
+                return;
+            }
+            if (stderr) {
+                console.error(`批处理文件的错误输出: ${stderr}`);
+                return;
+            }
+            console.log(`批处理文件的输出: ${stdout}`);
+        });
     }
 };
