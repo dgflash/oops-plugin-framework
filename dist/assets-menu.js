@@ -13,10 +13,8 @@ function onAssetMenu(assetInfo) {
                     submenu: [
                         {
                             label: `i18n:oops-framework.createGameComponent`,
-                            async click() {
-                                localStorage.setItem('create_path', assetInfo.file);
-                                localStorage.setItem('create_type', "GameComponent");
-                                Editor.Panel.open("oops-framework.set_file_name");
+                            click() {
+                                Editor.Panel.open("oops-framework.set_file_name", assetInfo.file, "GameComponent");
                             },
                         },
                         {
@@ -25,41 +23,31 @@ function onAssetMenu(assetInfo) {
                         {
                             label: `i18n:oops-framework.createModule`,
                             click() {
-                                localStorage.setItem('create_path', assetInfo.file);
-                                localStorage.setItem('create_type', "Module");
-                                Editor.Panel.open("oops-framework.set_file_name");
+                                Editor.Panel.open("oops-framework.set_file_name", assetInfo.file, "Module");
                             },
                         },
                         {
                             label: `i18n:oops-framework.createModel`,
                             click() {
-                                localStorage.setItem('create_path', assetInfo.file);
-                                localStorage.setItem('create_type', "Model");
-                                Editor.Panel.open("oops-framework.set_file_name");
+                                Editor.Panel.open("oops-framework.set_file_name", assetInfo.file, "Model");
                             },
                         },
                         {
                             label: `i18n:oops-framework.createBll`,
                             click() {
-                                localStorage.setItem('create_path', assetInfo.file);
-                                localStorage.setItem('create_type', "Bll");
-                                Editor.Panel.open("oops-framework.set_file_name");
+                                Editor.Panel.open("oops-framework.set_file_name", assetInfo.file, "Bll");
                             },
                         },
                         {
                             label: `i18n:oops-framework.createView`,
                             click() {
-                                localStorage.setItem('create_path', assetInfo.file);
-                                localStorage.setItem('create_type', "View");
-                                Editor.Panel.open("oops-framework.set_file_name");
+                                Editor.Panel.open("oops-framework.set_file_name", assetInfo.file, "View");
                             },
                         },
                         {
                             label: `i18n:oops-framework.createViewMvvm`,
                             click() {
-                                localStorage.setItem('create_path', assetInfo.file);
-                                localStorage.setItem('create_type', "ViewMvvm");
-                                Editor.Panel.open("oops-framework.set_file_name");
+                                Editor.Panel.open("oops-framework.set_file_name", assetInfo.file, "ViewMvvm");
                             },
                         },
                     ]

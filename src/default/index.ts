@@ -22,11 +22,10 @@ module.exports = Editor.Panel.define({
         app: '#app',
     },
     ready() {
+        var args = arguments as any;
         let filename = "Default";
-        let type = localStorage.getItem('create_type')!;
-        localStorage.removeItem('create_type');
-        let path = localStorage.getItem('create_path')!;
-        localStorage.removeItem('create_path');
+        let path = args[0];
+        let type = args[1];
         let title = "???";
         let showModule = false;
         let moduleName = "ModuleName";
