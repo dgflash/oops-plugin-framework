@@ -97,7 +97,7 @@ export class RandomManager {
         var temp: Array<T> = objects.slice();
         var result: Array<T> = [];
         for (let i = 0; i < n; i++) {
-            let index = this.getRandomInt(0, objects.length, n);
+            let index = this.getRandomInt(0, temp.length, 1);
             result.push(temp.splice(index, 1)[0]);
         }
         return result;
