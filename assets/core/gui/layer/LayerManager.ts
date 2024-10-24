@@ -103,7 +103,7 @@ export class LayerManager {
 
         let finalW: number = 0;
         let finalH: number = 0;
-        
+
         if (windowAspectRatio > designAspectRatio) {
             finalH = drs.height;
             finalW = finalH * ws.width / ws.height;
@@ -256,8 +256,13 @@ export class LayerManager {
      * @param uiArgs      新打开场景参数
      */
     replace(removeUiId: number, openUiId: number, uiArgs: any = null) {
-        this.open(openUiId, uiArgs);
-        this.remove(removeUiId);
+        const callbacks: UICallbacks = {
+            onAdded: (node: Node, params: any) => {
+                this.remove(removeUiId);
+            }
+        };
+        this.open(openUiId, uiArgs, callbacks);
+
     }
 
     /**
