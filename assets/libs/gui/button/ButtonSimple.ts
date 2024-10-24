@@ -23,7 +23,7 @@ export default class ButtonSimple extends Component {
         type: AudioClip
     })
     private effect: AudioClip = null!;
-    private effectIds: number[] = [];
+    // private effectIds: number[] = [];
     private touchCount = 0;
     private touchtEndTime = 0;
 
@@ -57,10 +57,11 @@ export default class ButtonSimple extends Component {
     /** 短按触摸音效 */
     protected async playEffect() {
         if (this.effect) {
-            const effectId = await oops.audio.playEffect(this.effect, resLoader.defaultBundleName, () => {
-                this.effectIds.remove(effectId);
-            });
-            if (effectId > 0) this.effectIds.push(effectId);
+            oops.audio.playEffect(this.effect);
+            // const effectId = await oops.audio.playEffect(this.effect, resLoader.defaultBundleName, () => {
+            //     this.effectIds.remove(effectId);
+            // });
+            // if (effectId > 0) this.effectIds.push(effectId);
         }
     }
 
@@ -68,11 +69,10 @@ export default class ButtonSimple extends Component {
         this.node.off(Node.EventType.TOUCH_END, this.onTouchEnd, this);
         this.node.off(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
 
-        if (this.effect) {
-            this.effectIds.forEach(effectId => {
-                console.log(effectId);
-                oops.audio.putEffect(effectId, this.effect);
-            });
-        }
+        // if (this.effect) {
+        //     this.effectIds.forEach(effectId => {
+        //         oops.audio.putEffect(effectId, this.effect);
+        //     });
+        // }
     }
 }
