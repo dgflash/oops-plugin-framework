@@ -4,7 +4,9 @@ import { shell } from "electron";
  * @en Hooks triggered after extension loading is complete
  * @zh 扩展加载完成后触发的钩子
  */
-export function load() { }
+export function load() {
+    
+}
 
 /**
  * @en Hooks triggered after extension uninstallation is complete
