@@ -63,6 +63,8 @@ export class ECSEntity {
     eid: number = -1;
     /** 实体对象名 */
     name: string = "";
+    /** 实体是否有效 */
+    isValid: boolean = true;
     /** 组件过滤数据 */
     private mask = new ECSMask();
     /** 当前实体身上附加的组件构造函数 */
@@ -265,6 +267,8 @@ export class ECSEntity {
 
     /** 销毁实体，实体会被回收到实体缓存池中 */
     destroy() {
+        this.isValid = false;
+
         // 如果有父模块，则移除父模块上记录的子模块
         if (this._parent) {
             this._parent.removeChild(this, false);
