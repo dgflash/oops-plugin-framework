@@ -183,8 +183,10 @@ export namespace ecs {
         }
 
         // 触发实体初始化逻辑
-        if (entity.init)
+        if (entity.init) {
+            entity.isValid = true;
             entity.init();
+        }
         else
             console.error(`${ctor.name} 实体缺少 init 方法初始化默认组件`);
 
