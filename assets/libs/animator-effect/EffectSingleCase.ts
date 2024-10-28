@@ -19,8 +19,10 @@ class EffectData extends Component {
 
 /** 特效参数 */
 export interface IEffectParams {
-    /** 初始位置 */
+    /** 初始空间坐标 */
     pos?: Vec3,
+    /** 初始世界坐标 */
+    worldPos?: Vec3,
     /** 是否播放完成后删除 */
     isPlayFinishedRelease?: boolean,
     /** 资源包名 */
@@ -142,7 +144,10 @@ export class EffectSingleCase {
         this.setSpeed(node);
 
         // 设置显示对象位置
-        if (params && params.pos) node.position = params.pos;
+        if (params) {
+            if (params.pos) node.position = params.pos;
+            if (params.worldPos) node.worldPosition = params.worldPos;
+        }
 
         // 显示到屏幕上
         if (parent) node.parent = parent;
