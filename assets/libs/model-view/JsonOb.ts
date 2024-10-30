@@ -58,8 +58,10 @@ export class JsonOb<T> {
                         if (OP.toString.call(newVal) === '[object Object]') {
                             self.observe(newVal, pathArray);
                         }
-                        self._callback(newVal, oldVal, pathArray);
+
+                        const ov = oldVal;
                         oldVal = newVal;
+                        self._callback(newVal, ov, pathArray);
                     }
                 }
             })
