@@ -1,11 +1,13 @@
-import { exec } from "child_process";
 import { shell } from "electron";
+import { checkUpdate } from "./common/version";
 
 /**
  * @en Hooks triggered after extension loading is complete
  * @zh 扩展加载完成后触发的钩子
  */
-export function load() { }
+export function load() {
+    checkUpdate();
+}
 
 /**
  * @en Hooks triggered after extension uninstallation is complete
@@ -32,6 +34,9 @@ export const methods: { [key: string]: (...any: any) => any } = {
     log() {
         shell.openExternal('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12101082&doc_id=2873565');
     },
+    update() {
+        checkUpdate();
+    },
     /** 打开解决方案列表 */
     solution() {
         shell.openExternal('https://store.cocos.com/app/search?name=oops');
@@ -47,21 +52,5 @@ export const methods: { [key: string]: (...any: any) => any } = {
     /** 点亮 Github 星星 */
     github() {
         shell.openExternal('https://github.com/dgflash/oops-framework');
-    },
-    update() {
-        let path = __dirname.replace("extensions\\oops-plugin-framework\\dist", "") + "update-oops-plugin-framework.bat";
-        console.log(path);
-
-        exec(path, (error, stdout, stderr) => {
-            if (error) {
-                console.error(`执行批处理文件时出错: ${error}`);
-                return;
-            }
-            if (stderr) {
-                console.error(`批处理文件的错误输出: ${stderr}`);
-                return;
-            }
-            console.log(`批处理文件的输出: ${stdout}`);
-        });
     }
 };
