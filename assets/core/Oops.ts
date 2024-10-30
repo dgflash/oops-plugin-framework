@@ -1,4 +1,4 @@
-/*
+\/*
  * @Author: dgflash
  * @Date: 2022-02-11 09:32:47
  * @LastEditors: dgflash
@@ -24,7 +24,7 @@ import { GameManager } from "./game/GameManager";
 import { LayerManager } from "./gui/layer/LayerManager";
 
 /** 框架版本号 */
-export var version: string = "2.0.0";
+export var version: string = "2.0.0.20241030";
 
 /** 框架核心模块访问入口 */
 export class oops {

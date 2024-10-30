@@ -2,11 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.methods = exports.config = exports.unload = exports.load = void 0;
 const electron_1 = require("electron");
+const version_1 = require("./common/version");
 /**
  * @en Hooks triggered after extension loading is complete
  * @zh 扩展加载完成后触发的钩子
  */
-function load() { }
+function load() {
+    (0, version_1.checkUpdate)();
+}
 exports.load = load;
 /**
  * @en Hooks triggered after extension uninstallation is complete
@@ -30,6 +33,9 @@ exports.methods = {
     /** 打开框架更新日志 */
     log() {
         electron_1.shell.openExternal('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12101082&doc_id=2873565');
+    },
+    update() {
+        (0, version_1.checkUpdate)();
     },
     /** 打开解决方案列表 */
     solution() {

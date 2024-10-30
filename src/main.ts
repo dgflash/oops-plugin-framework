@@ -1,11 +1,12 @@
 import { shell } from "electron";
+import { checkUpdate } from "./common/version";
 
 /**
  * @en Hooks triggered after extension loading is complete
  * @zh 扩展加载完成后触发的钩子
  */
 export function load() {
-    
+    checkUpdate();
 }
 
 /**
@@ -32,6 +33,9 @@ export const methods: { [key: string]: (...any: any) => any } = {
     /** 打开框架更新日志 */
     log() {
         shell.openExternal('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12101082&doc_id=2873565');
+    },
+    update() {
+        checkUpdate();
     },
     /** 打开解决方案列表 */
     solution() {

@@ -10,6 +10,7 @@ module.exports = {
     gitee: "点亮 Gitee 星星",
     github: "点亮 Github 星星",
     log: "更新日志",
+    update: "检查更新",
     script: "脚本",
     createGameComponent: "创建显示对象模板",
     createModule: "创建 ECS 模块",

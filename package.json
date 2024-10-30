@@ -1,11 +1,13 @@
 {
     "package_version": 2,
-    "version": "1.0.0",
+    "version": "2.0.0.20241030",
     "name": "oops-framework",
     "description": "i18n:oops-framework.description",
     "main": "./dist/main.js",
     "author": "dgflash",
     "editor": ">=3.4.2",
+    "repository": "https://gitee.com/dgflash/oops-plugin-framework",
+    "license": "MIT",
     "scripts": {
         "build": "tsc -b",
         "watch": "tsc -w",
@@ -86,6 +88,11 @@
                 "path": "i18n:oops-framework.name",
                 "label": "i18n:oops-framework.log",
                 "message": "log"
+            },
+            {
+                "path": "i18n:oops-framework.name",
+                "label": "i18n:oops-framework.update",
+                "message": "update"
             }
         ],
         "messages": {
@@ -102,6 +109,11 @@
             "log": {
                 "methods": [
                     "log"
+                ]
+            },
+            "update": {
+                "methods": [
+                    "update"
                 ]
             },
             "tutorial": {
@@ -127,6 +139,7 @@
         }
     },
     "dependencies": {
+        "axios": "^1.7.7",
         "fs-extra": "^10.0.0",
         "vue": "^3.1.4"
     },
