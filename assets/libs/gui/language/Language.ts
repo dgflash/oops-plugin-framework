@@ -1,12 +1,13 @@
-import {Logger} from "../../../core/common/log/Logger";
-import {LanguageData} from "./LanguageData";
-import {LanguagePack} from "./LanguagePack";
+import { sys } from "cc";
+import { Logger } from "../../../core/common/log/Logger";
+import { LanguageData } from "./LanguageData";
+import { LanguagePack } from "./LanguagePack";
 
 /** 多语言管理器 */
 export class LanguageManager {
-    private _languages: Array<string> = ["zh", "en", "tr"];      // 支持的语言
-    private _languagePack: LanguagePack = new LanguagePack();    // 语言包
-    private _defaultLanguage: string = "zh";                     // 默认语言
+    private _languages: Array<string> = [sys.Language.CHINESE, sys.Language.ENGLISH];      // 支持的语言
+    private _languagePack: LanguagePack = new LanguagePack();                              // 语言包
+    private _defaultLanguage: string = sys.Language.CHINESE;                               // 默认语言
 
     /** 支持的多种语言列表 */
     get languages(): string[] {
@@ -18,7 +19,7 @@ export class LanguageManager {
 
     /** 设置的当前语言列表中没有配置时，使用默认语言 */
     set default(lang: string) {
-        this._defaultLanguage = lang || "zh";
+        this._defaultLanguage = lang || sys.Language.CHINESE;
     }
 
     /** 获取当前语种 */
