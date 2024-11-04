@@ -54,9 +54,9 @@ export class LayerPopUp extends LayerUI {
         // 所有弹窗关闭后，关闭事件阻挡功能
         if (this.ui_nodes.size == 0) {
             this.black.enabled = false;
+            this.closeVacancyRemove();
+            this.closeMask();
         }
-        this.closeVacancyRemove();
-        this.closeMask();
     }
 
     /** 关闭遮罩 */
