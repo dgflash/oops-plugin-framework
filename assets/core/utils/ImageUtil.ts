@@ -25,7 +25,7 @@ cc.color(50, 100, 123, 255);
         const ctx = canvas.getContext('2d')!;
         canvas.width = texture.width;
         canvas.height = texture.height;
-        const image = texture.getHtmlElementObj()!;
+        const image = texture.image?.data as HTMLCanvasElement | HTMLImageElement;
         ctx.drawImage(image, 0, 0, texture.width, texture.height);
         const imageData = ctx.getImageData(0, 0, texture.width, texture.height);
         const pixelIndex = ((y - 1) * texture.width * 4) + (x - 1) * 4;
