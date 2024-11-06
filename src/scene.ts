@@ -12,9 +12,10 @@ export function unload() { }
 export const methods = {
     /** 创建视图层制 */
     async createPrefab(fileName: string, className: string, prefabUrl: string) {
-        const { Node, js, Layers } = require('cc');
+        const { Node, js, Layers, UITransform } = require('cc');
         const node = new Node(fileName);
         node.layer = Layers.Enum.UI_2D;
+        node.addComponent(UITransform);
 
         while (true) {
             const result = js.getClassByName(className);
