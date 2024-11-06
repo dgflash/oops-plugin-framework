@@ -28,9 +28,7 @@ export class LanguageLabel extends Component {
     })
     set params(value: Array<LangLabelParamsItem>) {
         this._params = value;
-        if (!EDITOR) {
-            this._needUpdate = true;
-        }
+        if (!EDITOR) this.enabled = true;
     }
     get params(): Array<LangLabelParamsItem> {
         return this._params || [];
@@ -44,9 +42,7 @@ export class LanguageLabel extends Component {
     }
     set dataID(value: string) {
         this._dataID = value;
-        if (!EDITOR) {
-            this._needUpdate = true;
-        }
+        if (!EDITOR) this.enabled = true;
     }
 
     get string(): string {
@@ -63,16 +59,11 @@ export class LanguageLabel extends Component {
         return _string;
     }
 
-    /** 更新语言 */
-    language() {
-        this._needUpdate = true;
-    }
-
     /** 初始字体尺寸 */
     initFontSize: number = 0;
 
     onLoad() {
-        this._needUpdate = true;
+        this.enabled = true;
     }
 
     /**
@@ -95,15 +86,16 @@ export class LanguageLabel extends Component {
             ii.value = value;
             this._params.push(ii);
         }
-        this._needUpdate = true;
+        this.enabled = true;
     }
-    private _needUpdate: boolean = false;
+
+    language() {
+        this.enabled = true;
+    }
 
     update() {
-        if (this._needUpdate) {
-            this.updateContent();
-            this._needUpdate = false;
-        }
+        this.updateContent();
+        this.enabled = false;
     }
 
     updateContent() {
