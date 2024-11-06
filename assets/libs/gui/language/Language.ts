@@ -53,7 +53,7 @@ export class LanguageManager {
      * @param language 语言名
      * @param callback 多语言资源数据加载完成回调
      */
-    setLanguage(language: string, callback: (success: boolean) => void) {
+    setLanguage(language: string, callback?: (success: boolean) => void) {
         if (language == null || language == "") {
             language = this._defaultLanguage;
         }
@@ -68,7 +68,7 @@ export class LanguageManager {
         }
 
         if (language === LanguageData.current) {
-            callback(false);
+            callback && callback(false);
             return;
         }
 
@@ -78,7 +78,7 @@ export class LanguageManager {
             LanguageData.current = language;
             this._languagePack.updateLanguage(language);
             this._languagePack.releaseLanguageAssets(oldLanguage);
-            callback(true);
+            callback && callback(true);
         });
     }
 

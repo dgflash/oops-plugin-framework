@@ -6,6 +6,7 @@ import { TTFFont } from "cc";
  * @LastEditors: dgflash
  * @LastEditTime: 2023-08-22 16:37:40
  */
+
 export class LanguageData {
     /** JSON资源目录 */
     static path_json: string = "language/json";
@@ -50,3 +51,9 @@ export class LanguageData {
         return labId;
     }
 }
+
+export const LanguageType = [
+    'LanguageLabel',
+    'LanguageSprite',
+    'LanguageSpine'
+]

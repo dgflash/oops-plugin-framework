@@ -38,7 +38,7 @@ export default class VMLabel extends VMBase {
     @property({
         readonly: true
     })
-    private labelType: string = LABEL_TYPE.CC_LABEL;
+    protected labelType: string = LABEL_TYPE.CC_LABEL;
 
     @property({
         type: [CCString],
@@ -57,7 +57,7 @@ export default class VMLabel extends VMBase {
     private templateFormatArr: string[] = [];
 
     /** 源字符串 */
-    private originText: string | null = null;
+    protected originText: string | null = null;
 
     onRestore() {
         this.checkLabel();
