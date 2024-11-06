@@ -18,7 +18,9 @@ module.exports = {
     createBll: "创建 ECS 业务层脚本",
     createView: "创建 ECS 视图层脚本",
     createViewMvvm: "创建 ECS 视图层脚本 - MVVM",
-    tools: "工具",
+    tools: "框架工具",
+    tools_asset_menu: "工具",
     tools_compress: "图片压缩",
+    tools_animator_editor: "动画状态机编辑器",
     panel_create_file: "创建框架模板"
 };

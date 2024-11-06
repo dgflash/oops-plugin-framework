@@ -53,7 +53,7 @@ function onAssetMenu(assetInfo) {
                     ]
                 },
                 {
-                    label: `i18n:oops-framework.tools`,
+                    label: `i18n:oops-framework.tools_asset_menu`,
                     submenu: [
                         {
                             label: `i18n:oops-framework.tools_compress`,

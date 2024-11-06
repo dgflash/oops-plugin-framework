@@ -52,5 +52,8 @@ exports.methods = {
     /** 点亮 Github 星星 */
     github() {
         electron_1.shell.openExternal('https://github.com/dgflash/oops-framework');
+    },
+    animator_editor() {
+        electron_1.shell.openExternal('https://oops-1255342636.cos.ap-shanghai.myqcloud.com/tools/animator-editor/index.html');
     }
 };

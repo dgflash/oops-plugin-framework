@@ -51,6 +51,11 @@
         },
         "menu": [
             {
+                "path": "i18n:oops-framework.name/i18n:oops-framework.tools",
+                "label": "i18n:oops-framework.tools_animator_editor",
+                "message": "animator_editor"
+            },
+            {
                 "path": "i18n:oops-framework.name",
                 "label": "i18n:oops-framework.document_oops",
                 "message": "document"
@@ -134,6 +139,11 @@
             "github": {
                 "methods": [
                     "github"
+                ]
+            },
+            "animator_editor": {
+                "methods": [
+                    "animator_editor"
                 ]
             }
         }

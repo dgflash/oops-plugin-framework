@@ -52,5 +52,8 @@ export const methods: { [key: string]: (...any: any) => any } = {
     /** 点亮 Github 星星 */
     github() {
         shell.openExternal('https://github.com/dgflash/oops-framework');
+    },
+    animator_editor() {
+        shell.openExternal('https://oops-1255342636.cos.ap-shanghai.myqcloud.com/tools/animator-editor/index.html');
     }
 };
