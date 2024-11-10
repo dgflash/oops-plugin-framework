@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 13:44:12
  */
-import { BlockInputEvents, Layers, Node, Widget, find, instantiate } from "cc";
+import { BlockInputEvents, Layers, Node, Widget, instantiate } from "cc";
 import { ViewUtil } from "../../utils/ViewUtil";
 import { Notify } from "../prompt/Notify";
 
@@ -62,33 +62,29 @@ export class LayerNotify extends Node {
      * @param content 文本表示
      * @param useI18n 是否使用多语言
      */
-    toast(content: string, useI18n: boolean): void {
-        try {
-            if (this.notify == null) {
-                this.notify = ViewUtil.createPrefabNode(ToastPrefabPath);
-                this.notifyItem = find("item", this.notify)!;
-                this.notifyItem.parent = null;
-            }
-
-            this.notify.parent = this;
-            let childNode = instantiate(this.notifyItem);
-            let toastCom = childNode.getChildByName("prompt")!.getComponent(Notify)!;
-            childNode.parent = this.notify;
-
-            toastCom.onComplete = () => {
-                if (this.notify.children.length == 0) {
-                    this.notify.parent = null;
-                }
-            };
-            toastCom.toast(content, useI18n);
-
-            // 超过3个提示，就施放第一个提示
-            if (this.notify.children.length > 3) {
-                this.notify.children[0].destroy();
-            }
+    toast(content: string, useI18n: boolean) {
+        if (this.notify == null) {
+            this.notify = ViewUtil.createPrefabNode(ToastPrefabPath);
+            this.notifyItem = this.notify.children[0];
+            this.notifyItem.parent = null;
         }
-        catch {
-            console.error("从oops-game-kit项目中拷贝 assets/bundle/common/prefab/notify.prefab 与 assets/bundle/common/anim/notify.anim 覆盖到本项目中");
+
+        this.notify.parent = this;
+        let childNode = instantiate(this.notifyItem);
+        let prompt = childNode.getChildByName("prompt")!;
+        let toastCom = prompt.getComponent(Notify)!;
+        childNode.parent = this.notify;
+
+        toastCom.onComplete = () => {
+            if (this.notify.children.length == 0) {
+                this.notify.parent = null;
+            }
+        };
+        toastCom.toast(content, useI18n);
+
+        // 超过3个提示，就施放第一个提示
+        if (this.notify.children.length > 3) {
+            this.notify.children[0].destroy();
         }
     }
 }
