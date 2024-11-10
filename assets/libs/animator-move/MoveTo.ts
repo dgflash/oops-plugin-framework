@@ -120,5 +120,18 @@ export class MoveTo extends Component {
     private exit() {
         this.onComplete?.call(this);
         this.enabled = false;
+
+        this.target = null;
+        this.velocity = Vec3Util.zero;
+        this.speed = 0;
+        this.hasYAxis = true;
+        this.ns = Node.NodeSpace.LOCAL;
+        this.offset = 0;
+        this.offsetVector = null;
+        this.onStart = null;
+        this.onComplete = null;
+        this.onChange = null;
+        this.timer.reset();
+        this.end = null;
     }
 }
