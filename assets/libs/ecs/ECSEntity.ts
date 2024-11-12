@@ -126,14 +126,14 @@ export class ECSEntity {
         if (typeof ctor === 'function') {
             let compTid = ctor.tid;
             if (ctor.tid === -1) {
-                throw Error('组件未注册！');
+                throw Error(`【${this.name}】实体【${ctor.compName}】组件未注册`);
             }
             if (this.compTid2Ctor.has(compTid)) {                               // 判断是否有该组件，如果有则先移除
                 if (isReAdd) {
                     this.remove(ctor);
                 }
                 else {
-                    console.log(`已经存在组件：${ctor.compName}`);
+                    console.log(`【${this.name}】实体【${ctor.compName}】组件已存在`);
                     // @ts-ignore
                     return this[ctor.compName] as T;
                 }
@@ -165,12 +165,8 @@ export class ECSEntity {
             let compTid = tmpCtor.tid;
             // console.assert(compTid !== -1 || !compTid, '组件未注册！');
             // console.assert(this.compTid2Ctor.has(compTid), '已存在该组件！');
-            if (compTid === -1 || compTid == null) {
-                throw Error('组件未注册');
-            }
-            if (this.compTid2Ctor.has(compTid)) {
-                throw Error('已经存在该组件');
-            }
+            if (compTid === -1 || compTid == null) throw Error(`【${this.name}】实体【${tmpCtor.name}】组件未注册`);
+            if (this.compTid2Ctor.has(compTid)) throw Error(`【${this.name}】实体【${tmpCtor.name}】组件已经存在`);
 
             this.mask.set(compTid);
             //@ts-ignore
