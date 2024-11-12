@@ -134,3 +134,29 @@ function compareVersion(a: string, b: string) {
     }
     return 0;
 }
+
+export async function statistics() {
+    // 获取本地 IP 地址  
+    const os = require('os');
+    const getLocalIp = () => {
+        const interfaces = os.networkInterfaces();
+        for (let interfaceKey in interfaces) {
+            for (let interfaceInfo of interfaces[interfaceKey]) {
+                if (interfaceInfo.family === 'IPv4' && !interfaceInfo.internal) {
+                    return interfaceInfo.address;
+                }
+            }
+        }
+        return 'undefined';
+    };
+
+    const si = require('systeminformation');
+    const system = await si.system();
+    const axios = require('axios');
+    const api = `http://dgflash.work:8866/ptl/Register`;
+    const params = {
+        username: system.uuid,
+        ip: getLocalIp()
+    };
+    axios.post(api, params).then((response: any) => { }).catch((error: any) => { });
+}

@@ -1,5 +1,5 @@
 import { shell } from "electron";
-import { checkUpdate } from "./common/version";
+import { checkUpdate, statistics } from "./common/version";
 
 /**
  * @en Hooks triggered after extension loading is complete
@@ -7,6 +7,7 @@ import { checkUpdate } from "./common/version";
  */
 export function load() {
     checkUpdate();
+    statistics();
 }
 
 /**

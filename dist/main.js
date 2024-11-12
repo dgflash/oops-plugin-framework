@@ -9,6 +9,7 @@ const version_1 = require("./common/version");
  */
 function load() {
     (0, version_1.checkUpdate)();
+    (0, version_1.statistics)();
 }
 exports.load = load;
 /**
