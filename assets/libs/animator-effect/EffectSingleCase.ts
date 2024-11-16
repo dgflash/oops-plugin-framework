@@ -134,7 +134,7 @@ export class EffectSingleCase {
      * @param parent  父节点
      * @param params  显示参数
      */
-    private show(path: string, parent?: Node, params?: IEffectParams): Node {
+    show(path: string, parent?: Node, params?: IEffectParams): Node {
         var np = this.effects.get(path);
         if (np == null) {
             np = new NodePool();
@@ -154,7 +154,6 @@ export class EffectSingleCase {
         // 池中获取没使用的显示对象
         else {
             node = np.get()!;
-            node.getComponent(EffectFinishedRelease);
         }
 
         // 设置动画播放速度
