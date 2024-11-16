@@ -4,18 +4,12 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-03-06 14:40:34
  */
-import { Animation, Component, Node, NodePool, ParticleSystem, Prefab, sp, Vec3 } from 'cc';
+import { Animation, Node, NodePool, ParticleSystem, Prefab, sp, Vec3 } from 'cc';
 import { message } from '../../core/common/event/MessageManager';
 import { resLoader } from '../../core/common/loader/ResLoader';
 import { ViewUtil } from '../../core/utils/ViewUtil';
 import { EffectEvent } from './EffectEvent';
 import { EffectFinishedRelease } from './EffectFinishedRelease';
-
-/** 效果数据 */
-class EffectData extends Component {
-    /** 资源路径 */
-    path: string = null!;
-}
 
 /** 特效参数 */
 export interface IEffectParams {
@@ -83,6 +77,28 @@ export class EffectSingleCase {
         return 0;
     }
 
+    /** 池中预加载显示对象 */
+    preload(count: number, path: string, bundleName: string = resLoader.defaultBundleName): Promise<void> {
+        return new Promise(async (resolve, reject) => {
+            let np = this.effects.get(path);
+            if (np == null) {
+                np = new NodePool();
+                this.effects.set(path, np);
+            }
+
+            this.res.set(path, bundleName);
+            await resLoader.loadAsync(bundleName, path, Prefab);
+
+            for (let i = 0; i < count; i++) {
+                let node = ViewUtil.createPrefabNode(path);
+                //@ts-ignore
+                node.res_path = path;
+                np.put(node);
+            }
+            resolve();
+        });
+    }
+
     /**
      * 加载资源并生成节点对象
      * @param path    预制资源路径
@@ -129,7 +145,8 @@ export class EffectSingleCase {
         // 创建池中新显示对象
         if (np.size() == 0) {
             node = ViewUtil.createPrefabNode(path);
-            node.addComponent(EffectData).path = path;
+            //@ts-ignore
+            node.res_path = path;
             if (params && params.isPlayFinishedRelease) {
                 node.addComponent(EffectFinishedRelease);
             }
@@ -164,14 +181,17 @@ export class EffectSingleCase {
      * @param node  节点
      */
     put(node: Node) {
-        var name = node.getComponent(EffectData)!.path;
-        var np = this.effects.get(name);
-        if (np) {
-            // 回收使用的节点
-            this.effects_use.delete(node);
+        //@ts-ignore
+        let name = node.res_path;
+        if (name) {
+            let np = this.effects.get(name);
+            if (np) {
+                // 回收使用的节点
+                this.effects_use.delete(node);
 
-            // 回到到池中
-            np.put(node);
+                // 回到到池中
+                np.put(node);
+            }
         }
     }
 
