@@ -105,7 +105,7 @@ export class EffectSingleCase {
      * @param parent  父节点
      * @param params  显示参数
      */
-    async loadAndShow(path: string, parent?: Node, params?: IEffectParams): Promise<Node> {
+    loadAndShow(path: string, parent?: Node, params?: IEffectParams): Promise<Node> {
         return new Promise(async (resolve, reject) => {
             var np = this.effects.get(path);
             if (np == undefined) {
