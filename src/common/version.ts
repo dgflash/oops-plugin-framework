@@ -5,23 +5,60 @@ const axios = require('axios');
  * 检查更新
  * @param {boolean} logWhatever 无论有无更新都打印提示
  */
-export async function checkUpdate() {
-    // 是否有新版本
-    const hasNewVersion = await check();
+export function checkUpdate() {
+    const packageJsonUrl = `${PackageUtil.repository}/raw/master/package.json`;
+    axios.get(packageJsonUrl)
+        .then(async (response: any) => {
+            const json = response.data;
 
-    // 打印到控制台
-    const localVersion = getLocalVersion();
-    if (hasNewVersion) {
-        const remoteVersion = await getRemoteVersion();
-        console.log('【Oops Framework】发现新版本');
-        console.log('【Oops Framework】本地版本：', localVersion);
-        console.log('【Oops Framework】最新版本：', remoteVersion);
-        console.log('【Oops Framework】关闭 Cocos Creator 运行 update-oops-plugin-hot-update 可自动更新');
-    }
-    else {
-        console.log('【Oops Framework】当前 Oops Framework 为最新版本');
-        console.log('【Oops Framework】本地版本：', localVersion);
-    }
+            if (json && json.version) {
+                const remoteVersion = json.version;
+                // 本地版本号
+                const localVersion = getLocalVersion();
+                // 对比版本号
+                const result = compareVersion(localVersion, remoteVersion);
+
+                if (result < 0) {
+                    console.log('【Oops Framework】发现新版本');
+                    console.log('【Oops Framework】本地版本：', localVersion);
+                    console.log('【Oops Framework】最新版本：', remoteVersion);
+                    console.log('【Oops Framework】关闭 Cocos Creator 运行 update-oops-plugin-hot-update 可自动更新');
+                }
+                else {
+                    console.log('【Oops Framework】当前 Oops Framework 为最新版本');
+                    console.log('【Oops Framework】本地版本：', localVersion);
+                }
+            }
+        })
+        .catch(() => {
+            console.error("【Oops Framework】请检查你的网络是否正常，框架版本验证失败");
+        });
+}
+
+export async function statistics() {
+    // 获取本地 IP 地址  
+    const os = require('os');
+    const getLocalIp = () => {
+        const interfaces = os.networkInterfaces();
+        for (let interfaceKey in interfaces) {
+            for (let interfaceInfo of interfaces[interfaceKey]) {
+                if (interfaceInfo.family === 'IPv4' && !interfaceInfo.internal) {
+                    return interfaceInfo.address;
+                }
+            }
+        }
+        return 'undefined';
+    };
+
+    const si = require('systeminformation');
+    const system = await si.system();
+    const axios = require('axios');
+    const api = `http://dgflash.work:8866/ptl/Register`;
+    const params = {
+        username: system.uuid,
+        ip: getLocalIp()
+    };
+    axios.post(api, params).then((response: any) => { }).catch(() => { });
 }
 
 export async function reload() {
@@ -29,55 +66,6 @@ export async function reload() {
     await Editor.Package.unregister(path);
     await Editor.Package.register(path);
     await Editor.Package.enable(path);
-}
-
-/**
- * 检查远端是否有新版本
- * @returns {Promise<boolean>}
- */
-async function check() {
-    // 远端版本号
-    const remoteVersion = await getRemoteVersion();
-    if (!remoteVersion) {
-        return false;
-    }
-
-    // 本地版本号
-    const localVersion = getLocalVersion();
-
-    // 对比版本号
-    const result = compareVersion(localVersion, remoteVersion);
-
-    return (result < 0);
-}
-
-/**
- * 获取远端版本号
- * @returns {Promise<string>}
- */
-async function getRemoteVersion() {
-    const json = await getRemotePackageJson();
-    if (json && json.version) {
-        return json.version;
-    }
-    return null;
-}
-
-/**
- * 获取远端的 package.json
- * @returns {Promise<object>}
- */
-async function getRemotePackageJson() {
-    return new Promise<any>(async (resolve, reject) => {
-        const packageJsonUrl = `${PackageUtil.repository}/raw/master/package.json`;
-        axios.get(packageJsonUrl)
-            .then((response: any) => {
-                resolve(response.data);
-            })
-            .catch((error: any) => {
-                console.error("服务器连接失败");
-            });
-    });
 }
 
 /**
@@ -133,30 +121,4 @@ function compareVersion(a: string, b: string) {
         }
     }
     return 0;
-}
-
-export async function statistics() {
-    // 获取本地 IP 地址  
-    const os = require('os');
-    const getLocalIp = () => {
-        const interfaces = os.networkInterfaces();
-        for (let interfaceKey in interfaces) {
-            for (let interfaceInfo of interfaces[interfaceKey]) {
-                if (interfaceInfo.family === 'IPv4' && !interfaceInfo.internal) {
-                    return interfaceInfo.address;
-                }
-            }
-        }
-        return 'undefined';
-    };
-
-    const si = require('systeminformation');
-    const system = await si.system();
-    const axios = require('axios');
-    const api = `http://dgflash.work:8866/ptl/Register`;
-    const params = {
-        username: system.uuid,
-        ip: getLocalIp()
-    };
-    axios.post(api, params).then((response: any) => { }).catch((error: any) => { });
 }
