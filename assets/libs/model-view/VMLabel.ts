@@ -38,7 +38,7 @@ export default class VMLabel extends VMBase {
     @property({
         readonly: true
     })
-    private labelType: string = LABEL_TYPE.CC_LABEL;
+    protected labelType: string = LABEL_TYPE.CC_LABEL;
 
     @property({
         type: [CCString],
@@ -57,7 +57,7 @@ export default class VMLabel extends VMBase {
     private templateFormatArr: string[] = [];
 
     /** 源字符串 */
-    private originText: string | null = null;
+    protected originText: string | null = null;
 
     onRestore() {
         this.checkLabel();
@@ -81,7 +81,7 @@ export default class VMLabel extends VMBase {
         this.onValueInit();
     }
 
-    // 解析模板 获取初始格式化字符串格式 的信息
+    /** 解析模板 获取初始格式化字符串格式的信息 */
     parseTemplate() {
         let regexAll = /\{\{(.+?)\}\}/g;                // 匹配： 所有的{{value}}
         let regex = /\{\{(.+?)\}\}/;                    // 匹配： {{value}} 中的 value
@@ -97,7 +97,7 @@ export default class VMLabel extends VMBase {
         }
     }
 
-    /**获取解析字符串模板后得到的值 */
+    /** 获取解析字符串模板后得到的值 */
     getReplaceText() {
         if (!this.originText) return "";
         let regexAll = /\{\{(.+?)\}\}/g;                    // 匹配： 所有的{{value}}
@@ -153,7 +153,6 @@ export default class VMLabel extends VMBase {
                 this.templateValueArr[index] = n;          // 缓存值
                 this.setLabelValue(this.getReplaceText()); // 重新解析文本
             }
-
         }
     }
 

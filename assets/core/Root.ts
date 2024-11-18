@@ -63,6 +63,7 @@ export class Root extends Component {
         const config_name = "config";
         const config = await oops.res.loadAsync(config_name, JsonAsset);
         if (config) {
+            // oops.config.btc = new BuildTimeConstants();
             oops.config.query = new GameQueryConfig();
             oops.config.game = new GameConfig(config);
 
@@ -73,6 +74,7 @@ export class Root extends Component {
             // 本地存储模块
             oops.storage = new StorageManager();
             oops.storage.init(new StorageSecuritySimple);
+            // oops.storage.init(new StorageSecurityCrypto);
 
             // 全局消息
             oops.message = message;

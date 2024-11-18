@@ -27,7 +27,7 @@ export default class UIButton extends Button {
         type: AudioClip
     })
     private effect: AudioClip = null!;
-    private effectIds: number[] = [];
+    // private effectIds: number[] = [];
 
     /** 触摸次数 */
     private _touchCount = 0;
@@ -61,19 +61,20 @@ export default class UIButton extends Button {
     /** 短按触摸音效 */
     protected async playEffect() {
         if (this.effect) {
-            const effectId = await oops.audio.playEffect(this.effect, resLoader.defaultBundleName, () => {
-                this.effectIds.remove(effectId);
-            });
-            if (effectId > 0) this.effectIds.push(effectId);
+            oops.audio.playEffect(this.effect);
+            // const effectId = await oops.audio.playEffect(this.effect, resLoader.defaultBundleName, () => {
+            //     this.effectIds.remove(effectId);
+            // });
+            // if (effectId > 0) this.effectIds.push(effectId);
         }
     }
 
-    onDestroy() {
-        if (this.effect) {
-            this.effectIds.forEach(effectId => {
-                console.log(effectId);
-                oops.audio.putEffect(effectId, this.effect);
-            });
-        }
-    }
+    // onDestroy() {
+    //     if (this.effect) {
+    //         this.effectIds.forEach(effectId => {
+    //             console.log(effectId);
+    //             oops.audio.putEffect(effectId, this.effect);
+    //         });
+    //     }
+    // }
 }

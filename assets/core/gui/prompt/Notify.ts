@@ -29,6 +29,7 @@ export class Notify extends Component {
     private onFinished() {
         this.node.destroy();
         this.onComplete && this.onComplete();
+        this.onComplete = null!;
     }
 
     /**

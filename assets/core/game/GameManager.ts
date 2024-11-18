@@ -17,10 +17,12 @@ export class GameManager {
 
     /** 设置游戏动画速度 */
     setTimeScale(scale: number) {
+        //@ts-ignore
         director.globalGameTimeScale = scale;
     }
     /** 获取游戏动画速度 */
     getTimeScale() {
+        //@ts-ignore
         return director.globalGameTimeScale;
     }
 }

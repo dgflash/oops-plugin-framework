@@ -167,7 +167,7 @@ export class GameComponent extends Component {
         }
     }
 
-    private getResKey(realBundle: string, realPath: string, resId?: number) {
+    private getResKey(realBundle: string, realPath: string, resId?: number): string {
         let key = `${realBundle}:${realPath}`;
         if (resId != null) key += ":" + resId;
         return key;

@@ -121,7 +121,6 @@ export class LayerPopUp extends LayerUI {
     clear(isDestroy: boolean) {
         super.clear(isDestroy)
         this.black.enabled = false;
-        this.active = false;
         this.closeVacancyRemove();
         this.closeMask();
     }

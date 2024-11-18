@@ -122,7 +122,6 @@ export class LanguageLabel extends Component {
             if (font) {
                 richtext.font = font;
             }
-            this.initFontSize = richtext.fontSize;
             richtext.string = this.string;
             this.initFontSize = richtext.fontSize;
         }

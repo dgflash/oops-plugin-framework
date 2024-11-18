@@ -8,10 +8,7 @@ import { director, error, JsonAsset, TTFFont } from "cc";
 import { resLoader } from "../../../core/common/loader/ResLoader";
 import { Logger } from "../../../core/common/log/Logger";
 import { JsonUtil } from "../../../core/utils/JsonUtil";
-import { LanguageData } from "./LanguageData";
-import { LanguageLabel } from "./LanguageLabel";
-import { LanguageSpine } from "./LanguageSpine";
-import { LanguageSprite } from "./LanguageSprite";
+import { LanguageData, LanguageType } from "./LanguageData";
 
 export class LanguagePack {
     /**
@@ -21,23 +18,12 @@ export class LanguagePack {
     updateLanguage(lang: string) {
         let rootNodes = director.getScene()!.children;
         for (let i = 0; i < rootNodes.length; ++i) {
-            // 更新所有的LanguageLabel节点
-            let labels = rootNodes[i].getComponentsInChildren(LanguageLabel);
-            for (let j = 0; j < labels.length; j++) {
-                labels[j].language();
-            }
-
-            // 更新所有的LanguageSprite节点
-            let sprites = rootNodes[i].getComponentsInChildren(LanguageSprite);
-            for (let j = 0; j < sprites.length; j++) {
-                sprites[j].language();
-            }
-
-            // 更新所有的LanguageSpine节点
-            let spines = rootNodes[i].getComponentsInChildren(LanguageSpine);
-            for (let j = 0; j < spines.length; j++) {
-                spines[j].language();
-            }
+            LanguageType.forEach(type => {
+                let comps: any[] = rootNodes[i].getComponentsInChildren(type);
+                for (let j = 0; j < comps.length; j++) {
+                    comps[j].language();
+                }
+            })
         }
     }
 

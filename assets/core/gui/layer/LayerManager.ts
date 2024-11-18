@@ -82,6 +82,11 @@ export class LayerManager {
     /** 新手引导层 */
     guide!: Node;
 
+    /** 窗口宽高比例 */
+    windowAspectRatio: number = 0;
+    /** 设计宽高比例 */
+    designAspectRatio: number = 0;
+
     /** 界面层 */
     private readonly ui!: LayerUI;
     /** 弹窗层 */
@@ -98,13 +103,13 @@ export class LayerManager {
     private initScreenAdapter() {
         const drs = view.getDesignResolutionSize();
         const ws = screen.windowSize;
-        const windowAspectRatio = ws.width / ws.height;
-        const designAspectRatio = drs.width / drs.height;
+        this.windowAspectRatio = ws.width / ws.height;
+        this.designAspectRatio = drs.width / drs.height;
 
         let finalW: number = 0;
         let finalH: number = 0;
-        
-        if (windowAspectRatio > designAspectRatio) {
+
+        if (this.windowAspectRatio > this.designAspectRatio) {
             finalH = drs.height;
             finalW = finalH * ws.width / ws.height;
             oops.log.logView("适配屏幕高度", "【横屏】");
@@ -256,8 +261,13 @@ export class LayerManager {
      * @param uiArgs      新打开场景参数
      */
     replace(removeUiId: number, openUiId: number, uiArgs: any = null) {
-        this.open(openUiId, uiArgs);
-        this.remove(removeUiId);
+        const callbacks: UICallbacks = {
+            onAdded: (node: Node, params: any) => {
+                this.remove(removeUiId);
+            }
+        };
+        this.open(openUiId, uiArgs, callbacks);
+
     }
 
     /**
