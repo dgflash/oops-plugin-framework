@@ -1,4 +1,4 @@
-import { Camera, Layers, Node, ResolutionPolicy, Widget, screen, view, warn } from "cc";
+import { Camera, Layers, Node, ResolutionPolicy, SafeArea, Widget, screen, view, warn } from "cc";
 import { oops } from "../../Oops";
 import { UICallbacks } from "./Defines";
 import { DelegateComponent } from "./DelegateComponent";
@@ -86,20 +86,49 @@ export class LayerManager {
     windowAspectRatio: number = 0;
     /** 设计宽高比例 */
     designAspectRatio: number = 0;
+    /** 是否开启移动设备安全区域适配 */
+    mobileSafeArea: boolean = false;
 
     /** 界面层 */
-    private readonly ui!: LayerUI;
+    private ui!: LayerUI;
     /** 弹窗层 */
-    private readonly popup!: LayerPopUp;
+    private popup!: LayerPopUp;
     /** 只能弹出一个的弹窗 */
-    private readonly dialog!: LayerDialog;
+    private dialog!: LayerDialog;
     /** 游戏系统提示弹窗  */
-    private readonly system!: LayerDialog;
+    private system!: LayerDialog;
     /** 消息提示控制器，请使用show方法来显示 */
-    private readonly notify!: LayerNotify;
+    private notify!: LayerNotify;
     /** UI配置 */
     private configs: { [key: number]: UIConfig } = {};
 
+    /**
+     * 初始化界面层
+     * @param root  界面根节点
+     */
+    private initLayer(root: Node) {
+        this.root = root;
+        this.initScreenAdapter();
+        this.camera = this.root.getComponentInChildren(Camera)!;
+        this.game = this.create_node(LayerType.Game);
+
+        this.ui = new LayerUI(LayerType.UI);
+        this.popup = new LayerPopUp(LayerType.PopUp);
+        this.dialog = new LayerDialog(LayerType.Dialog);
+        this.system = new LayerDialog(LayerType.System);
+        this.notify = new LayerNotify(LayerType.Notify);
+        this.guide = this.create_node(LayerType.Guide);
+
+        root.addChild(this.game);
+        root.addChild(this.ui);
+        root.addChild(this.popup);
+        root.addChild(this.dialog);
+        root.addChild(this.system);
+        root.addChild(this.notify);
+        root.addChild(this.guide);
+    }
+
+    /** 初始化屏幕适配 */
     private initScreenAdapter() {
         const drs = view.getDesignResolutionSize();
         const ws = screen.windowSize;
@@ -120,32 +149,11 @@ export class LayerManager {
             oops.log.logView("适配屏幕宽度", "【竖屏】");
         }
         view.setDesignResolutionSize(finalW, finalH, ResolutionPolicy.UNKNOWN);
-    }
 
-    /**
-     * 构造函数
-     * @param root  界面根节点
-     */
-    constructor(root: Node) {
-        this.root = root;
-        this.initScreenAdapter();
-        this.camera = this.root.getComponentInChildren(Camera)!;
-        this.game = this.create_node(LayerType.Game);
-
-        this.ui = new LayerUI(LayerType.UI);
-        this.popup = new LayerPopUp(LayerType.PopUp);
-        this.dialog = new LayerDialog(LayerType.Dialog);
-        this.system = new LayerDialog(LayerType.System);
-        this.notify = new LayerNotify(LayerType.Notify);
-        this.guide = this.create_node(LayerType.Guide);
-
-        root.addChild(this.game);
-        root.addChild(this.ui);
-        root.addChild(this.popup);
-        root.addChild(this.dialog);
-        root.addChild(this.system);
-        root.addChild(this.notify);
-        root.addChild(this.guide);
+        if (this.mobileSafeArea) {
+            this.root.addComponent(SafeArea);
+            oops.log.logView("开启移动设备安全区域适配");
+        }
     }
 
     /**

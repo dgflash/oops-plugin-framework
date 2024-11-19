@@ -90,13 +90,17 @@ export class Root extends Component {
             oops.game = new GameManager(this.game);
 
             // 游戏界面管理
-            oops.gui = new LayerManager(this.gui);
+            oops.gui = new LayerManager();
+            oops.gui.mobileSafeArea = oops.config.game.mobileSafeArea;
+            //@ts-ignore
+            oops.gui.initLayer(this.gui);
 
             // 网络模块
             oops.http.server = oops.config.game.httpServer;                                      // Http 服务器地址
             oops.http.timeout = oops.config.game.httpTimeout;                                    // Http 请求超时时间
 
-            game.frameRate = oops.config.game.frameRate;                                         // 初始化每秒传输帧数
+            // 初始化每秒传输帧数
+            game.frameRate = oops.config.game.frameRate;
 
             this.enabled = true;
             this.init();

@@ -77,6 +77,11 @@ export class GameConfig {
         return this._data.config.loadingTimeoutGui || 1000;
     }
 
+    /** 是否开启移动设备安全区域适配 */
+    get mobileSafeArea(): boolean {
+        return this._data.config.mobileSafeArea || false;
+    }
+
     private readonly _data: any = null;
     /** 游戏配置数据 */
     get data(): any {
