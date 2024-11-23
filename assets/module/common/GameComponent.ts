@@ -30,7 +30,7 @@ interface ResRecord {
     resId?: number
 }
 
-/** 
+/**
  * 游戏显示对象组件模板
  * 1、当前对象加载的资源，会在对象释放时，自动释放引用的资源
  * 2、当前对象支持启动游戏引擎提供的各种常用逻辑事件
@@ -63,8 +63,8 @@ export class GameComponent extends Component {
         this.event.off(event);
     }
 
-    /** 
-     * 触发全局事件 
+    /**
+     * 触发全局事件
      * @param event      事件名
      * @param args       事件参数
      */
@@ -76,7 +76,7 @@ export class GameComponent extends Component {
     //#region 预制节点管理
 
     /** 摊平的节点集合（所有节点不能重名） */
-    private nodes: Map<string, Node> = null!;
+    protected nodes: Map<string, Node> = null!;
 
     /** 通过节点名获取预制上的节点，整个预制不能有重名节点 */
     getNode(name: string): Node | undefined {
@@ -84,6 +84,26 @@ export class GameComponent extends Component {
             return this.nodes.get(name);
         }
         return undefined;
+    }
+
+    /**
+     * 通过节点名查找节点，并执行相应回调
+     * @param nodeName 节点名
+     * @param callback 如果节点存在，则执行 callback
+     * @param notCallback 如果节点不存在，则执行 notCallback
+     * @example
+     *         this.ifNode("yourNodeName", node => {
+     *             // your biz code
+     *         });
+     */
+    ifNode(nodeName: string, callback: (node: Node) => void, notCallback?: () => void) {
+        const theNode = this.getNode(nodeName);
+        if (theNode && callback) {
+            callback(theNode);
+            return;
+        }
+
+        notCallback!();
     }
 
     /** 平摊所有节点存到Map<string, Node>中通过get(name: string)方法获取 */
@@ -354,13 +374,13 @@ export class GameComponent extends Component {
     //#endregion
 
     //#region 游戏逻辑事件
-    /** 
+    /**
      * 批量设置当前界面按钮事件
      * @param bindRootEvent  是否对预制根节点绑定触摸事件
      * @example
      * 注：按钮节点Label1、Label2必须绑定UIButton等类型的按钮组件才会生效，方法名必须与节点名一致
      * this.setButton();
-     * 
+     *
      * Label1(event: EventTouch) { console.log(event.target.name); }
      * Label2(event: EventTouch) { console.log(event.target.name); }
      */
@@ -400,12 +420,12 @@ export class GameComponent extends Component {
         });
     }
 
-    /** 
-     * 批量设置全局事件 
+    /**
+     * 批量设置全局事件
      * @example
      *  this.setEvent("onGlobal");
      *  this.dispatchEvent("onGlobal", "全局事件");
-     * 
+     *
      *  onGlobal(event: string, args: any) { console.log(args) };
      */
     protected setEvent(...args: string[]) {
