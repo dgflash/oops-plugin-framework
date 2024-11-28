@@ -56,16 +56,6 @@ export class AudioEffectPool {
         return new Promise(async (resolve, reject) => {
             if (!this.switch) return resolve(-1);
 
-            let aeid = this.getAeId();
-            let key: string;
-            if (url instanceof AudioClip) {
-                key = url.uuid;
-            }
-            else {
-                key = `${bundleName}_${url}`;
-            }
-            key += "_" + aeid;
-
             // 创建音效资源
             let clip: AudioClip;
             if (url instanceof AudioClip) {
@@ -78,6 +68,22 @@ export class AudioEffectPool {
                     clip = await resLoader.loadAsync(bundleName, url, AudioClip);
                 }
             }
+
+            // 资源已被释放
+            if (!clip.isValid) {
+                resolve(-1);
+                return;
+            }
+
+            let aeid = this.getAeId();
+            let key: string;
+            if (url instanceof AudioClip) {
+                key = url.uuid;
+            }
+            else {
+                key = `${bundleName}_${url}`;
+            }
+            key += "_" + aeid;
 
             // 获取音效果播放器播放音乐
             let ae: AudioEffect;
