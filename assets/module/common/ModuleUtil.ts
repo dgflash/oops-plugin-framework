@@ -1,11 +1,11 @@
-import {Node, __private} from "cc";
-import {oops} from "../../core/Oops";
-import {UICallbacks} from "../../core/gui/layer/Defines";
-import {ViewUtil} from "../../core/utils/ViewUtil";
-import {ecs} from "../../libs/ecs/ECS";
-import {CompType} from "../../libs/ecs/ECSModel";
-import {CCComp} from "./CCComp";
-import {CCVMParentComp} from "./CCVMParentComp";
+import { Node, __private } from "cc";
+import { oops } from "../../core/Oops";
+import { UICallbacks } from "../../core/gui/layer/Defines";
+import { ViewUtil } from "../../core/utils/ViewUtil";
+import { ecs } from "../../libs/ecs/ECS";
+import { CompType } from "../../libs/ecs/ECSModel";
+import { CCComp } from "./CCComp";
+import { CCVMParentComp } from "./CCVMParentComp";
 
 export class ModuleUtil {
     /**
@@ -23,7 +23,8 @@ export class ModuleUtil {
         const uic: UICallbacks = {
             onAdded: (node: Node, params: any) => {
                 const comp = node.getComponent(ctor) as ecs.Comp;
-                ent.add(comp);
+                //@ts-ignore
+                if (!ent.has(ctor)) ent.add(comp);
             }
         };
         oops.gui.open(uiId, uiArgs, uic);
@@ -83,7 +84,7 @@ export class ModuleUtil {
      * @param isDestroy  是否释放界面缓存（默认为释放界面缓存）
      */
     public static removeViewUi(ent: ecs.Entity, ctor: CompType<ecs.IComp>, uiId: number, isDestroy: boolean = true) {
-        ent.remove(ctor, isDestroy);
+        if (isDestroy) ent.remove(ctor, isDestroy);
         oops.gui.remove(uiId, isDestroy);
     }
 }
