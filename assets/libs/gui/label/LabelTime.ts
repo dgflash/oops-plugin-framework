@@ -2,6 +2,7 @@ import { Label, _decorator } from "cc";
 import { oops } from "../../../core/Oops";
 import { EventMessage } from "../../../core/common/event/EventMessage";
 import { TimeUtil } from "../../../core/utils/TimeUtils";
+import { EDITOR } from "cc/env";
 
 const { ccclass, property, menu } = _decorator;
 
@@ -135,15 +136,19 @@ export default class LabelTime extends Label {
     }
 
     start() {
-        oops.message.on(EventMessage.GAME_SHOW, this.onGameShow, this);
-        oops.message.on(EventMessage.GAME_HIDE, this.onGameHide, this);
+        if (!EDITOR) {
+            oops.message.on(EventMessage.GAME_SHOW, this.onGameShow, this);
+            oops.message.on(EventMessage.GAME_HIDE, this.onGameHide, this);
+        }
         this.timing_start();
         this.format();
     }
 
     onDestroy() {
-        oops.message.off(EventMessage.GAME_SHOW, this.onGameShow, this);
-        oops.message.off(EventMessage.GAME_HIDE, this.onGameHide, this);
+        if (!EDITOR) {
+            oops.message.off(EventMessage.GAME_SHOW, this.onGameShow, this);
+            oops.message.off(EventMessage.GAME_HIDE, this.onGameHide, this);
+        }
     }
 
     private onGameShow() {
