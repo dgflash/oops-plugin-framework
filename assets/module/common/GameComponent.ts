@@ -86,26 +86,6 @@ export class GameComponent extends Component {
         return undefined;
     }
 
-    /**
-     * 通过节点名查找节点，并执行相应回调
-     * @param nodeName 节点名
-     * @param callback 如果节点存在，则执行 callback
-     * @param notCallback 如果节点不存在，则执行 notCallback
-     * @example
-     *         this.ifNode("yourNodeName", node => {
-     *             // your biz code
-     *         });
-     */
-    ifNode(nodeName: string, callback: (node: Node) => void, notCallback?: () => void) {
-        const theNode = this.getNode(nodeName);
-        if (theNode && callback) {
-            callback(theNode);
-            return;
-        }
-
-        notCallback!();
-    }
-
     /** 平摊所有节点存到Map<string, Node>中通过get(name: string)方法获取 */
     nodeTreeInfoLite() {
         this.nodes = new Map();
