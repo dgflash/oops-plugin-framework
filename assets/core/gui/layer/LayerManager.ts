@@ -69,6 +69,8 @@ export interface UIConfig {
     vacancy?: boolean,
     /** 是否打开窗口后显示背景遮罩（默认关闭） */
     mask?: boolean;
+    /** 是否启动真机安全区域显示 */
+    safeArea?: boolean;
 }
 
 /** 界面层级管理器 */

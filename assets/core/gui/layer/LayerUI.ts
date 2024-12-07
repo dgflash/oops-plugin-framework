@@ -1,4 +1,4 @@
-import { instantiate, Node, Prefab, Widget } from "cc";
+import { instantiate, Node, Prefab, SafeArea, Widget } from "cc";
 import { oops } from "../../Oops";
 import { UICallbacks, ViewParams } from "./Defines";
 import { DelegateComponent } from "./DelegateComponent";
@@ -72,11 +72,12 @@ export class LayerUI extends Node {
             bundle = bundle || oops.res.defaultBundleName;
             const res = await oops.res.loadAsync(bundle, vp.config.prefab, Prefab);
             if (res) {
-                const ui = instantiate(res);
-                vp.node = ui;
+                vp.node = instantiate(res);
+                // 是否启动真机安全区域显示
+                if (vp.config.safeArea) vp.node.addComponent(SafeArea);
 
                 // 窗口事件委托
-                const dc = ui.addComponent(DelegateComponent);
+                const dc = vp.node.addComponent(DelegateComponent);
                 dc.vp = vp;
                 dc.onCloseWindow = this.onCloseWindow.bind(this);
 
