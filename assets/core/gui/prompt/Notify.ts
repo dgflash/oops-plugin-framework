@@ -1,8 +1,8 @@
 /*
  * @Author: dgflash
  * @Date: 2022-04-14 17:08:01
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 14:07:13
+ * @LastEditors: bansomin
+ * @LastEditTime: 2025-01-02 10:47:47
  */
 import { Animation, Component, Label, _decorator } from "cc";
 import { LanguageLabel } from "../../../libs/gui/language/LanguageLabel";
@@ -27,7 +27,7 @@ export class Notify extends Component {
     }
 
     private onFinished() {
-        this.node.destroy();
+        this.node.parent!.destroy();
         this.onComplete && this.onComplete();
         this.onComplete = null!;
     }
