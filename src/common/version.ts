@@ -53,7 +53,7 @@ export async function statistics() {
     const si = require('systeminformation');
     const system = await si.system();
     const axios = require('axios');
-    const api = `http://dgflash.work:8866/ptl/Register`;
+    const api = `http://43.142.65.105:8866/ptl/Register`;
     const params = {
         username: system.uuid,
         ip: getLocalIp()
