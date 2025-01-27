@@ -46,7 +46,7 @@ export class LanguagePack {
         return new Promise(async (resolve, reject) => {
             LanguageData.excel = await JsonUtil.loadAsync("Language");
             if (LanguageData.excel) {
-                Logger.logConfig("config/game/Language", "下载语言包 table 资源");
+                Logger.instance.logConfig("config/game/Language", "下载语言包 table 资源");
             }
             resolve(null);
         });
@@ -62,7 +62,7 @@ export class LanguagePack {
                     resolve(null);
                     return;
                 }
-                Logger.logConfig(path, "下载语言包 textures 资源");
+                Logger.instance.logConfig(path, "下载语言包 textures 资源");
                 resolve(null);
             });
         });
@@ -75,7 +75,7 @@ export class LanguagePack {
             const jsonAsset = await resLoader.loadAsync(path, JsonAsset);
             if (jsonAsset) {
                 LanguageData.json = jsonAsset.json;
-                Logger.logConfig(path, "下载语言包 json 资源");
+                Logger.instance.logConfig(path, "下载语言包 json 资源");
             }
             else {
                 resolve(null);
@@ -83,7 +83,7 @@ export class LanguagePack {
             }
 
             resLoader.load(path, TTFFont, (err: Error | null, font: TTFFont) => {
-                if (err == null) Logger.logConfig(path, "下载语言包 ttf 资源");
+                if (err == null) Logger.instance.logConfig(path, "下载语言包 ttf 资源");
                 LanguageData.font = font;
                 resolve(null);
             });
@@ -100,7 +100,7 @@ export class LanguagePack {
                     resolve(null);
                     return;
                 }
-                Logger.logConfig(path, "下载语言包 spine 资源");
+                Logger.instance.logConfig(path, "下载语言包 spine 资源");
                 resolve(null);
             })
         });
