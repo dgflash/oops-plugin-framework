@@ -34,7 +34,6 @@ export class LayerDialog extends LayerPopUp {
             return;
         }
 
-        this.black.enabled = true;
         this.show(config, params, callbacks);
     }
 

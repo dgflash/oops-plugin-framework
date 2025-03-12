@@ -26,8 +26,20 @@ export class LayerPopUp extends LayerUI {
 
     private init() {
         this.layer = Layers.Enum.UI_2D;
-        this.black = this.addComponent(BlockInputEvents);
-        this.black.enabled = false;
+        this.on(Node.EventType.CHILD_ADDED, this.onChildAdded, this);
+        this.on(Node.EventType.CHILD_REMOVED, this.onChildRemoved, this);
+    }
+
+    private onChildAdded(child: Node) {
+        if (this.mask) {
+            this.mask.setSiblingIndex(this.children.length - 2);
+        }
+    }
+
+    private onChildRemoved(child: Node) {
+        if (this.mask) {
+            this.mask.setSiblingIndex(this.children.length - 2);
+        }
     }
 
     protected async showUi(vp: ViewParams): Promise<boolean> {
@@ -78,18 +90,28 @@ export class LayerPopUp extends LayerUI {
 
     /** 启动触摸非窗口区域关闭 */
     protected openVacancyRemove(config: UIConfig) {
-        if (!this.hasEventListener(Node.EventType.TOUCH_END, this.onTouchEnd, this)) {
-            this.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
-        }
-
         // 背景半透明遮罩
         if (this.mask == null) {
             this.mask = ViewUtil.createPrefabNode(Mask);
+            this.mask.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
+
+            this.black = this.mask.addComponent(BlockInputEvents);
+            this.black.enabled = false;
         }
+
         if (config.mask) {
             this.mask.parent = this;
-            this.mask.setSiblingIndex(0);
         }
+    }
+
+    /** 触摸非窗口区域关闭 */
+    private onTouchEnd(event: EventTouch) {
+        this.ui_nodes.forEach(vp => {
+            // 关闭已显示的界面
+            if (vp.valid && vp.config.vacancy) {
+                this.remove(vp.config.prefab, vp.config.destroy);
+            }
+        });
     }
 
     /** 关闭触摸非窗口区域关闭 */
@@ -104,17 +126,6 @@ export class LayerPopUp extends LayerUI {
 
         if (flag && this.hasEventListener(Node.EventType.TOUCH_END, this.onTouchEnd, this)) {
             this.off(Node.EventType.TOUCH_END, this.onTouchEnd, this);
-        }
-    }
-
-    private onTouchEnd(event: EventTouch) {
-        if (event.target === this) {
-            this.ui_nodes.forEach(vp => {
-                // 关闭已显示的界面
-                if (vp.valid && vp.config.vacancy) {
-                    this.remove(vp.config.prefab, vp.config.destroy);
-                }
-            });
         }
     }
 
