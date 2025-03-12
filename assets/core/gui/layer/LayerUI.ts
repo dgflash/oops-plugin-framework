@@ -1,4 +1,5 @@
 import { instantiate, Node, Prefab, SafeArea, Widget } from "cc";
+import { Collection } from "db://oops-framework/libs/collection/Collection";
 import { oops } from "../../Oops";
 import { UICallbacks, ViewParams } from "./Defines";
 import { DelegateComponent } from "./DelegateComponent";
@@ -9,7 +10,7 @@ export class LayerUI extends Node {
     /** 全局窗口打开失败 */
     onOpenFailure: Function = null!;
     /** 显示界面节点集合 */
-    protected ui_nodes = new Map<string, ViewParams>();
+    protected ui_nodes = new Collection<string, ViewParams>();
     /** 被移除的界面缓存数据 */
     protected ui_cache = new Map<string, ViewParams>();
 
@@ -139,7 +140,7 @@ export class LayerUI extends Node {
      * @param isDestroy    移除后是否释放
      */
     remove(prefabPath: string, isDestroy?: boolean): void {
-        let release = undefined;
+        let release: any = undefined;
         if (isDestroy !== undefined) release = isDestroy;
 
         // 界面移出舞台
