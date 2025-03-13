@@ -90,7 +90,7 @@ export class EffectSingleCase {
             await resLoader.loadAsync(bundleName, path, Prefab);
 
             for (let i = 0; i < count; i++) {
-                let node = ViewUtil.createPrefabNode(path);
+                let node = ViewUtil.createPrefabNode(path, bundleName);
                 //@ts-ignore
                 node.res_path = path;
                 np.put(node);
@@ -144,7 +144,9 @@ export class EffectSingleCase {
         var node: Node;
         // 创建池中新显示对象
         if (np.size() == 0) {
-            node = ViewUtil.createPrefabNode(path);
+            var bundleName = resLoader.defaultBundleName;
+            if (params && params.bundleName) bundleName = params.bundleName;
+            node = ViewUtil.createPrefabNode(path, bundleName);
             //@ts-ignore
             node.res_path = path;
             if (params && params.isPlayFinishedRelease) {
