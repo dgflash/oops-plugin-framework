@@ -6,10 +6,8 @@
  */
 import { BlockInputEvents, Layers, Node, Widget, instantiate } from "cc";
 import { ViewUtil } from "../../utils/ViewUtil";
+import { PromptResType } from "../GuiEnum";
 import { Notify } from "../prompt/Notify";
-
-const ToastPrefabPath: string = 'common/prefab/notify';
-const WaitPrefabPath: string = 'common/prefab/wait';
 
 /*
  * 滚动消息提示层
@@ -41,8 +39,13 @@ export class LayerNotify extends Node {
     }
 
     /** 打开等待提示 */
-    waitOpen() {
-        if (this.wait == null) this.wait = ViewUtil.createPrefabNode(WaitPrefabPath);
+    async waitOpen() {
+        if (this.wait == null) {
+            this.wait = ViewUtil.createPrefabNode(PromptResType.Wait);
+            // 兼容编辑器预览模式
+            if (this.wait == null) this.wait = await ViewUtil.createPrefabNodeAsync(PromptResType.Wait);
+        }
+
         if (this.wait.parent == null) {
             this.wait.parent = this;
             this.black.enabled = true;
@@ -64,7 +67,7 @@ export class LayerNotify extends Node {
      */
     toast(content: string, useI18n: boolean) {
         if (this.notify == null) {
-            this.notify = ViewUtil.createPrefabNode(ToastPrefabPath);
+            this.notify = ViewUtil.createPrefabNode(PromptResType.Toast);
             this.notifyItem = this.notify.children[0];
             this.notifyItem.parent = null;
         }

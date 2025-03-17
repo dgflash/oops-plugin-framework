@@ -6,11 +6,10 @@
 
 import { BlockInputEvents, EventTouch, Layers, Node } from "cc";
 import { ViewUtil } from "../../utils/ViewUtil";
+import { PromptResType } from "../GuiEnum";
 import { ViewParams } from "./Defines";
 import { UIConfig } from "./LayerManager";
 import { LayerUI } from "./LayerUI";
-
-const Mask: string = 'common/prefab/mask';
 
 /* 弹窗层，允许同时弹出多个窗口 */
 export class LayerPopUp extends LayerUI {
@@ -65,7 +64,7 @@ export class LayerPopUp extends LayerUI {
     protected setBlackDisable() {
         // 所有弹窗关闭后，关闭事件阻挡功能
         if (this.ui_nodes.size == 0) {
-            this.black.enabled = false;
+            if (this.black) this.black.enabled = false;
             this.closeVacancyRemove();
             this.closeMask();
         }
@@ -92,7 +91,7 @@ export class LayerPopUp extends LayerUI {
     protected openVacancyRemove(config: UIConfig) {
         // 背景半透明遮罩
         if (this.mask == null) {
-            this.mask = ViewUtil.createPrefabNode(Mask);
+            this.mask = ViewUtil.createPrefabNode(PromptResType.Mask);
             this.mask.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
 
             this.black = this.mask.addComponent(BlockInputEvents);
