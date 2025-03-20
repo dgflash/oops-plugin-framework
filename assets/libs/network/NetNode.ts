@@ -66,7 +66,7 @@ export class NetNode {
 
     /********************** 网络相关处理 *********************/
     init(socket: ISocket, protocol: IProtocolHelper, networkTips: INetworkTips | null = null, execFunc: ExecuterFunc | null = null) {
-        Logger.logNet(`网络初始化`);
+        Logger.instance.logNet(`网络初始化`);
         this._socket = socket;
         this._protocolHelper = protocol;
         this._networkTips = networkTips;
@@ -125,7 +125,7 @@ export class NetNode {
 
     /** 网络连接成功 */
     protected onConnected(event: any) {
-        Logger.logNet("网络已连接")
+        Logger.instance.logNet("网络已连接")
         this._isSocketOpen = true;
         // 如果设置了鉴权回调，在连接完成后进入鉴权阶段，等待鉴权结束
         if (this._connectedCallback !== null) {
@@ -135,12 +135,12 @@ export class NetNode {
         else {
             this.onChecked();
         }
-        Logger.logNet(`网络已连接当前状态为【${NetNodeStateStrs[this._state]}】`);
+        Logger.instance.logNet(`网络已连接当前状态为【${NetNodeStateStrs[this._state]}】`);
     }
 
     /** 连接验证成功，进入工作状态 */
     protected onChecked() {
-        Logger.logNet("连接验证成功，进入工作状态");
+        Logger.instance.logNet("连接验证成功，进入工作状态");
         this._state = NetNodeState.Working;
         // 关闭连接或重连中的状态显示
         this.updateNetTips(NetTipsType.Connecting, false);
@@ -149,7 +149,7 @@ export class NetNode {
         // 重发待发送信息
         var requests = this._requests.concat();
         if (requests.length > 0) {
-            Logger.logNet(`请求【${this._requests.length}】个待发送的信息`);
+            Logger.instance.logNet(`请求【${this._requests.length}】个待发送的信息`);
 
             for (var i = 0; i < requests.length;) {
                 let req = requests[i];
@@ -191,13 +191,13 @@ export class NetNode {
         // 触发消息执行
         let rspCmd = this._protocolHelper!.getPackageId(json);
 
-        Logger.logNet(`接受到命令【${rspCmd}】的消息`);
+        Logger.instance.logNet(`接受到命令【${rspCmd}】的消息`);
         // 优先触发request队列
         if (this._requests.length > 0) {
             for (let reqIdx in this._requests) {
                 let req = this._requests[reqIdx];
                 if (req.rspCmd == rspCmd && req.rspObject) {
-                    Logger.logNet(`触发请求命令【${rspCmd}】的回调`);
+                    Logger.instance.logNet(`触发请求命令【${rspCmd}】的回调`);
                     this._callbackExecuter!(req.rspObject, json.data);
                     this._requests.splice(parseInt(reqIdx), 1);
                     break;
@@ -208,14 +208,14 @@ export class NetNode {
                 this.updateNetTips(NetTipsType.Requesting, false);
             }
             else {
-                Logger.logNet(`请求队列中还有【${this._requests.length}】个请求在等待`);
+                Logger.instance.logNet(`请求队列中还有【${this._requests.length}】个请求在等待`);
             }
         }
 
         let listeners = this._listener[rspCmd];
         if (null != listeners) {
             for (const rsp of listeners) {
-                Logger.logNet(`触发监听命令【${rspCmd}】的回调`);
+                Logger.instance.logNet(`触发监听命令【${rspCmd}】的回调`);
                 this._callbackExecuter!(rsp, json.data);
             }
         }
@@ -230,7 +230,7 @@ export class NetNode {
 
         // 执行断线回调，返回false表示不进行重连
         if (this._disconnectCallback && !this._disconnectCallback()) {
-            Logger.logNet(`断开连接`);
+            Logger.instance.logNet(`断开连接`);
             return;
         }
 
@@ -300,7 +300,7 @@ export class NetNode {
                 rspCmd: "",
                 rspObject: null
             });
-            Logger.logNet(`当前状态为【${NetNodeStateStrs[this._state]}】,繁忙并缓冲发送数据`);
+            Logger.instance.logNet(`当前状态为【${NetNodeStateStrs[this._state]}】,繁忙并缓冲发送数据`);
             return 0;
         }
         else {
@@ -333,7 +333,7 @@ export class NetNode {
 
         for (let i = 0; i < this._requests.length; ++i) {
             if (this._requests[i].rspCmd == rspCmd) {
-                Logger.logNet(`命令【${rspCmd}】重复请求`);
+                Logger.instance.logNet(`命令【${rspCmd}】重复请求`);
                 return false;
             }
         }
@@ -349,7 +349,7 @@ export class NetNode {
             this._socket!.send(buf);
         }
 
-        Logger.logNet(`队列命令为【${rspCmd}】的请求，等待请求数据的回调`);
+        Logger.instance.logNet(`队列命令为【${rspCmd}】的请求，等待请求数据的回调`);
 
         // 进入发送缓存列表
         this._requests.push({
@@ -461,7 +461,7 @@ export class NetNode {
         }
 
         this._keepAliveTimer = setTimeout(() => {
-            Logger.logNet("网络节点保持活跃发送心跳信息");
+            Logger.instance.logNet("网络节点保持活跃发送心跳信息");
             this.send(this._protocolHelper!.getHearbeat());
         }, this._heartTime);
     }
