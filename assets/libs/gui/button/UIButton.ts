@@ -1,6 +1,5 @@
-import { AudioClip, Button, EventTouch, _decorator, game } from "cc";
+import { AudioClip, Button, EventHandler, EventTouch, _decorator, game } from "cc";
 import { oops } from "../../../core/Oops";
-import { resLoader } from "../../../core/common/loader/ResLoader";
 
 const { ccclass, property, menu } = _decorator;
 
@@ -36,25 +35,41 @@ export default class UIButton extends Button {
 
     /** 触摸结束 */
     protected _onTouchEnded(event: EventTouch) {
-        // 是否只触发一次
-        if (this.once) {
-            if (this._touchCount > 0) {
-                event.propagationStopped = true;
-                return;
+        if (!this._interactable || !this.enabledInHierarchy) {
+            return;
+        }
+
+        //@ts-ignore
+        if (this._pressed) {
+            // 是否只触发一次
+            if (this.once) {
+                if (this._touchCount > 0) {
+                    event.propagationStopped = true;
+                    return;
+                }
+                this._touchCount++;
             }
-            this._touchCount++;
+
+            // 防连点500毫秒出发一次事件
+            if (this._touchEndTime && game.totalTime - this._touchEndTime < this.interval) {
+                event.propagationStopped = true;
+            }
+            else {
+                this._touchEndTime = game.totalTime;
+                EventHandler.emitEvents(this.clickEvents, event);
+                this.node.emit(Button.EventType.CLICK, this);
+
+                // 短按触摸音效
+                this.playEffect();
+            }
         }
 
-        // 防连点500毫秒出发一次事件
-        if (this._touchEndTime && game.totalTime - this._touchEndTime < this.interval) {
+        //@ts-ignore
+        this._pressed = false;
+        this._updateState();
+
+        if (event) {
             event.propagationStopped = true;
-        }
-        else {
-            this._touchEndTime = game.totalTime;
-            super._onTouchEnded(event);
-
-            // 短按触摸音效
-            this.playEffect();
         }
     }
 
