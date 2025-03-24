@@ -69,7 +69,7 @@ export class LayerNotify extends Node {
         if (this.notify == null) {
             this.notify = ViewUtil.createPrefabNode(PromptResType.Toast);
             // 兼容编辑器预览模式
-            if (this.notify == null) this.wait = await ViewUtil.createPrefabNodeAsync(PromptResType.Toast);
+            if (this.notify == null) this.notify = await ViewUtil.createPrefabNodeAsync(PromptResType.Toast);
             this.notifyItem = this.notify.children[0];
             this.notifyItem.parent = null;
         }
