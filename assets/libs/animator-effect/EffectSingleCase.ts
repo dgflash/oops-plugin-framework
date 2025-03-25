@@ -202,8 +202,8 @@ export class EffectSingleCase {
      */
     clear(path?: string) {
         if (path) {
-            var np = this.effects.get(path)!;
-            np.clear();
+            var np = this.effects.get(path);
+            if (np) np.clear();
         }
         else {
             this.effects.forEach(np => {
