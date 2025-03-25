@@ -45,59 +45,57 @@ export class Root extends Component {
         if (!isInited) {
             isInited = true;      // 注：这里是规避cc3.8在编辑器模式下运行时，关闭游戏会两次初始化报错
 
-            console.log(`Oops Framework v${version}`);
+            console.log(`Oops Framework ${version}`);
             this.enabled = false;
+
+            this.initModule();
             this.iniStart();
             this.loadConfig().then();
         }
     }
 
-    private async loadConfig() {
+    private initModule() {
         // 创建持久根节点
         this.persist = new Node("OopsFrameworkPersistNode");
         director.addPersistRootNode(this.persist);
-
+        // oops.config.btc = new BuildTimeConstants();
+        // Web平台查询参数管理
+        oops.config.query = new GameQueryConfig();
         // 资源管理模块
         oops.res = resLoader;
+        // 全局消息
+        oops.message = message;
+        // 创建时间模块
+        oops.timer = this.persist.addComponent(TimerManager)!;
+        // 游戏场景管理
+        oops.game = new GameManager(this.game);
+        // 创建游戏界面管理对象
+        oops.gui = new LayerManager();
+    }
 
+    private async loadConfig() {
         const config_name = "config";
         const config = await oops.res.loadAsync(config_name, JsonAsset);
         if (config) {
-            // oops.config.btc = new BuildTimeConstants();
-            oops.config.query = new GameQueryConfig();
             oops.config.game = new GameConfig(config);
-
-            // 设置默认资源包
-            oops.res.defaultBundleName = oops.config.game.bundleDefault;
-            oops.res.init(oops.config.game.data.bundle);
 
             // 本地存储模块
             oops.storage = new StorageManager();
             oops.storage.init(new StorageSecuritySimple);
             // oops.storage.init(new StorageSecurityCrypto);
 
-            // 全局消息
-            oops.message = message;
-
             // 创建音频模块
             oops.audio = this.persist.addComponent(AudioManager);
             oops.audio.load();
 
-            // 创建时间模块
-            oops.timer = this.persist.addComponent(TimerManager)!;
-
-            // 游戏场景管理
-            oops.game = new GameManager(this.game);
+            // 设置默认资源包
+            oops.res.defaultBundleName = oops.config.game.bundleDefault;
+            oops.res.init(oops.config.game.data.bundle);
 
             // 游戏界面管理
-            oops.gui = new LayerManager();
             oops.gui.mobileSafeArea = oops.config.game.mobileSafeArea;
             //@ts-ignore
-            oops.gui.initLayer(this.gui);
-
-            // 网络模块
-            oops.http.server = oops.config.game.httpServer;                                      // Http 服务器地址
-            oops.http.timeout = oops.config.game.httpTimeout;                                    // Http 请求超时时间
+            oops.gui.initLayer(this.gui, config.json.gui);
 
             // 初始化每秒传输帧数
             game.frameRate = oops.config.game.frameRate;

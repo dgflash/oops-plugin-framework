@@ -29,10 +29,24 @@ export enum LayerType {
     Dialog = "LayerDialog",
     /** 系统触发模式窗口层 */
     System = "LayerSystem",
-    /** 滚动消息提示层 */
+    /** 消息提示层 */
     Notify = "LayerNotify",
     /** 新手引导层 */
     Guide = "LayerGuide"
+}
+
+/** 界面层组件类型 */
+export enum LayerTypeCls {
+    /** 主界面层 */
+    UI = "UI",
+    /** 弹窗层 */
+    PopUp = "PopUp",
+    /** 模式窗口层 */
+    Dialog = "Dialog",
+    /** 消息提示层 */
+    Notify = "Notify",
+    /** 自定义节点层 */
+    Node = "Node"
 }
 
 /** 
@@ -58,7 +72,7 @@ export interface UIConfig {
     /** 远程包名 */
     bundle?: string;
     /** 窗口层级 */
-    layer: LayerType;
+    layer: string;
     /** 预制资源相对路径 */
     prefab: string;
     /** 是否自动施放（默认不自动释放） */
@@ -71,6 +85,8 @@ export interface UIConfig {
     mask?: boolean;
     /** 是否启动真机安全区域显示 */
     safeArea?: boolean;
+    /** 界面弹出时的节点排序索引 */
+    siblingIndex?: number;
 }
 
 /** 界面层级管理器 */
@@ -91,43 +107,72 @@ export class LayerManager {
     /** 是否开启移动设备安全区域适配 */
     mobileSafeArea: boolean = false;
 
-    /** 界面层 */
-    private ui!: LayerUI;
-    /** 弹窗层 */
-    private popup!: LayerPopUp;
-    /** 只能弹出一个的弹窗 */
-    private dialog!: LayerDialog;
-    /** 游戏系统提示弹窗  */
-    private system!: LayerDialog;
     /** 消息提示控制器，请使用show方法来显示 */
     private notify!: LayerNotify;
     /** UI配置 */
     private configs: { [key: number]: UIConfig } = {};
+    /** 界面层集合 - 无自定义类型 */
+    private uiLayers: Map<string, LayerUI> = new Map();
+    /** 界面层组件集合 */
+    private clsLayers: Map<string, any> = new Map();
+
+    constructor() {
+        this.clsLayers.set(LayerTypeCls.UI, LayerUI);
+        this.clsLayers.set(LayerTypeCls.PopUp, LayerPopUp);
+        this.clsLayers.set(LayerTypeCls.Dialog, LayerDialog);
+        this.clsLayers.set(LayerTypeCls.Notify, LayerNotify);
+        this.clsLayers.set(LayerTypeCls.Node, null);
+    }
+
+    /**
+     * 注册自定义界面层对象
+     * @param type  自定义界面层类型
+     * @param cls   自定义界面层对象
+     */
+    registerLayerCls(type: string, cls: any) {
+        if (this.clsLayers.has(type)) {
+            console.error("已存在自定义界面层类型", type);
+            return;
+        }
+        this.clsLayers.set(type, cls);
+    }
 
     /**
      * 初始化界面层
      * @param root  界面根节点
      */
-    private initLayer(root: Node) {
+    private initLayer(root: Node, config: any) {
+        if (config == null) {
+            console.error("请升级到最新版本框架,界面层级管理修改为数据驱动。参考模板项目中的config.json配置文件");
+            return;
+        }
         this.root = root;
         this.initScreenAdapter();
         this.camera = this.root.getComponentInChildren(Camera)!;
-        this.game = this.create_node(LayerType.Game);
 
-        this.ui = new LayerUI(LayerType.UI);
-        this.popup = new LayerPopUp(LayerType.PopUp);
-        this.dialog = new LayerDialog(LayerType.Dialog);
-        this.system = new LayerDialog(LayerType.System);
-        this.notify = new LayerNotify(LayerType.Notify);
-        this.guide = this.create_node(LayerType.Guide);
+        // 创建界面层
+        for (let i = 0; i < config.length; i++) {
+            let data = config[i];
+            let layer: Node = null!;
+            if (data.type == LayerTypeCls.Node) {
+                layer = this.create_node(data.name);
+            }
+            else {
+                let cls = this.clsLayers.get(data.type);
+                if (cls) {
+                    layer = new cls(data.name);
+                }
+                else {
+                    console.error("未识别的界面层类型", data.type);
+                }
+            }
+            root.addChild(layer);
 
-        root.addChild(this.game);
-        root.addChild(this.ui);
-        root.addChild(this.popup);
-        root.addChild(this.dialog);
-        root.addChild(this.system);
-        root.addChild(this.notify);
-        root.addChild(this.guide);
+            if (layer instanceof LayerUI)
+                this.uiLayers.set(data.name, layer);
+            else if (layer instanceof LayerNotify)
+                this.notify = layer;
+        }
     }
 
     /** 初始化屏幕适配 */
@@ -171,7 +216,9 @@ export class LayerManager {
      * @param callback  回调方法
      */
     setOpenFailure(callback: Function) {
-        this.ui.onOpenFailure = this.popup.onOpenFailure = this.dialog.onOpenFailure = this.system.onOpenFailure = callback;
+        this.uiLayers.forEach((layer: LayerUI) => {
+            layer.onOpenFailure = callback;
+        })
     }
 
     /**
@@ -182,6 +229,7 @@ export class LayerManager {
      * oops.gui.toast("提示内容");
      */
     toast(content: string, useI18n: boolean = false) {
+
         this.notify.toast(content, useI18n)
     }
 
@@ -227,19 +275,12 @@ export class LayerManager {
             return;
         }
 
-        switch (config.layer) {
-            case LayerType.UI:
-                this.ui.add(config, uiArgs, callbacks);
-                break;
-            case LayerType.PopUp:
-                this.popup.add(config, uiArgs, callbacks);
-                break;
-            case LayerType.Dialog:
-                this.dialog.add(config, uiArgs, callbacks);
-                break;
-            case LayerType.System:
-                this.system.add(config, uiArgs, callbacks);
-                break;
+        let layer = this.uiLayers.get(config.layer);
+        if (layer) {
+            layer.add(config, uiArgs, callbacks);
+        }
+        else {
+            console.error(`打开编号为【${uiId}】的界面失败，界面层不存在`);
         }
     }
 
@@ -313,19 +354,12 @@ export class LayerManager {
         }
 
         var result = false;
-        switch (config.layer) {
-            case LayerType.UI:
-                result = this.ui.has(config.prefab);
-                break;
-            case LayerType.PopUp:
-                result = this.popup.has(config.prefab);
-                break;
-            case LayerType.Dialog:
-                result = this.dialog.has(config.prefab);
-                break;
-            case LayerType.System:
-                result = this.system.has(config.prefab);
-                break;
+        let layer = this.uiLayers.get(config.layer);
+        if (layer) {
+            result = layer.has(config.prefab);
+        }
+        else {
+            console.error(`验证编号为【${uiId}】的界面失败，界面层不存在`);
         }
 
         return result;
@@ -345,19 +379,12 @@ export class LayerManager {
         }
 
         let result: Node = null!;
-        switch (config.layer) {
-            case LayerType.UI:
-                result = this.ui.get(config.prefab);
-                break;
-            case LayerType.PopUp:
-                result = this.popup.get(config.prefab);
-                break;
-            case LayerType.Dialog:
-                result = this.dialog.get(config.prefab);
-                break;
-            case LayerType.System:
-                result = this.system.get(config.prefab);
-                break;
+        let layer = this.uiLayers.get(config.layer);
+        if (layer) {
+            result = layer.get(config.prefab);
+        }
+        else {
+            console.error(`获取编号为【${uiId}】的界面失败，界面层不存在`);
         }
         return result;
     }
@@ -376,19 +403,12 @@ export class LayerManager {
             return;
         }
 
-        switch (config.layer) {
-            case LayerType.UI:
-                this.ui.remove(config.prefab, isDestroy);
-                break;
-            case LayerType.PopUp:
-                this.popup.remove(config.prefab, isDestroy);
-                break;
-            case LayerType.Dialog:
-                this.dialog.remove(config.prefab, isDestroy);
-                break;
-            case LayerType.System:
-                this.system.remove(config.prefab, isDestroy);
-                break;
+        let layer = this.uiLayers.get(config.layer);
+        if (layer) {
+            layer.remove(config.prefab, isDestroy);
+        }
+        else {
+            console.error(`移除编号为【${uiId}】的界面失败，界面层不存在`);
         }
     }
 
@@ -405,27 +425,14 @@ export class LayerManager {
             if (comp && comp.vp) {
                 // 释放显示的界面
                 if (node.parent) {
-                    (node.parent as LayerUI).remove(comp.vp.config.prefab, isDestroy);
+                    this.uiLayers.get(LayerType.UI)!.remove(comp.vp.config.prefab, isDestroy);
                 }
                 // 释放缓存中的界面
                 else if (isDestroy) {
-                    switch (comp.vp.config.layer) {
-                        case LayerType.UI:
-                            // @ts-ignore 注：不对外使用
-                            this.ui.removeCache(comp.vp.config.prefab);
-                            break;
-                        case LayerType.PopUp:
-                            // @ts-ignore 注：不对外使用
-                            this.popup.removeCache(comp.vp.config.prefab);
-                            break;
-                        case LayerType.Dialog:
-                            // @ts-ignore 注：不对外使用
-                            this.dialog.removeCache(comp.vp.config.prefab);
-                            break;
-                        case LayerType.System:
-                            // @ts-ignore 注：不对外使用
-                            this.system.removeCache(comp.vp.config.prefab);
-                            break;
+                    let layer = this.uiLayers.get(comp.vp.config.layer);
+                    if (layer) {
+                        // @ts-ignore 注：不对外使用
+                        layer.removeCache(comp.vp.config.prefab);
                     }
                 }
             }
@@ -443,10 +450,9 @@ export class LayerManager {
      * oops.gui.clear();
      */
     clear(isDestroy: boolean = false) {
-        this.ui.clear(isDestroy);
-        this.popup.clear(isDestroy);
-        this.dialog.clear(isDestroy);
-        this.system.clear(isDestroy);
+        this.uiLayers.forEach((layer: LayerUI) => {
+            layer.clear(isDestroy);
+        })
     }
 
     private create_node(name: string) {
