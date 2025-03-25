@@ -156,6 +156,14 @@ export class LayerManager {
             let layer: Node = null!;
             if (data.type == LayerTypeCls.Node) {
                 layer = this.create_node(data.name);
+                switch (data.name) {
+                    case LayerType.Game:
+                        this.game = layer;
+                        break
+                    case LayerType.Guide:
+                        this.guide = layer;
+                        break
+                }
             }
             else {
                 let cls = this.clsLayers.get(data.type);
