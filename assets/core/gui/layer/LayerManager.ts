@@ -433,7 +433,7 @@ export class LayerManager {
             if (comp && comp.vp) {
                 // 释放显示的界面
                 if (node.parent) {
-                    this.uiLayers.get(LayerType.UI)!.remove(comp.vp.config.prefab, isDestroy);
+                    this.uiLayers.get(comp.vp.config.layer)!.remove(comp.vp.config.prefab, isDestroy);
                 }
                 // 释放缓存中的界面
                 else if (isDestroy) {
