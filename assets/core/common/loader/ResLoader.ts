@@ -364,7 +364,9 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
      * @param path          资源路径
      * @param bundleName    远程资源包名
      */
-    release(path: string, bundleName: string = this.defaultBundleName) {
+    release(path: string, bundleName?: string) {
+        if (bundleName == undefined) bundleName = this.defaultBundleName;
+        
         const bundle = assetManager.getBundle(bundleName);
         if (bundle) {
             const asset = bundle.get(path);
