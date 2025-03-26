@@ -24,7 +24,7 @@ import { GameManager } from "./game/GameManager";
 import { LayerManager } from "./gui/layer/LayerManager";
 
 /** 框架版本号 */
-export var version: string = "2.0.0.20250127";
+export var version: string = "2.0.0.20250325";
 
 /** 框架核心模块访问入口 */
 export class oops {
