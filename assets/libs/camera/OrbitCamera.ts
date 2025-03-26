@@ -220,7 +220,7 @@ export class OrbitCamera extends Component {
             targetRotation.y += this.autoRotateSpeed * dt;
         }
 
-        if (this.target) {
+        if (this.target && this.target.isValid) {
             // 重置摄像机中心点
             this._targetCenter.set(this.target.worldPosition);
 
