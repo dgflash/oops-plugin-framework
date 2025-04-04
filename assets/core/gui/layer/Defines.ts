@@ -5,7 +5,7 @@
  * @LastEditTime: 2023-01-09 11:52:38
  */
 import { Node } from "cc";
-import { UIConfig } from "./LayerManager";
+import { UIConfig } from "./UIConfig";
 
 /*** 界面回调参数对象定义 */
 export interface UICallbacks {
@@ -38,6 +38,8 @@ export interface UICallbacks {
 
 /** 本类型仅供gui模块内部使用，请勿在功能逻辑中使用 */
 export class ViewParams {
+    /** 界面唯一编号 */
+    uiid: number = -1;
     /** 界面配置 */
     config: UIConfig = null!;
     /** 传递给打开界面的参数 */
