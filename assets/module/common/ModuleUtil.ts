@@ -15,7 +15,7 @@ export class ModuleUtil {
      * @param uiId     界面资源编号
      * @param uiArgs   界面参数
      */
-    public static addViewUi<T extends CCVMParentComp | CCComp>(
+    static addViewUi<T extends CCVMParentComp | CCComp>(
         ent: ecs.Entity,
         ctor: __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>,
         uiId: number,
@@ -38,7 +38,7 @@ export class ModuleUtil {
      * @param uiArgs   界面参数
      * @returns 界面节点
      */
-    public static addViewUiAsync<T extends CCVMParentComp | CCComp>(
+    static addViewUiAsync<T extends CCVMParentComp | CCComp>(
         ent: ecs.Entity,
         ctor: __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>,
         uiId: number,
@@ -65,7 +65,7 @@ export class ModuleUtil {
      * @param parent   显示对象父级
      * @param url      显示资源地址
      */
-    public static addView<T extends CCVMParentComp | CCComp>(
+    static addView<T extends CCVMParentComp | CCComp>(
         ent: ecs.Entity,
         ctor: __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>,
         parent: Node,
@@ -83,7 +83,7 @@ export class ModuleUtil {
      * @param uiId       界面资源编号
      * @param isDestroy  是否释放界面缓存（默认为释放界面缓存）
      */
-    public static removeViewUi(ent: ecs.Entity, ctor: CompType<ecs.IComp>, uiId: number, isDestroy: boolean = true) {
+    static removeViewUi(ent: ecs.Entity, ctor: CompType<ecs.IComp>, uiId: number, isDestroy: boolean = true) {
         if (isDestroy) ent.remove(ctor, isDestroy);
         oops.gui.remove(uiId, isDestroy);
     }
