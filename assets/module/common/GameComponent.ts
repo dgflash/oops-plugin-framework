@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-12-13 11:36:00
  */
-import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, Sprite, SpriteFrame, __private, _decorator, input, isValid } from "cc";
+import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, Prefab, Sprite, SpriteFrame, __private, _decorator, input, isValid } from "cc";
 import { oops } from "../../core/Oops";
 import { EventDispatcher } from "../../core/common/event/EventDispatcher";
 import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage";
@@ -76,7 +76,7 @@ export class GameComponent extends Component {
     //#region 预制节点管理
 
     /** 摊平的节点集合（所有节点不能重名） */
-    protected nodes: Map<string, Node> = null!;
+    nodes: Map<string, Node> = null!;
 
     /** 通过节点名获取预制上的节点，整个预制不能有重名节点 */
     getNode(name: string): Node | undefined {
@@ -106,7 +106,11 @@ export class GameComponent extends Component {
      * @param bundleName 资源包名
      */
     createPrefabNodeAsync(path: string, bundleName: string = oops.res.defaultBundleName): Promise<Node> {
-        return ViewUtil.createPrefabNodeAsync(path, bundleName);
+        return new Promise(async (resolve, reject) => {
+            await this.loadAsync(bundleName, path, Prefab);
+            let node = ViewUtil.createPrefabNode(path, bundleName);
+            resolve(node);
+        });
     }
     //#endregion
 
