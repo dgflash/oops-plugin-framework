@@ -347,6 +347,8 @@ export class GameComponent extends Component {
     async playEffect(url: string, bundleName?: string) {
         if (bundleName == null) bundleName = oops.res.defaultBundleName;
         await oops.audio.playEffect(url, bundleName, () => {
+            if (!this.isValid) return;
+            
             const rps = this.resPaths.get(ResType.Audio);
             if (rps) {
                 const key = this.getResKey(bundleName, url);
@@ -489,7 +491,6 @@ export class GameComponent extends Component {
     /** 游戏旋转屏幕事件回调 */
     protected onGameOrientation(): void { }
     //#endregion
-
     protected onDestroy() {
         // 释放消息对象
         if (this._event) {
