@@ -41,11 +41,12 @@ export class LanguageData {
      * 
      * 3、config/game/Language配置表使用oops-plugin-excel-to-json插件生成，点击项目根目录下载update-oops-plugin-framework.bat或update-oops-plugin-framework.sh脚本下载插件
      */
-    public static getLangByID(labId: string): string {
+    static getLangByID(labId: string): string {
         let content: string = null!;
         for (const [key, value] of this.language) {
             if (key == LanguageDataType.Excel) {
-                content = value[labId][this.current];
+                let lang = value[labId];
+                if (lang) content = lang[this.current];
             }
             else {
                 content = value[labId];
