@@ -34,14 +34,15 @@ export class LayerDialog extends LayerPopUp {
             return;
         }
 
-        this.show(config, params, callbacks);
+        this.show(uiid, config, params, callbacks);
     }
 
     /** 显示模式弹窗 */
-    private show(config: UIConfig, params?: any, callbacks?: UICallbacks) {
+    private show(uiid: number, config: UIConfig, params?: any, callbacks?: UICallbacks) {
         let vp = this.ui_cache.get(config.prefab);
         if (vp == null) {
             vp = new ViewParams();
+            vp.uiid = uiid;
             vp.valid = true;
             vp.config = config;
         }
@@ -55,7 +56,9 @@ export class LayerDialog extends LayerPopUp {
 
     protected onCloseWindow(vp: ViewParams) {
         super.onCloseWindow(vp);
-        setTimeout(this.next.bind(this), 0);
+        setTimeout(() => {
+            this.next(vp);
+        }, 0);
     }
 
     protected setBlackDisable() {
@@ -66,10 +69,10 @@ export class LayerDialog extends LayerPopUp {
         }
     }
 
-    private next() {
+    private next(vp: ViewParams) {
         if (this.params.length > 0) {
             let param = this.params.shift()!;
-            this.show(param.config, param.params, param.callbacks);
+            this.show(vp.uiid, param.config, param.params, param.callbacks);
         }
     }
 }
