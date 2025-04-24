@@ -62,6 +62,9 @@ export class DelegateComponent extends Component {
                 this.removed(this.vp, isDestroy);
             }
         }
+        else {
+            this.removed(this.vp, isDestroy);
+        }
     }
 
     /** 窗口关闭前动画处理完后的回调方法，主要用于释放资源 */
@@ -87,16 +90,22 @@ export class DelegateComponent extends Component {
             // 释放界面相关资源
             oops.res.release(vp.config.prefab, vp.config.bundle);
 
-            // oops.log.logView(`【界面管理】释放【${vp.config.prefab}】界面资源`);
+            // 释放自动递增编号的界面配置
+            if (vp.config.auto) {
+                oops.gui.setConfig(vp.uiid, null!);
+            }
+
+            oops.log.logView(`【界面管理】释放【${vp.config.prefab}】界面资源`);
         }
         else {
             this.node.removeFromParent();
         }
+
+        // 触发窗口组件上窗口移除之后的事件
+        this.applyComponentsFunction(this.node, EventOnRemoved, this.vp.params);
     }
 
     onDestroy() {
-        // 触发窗口组件上窗口移除之后的事件
-        this.applyComponentsFunction(this.node, EventOnRemoved, this.vp.params);
         this.vp = null!;
     }
 

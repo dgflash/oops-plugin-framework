@@ -6,8 +6,8 @@
  */
 
 import { UICallbacks, ViewParams } from "./Defines";
-import { UIConfig } from "./LayerManager";
 import { LayerPopUp } from "./LayerPopup";
+import { UIConfig } from "./UIConfig";
 
 /** 模式弹窗数据 */
 type DialogParam = {
@@ -23,7 +23,7 @@ export class LayerDialog extends LayerPopUp {
     /** 窗口调用参数队列 */
     private params: Array<DialogParam> = [];
 
-    add(config: UIConfig, params?: any, callbacks?: UICallbacks) {
+    add(uiid: number, config: UIConfig, params?: any, callbacks?: UICallbacks) {
         // 控制同一时间只能显示一个模式窗口
         if (this.ui_nodes.size > 0) {
             this.params.push({

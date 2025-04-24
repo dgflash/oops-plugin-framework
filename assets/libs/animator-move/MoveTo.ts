@@ -52,7 +52,10 @@ export class MoveTo extends Component {
     update(dt: number) {
         let end: Vec3;
 
-        console.assert(this.speed > 0, "移动速度必须要大于零");
+        if (this.speed <= 0) {
+            console.error("移动速度必须要大于零");
+            return;
+        }
 
         if (this.target instanceof Node) {
             end = this.ns == Node.NodeSpace.WORLD ? this.target.worldPosition : this.target.position;

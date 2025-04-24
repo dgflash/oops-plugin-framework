@@ -8,8 +8,8 @@ import { BlockInputEvents, EventTouch, Layers, Node } from "cc";
 import { ViewUtil } from "../../utils/ViewUtil";
 import { PromptResType } from "../GuiEnum";
 import { ViewParams } from "./Defines";
-import { UIConfig } from "./LayerManager";
 import { LayerUI } from "./LayerUI";
+import { UIConfig } from "./UIConfig";
 
 /* 弹窗层，允许同时弹出多个窗口 */
 export class LayerPopUp extends LayerUI {

@@ -3,7 +3,7 @@ import { Collection } from "db://oops-framework/libs/collection/Collection";
 import { oops } from "../../Oops";
 import { UICallbacks, ViewParams } from "./Defines";
 import { DelegateComponent } from "./DelegateComponent";
-import { UIConfig } from "./LayerManager";
+import { UIConfig } from "./UIConfig";
 
 /** 界面层对象 */
 export class LayerUI extends Node {
@@ -35,7 +35,7 @@ export class LayerUI extends Node {
      * @param callbacks  回调函数对象，可选
      * @returns ture为成功,false为失败
      */
-    add(config: UIConfig, params?: any, callbacks?: UICallbacks) {
+    add(uiid: number, config: UIConfig, params?: any, callbacks?: UICallbacks) {
         if (this.ui_nodes.has(config.prefab)) {
             console.warn(`路径为【${config.prefab}】的预制重复加载`);
             return;
@@ -45,6 +45,7 @@ export class LayerUI extends Node {
         let vp = this.ui_cache.get(config.prefab);
         if (vp == null) {
             vp = new ViewParams();
+            vp.uiid = uiid;
             vp.config = config;
         }
         this.ui_nodes.set(config.prefab, vp);
@@ -172,6 +173,10 @@ export class LayerUI extends Node {
             this.onCloseWindow(vp);
             this.ui_cache.delete(prefabPath);
             const childNode = vp.node;
+            const comp = childNode.getComponent(DelegateComponent)!;
+            if (comp) {
+                comp.remove(true);
+            }
             childNode.destroy();
         }
     }
