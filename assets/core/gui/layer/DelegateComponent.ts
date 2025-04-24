@@ -100,11 +100,12 @@ export class DelegateComponent extends Component {
         else {
             this.node.removeFromParent();
         }
+
+        // 触发窗口组件上窗口移除之后的事件
+        this.applyComponentsFunction(this.node, EventOnRemoved, this.vp.params);
     }
 
     onDestroy() {
-        // 触发窗口组件上窗口移除之后的事件
-        this.applyComponentsFunction(this.node, EventOnRemoved, this.vp.params);
         this.vp = null!;
     }
 
