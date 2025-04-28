@@ -11,6 +11,7 @@ import { UIConfig } from "./UIConfig";
 
 /** 模式弹窗数据 */
 type DialogParam = {
+    uiid: number;
     config: UIConfig;
     params?: any;
     callbacks?: UICallbacks;
@@ -27,6 +28,7 @@ export class LayerDialog extends LayerPopUp {
         // 控制同一时间只能显示一个模式窗口
         if (this.ui_nodes.size > 0) {
             this.params.push({
+                uiid: uiid,
                 config: config,
                 params: params,
                 callbacks: callbacks,
@@ -56,9 +58,7 @@ export class LayerDialog extends LayerPopUp {
 
     protected onCloseWindow(vp: ViewParams) {
         super.onCloseWindow(vp);
-        setTimeout(() => {
-            this.next(vp);
-        }, 0);
+        setTimeout(this.next.bind(this), 0);
     }
 
     protected setBlackDisable() {
@@ -69,10 +69,10 @@ export class LayerDialog extends LayerPopUp {
         }
     }
 
-    private next(vp: ViewParams) {
+    private next() {
         if (this.params.length > 0) {
             let param = this.params.shift()!;
-            this.show(vp.uiid, param.config, param.params, param.callbacks);
+            this.show(param.uiid, param.config, param.params, param.callbacks);
         }
     }
 }
