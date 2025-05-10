@@ -8,6 +8,8 @@ import { BlockInputEvents, Layers, Node, Widget, instantiate } from "cc";
 import { ViewUtil } from "../../utils/ViewUtil";
 import { PromptResType } from "../GuiEnum";
 import { Notify } from "../prompt/Notify";
+import { sys } from "cc";
+import { EDITOR, EDITOR_NOT_IN_PREVIEW } from "cc/env";
 
 /*
  * 滚动消息提示层
@@ -29,10 +31,7 @@ export class LayerNotify extends Node {
         widget.left = widget.right = widget.top = widget.bottom = 0;
         widget.alignMode = 2;
         widget.enabled = true;
-        this.init();
-    }
 
-    private init() {
         this.layer = Layers.Enum.UI_2D;
         this.black = this.addComponent(BlockInputEvents);
         this.black.enabled = false;
@@ -67,9 +66,13 @@ export class LayerNotify extends Node {
      */
     async toast(content: string, useI18n: boolean) {
         if (this.notify == null) {
-            this.notify = ViewUtil.createPrefabNode(PromptResType.Toast);
             // 兼容编辑器预览模式
-            if (this.notify == null) this.notify = await ViewUtil.createPrefabNodeAsync(PromptResType.Toast);
+            if (EDITOR) {
+                this.notify = await ViewUtil.createPrefabNodeAsync(PromptResType.Toast);
+            }
+            else {
+                this.notify = ViewUtil.createPrefabNode(PromptResType.Toast);
+            }
             this.notifyItem = this.notify.children[0];
             this.notifyItem.parent = null;
         }
