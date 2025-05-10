@@ -5,11 +5,10 @@
  * @LastEditTime: 2022-09-02 13:44:12
  */
 import { BlockInputEvents, Layers, Node, Widget, instantiate } from "cc";
+import { EDITOR } from "cc/env";
 import { ViewUtil } from "../../utils/ViewUtil";
 import { PromptResType } from "../GuiEnum";
 import { Notify } from "../prompt/Notify";
-import { sys } from "cc";
-import { EDITOR, EDITOR_NOT_IN_PREVIEW } from "cc/env";
 
 /*
  * 滚动消息提示层
@@ -40,9 +39,13 @@ export class LayerNotify extends Node {
     /** 打开等待提示 */
     async waitOpen() {
         if (this.wait == null) {
-            this.wait = ViewUtil.createPrefabNode(PromptResType.Wait);
             // 兼容编辑器预览模式
-            if (this.wait == null) this.wait = await ViewUtil.createPrefabNodeAsync(PromptResType.Wait);
+            if (EDITOR) {
+                this.wait = await ViewUtil.createPrefabNodeAsync(PromptResType.Wait);
+            }
+            else {
+                this.wait = ViewUtil.createPrefabNode(PromptResType.Wait);
+            }
         }
 
         if (this.wait.parent == null) {
