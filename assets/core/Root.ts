@@ -90,7 +90,6 @@ export class Root extends Component {
 
             // 设置默认资源包
             oops.res.defaultBundleName = oops.config.game.bundleDefault;
-            oops.res.init(oops.config.game.data.bundle);
 
             // 游戏界面管理
             oops.gui.mobileSafeArea = oops.config.game.mobileSafeArea;
