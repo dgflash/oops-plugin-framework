@@ -35,7 +35,7 @@ export class AudioEffectPool {
     /** 对象池集合 */
     private effects: Map<string, AudioEffect> = new Map();
     /** 用过的音效资源记录 */
-    private res: Map<string, string> = new Map();
+    private res: Map<string, string[]> = new Map();
 
     private _aeId: number = 0;
     /** 获取请求唯一编号 */
@@ -63,8 +63,16 @@ export class AudioEffectPool {
             }
             else {
                 clip = resLoader.get(url, AudioClip, bundleName)!;
-                if (!clip) {
-                    this.res.set(bundleName, url);
+                if (clip == null) {
+                    let urls = this.res.get(bundleName);
+                    if (urls == null) {
+                        urls = [];
+                        this.res.set(bundleName, urls);
+                        urls.push(url);
+                    }
+                    else if (urls.indexOf(url) == -1) {
+                        urls.push(url);
+                    }
                     clip = await resLoader.loadAsync(bundleName, url, AudioClip);
                 }
             }
@@ -148,8 +156,8 @@ export class AudioEffectPool {
         this.effects.clear();
 
         // 释放音效资源
-        this.res.forEach((url: string, bundleName: string) => {
-            resLoader.release(bundleName, url);
+        this.res.forEach((urls: string[], bundleName: string) => {
+            urls.forEach(url => resLoader.release(bundleName, url));
         });
 
         // 释放池中播放器

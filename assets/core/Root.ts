@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-08-28 10:02:57
  */
-import { _decorator, Component, director, Game, game, JsonAsset, Node, screen, sys } from "cc";
+import { _decorator, Component, director, Game, game, JsonAsset, Node, resources, screen, sys } from "cc";
 import { GameConfig } from "../module/config/GameConfig";
 import { GameQueryConfig } from "../module/config/GameQueryConfig";
 import { oops, version } from "./Oops";
@@ -19,8 +19,6 @@ import { GameManager } from "./game/GameManager";
 import { LayerManager } from "./gui/layer/LayerManager";
 
 const { property } = _decorator;
-
-let isInited = false;
 
 /** 框架显示层根节点 */
 export class Root extends Component {
@@ -42,16 +40,12 @@ export class Root extends Component {
     private persist: Node = null!
 
     onLoad() {
-        if (!isInited) {
-            isInited = true;      // 注：这里是规避cc3.8在编辑器模式下运行时，关闭游戏会两次初始化报错
+        console.log(`Oops Framework ${version}`);
+        this.enabled = false;
 
-            console.log(`Oops Framework ${version}`);
-            this.enabled = false;
-
-            this.initModule();
-            this.iniStart();
-            this.loadConfig().then();
-        }
+        this.initModule();
+        this.iniStart();
+        this.loadConfig().then();
     }
 
     private initModule() {
@@ -75,8 +69,12 @@ export class Root extends Component {
 
     private async loadConfig() {
         const config_name = "config";
-        const config = await oops.res.loadAsync(config_name, JsonAsset);
-        if (config) {
+        resources.load(config_name, JsonAsset, (err, config) => {
+            if (err) {
+                this.loadConfig().then();
+                return;
+            }
+
             oops.config.game = new GameConfig(config);
 
             // 本地存储模块
@@ -103,11 +101,8 @@ export class Root extends Component {
             this.init();
             this.run();
 
-            oops.res.release(config_name);
-        }
-        else {
-            this.loadConfig().then();
-        }
+            resources.release(config_name);
+        });
     }
 
     update(dt: number) {
