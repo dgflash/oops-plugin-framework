@@ -1,5 +1,6 @@
 import { Node, __private } from "cc";
 import { oops } from "../../core/Oops";
+import { resLoader } from "../../core/common/loader/ResLoader";
 import { UICallbacks } from "../../core/gui/layer/Defines";
 import { ViewUtil } from "../../core/utils/ViewUtil";
 import { ecs } from "../../libs/ecs/ECS";
@@ -60,17 +61,19 @@ export class ModuleUtil {
 
     /**
      * 通过资源内存中获取预制上的组件添加到ECS实体中
-     * @param ent      模块实体
-     * @param ctor     界面逻辑组件
-     * @param parent   显示对象父级
-     * @param url      显示资源地址
+     * @param ent        模块实体
+     * @param ctor       界面逻辑组件
+     * @param parent     显示对象父级
+     * @param url        显示资源地址
+     * @param bundleName 资源包名称
      */
     static addView<T extends CCVMParentComp | CCComp>(
         ent: ecs.Entity,
         ctor: __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>,
         parent: Node,
-        url: string) {
-        const node = ViewUtil.createPrefabNode(url);
+        url: string,
+        bundleName: string = resLoader.defaultBundleName) {
+        const node = ViewUtil.createPrefabNode(url, bundleName);
         const comp = node.getComponent(ctor)!;
         ent.add(comp);
         node.parent = parent;

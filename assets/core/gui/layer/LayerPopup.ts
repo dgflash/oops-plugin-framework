@@ -20,10 +20,7 @@ export class LayerPopUp extends LayerUI {
 
     constructor(name: string) {
         super(name);
-        this.init();
-    }
-
-    private init() {
+        
         this.layer = Layers.Enum.UI_2D;
         this.on(Node.EventType.CHILD_ADDED, this.onChildAdded, this);
         this.on(Node.EventType.CHILD_REMOVED, this.onChildRemoved, this);

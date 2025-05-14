@@ -5,6 +5,7 @@
  * @LastEditTime: 2022-09-02 13:44:12
  */
 import { BlockInputEvents, Layers, Node, Widget, instantiate } from "cc";
+import { EDITOR } from "cc/env";
 import { ViewUtil } from "../../utils/ViewUtil";
 import { PromptResType } from "../GuiEnum";
 import { Notify } from "../prompt/Notify";
@@ -29,10 +30,7 @@ export class LayerNotify extends Node {
         widget.left = widget.right = widget.top = widget.bottom = 0;
         widget.alignMode = 2;
         widget.enabled = true;
-        this.init();
-    }
 
-    private init() {
         this.layer = Layers.Enum.UI_2D;
         this.black = this.addComponent(BlockInputEvents);
         this.black.enabled = false;
@@ -41,9 +39,13 @@ export class LayerNotify extends Node {
     /** 打开等待提示 */
     async waitOpen() {
         if (this.wait == null) {
-            this.wait = ViewUtil.createPrefabNode(PromptResType.Wait);
             // 兼容编辑器预览模式
-            if (this.wait == null) this.wait = await ViewUtil.createPrefabNodeAsync(PromptResType.Wait);
+            if (EDITOR) {
+                this.wait = await ViewUtil.createPrefabNodeAsync(PromptResType.Wait);
+            }
+            else {
+                this.wait = ViewUtil.createPrefabNode(PromptResType.Wait);
+            }
         }
 
         if (this.wait.parent == null) {
@@ -67,9 +69,13 @@ export class LayerNotify extends Node {
      */
     async toast(content: string, useI18n: boolean) {
         if (this.notify == null) {
-            this.notify = ViewUtil.createPrefabNode(PromptResType.Toast);
             // 兼容编辑器预览模式
-            if (this.notify == null) this.notify = await ViewUtil.createPrefabNodeAsync(PromptResType.Toast);
+            if (EDITOR) {
+                this.notify = await ViewUtil.createPrefabNodeAsync(PromptResType.Toast);
+            }
+            else {
+                this.notify = ViewUtil.createPrefabNode(PromptResType.Toast);
+            }
             this.notifyItem = this.notify.children[0];
             this.notifyItem.parent = null;
         }

@@ -1,4 +1,4 @@
-import { Asset, AssetManager, __private, assetManager, error, js, resources, warn } from "cc";
+import { __private, Asset, AssetManager, assetManager, error, js, resources, warn } from "cc";
 
 export type AssetType<T = Asset> = __private.__types_globals__Constructor<T> | null;
 export type Paths = string | string[];
@@ -35,8 +35,6 @@ export class ResLoader {
     //#region 资源配置数据
     /** 全局默认加载的资源包名 */
     defaultBundleName: string = "resources";
-    /** 是否使用远程 CDN 资源 */
-    cdn: boolean = false;
 
     /** 下载时的最大并发数 - 项目设置 -> 项目数据 -> 资源下载并发数，设置默认值；初始值为15 */
     get maxConcurrency() {
@@ -68,17 +66,6 @@ export class ResLoader {
     }
     set retryInterval(value) {
         assetManager.downloader.retryInterval = value;
-    }
-
-    /** 资源包配置 */
-    private bundles: Map<string, string> = new Map<string, string>();
-    //#endregion
-
-    init(config: any) {
-        this.cdn = config.enable;
-        for (let bundleName in config.packages) {
-            this.bundles.set(bundleName, config.packages[bundleName]);
-        }
     }
 
     //#region 加载远程资源
@@ -120,16 +107,13 @@ oops.res.loadRemote<ImageAsset>(this.url, opt, onComplete);
     //#region 资源包管理
     /**
      * 加载资源包
-     * @param url       资源地址
-     * @param v         资源MD5版本号
+     * @param name       资源地址
      * @example
-var serverUrl = "http://192.168.1.8:8080/";         // 服务器地址
-var md5 = "8e5c0";                                  // Cocos Creator 构建后的MD5字符
-await oops.res.loadBundle(serverUrl,md5);
+        await oops.res.loadBundle(name);
      */
-    loadBundle(url: string, v?: string) {
+    loadBundle(name: string) {
         return new Promise<AssetManager.Bundle>((resolve, reject) => {
-            assetManager.loadBundle(url, { version: v }, (err, bundle: AssetManager.Bundle) => {
+            assetManager.loadBundle(name, (err, bundle: AssetManager.Bundle) => {
                 if (err) {
                     return error(err);
                 }
@@ -366,7 +350,7 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
      */
     release(path: string, bundleName?: string) {
         if (bundleName == undefined) bundleName = this.defaultBundleName;
-        
+
         const bundle = assetManager.getBundle(bundleName);
         if (bundle) {
             const asset = bundle.get(path);
@@ -483,8 +467,7 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
             }
             // 自动加载资源包
             else {
-                const v = this.cdn ? this.bundles.get(args.bundle) : "";
-                bundle = await this.loadBundle(args.bundle, v);
+                bundle = await this.loadBundle(args.bundle);
                 if (bundle) this.loadByBundleAndArgs(bundle, args);
             }
         }

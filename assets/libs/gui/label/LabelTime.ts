@@ -30,6 +30,11 @@ export default class LabelTime extends Label {
     })
     zeroize: boolean = true;
 
+    @property({
+        tooltip: "游戏进入后台时间暂时",
+    })
+    paused: boolean = false;
+
     private backStartTime: number = 0;      // 进入后台开始时间
     private dateDisable!: boolean;          // 时间能否由天数显示
     private result!: string;                // 时间结果字符串
@@ -152,6 +157,11 @@ export default class LabelTime extends Label {
     }
 
     private onGameShow() {
+        // 时间到了
+        if (this.countDown <= 0) return;
+        // 时间暂停
+        if (this.paused) return;
+
         const interval = Math.floor((oops.timer.getTime() - (this.backStartTime || oops.timer.getTime())) / 1000);
         this.countDown -= interval;
         if (this.countDown < 0) {
