@@ -26,9 +26,12 @@ interface ResRecord {
     bundle: string,
     /** 资源路径 */
     path: string,
+    /** 引用计数 */
+    refCount: number,
     /** 资源编号 */
     resId?: number
 }
+
 
 /**
  * 游戏显示对象组件模板
@@ -148,8 +151,12 @@ export class GameComponent extends Component {
             for (let index = 0; index < paths.length; index++) {
                 let realPath = paths[index];
                 let key = this.getResKey(realBundle, realPath, resId);
-                if (!rps.has(key)) {
-                    rps.set(key, { path: realPath, bundle: realBundle, resId: resId });
+                let rp = rps.get(key);
+                if (rp) {
+                    rp.refCount++;
+                }
+                else {
+                    rps.set(key, { path: realPath, bundle: realBundle, refCount: 1, resId: resId });
                 }
             }
         }
@@ -157,16 +164,24 @@ export class GameComponent extends Component {
             let realBundle = bundleName;
             let realPath = paths;
             let key = this.getResKey(realBundle, realPath, resId);
-            if (!rps.has(key)) {
-                rps.set(key, { path: realPath, bundle: realBundle, resId: resId });
+            let rp = rps.get(key);
+            if (rp) {
+                rp.refCount++;
+            }
+            else {
+                rps.set(key, { path: realPath, bundle: realBundle, refCount: 1, resId: resId });
             }
         }
         else {
             let realBundle = oops.res.defaultBundleName;
             let realPath = bundleName;
             let key = this.getResKey(realBundle, realPath, resId);
-            if (!rps.has(key)) {
-                rps.set(key, { path: realPath, bundle: realBundle, resId: resId });
+            let rp = rps.get(key);
+            if (rp) {
+                rp.refCount++;
+            }
+            else {
+                rps.set(key, { path: realPath, bundle: realBundle, refCount: 1, resId: resId });
             }
         }
     }
@@ -265,7 +280,9 @@ export class GameComponent extends Component {
             const rps = this.resPaths.get(ResType.Load);
             if (rps) {
                 rps.forEach((value: ResRecord) => {
-                    oops.res.release(value.path, value.bundle);
+                    for (let i = 0; i < value.refCount; i++) {
+                        oops.res.release(value.path, value.bundle);
+                    }
                 });
                 rps.clear();
             }
@@ -313,6 +330,7 @@ export class GameComponent extends Component {
             }
             return;
         }
+        spriteFrame.addRef();
         target.spriteFrame = spriteFrame;
     }
     //#endregion
@@ -348,7 +366,7 @@ export class GameComponent extends Component {
         if (bundleName == null) bundleName = oops.res.defaultBundleName;
         await oops.audio.playEffect(url, bundleName, () => {
             if (!this.isValid) return;
-            
+
             const rps = this.resPaths.get(ResType.Audio);
             if (rps) {
                 const key = this.getResKey(bundleName, url);
