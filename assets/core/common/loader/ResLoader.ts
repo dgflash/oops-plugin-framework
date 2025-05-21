@@ -105,6 +105,15 @@ oops.res.loadRemote<ImageAsset>(this.url, opt, onComplete);
     //#endregion
 
     //#region 资源包管理
+
+    /**
+     * 获取资源包
+     * @param name 资源包名
+     */
+    getBundle(name: string) {
+        return assetManager.bundles.get(name);
+    }
+
     /**
      * 加载资源包
      * @param name       资源地址
