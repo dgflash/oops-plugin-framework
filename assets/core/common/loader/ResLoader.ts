@@ -548,7 +548,7 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
     /** 打印缓存中所有资源信息 */
     dump() {
         assetManager.assets.forEach((value: Asset, key: string) => {
-            console.log(assetManager.assets.get(key));
+            console.log(`引用数量:${value.refCount}`, assetManager.assets.get(key));
         })
         console.log(`当前资源总数:${assetManager.assets.count}`);
     }
