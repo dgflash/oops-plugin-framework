@@ -1,5 +1,4 @@
-import { AudioClip } from "cc";
-import { __private, Asset, AssetManager, assetManager, error, ImageAsset, js, JsonAsset, Prefab, resources, SpriteFrame, Texture2D, warn } from "cc";
+import { __private, AnimationClip, Asset, AssetManager, assetManager, AudioClip, error, Font, ImageAsset, js, JsonAsset, Material, Mesh, Prefab, resources, sp, SpriteFrame, Texture2D, warn } from "cc";
 
 export type AssetType<T = Asset> = __private.__types_globals__Constructor<T> | null;
 export type Paths = string | string[];
@@ -409,14 +408,14 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
         if (uuid instanceof Asset) {
             uuid.decRef();
             // assetManager.releaseAsset(uuid);
-            this.debugLogReleasedAsset(bundleName, uuid);
+            // this.debugLogReleasedAsset(bundleName, uuid);
         }
         else {
             const asset = assetManager.assets.get(uuid);
             if (asset) {
                 asset.decRef();
                 // assetManager.releaseAsset(asset);
-                this.debugLogReleasedAsset(bundleName, asset);
+                // this.debugLogReleasedAsset(bundleName, asset);
             }
         }
     }
@@ -424,27 +423,44 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
     private debugLogReleasedAsset(bundleName: string, asset: Asset) {
         if (asset.refCount == 0) {
             let path = this.getAssetPath(bundleName, asset.uuid);
+            let content: string = "";
             if (asset instanceof JsonAsset) {
-                console.log("释放资源 - Json", path);
+                content = "【释放资源】Json【路径】" + path;
             }
             else if (asset instanceof Prefab) {
-                console.log("释放资源 - Prefab", path);
+                content = "【释放资源】Prefab【路径】" + path;
             }
             else if (asset instanceof SpriteFrame) {
-                console.log("释放资源 - SpriteFrame", path);
+                content = "【释放资源】SpriteFrame【路径】" + path;
             }
             else if (asset instanceof Texture2D) {
-                console.log("释放资源 - Texture2D", path);
+                content = "【释放资源】Texture2D【路径】" + path;
             }
             else if (asset instanceof ImageAsset) {
-                console.log("释放资源 - ImageAsset", path);
+                content = "【释放资源】ImageAsset【路径】" + path;
             }
             else if (asset instanceof AudioClip) {
-                console.log("释放资源 - AudioClip", path);
+                content = "【释放资源】AudioClip【路径】" + path;
+            }
+            else if (asset instanceof AnimationClip) {
+                content = "【释放资源】AnimationClip【路径】" + path;
+            }
+            else if (asset instanceof Font) {
+                content = "【释放资源】Font【路径】" + path;
+            }
+            else if (asset instanceof Material) {
+                content = "【释放资源】Material【路径】" + path;
+            }
+            else if (asset instanceof Mesh) {
+                content = "【释放资源】Mesh【路径】" + path;
+            }
+            else if (asset instanceof sp.SkeletonData) {
+                content = "【释放资源】Spine【路径】" + path;
             }
             else {
-                console.log("释放资源 - 未知", path);
+                content = "【释放资源】未知【路径】" + path;
             }
+            console.log(content);
         }
     }
 
