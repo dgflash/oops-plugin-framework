@@ -1,4 +1,5 @@
-import { __private, Asset, AssetManager, assetManager, error, js, resources, warn } from "cc";
+import { AudioClip } from "cc";
+import { __private, Asset, AssetManager, assetManager, error, ImageAsset, js, JsonAsset, Prefab, resources, SpriteFrame, Texture2D, warn } from "cc";
 
 export type AssetType<T = Asset> = __private.__types_globals__Constructor<T> | null;
 export type Paths = string | string[];
@@ -364,7 +365,7 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
         if (bundle) {
             const asset = bundle.get(path);
             if (asset) {
-                this.releasePrefabtDepsRecursively(asset);
+                this.releasePrefabtDepsRecursively(bundleName, asset);
             }
         }
     }
@@ -380,7 +381,7 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
             var infos = bundle.getDirWithPath(path);
             if (infos) {
                 infos.map((info) => {
-                    this.releasePrefabtDepsRecursively(info.uuid);
+                    this.releasePrefabtDepsRecursively(bundleName, info.uuid);
                 });
             }
 
@@ -390,17 +391,59 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
         }
     }
 
+    /**
+     * 获取资源路径
+     * @param bundleName 资源包名
+     * @param uuid       资源唯一编号
+     * @returns 
+     */
+    getAssetPath(bundleName: string, uuid: string): string {
+        let b = this.getBundle(bundleName)!;
+        let info = b.getAssetInfo(uuid)!;
+        //@ts-ignore
+        return info.path;
+    }
+
     /** 释放预制依赖资源 */
-    private releasePrefabtDepsRecursively(uuid: string | Asset) {
+    private releasePrefabtDepsRecursively(bundleName: string, uuid: string | Asset) {
         if (uuid instanceof Asset) {
             uuid.decRef();
             // assetManager.releaseAsset(uuid);
+            this.debugLogReleasedAsset(bundleName, uuid);
         }
         else {
             const asset = assetManager.assets.get(uuid);
             if (asset) {
                 asset.decRef();
                 // assetManager.releaseAsset(asset);
+                this.debugLogReleasedAsset(bundleName, asset);
+            }
+        }
+    }
+
+    private debugLogReleasedAsset(bundleName: string, asset: Asset) {
+        if (asset.refCount == 0) {
+            let path = this.getAssetPath(bundleName, asset.uuid);
+            if (asset instanceof JsonAsset) {
+                console.log("释放资源 - Json", path);
+            }
+            else if (asset instanceof Prefab) {
+                console.log("释放资源 - Prefab", path);
+            }
+            else if (asset instanceof SpriteFrame) {
+                console.log("释放资源 - SpriteFrame", path);
+            }
+            else if (asset instanceof Texture2D) {
+                console.log("释放资源 - Texture2D", path);
+            }
+            else if (asset instanceof ImageAsset) {
+                console.log("释放资源 - ImageAsset", path);
+            }
+            else if (asset instanceof AudioClip) {
+                console.log("释放资源 - AudioClip", path);
+            }
+            else {
+                console.log("释放资源 - 未知", path);
             }
         }
     }

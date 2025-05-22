@@ -307,7 +307,7 @@ export class GameComponent extends Component {
             const rps = this.resPaths.get(ResType.Audio);
             if (rps) {
                 rps.forEach((value: ResRecord) => {
-                    oops.audio.putEffect(value.resId!, value.path, value.bundle);
+                    oops.audio.putEffect(value.resId!, value.path, value.bundle);       // 回收音乐效到音效池中等下次使用
                 });
             }
         }
@@ -364,7 +364,7 @@ export class GameComponent extends Component {
      */
     async playEffect(url: string, bundleName?: string) {
         if (bundleName == null) bundleName = oops.res.defaultBundleName;
-        await oops.audio.playEffect(url, bundleName, () => {
+        let resId = await oops.audio.playEffect(url, bundleName, () => {
             if (!this.isValid) return;
 
             const rps = this.resPaths.get(ResType.Audio);
@@ -373,7 +373,7 @@ export class GameComponent extends Component {
                 rps.delete(key);
             }
         });
-        this.addPathToRecord(ResType.Audio, bundleName, url);
+        this.addPathToRecord(ResType.Audio, bundleName, url, resId);
     }
     //#endregion
 
