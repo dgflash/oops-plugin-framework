@@ -26,7 +26,13 @@ export class PlatformUtil {
     }
 
     /** 拷贝字符串到剪切板 */
-    static copyText(text: string) {
-        native.copyTextToClipboard(text);
+    static async copyText(text: string) {
+        if (sys.isNative) {
+            native.copyTextToClipboard(text);
+
+        }
+        else {
+            await navigator.clipboard.writeText(text)
+        }
     }
 }
