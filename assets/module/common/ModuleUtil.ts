@@ -2,6 +2,7 @@ import { Node, __private } from "cc";
 import { oops } from "../../core/Oops";
 import { resLoader } from "../../core/common/loader/ResLoader";
 import { UICallbacks } from "../../core/gui/layer/Defines";
+import { DelegateComponent } from "../../core/gui/layer/DelegateComponent";
 import { ViewUtil } from "../../core/utils/ViewUtil";
 import { ecs } from "../../libs/ecs/ECS";
 import { CompType } from "../../libs/ecs/ECSModel";
@@ -81,13 +82,30 @@ export class ModuleUtil {
 
     /**
      * 业务实体上移除界面组件
-     * @param ent        模块实体
-     * @param ctor       界面逻辑组件
-     * @param uiId       界面资源编号
-     * @param isDestroy  是否释放界面缓存（默认为释放界面缓存）
+     * @param ent            模块实体
+     * @param ctor           界面逻辑组件
+     * @param uiId           界面资源编号
+     * @param isDestroy      是否释放界面缓存（默认为释放界面缓存）
+     * @param onCloseWindow  窗口动画关闭完成事件
      */
-    static removeViewUi(ent: ecs.Entity, ctor: CompType<ecs.IComp>, uiId: number, isDestroy: boolean = true) {
-        if (isDestroy) ent.remove(ctor, isDestroy);
+    static removeViewUi(ent: ecs.Entity, ctor: CompType<ecs.IComp>, uiId: number, isDestroy: boolean = true, onCloseWindow?: Function) {
+        const node = oops.gui.get(uiId);
+        if (!node) {
+            if (onCloseWindow) onCloseWindow();
+            return;
+        }
+
+        const comp = node.getComponent(DelegateComponent);
+        if (comp) {
+            comp.onCloseWindow = () => {
+                ent.remove(ctor, isDestroy);
+                if (onCloseWindow) onCloseWindow();
+            };
+        }
+        else {
+            ent.remove(ctor, isDestroy);
+            if (onCloseWindow) onCloseWindow();
+        }
         oops.gui.remove(uiId, isDestroy);
     }
 }
