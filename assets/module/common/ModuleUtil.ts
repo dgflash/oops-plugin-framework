@@ -86,26 +86,27 @@ export class ModuleUtil {
      * @param ctor           界面逻辑组件
      * @param uiId           界面资源编号
      * @param isDestroy      是否释放界面缓存（默认为释放界面缓存）
-     * @param onCloseWindow  窗口动画关闭完成事件
+     * @param onRemoved      窗口关闭完成事件
      */
-    static removeViewUi(ent: ecs.Entity, ctor: CompType<ecs.IComp>, uiId: number, isDestroy: boolean = true, onCloseWindow?: Function) {
+    static removeViewUi(ent: ecs.Entity, ctor: CompType<ecs.IComp>, uiId: number, isDestroy: boolean = true, onRemoved?: Function) {
         const node = oops.gui.get(uiId);
         if (!node) {
-            if (onCloseWindow) onCloseWindow();
+            if (onRemoved) onRemoved();
             return;
         }
 
         const comp = node.getComponent(DelegateComponent);
         if (comp) {
-            comp.onCloseWindow = () => {
+            comp.onCloseWindowBefore = () => {
                 ent.remove(ctor, isDestroy);
-                if (onCloseWindow) onCloseWindow();
+                if (onRemoved) onRemoved();
             };
         }
         else {
             ent.remove(ctor, isDestroy);
-            if (onCloseWindow) onCloseWindow();
+            if (onRemoved) onRemoved();
         }
+
         oops.gui.remove(uiId, isDestroy);
     }
 }
