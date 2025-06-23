@@ -97,10 +97,22 @@ export class ModuleUtil {
 
         const comp = node.getComponent(DelegateComponent);
         if (comp) {
-            comp.onCloseWindowBefore = () => {
+            if (comp.vp.callbacks.onBeforeRemove) {
+                comp.onCloseWindowBefore = () => {
+                    ent.remove(ctor, isDestroy);
+                    if (onRemoved) onRemoved();
+                };
+            }
+            else if (comp.vp.callbacks.onRemoved) {
+                comp.onCloseWindow = () => {
+                    ent.remove(ctor, isDestroy);
+                    if (onRemoved) onRemoved();
+                };
+            }
+            else {
                 ent.remove(ctor, isDestroy);
                 if (onRemoved) onRemoved();
-            };
+            }
         }
         else {
             ent.remove(ctor, isDestroy);
