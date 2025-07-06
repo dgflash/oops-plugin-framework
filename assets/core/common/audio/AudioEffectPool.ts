@@ -157,7 +157,7 @@ export class AudioEffectPool {
 
         // 释放音效资源
         this.res.forEach((urls: string[], bundleName: string) => {
-            urls.forEach(url => resLoader.release(bundleName, url));
+            urls.forEach(url => resLoader.release(url, bundleName));
         });
 
         // 释放池中播放器

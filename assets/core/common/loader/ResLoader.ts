@@ -1,4 +1,4 @@
-import { __private, Asset, AssetManager, assetManager, error, js, resources, warn } from "cc";
+import { __private, AnimationClip, Asset, AssetManager, assetManager, AudioClip, error, Font, ImageAsset, js, JsonAsset, Material, Mesh, Prefab, resources, sp, SpriteFrame, Texture2D, warn } from "cc";
 
 export type AssetType<T = Asset> = __private.__types_globals__Constructor<T> | null;
 export type Paths = string | string[];
@@ -105,6 +105,15 @@ oops.res.loadRemote<ImageAsset>(this.url, opt, onComplete);
     //#endregion
 
     //#region 资源包管理
+
+    /**
+     * 获取资源包
+     * @param name 资源包名
+     */
+    getBundle(name: string) {
+        return assetManager.bundles.get(name);
+    }
+
     /**
      * 加载资源包
      * @param name       资源地址
@@ -355,7 +364,7 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
         if (bundle) {
             const asset = bundle.get(path);
             if (asset) {
-                this.releasePrefabtDepsRecursively(asset);
+                this.releasePrefabtDepsRecursively(bundleName, asset);
             }
         }
     }
@@ -371,7 +380,7 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
             var infos = bundle.getDirWithPath(path);
             if (infos) {
                 infos.map((info) => {
-                    this.releasePrefabtDepsRecursively(info.uuid);
+                    this.releasePrefabtDepsRecursively(bundleName, info.uuid);
                 });
             }
 
@@ -381,18 +390,77 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
         }
     }
 
+    /**
+     * 获取资源路径
+     * @param bundleName 资源包名
+     * @param uuid       资源唯一编号
+     * @returns 
+     */
+    getAssetPath(bundleName: string, uuid: string): string {
+        let b = this.getBundle(bundleName)!;
+        let info = b.getAssetInfo(uuid)!;
+        //@ts-ignore
+        return info.path;
+    }
+
     /** 释放预制依赖资源 */
-    private releasePrefabtDepsRecursively(uuid: string | Asset) {
+    private releasePrefabtDepsRecursively(bundleName: string, uuid: string | Asset) {
         if (uuid instanceof Asset) {
             uuid.decRef();
             // assetManager.releaseAsset(uuid);
+            // this.debugLogReleasedAsset(bundleName, uuid);
         }
         else {
             const asset = assetManager.assets.get(uuid);
             if (asset) {
                 asset.decRef();
                 // assetManager.releaseAsset(asset);
+                // this.debugLogReleasedAsset(bundleName, asset);
             }
+        }
+    }
+
+    private debugLogReleasedAsset(bundleName: string, asset: Asset) {
+        if (asset.refCount == 0) {
+            let path = this.getAssetPath(bundleName, asset.uuid);
+            let content: string = "";
+            if (asset instanceof JsonAsset) {
+                content = "【释放资源】Json【路径】" + path;
+            }
+            else if (asset instanceof Prefab) {
+                content = "【释放资源】Prefab【路径】" + path;
+            }
+            else if (asset instanceof SpriteFrame) {
+                content = "【释放资源】SpriteFrame【路径】" + path;
+            }
+            else if (asset instanceof Texture2D) {
+                content = "【释放资源】Texture2D【路径】" + path;
+            }
+            else if (asset instanceof ImageAsset) {
+                content = "【释放资源】ImageAsset【路径】" + path;
+            }
+            else if (asset instanceof AudioClip) {
+                content = "【释放资源】AudioClip【路径】" + path;
+            }
+            else if (asset instanceof AnimationClip) {
+                content = "【释放资源】AnimationClip【路径】" + path;
+            }
+            else if (asset instanceof Font) {
+                content = "【释放资源】Font【路径】" + path;
+            }
+            else if (asset instanceof Material) {
+                content = "【释放资源】Material【路径】" + path;
+            }
+            else if (asset instanceof Mesh) {
+                content = "【释放资源】Mesh【路径】" + path;
+            }
+            else if (asset instanceof sp.SkeletonData) {
+                content = "【释放资源】Spine【路径】" + path;
+            }
+            else {
+                content = "【释放资源】未知【路径】" + path;
+            }
+            console.log(content);
         }
     }
 
@@ -480,7 +548,7 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
     /** 打印缓存中所有资源信息 */
     dump() {
         assetManager.assets.forEach((value: Asset, key: string) => {
-            console.log(assetManager.assets.get(key));
+            console.log(`引用数量:${value.refCount}`, assetManager.assets.get(key));
         })
         console.log(`当前资源总数:${assetManager.assets.count}`);
     }

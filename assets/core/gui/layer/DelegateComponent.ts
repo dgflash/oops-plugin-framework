@@ -19,6 +19,8 @@ const EventOnRemoved: string = "onRemoved";
 export class DelegateComponent extends Component {
     /** 视图参数 */
     vp: ViewParams = null!;
+    /** 关闭窗口之前 */
+    onCloseWindowBefore: Function = null!;
     /** 界面关闭回调 - 包括关闭动画播放完（辅助框架内存业务流程使用） */
     onCloseWindow: Function = null!;
 
@@ -69,6 +71,10 @@ export class DelegateComponent extends Component {
 
     /** 窗口关闭前动画处理完后的回调方法，主要用于释放资源 */
     private onBeforeRemoveNext(isDestroy?: boolean) {
+        if (this.onCloseWindowBefore) {
+            this.onCloseWindowBefore();
+            this.onCloseWindowBefore = null!;
+        }
         this.removed(this.vp, isDestroy);
     }
 

@@ -2,6 +2,7 @@ import { Node, __private } from "cc";
 import { oops } from "../../core/Oops";
 import { resLoader } from "../../core/common/loader/ResLoader";
 import { UICallbacks } from "../../core/gui/layer/Defines";
+import { DelegateComponent } from "../../core/gui/layer/DelegateComponent";
 import { ViewUtil } from "../../core/utils/ViewUtil";
 import { ecs } from "../../libs/ecs/ECS";
 import { CompType } from "../../libs/ecs/ECSModel";
@@ -81,13 +82,43 @@ export class ModuleUtil {
 
     /**
      * 业务实体上移除界面组件
-     * @param ent        模块实体
-     * @param ctor       界面逻辑组件
-     * @param uiId       界面资源编号
-     * @param isDestroy  是否释放界面缓存（默认为释放界面缓存）
+     * @param ent            模块实体
+     * @param ctor           界面逻辑组件
+     * @param uiId           界面资源编号
+     * @param isDestroy      是否释放界面缓存（默认为释放界面缓存）
+     * @param onRemoved      窗口关闭完成事件
      */
-    static removeViewUi(ent: ecs.Entity, ctor: CompType<ecs.IComp>, uiId: number, isDestroy: boolean = true) {
-        if (isDestroy) ent.remove(ctor, isDestroy);
+    static removeViewUi(ent: ecs.Entity, ctor: CompType<ecs.IComp>, uiId: number, isDestroy: boolean = true, onRemoved?: Function) {
+        const node = oops.gui.get(uiId);
+        if (!node) {
+            if (onRemoved) onRemoved();
+            return;
+        }
+
+        const comp = node.getComponent(DelegateComponent);
+        if (comp) {
+            if (comp.vp.callbacks.onBeforeRemove) {
+                comp.onCloseWindowBefore = () => {
+                    ent.remove(ctor, isDestroy);
+                    if (onRemoved) onRemoved();
+                };
+            }
+            else if (comp.vp.callbacks.onRemoved) {
+                comp.onCloseWindow = () => {
+                    ent.remove(ctor, isDestroy);
+                    if (onRemoved) onRemoved();
+                };
+            }
+            else {
+                ent.remove(ctor, isDestroy);
+                if (onRemoved) onRemoved();
+            }
+        }
+        else {
+            ent.remove(ctor, isDestroy);
+            if (onRemoved) onRemoved();
+        }
+
         oops.gui.remove(uiId, isDestroy);
     }
 }
