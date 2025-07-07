@@ -170,7 +170,6 @@ export class LayerManager {
      * oops.gui.toast("提示内容");
      */
     toast(content: string, useI18n: boolean = false) {
-
         this.notify.toast(content, useI18n)
     }
 
