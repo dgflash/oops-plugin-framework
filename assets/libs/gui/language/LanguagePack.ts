@@ -42,35 +42,35 @@ export class LanguagePack {
     }
 
     /** 多语言Excel配置表数据 */
-    private loadTable(lang: string) {
+    private loadTable(lang: string): Promise<void> {
         return new Promise(async (resolve, reject) => {
             let json = await JsonUtil.loadAsync("Language");
             if (json) {
                 LanguageData.language.set(LanguageDataType.Excel, json);
                 Logger.instance.logConfig("config/game/Language", "下载语言包 table 资源");
             }
-            resolve(null);
+            resolve();
         });
     }
 
     /** 纹理多语言资源 */
-    private loadTexture(lang: string) {
+    private loadTexture(lang: string): Promise<void> {
         return new Promise((resolve, reject) => {
             const path = `${LanguageData.path_texture}/${lang}`;
             resLoader.loadDir(path, (err: any, assets: any) => {
                 if (err) {
                     error(err);
-                    resolve(null);
+                    resolve();
                     return;
                 }
                 Logger.instance.logConfig(path, "下载语言包 textures 资源");
-                resolve(null);
+                resolve();
             });
         });
     }
 
     /** Json格式多语言资源 */
-    private loadJson(lang: string) {
+    private loadJson(lang: string): Promise<void> {
         return new Promise(async (resolve, reject) => {
             const path = `${LanguageData.path_json}/${lang}`;
             const jsonAsset = await resLoader.loadAsync(path, JsonAsset);
@@ -79,30 +79,30 @@ export class LanguagePack {
                 Logger.instance.logConfig(path, "下载语言包 json 资源");
             }
             else {
-                resolve(null);
+                resolve();
                 return;
             }
 
             resLoader.load(path, TTFFont, (err: Error | null, font: TTFFont) => {
                 if (err == null) Logger.instance.logConfig(path, "下载语言包 ttf 资源");
                 LanguageData.font = font;
-                resolve(null);
+                resolve();
             });
         });
     }
 
     /** SPINE动画多语言资源 */
-    private loadSpine(lang: string) {
+    private loadSpine(lang: string): Promise<void> {
         return new Promise(async (resolve, reject) => {
             const path = `${LanguageData.path_spine}/${lang}`;
             resLoader.loadDir(path, (err: any, assets: any) => {
                 if (err) {
                     error(err);
-                    resolve(null);
+                    resolve();
                     return;
                 }
                 Logger.instance.logConfig(path, "下载语言包 spine 资源");
-                resolve(null);
+                resolve();
             })
         });
     }
