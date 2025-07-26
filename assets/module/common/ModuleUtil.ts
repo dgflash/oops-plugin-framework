@@ -3,6 +3,8 @@ import { oops } from "../../core/Oops";
 import { resLoader } from "../../core/common/loader/ResLoader";
 import { UICallbacks } from "../../core/gui/layer/Defines";
 import { DelegateComponent } from "../../core/gui/layer/DelegateComponent";
+import { Uiid } from "../../core/gui/layer/LayerEnum";
+import { UIConfig } from "../../core/gui/layer/UIConfig";
 import { ViewUtil } from "../../core/utils/ViewUtil";
 import { ecs } from "../../libs/ecs/ECS";
 import { CompType } from "../../libs/ecs/ECSModel";
@@ -43,7 +45,7 @@ export class ModuleUtil {
     static addViewUiAsync<T extends CCVMParentComp | CCComp>(
         ent: ecs.Entity,
         ctor: __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>,
-        uiId: number,
+        uiId: number | UIConfig,
         uiArgs: any = null): Promise<Node | null> {
         return new Promise<Node | null>((resolve, reject) => {
             const uic: UICallbacks = {
@@ -88,7 +90,7 @@ export class ModuleUtil {
      * @param isDestroy      是否释放界面缓存（默认为释放界面缓存）
      * @param onRemoved      窗口关闭完成事件
      */
-    static removeViewUi(ent: ecs.Entity, ctor: CompType<ecs.IComp>, uiId: number, isDestroy: boolean = true, onRemoved?: Function) {
+    static removeViewUi(ent: ecs.Entity, ctor: CompType<ecs.IComp>, uiId: Uiid, isDestroy: boolean = true, onRemoved?: Function) {
         const node = oops.gui.get(uiId);
         if (!node) {
             if (onRemoved) onRemoved();

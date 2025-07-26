@@ -3,6 +3,7 @@ import { Collection } from "db://oops-framework/libs/collection/Collection";
 import { oops } from "../../Oops";
 import { UICallbacks, ViewParams } from "./Defines";
 import { DelegateComponent } from "./DelegateComponent";
+import { Uiid } from "./LayerEnum";
 import { UIConfig } from "./UIConfig";
 
 /** 界面层对象 */
@@ -35,7 +36,7 @@ export class LayerUI extends Node {
      * @param callbacks  回调函数对象，可选
      * @returns ture为成功,false为失败
      */
-    add(uiid: number, config: UIConfig, params?: any, callbacks?: UICallbacks) {
+    add(uiid: Uiid, config: UIConfig, params?: any, callbacks?: UICallbacks) {
         if (this.ui_nodes.has(config.prefab)) {
             console.warn(`路径为【${config.prefab}】的预制重复加载`);
             return;
@@ -45,7 +46,7 @@ export class LayerUI extends Node {
         let vp = this.ui_cache.get(config.prefab);
         if (vp == null) {
             vp = new ViewParams();
-            vp.uiid = uiid;
+            vp.uiid = uiid.toString();
             vp.config = config;
         }
         this.ui_nodes.set(config.prefab, vp);

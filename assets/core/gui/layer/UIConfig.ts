@@ -10,16 +10,19 @@ export enum UIID {
     Netinstable
 }
 
-// 打开界面方式的配置数据
+// 打开界面方式1
 export var UIConfigData: { [key: number]: UIConfig } = {
     [UIID.Loading]: { layer: LayerType.UI, prefab: "loading/prefab/loading", bundle: "resources" },
     [UIID.Netinstable]: { layer: LayerType.PopUp, prefab: "common/prefab/netinstable" },
     [UIID.Window]: { layer: LayerType.Dialog, prefab: "common/prefab/window" }
 }
+
+// 打开界面方式2
+export class InitializeUIConfig {
+    static Loading = { layer: LayerType.UI, prefab: "gui/loading/loading" }
+}
  */
 export interface UIConfig {
-    /** 是否为自动生成的界面编号 */
-    auto?: boolean,
     /** -----公共属性----- */
     /** 远程包名 */
     bundle?: string;

@@ -1,3 +1,10 @@
+import { UIConfig } from "./UIConfig";
+
+/** 界面编号 */
+export type Uiid = number | string | UIConfig;
+/** 界面配置集合 */
+export type UIConfigMap = { [key: string]: UIConfig }
+
 /** 屏幕适配类型 */
 export enum ScreenAdapterType {
     /** 自动适配 */
