@@ -1,4 +1,4 @@
-import { CCString, Component, Enum, log, Node, _decorator } from "cc";
+import { _decorator, CCString, Component, Enum, log, Node } from "cc";
 import { VMEnv } from "./VMEnv";
 
 const { ccclass, property, executeInEditMode, menu, help } = _decorator;
@@ -36,10 +36,10 @@ export default class MVCompsEdit extends Component {
             return this.actionType === ACTION_MODE.SEARCH_COMPONENT;
         }
     })
-    public get findTrigger() {
+    get findTrigger() {
         return false;
     }
-    public set findTrigger(v: boolean) {
+    set findTrigger(v: boolean) {
         this.setComponents(0);
     }
 
@@ -50,10 +50,10 @@ export default class MVCompsEdit extends Component {
             return this.actionType === ACTION_MODE.ENABLE_COMPONENT;
         }
     })
-    public get enableTrigger() {
+    get enableTrigger() {
         return false;
     }
-    public set enableTrigger(v: boolean) {
+    set enableTrigger(v: boolean) {
         this.setComponents(1);
     }
 
@@ -64,10 +64,10 @@ export default class MVCompsEdit extends Component {
             return this.actionType === ACTION_MODE.ENABLE_COMPONENT;
         }
     })
-    public get disableTrigger() {
+    get disableTrigger() {
         return false;
     }
-    public set disableTrigger(v: boolean) {
+    set disableTrigger(v: boolean) {
         this.setComponents(2);
     }
 
@@ -88,10 +88,10 @@ export default class MVCompsEdit extends Component {
             return this.allowDelete && this.actionType === ACTION_MODE.DELETE_COMPONENT;
         }
     })
-    public get deleteTrigger() {
+    get deleteTrigger() {
         return false;
     }
-    public set deleteTrigger(v: boolean) {
+    set deleteTrigger(v: boolean) {
         this.setComponents(3);
     }
 
@@ -102,10 +102,10 @@ export default class MVCompsEdit extends Component {
             return this.actionType === ACTION_MODE.REPLACE_WATCH_PATH;
         }
     })
-    public get replaceTrigger() {
+    get replaceTrigger() {
         return false;
     }
-    public set replaceTrigger(v: boolean) {
+    set replaceTrigger(v: boolean) {
         this.setComponents(4);
     }
 
@@ -269,7 +269,7 @@ export default class MVCompsEdit extends Component {
 
     getNodePath(node: Node) {
         let parent = node;
-        let array = [];
+        let array: string[] = [];
         while (parent) {
             let p = parent.getParent();
             if (p) {

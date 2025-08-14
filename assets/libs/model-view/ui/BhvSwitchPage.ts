@@ -13,13 +13,13 @@ export class BhvSwitchPage extends Component {
 
     @property
     private _index: number = 0;
-    public get index(): number {
+    get index(): number {
         return this._index;
     }
     @property({
         type: CCInteger
     })
-    public set index(v: number) {
+    set index(v: number) {
         if (this.isChanging) return;
         v = Math.round(v);
         let count = this.node.children.length - 1;
@@ -49,7 +49,7 @@ export class BhvSwitchPage extends Component {
 
     private _isChanging: boolean = false;
     /**只读，是否在changing 的状态 */
-    public get isChanging(): boolean {
+    get isChanging(): boolean {
         return this._isChanging;
     }
 
@@ -85,7 +85,7 @@ export class BhvSwitchPage extends Component {
         showNode.active = true;
     }
 
-    public next(): boolean {
+    next(): boolean {
         if (this.isChanging) {
             return false;
         }
@@ -95,7 +95,7 @@ export class BhvSwitchPage extends Component {
         }
     }
 
-    public previous(): boolean {
+    previous(): boolean {
         if (this.isChanging) {
             return false;
         }
@@ -105,7 +105,7 @@ export class BhvSwitchPage extends Component {
         }
     }
 
-    public setEventIndex(e: any, index: any): boolean {
+    setEventIndex(e: any, index: any): boolean {
         if (this.index >= 0 && this.index != null && this.isChanging === false) {
             this.index = index;
             return true;

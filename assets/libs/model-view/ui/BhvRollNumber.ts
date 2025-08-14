@@ -45,10 +45,10 @@ export class BhvRollNumber extends Component {
     @property({
         tooltip: '滚动的目标值'
     })
-    public get targetValue(): number {
+    get targetValue(): number {
         return this._targetValue;
     }
-    public set targetValue(v: number) {
+    set targetValue(v: number) {
         this._targetValue = v;
         this.scroll();//数据变动了就开始滚动
     }
