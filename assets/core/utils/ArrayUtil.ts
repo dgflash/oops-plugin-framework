@@ -103,4 +103,14 @@ export class ArrayUtil {
     static getRandomValueInArray(array: any[]): any {
         return array[Math.floor(Math.random() * array.length)];
     }
+
+    /**
+     * 获取连续数字数组, 范围在[start, end]之间
+     * @param start 开始数字
+     * @param end 结束数字
+     * @example getNumsBetween(1, 10) => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] 
+     */
+    static getNumsBetween(start: number, end: number): number[] {
+        return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+    }
 }
