@@ -11,9 +11,13 @@ import { UIConfig } from "./UIConfig";
 
 /** 模式弹窗数据 */
 type DialogParam = {
-    uiid: number;
+    /** 弹窗唯一编号 */
+    uiid: string;
+    /** 窗口配置 */
     config: UIConfig;
+    /** 窗口附加参数 */
     params?: any;
+    /** 窗口回调 */
     callbacks?: UICallbacks;
 }
 
@@ -24,7 +28,7 @@ export class LayerDialog extends LayerPopUp {
     /** 窗口调用参数队列 */
     private params: Array<DialogParam> = [];
 
-    add(uiid: number, config: UIConfig, params?: any, callbacks?: UICallbacks) {
+    add(uiid: string, config: UIConfig, params?: any, callbacks?: UICallbacks) {
         // 控制同一时间只能显示一个模式窗口
         if (this.ui_nodes.size > 0) {
             this.params.push({
@@ -40,7 +44,7 @@ export class LayerDialog extends LayerPopUp {
     }
 
     /** 显示模式弹窗 */
-    private show(uiid: number, config: UIConfig, params?: any, callbacks?: UICallbacks) {
+    private show(uiid: string, config: UIConfig, params?: any, callbacks?: UICallbacks) {
         let vp = this.ui_cache.get(config.prefab);
         if (vp == null) {
             vp = new ViewParams();

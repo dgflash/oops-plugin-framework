@@ -1,3 +1,4 @@
+/** 框架提示资源路径 */
 export enum PromptResType {
     /** 飘动提示 */
     Toast = 'common/prefab/notify',

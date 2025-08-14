@@ -5,7 +5,6 @@
  * @LastEditTime: 2023-01-09 11:52:38
  */
 import { Node } from "cc";
-import { Uiid } from "./LayerEnum";
 import { UIConfig } from "./UIConfig";
 
 /*** 界面回调参数对象定义 */
