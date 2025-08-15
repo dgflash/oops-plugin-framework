@@ -1,6 +1,8 @@
-import { oops } from "../../core/Oops";
-
-/** 数值格式化函数, 通过语义解析自动设置值的范围 */
+/**
+ * 数值格式化函数, 通过语义解析自动设置值的范围
+ *     //整数
+ * 1:def(0)//显示一个默认值
+ */
 class StringFormat {
     deal(value: number | string, format: string): string {
         if (format === '') return value as string;
@@ -23,10 +25,10 @@ class StringFormat {
                 case 'per': res = this.per(value, num); break;
                 case 'sep': res = this.sep(value); break;
 
-                case 'tstamp': res = this.time_stamp(value); break;
-                case 'tm': res = this.time_m(value); break;
-                case 'ts': res = this.time_s(value); break;
-                case 'tms': res = this.time_ms(value); break;
+                case 'stamp': res = this.time_stamp(value); break;
+                case 'ms': res = this.time_ms(value); break;
+                case 'hms': res = this.time_hms(value); break;
+                case 'hmss': res = this.time_hmss(value); break;
 
                 default: break;
             }
@@ -34,8 +36,10 @@ class StringFormat {
         else {
             switch (func) {
                 case 'limit': res = this.limit(value, num); break;
-                default: res = value; break;
+                default:
+                    break;
             }
+            res = value;
         }
 
         return res as string;
@@ -47,18 +51,18 @@ class StringFormat {
         return num.replace(new RegExp('(\\d)(?=(\\d{3})+$)', 'ig'), "$1,");
     }
 
-    /** 将数字按分显示 00:00 显示 （时:分） */
-    private time_m(value: number) {
-        return new Date(value).format('hh:ss');
+    /** 将数字按分显示 00:00 显示 （分:秒） */
+    private time_ms(value: number) {
+        return new Date(value).format('mm:ss');
     }
 
     /** 将数字按秒显示 00:00:00 显示 （时:分:秒） */
-    private time_s(value: number) {
+    private time_hms(value: number) {
         return new Date(value).format('hh:mm:ss');
     }
 
     /** 将数字按 0:00:00:000 显示 （时:分:秒:毫秒） */
-    private time_ms(value: number) {
+    private time_hmss(value: number) {
         return new Date(value).format('hh:mm:ss:ms');
     }
 
@@ -89,21 +93,18 @@ class StringFormat {
     }
 
     /** 将数字缩短显示为KMBT单位 大写,目前只支持英文 */
-    private kmbt(value: number) {
+    private kmbt(value: number, lang: string = 'en') {
         //10^4=万, 10^8=亿,10^12=兆,10^16=京，
-        let counts: number[] = null!;
-        let units: string[] = null!;
+        let counts = [1000, 1000000, 1000000000, 1000000000000];
+        let units = ['', 'K', 'M', 'B', 'T'];
 
-        switch (oops.language.current) {
+        switch (lang) {
             case 'zh':
                 //10^4=万, 10^8=亿,10^12=兆,10^16=京，
                 counts = [10000, 100000000, 1000000000000, 10000000000000000];
                 units = ['', '万', '亿', '兆', '京'];
                 break;
-            case 'en':
-                counts = [1000, 1000000, 1000000000, 1000000000000];
-                units = ['', 'K', 'M', 'B', 'T'];
-                break;
+
             default:
                 break;
         }
