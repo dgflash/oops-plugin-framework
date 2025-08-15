@@ -4,7 +4,8 @@ import { oops } from "../../Oops";
 import { UICallbacks } from "./Defines";
 import { DelegateComponent } from "./DelegateComponent";
 import { LayerDialog } from "./LayerDialog";
-import { LayerType, LayerTypeCls, UIConfigMap, Uiid } from "./LayerEnum";
+import { LayerCustomType, LayerTypeCls, UIConfigMap, Uiid } from "./LayerEnum";
+import { LayerGame } from "./LayerGame";
 import { LayerNotify } from "./LayerNotify";
 import { LayerPopUp } from "./LayerPopup";
 import { LayerUI } from "./LayerUI";
@@ -17,7 +18,7 @@ export class LayerManager {
     /** 界面摄像机 */
     camera!: Camera;
     /** 游戏界面特效层 */
-    game!: Node;
+    game!: LayerGame;
     /** 新手引导层 */
     guide!: Node;
 
@@ -42,6 +43,7 @@ export class LayerManager {
         this.clsLayers.set(LayerTypeCls.PopUp, LayerPopUp);
         this.clsLayers.set(LayerTypeCls.Dialog, LayerDialog);
         this.clsLayers.set(LayerTypeCls.Notify, LayerNotify);
+        this.clsLayers.set(LayerTypeCls.Game, LayerGame);
         this.clsLayers.set(LayerTypeCls.Node, null);
     }
 
@@ -76,13 +78,10 @@ export class LayerManager {
             let data = config[i];
             let layer: Node = null!;
             if (data.type == LayerTypeCls.Node) {
-                layer = this.create_node(data.name);
                 switch (data.name) {
-                    case LayerType.Game:
-                        this.game = layer;
-                        break
-                    case LayerType.Guide:
-                        this.guide = layer;
+                    case LayerCustomType.Guide:
+                        this.guide = this.create_node(data.name);
+                        layer = this.guide;
                         break
                 }
             }
@@ -101,6 +100,8 @@ export class LayerManager {
                 this.uiLayers.set(data.name, layer);
             else if (layer instanceof LayerNotify)
                 this.notify = layer;
+            else if (layer instanceof LayerGame)
+                this.game = layer;
         }
     }
 

@@ -15,10 +15,18 @@ export enum ScreenAdapterType {
     Portrait
 }
 
-/** 界面层类型 */
-export enum LayerType {
+/** 自定义层类型 */
+export enum LayerCustomType {
     /** 二维游戏层 */
     Game = "LayerGame",
+    /** 消息提示层 */
+    Notify = "LayerNotify",
+    /** 新手引导层 */
+    Guide = "LayerGuide"
+}
+
+/** 界面层类型 */
+export enum LayerType {
     /** 主界面层 */
     UI = "LayerUI",
     /** 弹窗层 */
@@ -27,10 +35,6 @@ export enum LayerType {
     Dialog = "LayerDialog",
     /** 系统触发模式窗口层 */
     System = "LayerSystem",
-    /** 消息提示层 */
-    Notify = "LayerNotify",
-    /** 新手引导层 */
-    Guide = "LayerGuide"
 }
 
 /** 界面层组件类型 */
@@ -43,6 +47,8 @@ export enum LayerTypeCls {
     Dialog = "Dialog",
     /** 消息提示层 */
     Notify = "Notify",
+    /** 游戏层 */
+    Game = "Game",
     /** 自定义节点层 */
     Node = "Node"
 }
