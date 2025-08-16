@@ -3,7 +3,7 @@ import { GameElementConfig } from "./UIConfig";
 
 const { ccclass } = _decorator;
 
-/** 窗口事件触发组件 */
+/** 游戏元素组件 */
 @ccclass('LayerGameElement')
 export class LayerGameElement extends Component {
     /** 视图参数 */

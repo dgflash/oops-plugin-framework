@@ -2,7 +2,7 @@ import { Node, __private } from "cc";
 import { oops } from "../../core/Oops";
 import { resLoader } from "../../core/common/loader/ResLoader";
 import { UICallbacks } from "../../core/gui/layer/Defines";
-import { DelegateComponent } from "../../core/gui/layer/DelegateComponent";
+import { LayerUIElement } from "../../core/gui/layer/LayerUIElement";
 import { Uiid } from "../../core/gui/layer/LayerEnum";
 import { UIConfig } from "../../core/gui/layer/UIConfig";
 import { ViewUtil } from "../../core/utils/ViewUtil";
@@ -97,15 +97,15 @@ export class ModuleUtil {
             return;
         }
 
-        const comp = node.getComponent(DelegateComponent);
+        const comp = node.getComponent(LayerUIElement);
         if (comp) {
-            if (comp.vp.callbacks.onBeforeRemove) {
+            if (comp.params.callbacks.onBeforeRemove) {
                 comp.onCloseWindowBefore = () => {
                     ent.remove(ctor, isDestroy);
                     if (onRemoved) onRemoved();
                 };
             }
-            else if (comp.vp.callbacks.onRemoved) {
+            else if (comp.params.callbacks.onRemoved) {
                 comp.onCloseWindow = () => {
                     ent.remove(ctor, isDestroy);
                     if (onRemoved) onRemoved();

@@ -1,8 +1,7 @@
 import { Camera, Layers, Node, ResolutionPolicy, SafeArea, Widget, screen, view, warn } from "cc";
 import { resLoader } from "../../common/loader/ResLoader";
 import { oops } from "../../Oops";
-import { UICallbacks } from "./Defines";
-import { DelegateComponent } from "./DelegateComponent";
+import { LayerUIElement, UICallbacks } from "./LayerUIElement";
 import { LayerDialog } from "./LayerDialog";
 import { LayerCustomType, LayerTypeCls, UIConfigMap, Uiid } from "./LayerEnum";
 import { LayerGame } from "./LayerGame";
@@ -271,19 +270,19 @@ export class LayerManager {
      */
     removeByNode(node: Node, isDestroy: boolean = true) {
         if (node instanceof Node) {
-            let comp = node.getComponent(DelegateComponent);
-            if (comp && comp.vp) {
+            let comp = node.getComponent(LayerUIElement);
+            if (comp && comp.params) {
                 // 释放显示的界面
                 if (node.parent) {
-                    let uiid = this.configs[comp.vp.uiid];
+                    let uiid = this.configs[comp.params.uiid];
                     this.remove(uiid, isDestroy);
                 }
                 // 释放缓存中的界面
                 else if (isDestroy) {
-                    let layer = this.uiLayers.get(comp.vp.config.layer);
+                    let layer = this.uiLayers.get(comp.params.config.layer);
                     if (layer) {
                         // @ts-ignore 注：不对外使用
-                        layer.removeCache(comp.vp.config.prefab);
+                        layer.removeCache(comp.params.config.prefab);
                     }
                 }
             }

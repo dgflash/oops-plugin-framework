@@ -7,9 +7,9 @@
 import { BlockInputEvents, EventTouch, Layers, Node } from "cc";
 import { ViewUtil } from "../../utils/ViewUtil";
 import { PromptResType } from "../GuiEnum";
-import { ViewParams } from "./Defines";
 import { LayerUI } from "./LayerUI";
 import { UIConfig } from "./UIConfig";
+import { UIParams } from "./LayerUIElement";
 
 /* 弹窗层，允许同时弹出多个窗口 */
 export class LayerPopUp extends LayerUI {
@@ -20,7 +20,7 @@ export class LayerPopUp extends LayerUI {
 
     constructor(name: string) {
         super(name);
-        
+
         this.layer = Layers.Enum.UI_2D;
         this.on(Node.EventType.CHILD_ADDED, this.onChildAdded, this);
         this.on(Node.EventType.CHILD_REMOVED, this.onChildRemoved, this);
@@ -38,11 +38,11 @@ export class LayerPopUp extends LayerUI {
         }
     }
 
-    protected async showUi(vp: ViewParams): Promise<boolean> {
-        const r = await super.showUi(vp);
+    protected async showUi(uip: UIParams): Promise<boolean> {
+        const r = await super.showUi(uip);
         if (r) {
             // 界面加载完成显示时，启动触摸非窗口区域关闭
-            this.openVacancyRemove(vp.config);
+            this.openVacancyRemove(uip.config);
 
             // 界面加载完成显示时，层级事件阻挡
             this.black.enabled = true;
@@ -50,8 +50,8 @@ export class LayerPopUp extends LayerUI {
         return r;
     }
 
-    protected onCloseWindow(vp: ViewParams) {
-        super.onCloseWindow(vp);
+    protected onCloseWindow(uip: UIParams) {
+        super.onCloseWindow(uip);
 
         // 界面关闭后，关闭触摸事件阻挡、关闭触摸非窗口区域关闭、关闭遮罩
         this.setBlackDisable();
