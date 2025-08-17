@@ -1,4 +1,4 @@
-import { __private, AnimationClip, Asset, AssetManager, assetManager, AudioClip, error, Font, ImageAsset, js, JsonAsset, Material, Mesh, Prefab, resources, sp, SpriteFrame, Texture2D, warn } from "cc";
+import { __private, AnimationClip, Asset, AssetManager, assetManager, AudioClip, Font, ImageAsset, js, JsonAsset, Material, Mesh, Prefab, resources, sp, SpriteFrame, Texture2D, warn } from "cc";
 
 export type AssetType<T = Asset> = __private.__types_globals__Constructor<T> | null;
 export type Paths = string | string[];
@@ -120,11 +120,12 @@ oops.res.loadRemote<ImageAsset>(this.url, opt, onComplete);
      * @example
         await oops.res.loadBundle(name);
      */
-    loadBundle(name: string) {
+    loadBundle(name: string): Promise<AssetManager.Bundle> {
         return new Promise<AssetManager.Bundle>((resolve, reject) => {
             assetManager.loadBundle(name, (err, bundle: AssetManager.Bundle) => {
                 if (err) {
-                    return error(err);
+                    resolve(null!);
+                    return;
                 }
                 resolve(bundle);
             });

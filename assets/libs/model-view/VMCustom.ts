@@ -18,7 +18,6 @@ const COMP_ARRAY_CHECK = [
     ['cc.Toggle', 'isChecked', true]
 ];
 
-
 /**
  * [VM-Custom]
  * 自定义数值监听, 可以快速对该节点上任意一个组件上的属性进行双向绑定

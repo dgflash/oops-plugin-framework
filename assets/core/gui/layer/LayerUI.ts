@@ -1,8 +1,8 @@
 import { instantiate, Node, Prefab, SafeArea, Widget } from "cc";
 import { Collection } from "db://oops-framework/libs/collection/Collection";
 import { oops } from "../../Oops";
-import { UICallbacks, ViewParams } from "./Defines";
-import { DelegateComponent } from "./DelegateComponent";
+import { Uiid } from "./LayerEnum";
+import { LayerUIElement, UICallbacks, UIParams } from "./LayerUIElement";
 import { UIConfig } from "./UIConfig";
 
 /** 界面层对象 */
@@ -10,9 +10,9 @@ export class LayerUI extends Node {
     /** 全局窗口打开失败 */
     onOpenFailure: Function = null!;
     /** 显示界面节点集合 */
-    protected ui_nodes = new Collection<string, ViewParams>();
+    protected ui_nodes = new Collection<string, UIParams>();
     /** 被移除的界面缓存数据 */
-    protected ui_cache = new Map<string, ViewParams>();
+    protected ui_cache = new Map<string, UIParams>();
 
     /**
      * UI基础层，允许添加多个预制件节点
@@ -35,26 +35,26 @@ export class LayerUI extends Node {
      * @param callbacks  回调函数对象，可选
      * @returns ture为成功,false为失败
      */
-    add(uiid: number, config: UIConfig, params?: any, callbacks?: UICallbacks) {
+    add(uiid: Uiid, config: UIConfig, params?: any, callbacks?: UICallbacks) {
         if (this.ui_nodes.has(config.prefab)) {
             console.warn(`路径为【${config.prefab}】的预制重复加载`);
             return;
         }
 
         // 检查缓存中是否存界面
-        let vp = this.ui_cache.get(config.prefab);
-        if (vp == null) {
-            vp = new ViewParams();
-            vp.uiid = uiid;
-            vp.config = config;
+        let uip = this.ui_cache.get(config.prefab);
+        if (uip == null) {
+            uip = new UIParams();
+            uip.uiid = uiid.toString();
+            uip.config = config;
         }
-        this.ui_nodes.set(config.prefab, vp);
+        this.ui_nodes.set(config.prefab, uip);
 
-        vp.params = params ?? {};
-        vp.callbacks = callbacks ?? {};
-        vp.valid = true;
+        uip.params = params ?? {};
+        uip.callbacks = callbacks ?? {};
+        uip.valid = true;
 
-        this.load(vp, config.bundle)
+        this.load(uip, config.bundle)
     }
 
     /**
@@ -62,7 +62,7 @@ export class LayerUI extends Node {
      * @param vp         显示参数
      * @param bundle     远程资源包名，如果为空就是默认本地资源包
      */
-    protected async load(vp: ViewParams, bundle?: string) {
+    protected async load(vp: UIParams, bundle?: string) {
         // 加载界面资源超时提示
         const timerId = setTimeout(this.onLoadingTimeoutGui, oops.config.game.loadingTimeoutGui);
 
@@ -79,8 +79,8 @@ export class LayerUI extends Node {
                 if (vp.config.safeArea) vp.node.addComponent(SafeArea);
 
                 // 窗口事件委托
-                const dc = vp.node.addComponent(DelegateComponent);
-                dc.vp = vp;
+                const dc = vp.node.addComponent(LayerUIElement);
+                dc.params = vp;
                 dc.onCloseWindow = this.onCloseWindow.bind(this);
 
                 // 显示界面
@@ -103,35 +103,35 @@ export class LayerUI extends Node {
     }
 
     /** 窗口关闭事件 */
-    protected onCloseWindow(vp: ViewParams) {
+    protected onCloseWindow(vp: UIParams) {
         this.ui_nodes.delete(vp.config.prefab);
     }
 
     /**
      * 创建界面节点
-     * @param vp  视图参数
+     * @param uip  视图参数
      */
-    protected async showUi(vp: ViewParams): Promise<boolean> {
+    protected async showUi(uip: UIParams): Promise<boolean> {
         // 触发窗口添加事件
-        const comp = vp.node.getComponent(DelegateComponent)!;
+        const comp = uip.node.getComponent(LayerUIElement)!;
         const r: boolean = await comp.add();
         if (r) {
-            vp.node.parent = this;
+            uip.node.parent = this;
 
             // 标记界面为使用状态
-            vp.valid = true;
+            uip.valid = true;
         }
         else {
-            console.warn(`路径为【${vp.config.prefab}】的自定义预处理逻辑异常.检查预制上绑定的组件中 onAdded 方法,返回true才能正确完成窗口显示流程`);
-            this.failure(vp);
+            console.warn(`路径为【${uip.config.prefab}】的自定义预处理逻辑异常.检查预制上绑定的组件中 onAdded 方法,返回true才能正确完成窗口显示流程`);
+            this.failure(uip);
         }
         return r;
     }
 
     /** 打开窗口失败逻辑 */
-    protected failure(vp: ViewParams) {
-        this.onCloseWindow(vp);
-        vp.callbacks && vp.callbacks.onLoadFailure && vp.callbacks.onLoadFailure();
+    protected failure(uip: UIParams) {
+        this.onCloseWindow(uip);
+        uip.callbacks && uip.callbacks.onLoadFailure && uip.callbacks.onLoadFailure();
         this.onOpenFailure && this.onOpenFailure();
     }
 
@@ -158,7 +158,7 @@ export class LayerUI extends Node {
             }
 
             const childNode = vp.node;
-            const comp = childNode.getComponent(DelegateComponent)!;
+            const comp = childNode.getComponent(LayerUIElement)!;
             comp.remove(release);
         }
 
@@ -173,7 +173,7 @@ export class LayerUI extends Node {
             this.onCloseWindow(vp);
             this.ui_cache.delete(prefabPath);
             const childNode = vp.node;
-            const comp = childNode.getComponent(DelegateComponent)!;
+            const comp = childNode.getComponent(LayerUIElement)!;
             if (comp) {
                 comp.remove(true);
             }
@@ -206,7 +206,7 @@ export class LayerUI extends Node {
      */
     clear(isDestroy: boolean): void {
         // 清除所有显示的界面
-        this.ui_nodes.forEach((value: ViewParams, key: string) => {
+        this.ui_nodes.forEach((value: UIParams, key: string) => {
             this.remove(value.config.prefab, isDestroy);
             value.valid = false;
         });
@@ -214,7 +214,7 @@ export class LayerUI extends Node {
 
         // 清除缓存中的界面
         if (isDestroy) {
-            this.ui_cache.forEach((value: ViewParams, prefabPath: string) => {
+            this.ui_cache.forEach((value: UIParams, prefabPath: string) => {
                 this.removeCache(prefabPath);
             });
         }

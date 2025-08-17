@@ -10,8 +10,6 @@ import { ecs } from "../libs/ecs/ECS";
 import { ECSRootSystem } from "../libs/ecs/ECSSystem";
 import { LanguageManager } from "../libs/gui/language/Language";
 import { VM } from "../libs/model-view/ViewModel";
-import { HttpRequest } from "../libs/network/HttpRequest";
-import { NetManager } from "../libs/network/NetManager";
 import { Config } from "../module/config/Config";
 import { AudioManager } from "./common/audio/AudioManager";
 import { MessageManager } from "./common/event/MessageManager";
@@ -55,10 +53,6 @@ export class oops {
 
     /** 多语言模块 */
     static language: LanguageManager = new LanguageManager();
-    /** HTTP */
-    static http: HttpRequest = new HttpRequest();           // 使用流程文档可参考、简化与服务器对接、使用新版API体验，可进入下面地址获取新版本，替换network目录中的内容(https://store.cocos.com/app/detail/5877)
-    /** WebSocket */
-    static tcp: NetManager = new NetManager();              // 使用流程文档可参考、简化与服务器对接、使用新版API体验，可进入下面地址获取新版本，替换network目录中的内容(https://store.cocos.com/app/detail/5877)
     /** ECS */
     static ecs: ECSRootSystem = new ecs.RootSystem();
     /** MVVM */

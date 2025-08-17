@@ -6,6 +6,7 @@
  */
 import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, Prefab, Sprite, SpriteFrame, __private, _decorator, input, isValid } from "cc";
 import { oops } from "../../core/Oops";
+import { IAudioParams } from "../../core/common/audio/IAudio";
 import { EventDispatcher } from "../../core/common/event/EventDispatcher";
 import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage";
 import { AssetType, CompleteCallback, Paths, ProgressCallback, resLoader } from "../../core/common/loader/ResLoader";
@@ -339,41 +340,44 @@ export class GameComponent extends Component {
     /**
      * 播放背景音乐（不受自动释放资源管理）
      * @param url           资源地址
-     * @param callback      资源加载完成回调
-     * @param bundleName    资源包名
+     * @param params        背景音乐资源播放参数
      */
-    playMusic(url: string, callback?: Function, bundleName?: string) {
-        oops.audio.playMusic(url, callback, bundleName);
-    }
-
-    /**
-     * 循环播放背景音乐（不受自动释放资源管理）
-     * @param url           资源地址
-     * @param bundleName    资源包名
-     */
-    playMusicLoop(url: string, bundleName?: string) {
-        oops.audio.stopMusic();
-        oops.audio.playMusicLoop(url, bundleName);
+    playMusic(url: string, params?: IAudioParams) {
+        oops.audio.music.loadAndPlay(url, params);
     }
 
     /**
      * 播放音效
      * @param url           资源地址
-     * @param callback      资源加载完成回调
-     * @param bundleName    资源包名
+     * @param params        音效播放参数
      */
-    async playEffect(url: string, bundleName?: string) {
-        if (bundleName == null) bundleName = oops.res.defaultBundleName;
-        let resId = await oops.audio.playEffect(url, bundleName, () => {
-            if (!this.isValid) return;
-
-            const rps = this.resPaths.get(ResType.Audio);
-            if (rps) {
-                const key = this.getResKey(bundleName, url);
-                rps.delete(key);
+    async playEffect(url: string, params?: IAudioParams): Promise<number> {
+        return new Promise(async (resolve, reject) => {
+            let bundleName = resLoader.defaultBundleName;
+            if (params == null) {
+                params = { bundle: bundleName }
             }
+            else if (params.bundle != null) {
+                bundleName = params.bundle;
+            }
+
+            // 音效播放完，关闭正在播放状态的音乐效果
+            params.onPlayComplete = (aeid: number, url: string, bundleName: string) => {
+                // 音效播放完前，界面被释放
+                if (!this.isValid) return;
+
+                // 删除界面音效的播放记录
+                const rps = this.resPaths.get(ResType.Audio);
+                if (rps) {
+                    const key = this.getResKey(bundleName, url, aeid);
+                    rps.delete(key);
+                }
+            }
+
+            let resId = await oops.audio.playEffect(url, params);
+            this.addPathToRecord(ResType.Audio, bundleName, url, resId);        // 支持界面释放时，立即停止所有音效的播放
+            resolve(resId);
         });
-        this.addPathToRecord(ResType.Audio, bundleName, url, resId);
     }
     //#endregion
 

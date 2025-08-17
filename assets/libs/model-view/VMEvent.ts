@@ -35,7 +35,7 @@ export default class VMEvent extends VMBase {
     @property({
         tooltip: '使用模板模式，可以使用多路径监听'
     })
-    public templateMode: boolean = false;
+    templateMode: boolean = false;
 
     @property({
         tooltip: '监听获取值的路径',
@@ -65,7 +65,7 @@ export default class VMEvent extends VMBase {
         tooltip: '过滤模式，会根据条件过滤掉时间的触发',
         type: Enum(FILTER_MODE)
     })
-    public filterMode: FILTER_MODE = FILTER_MODE.none;
+    filterMode: FILTER_MODE = FILTER_MODE.none;
 
     @property({
         visible: function () {
@@ -73,7 +73,7 @@ export default class VMEvent extends VMBase {
             return this.filterMode !== FILTER_MODE.none
         }
     })
-    public compareValue: string = '';
+    compareValue: string = '';
 
     @property([EventHandler])
     changeEvents: EventHandler[] = [];

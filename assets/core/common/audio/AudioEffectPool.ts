@@ -2,6 +2,7 @@ import { AudioClip, Node, NodePool } from "cc";
 import { oops } from "../../Oops";
 import { resLoader } from "../loader/ResLoader";
 import { AudioEffect } from "./AudioEffect";
+import { IAudioParams } from "./IAudio";
 
 const AE_ID_MAX = 30000;
 
@@ -9,10 +10,10 @@ const AE_ID_MAX = 30000;
 export class AudioEffectPool {
     private _switch: boolean = true;
     /** 音效开关 */
-    public get switch(): boolean {
+    get switch(): boolean {
         return this._switch;
     }
-    public set switch(value: boolean) {
+    set switch(value: boolean) {
         this._switch = value;
         if (value) this.stop();
     }
@@ -52,9 +53,20 @@ export class AudioEffectPool {
      * @param onPlayComplete       播放完成回调
      * @returns 
      */
-    async load(url: string | AudioClip, bundleName: string = resLoader.defaultBundleName, onPlayComplete?: Function): Promise<number> {
+    async loadAndPlay(url: string | AudioClip, params?: IAudioParams): Promise<number> {
         return new Promise(async (resolve, reject) => {
             if (!this.switch) return resolve(-1);
+
+            let bundleName = resLoader.defaultBundleName;
+            let loop = false;
+            let volume = this.volume;
+            let onPlayComplete: Function = null!;
+            if (params) {
+                if (params.bundle != null) bundleName = params.bundle;
+                if (params.loop != null) loop = params.loop;
+                if (params.volume != null) volume = params.volume;
+                if (params.onPlayComplete != null) onPlayComplete = params.onPlayComplete;
+            }
 
             // 创建音效资源
             let clip: AudioClip;
@@ -63,6 +75,8 @@ export class AudioEffectPool {
             }
             else {
                 clip = resLoader.get(url, AudioClip, bundleName)!;
+
+                // 加载音效资源
                 if (clip == null) {
                     let urls = this.res.get(bundleName);
                     if (urls == null) {
@@ -101,22 +115,24 @@ export class AudioEffectPool {
                 node.name = "AudioEffect";
                 node.parent = oops.audio.node;
                 ae = node.addComponent(AudioEffect)!;
+                ae.onComplete = () => {
+                    this.put(aeid, url, bundleName);       // 播放完回收对象
+                    onPlayComplete && onPlayComplete(aeid, url, bundleName);
+                    // console.log(`【音效】回收，池中剩余音效播放器【${this.pool.size()}】`);
+                };
             }
             else {
                 node = this.pool.get()!;
                 ae = node.getComponent(AudioEffect)!;
             }
-            ae.onComplete = () => {
-                this.put(aeid, url, bundleName);       // 播放完回收对象
-                onPlayComplete && onPlayComplete();
-                // console.log(`【音效】回收，池中剩余音效播放器【${this.pool.size()}】`);
-            };
 
             // 记录正在播放的音效播放器
             this.effects.set(key, ae);
 
-            ae.volume = this.volume;
+            ae.loop = loop;
             ae.clip = clip;
+            ae.volume = volume;
+            ae.currentTime = 0;
             ae.play();
 
             resolve(aeid);
@@ -147,23 +163,6 @@ export class AudioEffectPool {
         }
     }
 
-    /** 释放所有音效资源与对象池中播放器 */
-    release() {
-        // 释放正在播放的音效
-        this.effects.forEach(ae => {
-            ae.node.destroy();
-        });
-        this.effects.clear();
-
-        // 释放音效资源
-        this.res.forEach((urls: string[], bundleName: string) => {
-            urls.forEach(url => resLoader.release(url, bundleName));
-        });
-
-        // 释放池中播放器
-        this.pool.clear();
-    }
-
     /** 停止播放所有音效 */
     stop() {
         this.effects.forEach(ae => {
@@ -187,5 +186,22 @@ export class AudioEffectPool {
         this.effects.forEach(ae => {
             ae.pause();
         });
+    }
+
+    /** 释放所有音效资源与对象池中播放器 */
+    release() {
+        // 释放正在播放的音效
+        this.effects.forEach(ae => {
+            ae.node.destroy();
+        });
+        this.effects.clear();
+
+        // 释放音效资源
+        this.res.forEach((urls: string[], bundleName: string) => {
+            urls.forEach(url => resLoader.release(url, bundleName));
+        });
+
+        // 释放池中播放器
+        this.pool.clear();
     }
 }

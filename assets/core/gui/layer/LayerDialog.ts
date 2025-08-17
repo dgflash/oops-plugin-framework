@@ -5,15 +5,19 @@
  * @LastEditTime: 2023-07-24 17:14:57
  */
 
-import { UICallbacks, ViewParams } from "./Defines";
 import { LayerPopUp } from "./LayerPopup";
+import { UICallbacks, UIParams } from "./LayerUIElement";
 import { UIConfig } from "./UIConfig";
 
 /** 模式弹窗数据 */
 type DialogParam = {
-    uiid: number;
+    /** 弹窗唯一编号 */
+    uiid: string;
+    /** 窗口配置 */
     config: UIConfig;
+    /** 窗口附加参数 */
     params?: any;
+    /** 窗口回调 */
     callbacks?: UICallbacks;
 }
 
@@ -24,7 +28,7 @@ export class LayerDialog extends LayerPopUp {
     /** 窗口调用参数队列 */
     private params: Array<DialogParam> = [];
 
-    add(uiid: number, config: UIConfig, params?: any, callbacks?: UICallbacks) {
+    add(uiid: string, config: UIConfig, params?: any, callbacks?: UICallbacks) {
         // 控制同一时间只能显示一个模式窗口
         if (this.ui_nodes.size > 0) {
             this.params.push({
@@ -40,24 +44,24 @@ export class LayerDialog extends LayerPopUp {
     }
 
     /** 显示模式弹窗 */
-    private show(uiid: number, config: UIConfig, params?: any, callbacks?: UICallbacks) {
-        let vp = this.ui_cache.get(config.prefab);
-        if (vp == null) {
-            vp = new ViewParams();
-            vp.uiid = uiid;
-            vp.valid = true;
-            vp.config = config;
+    private show(uiid: string, config: UIConfig, params?: any, callbacks?: UICallbacks) {
+        let uip = this.ui_cache.get(config.prefab);
+        if (uip == null) {
+            uip = new UIParams();
+            uip.uiid = uiid;
+            uip.valid = true;
+            uip.config = config;
         }
 
-        vp.params = params || {};
-        vp.callbacks = callbacks ?? {};
-        this.ui_nodes.set(vp.config.prefab, vp);
+        uip.params = params || {};
+        uip.callbacks = callbacks ?? {};
+        this.ui_nodes.set(uip.config.prefab, uip);
 
-        this.load(vp, config.bundle);
+        this.load(uip, config.bundle);
     }
 
-    protected onCloseWindow(vp: ViewParams) {
-        super.onCloseWindow(vp);
+    protected onCloseWindow(uip: UIParams) {
+        super.onCloseWindow(uip);
         setTimeout(this.next.bind(this), 0);
     }
 

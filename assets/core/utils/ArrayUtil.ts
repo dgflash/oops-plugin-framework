@@ -97,10 +97,39 @@ export class ArrayUtil {
     }
 
     /**
-     * 获取随机数组成员
+     * 获取数组中随机成员
      * @param array 目标数组
      */
     static getRandomValueInArray(array: any[]): any {
         return array[Math.floor(Math.random() * array.length)];
+    }
+
+    /**
+     * 随机打乱数组
+     * @param array 目标数组
+     * @example [1,2,3,4,5] --> [5, 1, 2, 3, 4] 
+     */
+    static shuffleArray<T>(array: T[]): T[] {
+        // 创建一个原数组的副本
+        const newArr = [...array];
+
+        // 使用Fisher-Yates 洗牌算法打乱新数组
+        for (let i = newArr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+        }
+
+        // 返回打乱后的新数组
+        return newArr;
+    }
+
+    /**
+     * 获取连续数字数组, 范围在[start, end]之间
+     * @param start 开始数字
+     * @param end 结束数字
+     * @example getNumsBetween(1, 10) => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] 
+     */
+    static getNumsBetween(start: number, end: number): number[] {
+        return Array.from({ length: end - start + 1 }, (_, i) => start + i);
     }
 }

@@ -34,7 +34,7 @@ function getValueFromPath(obj: any, path: string, def?: any, tag: string | null 
 /**
  * ModelViewer 类
  */
-class ViewModel<T>{
+class ViewModel<T> {
     constructor(data: T, tag: string) {
         new JsonOb(data, this._callback.bind(this));
         this.$data = data;
@@ -149,6 +149,9 @@ class VMManager {
      */
     getValue(path: string, def?: any): any {
         path = path.trim();                 // 防止空格,自动剔除
+
+        if (path === '') return '';
+
         let rs = path.split('.');
         if (rs.length < 2) { console.error('Get Value Cant find path:' + path); return; };
         let vm = this.get(rs[0]);
@@ -215,10 +218,8 @@ class VMManager {
     }
 }
 
-//   整数、小数、时间、缩写
-
 /**
  *  VM管理对象,使用文档: 
- *  https://github.com/wsssheep/cocos_creator_mvvm_tools/blob/master/docs/ViewModelScript.md
+ *  https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037849&doc_id=2873565
  */
 export let VM = new VMManager();
