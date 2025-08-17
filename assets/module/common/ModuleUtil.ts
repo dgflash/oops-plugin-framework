@@ -1,8 +1,7 @@
 import { Node, __private } from "cc";
 import { oops } from "../../core/Oops";
 import { resLoader } from "../../core/common/loader/ResLoader";
-import { UICallbacks } from "../../core/gui/layer/Defines";
-import { LayerUIElement } from "../../core/gui/layer/LayerUIElement";
+import { LayerUIElement, UICallbacks } from "../../core/gui/layer/LayerUIElement";
 import { Uiid } from "../../core/gui/layer/LayerEnum";
 import { UIConfig } from "../../core/gui/layer/UIConfig";
 import { ViewUtil } from "../../core/utils/ViewUtil";
