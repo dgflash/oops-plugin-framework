@@ -81,6 +81,7 @@ export class LayerUI extends Node {
                 // 窗口事件委托
                 const dc = vp.node.addComponent(LayerUIElement);
                 dc.params = vp;
+                //@ts-ignore
                 dc.onCloseWindow = this.onCloseWindow.bind(this);
 
                 // 显示界面

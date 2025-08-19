@@ -1,8 +1,8 @@
 import { Node, __private } from "cc";
 import { oops } from "../../core/Oops";
 import { resLoader } from "../../core/common/loader/ResLoader";
-import { LayerUIElement, UICallbacks } from "../../core/gui/layer/LayerUIElement";
 import { Uiid } from "../../core/gui/layer/LayerEnum";
+import { LayerUIElement, UICallbacks } from "../../core/gui/layer/LayerUIElement";
 import { UIConfig } from "../../core/gui/layer/UIConfig";
 import { ViewUtil } from "../../core/utils/ViewUtil";
 import { ecs } from "../../libs/ecs/ECS";
@@ -98,28 +98,12 @@ export class ModuleUtil {
 
         const comp = node.getComponent(LayerUIElement);
         if (comp) {
-            if (comp.params.callbacks.onBeforeRemove) {
-                comp.onCloseWindowBefore = () => {
-                    ent.remove(ctor, isDestroy);
-                    if (onRemoved) onRemoved();
-                };
-            }
-            else if (comp.params.callbacks.onRemoved) {
-                comp.onCloseWindow = () => {
-                    ent.remove(ctor, isDestroy);
-                    if (onRemoved) onRemoved();
-                };
-            }
-            else {
-                ent.remove(ctor, isDestroy);
+            comp.onCloseWindowBefore = () => {
+                // 移除ECS显示组件
+                if (isDestroy) ent.remove(ctor, isDestroy);
                 if (onRemoved) onRemoved();
-            }
+            };
+            oops.gui.remove(uiId, isDestroy);
         }
-        else {
-            ent.remove(ctor, isDestroy);
-            if (onRemoved) onRemoved();
-        }
-
-        oops.gui.remove(uiId, isDestroy);
     }
 }
