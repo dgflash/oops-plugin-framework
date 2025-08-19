@@ -59,37 +59,38 @@ export class LayerUI extends Node {
 
     /**
      * 加载界面资源
-     * @param vp         显示参数
+     * @param uip        显示参数
      * @param bundle     远程资源包名，如果为空就是默认本地资源包
      */
-    protected async load(vp: UIParams, bundle?: string) {
+    protected async load(uip: UIParams, bundle?: string) {
         // 加载界面资源超时提示
         const timerId = setTimeout(this.onLoadingTimeoutGui, oops.config.game.loadingTimeoutGui);
 
-        if (vp && vp.node) {
-            await this.showUi(vp);
+        if (uip && uip.node) {
+            await this.showUi(uip);
         }
         else {
             // 优先加载配置的指定资源包中资源，如果没配置则加载默认资源包资源
             bundle = bundle || oops.res.defaultBundleName;
-            const res = await oops.res.loadAsync(bundle, vp.config.prefab, Prefab);
+            const res = await oops.res.loadAsync(bundle, uip.config.prefab, Prefab);
             if (res) {
-                vp.node = instantiate(res);
+                uip.node = instantiate(res);
+
                 // 是否启动真机安全区域显示
-                if (vp.config.safeArea) vp.node.addComponent(SafeArea);
+                if (uip.config.safeArea) uip.node.addComponent(SafeArea);
 
                 // 窗口事件委托
-                const dc = vp.node.addComponent(LayerUIElement);
-                dc.params = vp;
+                const dc = uip.node.addComponent(LayerUIElement);
+                dc.params = uip;
                 //@ts-ignore
                 dc.onCloseWindow = this.onCloseWindow.bind(this);
 
                 // 显示界面
-                await this.showUi(vp);
+                await this.showUi(uip);
             }
             else {
-                console.warn(`路径为【${vp.config.prefab}】的预制加载失败`);
-                this.failure(vp);
+                console.warn(`路径为【${uip.config.prefab}】的预制加载失败`);
+                this.failure(uip);
             }
         }
 
