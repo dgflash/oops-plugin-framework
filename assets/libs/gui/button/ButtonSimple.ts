@@ -1,6 +1,5 @@
 import { AudioClip, Component, EventTouch, Node, _decorator, game } from "cc";
 import { oops } from "../../../core/Oops";
-import { resLoader } from "../../../core/common/loader/ResLoader";
 
 const { ccclass, property, menu } = _decorator;
 
@@ -23,9 +22,14 @@ export default class ButtonSimple extends Component {
         type: AudioClip
     })
     private effect: AudioClip = null!;
-    // private effectIds: number[] = [];
     private touchCount = 0;
     private touchtEndTime = 0;
+
+    private static effectPath: string = null!;
+    /** 批量设置触摸音效 */
+    static setBatchEffect(path: string) {
+        this.effectPath = path;
+    }
 
     onLoad() {
         this.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
@@ -56,23 +60,16 @@ export default class ButtonSimple extends Component {
 
     /** 短按触摸音效 */
     protected async playEffect() {
-        if (this.effect) {
+        if (ButtonSimple.effectPath) {
+            oops.audio.playEffect(ButtonSimple.effectPath);
+        }
+        else if (this.effect) {
             oops.audio.playEffect(this.effect);
-            // const effectId = await oops.audio.playEffect(this.effect, resLoader.defaultBundleName, () => {
-            //     this.effectIds.remove(effectId);
-            // });
-            // if (effectId > 0) this.effectIds.push(effectId);
         }
     }
 
     onDestroy() {
         this.node.off(Node.EventType.TOUCH_END, this.onTouchEnd, this);
         this.node.off(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
-
-        // if (this.effect) {
-        //     this.effectIds.forEach(effectId => {
-        //         oops.audio.putEffect(effectId, this.effect);
-        //     });
-        // }
     }
 }
