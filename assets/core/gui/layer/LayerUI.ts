@@ -1,7 +1,8 @@
-import { instantiate, Node, Prefab, SafeArea, Widget } from "cc";
+import { instantiate, Node, Prefab, SafeArea } from "cc";
 import { Collection } from "db://oops-framework/libs/collection/Collection";
 import { oops } from "../../Oops";
 import { Uiid } from "./LayerEnum";
+import { LayerHelper } from "./LayerHelper";
 import { LayerUIElement, UICallbacks, UIParams } from "./LayerUIElement";
 import { UIConfig } from "./UIConfig";
 
@@ -20,12 +21,7 @@ export class LayerUI extends Node {
      */
     constructor(name: string) {
         super(name);
-
-        const widget: Widget = this.addComponent(Widget);
-        widget.isAlignLeft = widget.isAlignRight = widget.isAlignTop = widget.isAlignBottom = true;
-        widget.left = widget.right = widget.top = widget.bottom = 0;
-        widget.alignMode = 2;
-        widget.enabled = true;
+        LayerHelper.setFullScreen(this);
     }
 
     /**
@@ -147,20 +143,20 @@ export class LayerUI extends Node {
         if (isDestroy !== undefined) release = isDestroy;
 
         // 界面移出舞台
-        const vp = this.ui_nodes.get(prefabPath);
-        if (vp) {
+        const uip = this.ui_nodes.get(prefabPath);
+        if (uip) {
             // 优先使用参数中控制的释放条件，如果未传递参数则用配置中的释放条件，默认不缓存关闭的界面
             if (release === undefined) {
-                release = vp.config.destroy !== undefined ? vp.config.destroy : true;
+                release = uip.config.destroy !== undefined ? uip.config.destroy : true;
             }
 
             // 不释放界面，缓存起来待下次使用
             if (release === false) {
-                this.ui_cache.set(vp.config.prefab, vp);
+                this.ui_cache.set(uip.config.prefab, uip);
             }
 
-            const childNode = vp.node;
-            const comp = childNode.getComponent(LayerUIElement)!;
+            const node = uip.node;
+            const comp = node.getComponent(LayerUIElement)!;
             comp.remove(release);
         }
 
@@ -174,12 +170,10 @@ export class LayerUI extends Node {
         if (vp) {
             this.onCloseWindow(vp);
             this.ui_cache.delete(prefabPath);
-            const childNode = vp.node;
-            const comp = childNode.getComponent(LayerUIElement)!;
-            if (comp) {
-                comp.remove(true);
-            }
-            childNode.destroy();
+            const node = vp.node;
+            const comp = node.getComponent(LayerUIElement)!;
+            comp.remove(true);
+            node.destroy();
         }
     }
 
@@ -189,8 +183,7 @@ export class LayerUI extends Node {
      */
     get(prefabPath: string): Node {
         const vp = this.ui_nodes.get(prefabPath);
-        if (vp)
-            return vp.node;
+        if (vp) return vp.node;
         return null!;
     }
 
@@ -208,10 +201,11 @@ export class LayerUI extends Node {
      */
     clear(isDestroy: boolean): void {
         // 清除所有显示的界面
-        this.ui_nodes.forEach((value: UIParams, key: string) => {
-            this.remove(value.config.prefab, isDestroy);
-            value.valid = false;
-        });
+        const length = this.ui_nodes.array.length - 1;
+        for (let i = length; i >= 0; i--) {
+            const uip = this.ui_nodes.array[i];
+            this.remove(uip.config.prefab, isDestroy);
+        }
         this.ui_nodes.clear();
 
         // 清除缓存中的界面

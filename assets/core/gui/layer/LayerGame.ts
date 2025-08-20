@@ -4,11 +4,12 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2025-08-15 10:06:47
  */
-import { Layers, Node, NodePool, Prefab, Vec3, warn, Widget } from "cc";
+import { Node, NodePool, Prefab, Vec3, warn } from "cc";
 import { resLoader } from "../../common/loader/ResLoader";
 import { ViewUtil } from "../../utils/ViewUtil";
 import { LayerCustomType } from "./LayerEnum";
 import { GameElementParams, LayerGameElement } from "./LayerGameElement";
+import { LayerHelper } from "./LayerHelper";
 import { GameElementConfig } from "./UIConfig";
 
 /* 二维游戏层 */
@@ -18,14 +19,7 @@ export class LayerGame extends Node {
 
     constructor() {
         super(LayerCustomType.Game);
-
-        const widget: Widget = this.addComponent(Widget);
-        widget.isAlignLeft = widget.isAlignRight = widget.isAlignTop = widget.isAlignBottom = true;
-        widget.left = widget.right = widget.top = widget.bottom = 0;
-        widget.alignMode = 2;
-        widget.enabled = true;
-
-        this.layer = Layers.Enum.UI_2D;
+        LayerHelper.setFullScreen(this);
     }
 
     /**

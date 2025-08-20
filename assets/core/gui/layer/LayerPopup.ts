@@ -3,13 +3,12 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 13:44:28
  */
-
-import { BlockInputEvents, EventTouch, Layers, Node } from "cc";
+import { BlockInputEvents, EventTouch, Node } from "cc";
 import { ViewUtil } from "../../utils/ViewUtil";
 import { PromptResType } from "../GuiEnum";
 import { LayerUI } from "./LayerUI";
-import { UIConfig } from "./UIConfig";
 import { UIParams } from "./LayerUIElement";
+import { UIConfig } from "./UIConfig";
 
 /* 弹窗层，允许同时弹出多个窗口 */
 export class LayerPopUp extends LayerUI {
@@ -21,7 +20,6 @@ export class LayerPopUp extends LayerUI {
     constructor(name: string) {
         super(name);
 
-        this.layer = Layers.Enum.UI_2D;
         this.on(Node.EventType.CHILD_ADDED, this.onChildAdded, this);
         this.on(Node.EventType.CHILD_REMOVED, this.onChildRemoved, this);
     }

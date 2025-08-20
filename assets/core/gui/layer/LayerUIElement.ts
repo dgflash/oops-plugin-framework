@@ -8,11 +8,11 @@ import { Component, Node, _decorator } from "cc";
 import { oops } from "../../Oops";
 import { UIConfig } from "./UIConfig";
 
-const { ccclass } = _decorator;
-
 const EventOnAdded: string = "onAdded";
 const EventOnBeforeRemove: string = "onBeforeRemove";
 const EventOnRemoved: string = "onRemoved";
+
+const { ccclass } = _decorator;
 
 /** 窗口元素组件 */
 @ccclass('LayerUIElement')
