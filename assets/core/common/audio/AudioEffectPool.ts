@@ -117,14 +117,15 @@ export class AudioEffectPool {
                 }
                 key += "_" + aeid;
 
-                node = new Node();
-                node.name = "AudioEffect";
+                node = new Node("AudioEffect");
                 node.parent = oops.audio.node;
-                ae = node.addComponent(AudioEffect)!;
+
+                ae = node.addComponent(AudioEffect);
                 ae.key = key;
                 ae.aeid = aeid;
                 ae.path = path;
                 ae.params = params;
+                ae.clip = clip;
                 ae.onComplete = this.onAudioEffectPlayComplete.bind(this);
             }
             else {
@@ -138,9 +139,7 @@ export class AudioEffectPool {
             this.effects.set(key, ae);
 
             ae.loop = loop;
-            ae.clip = clip;
             ae.volume = volume;
-            ae.currentTime = 0;
             ae.play();
             resolve(aeid);
         });
@@ -150,7 +149,7 @@ export class AudioEffectPool {
         const bundle = ae.params!.bundle!;
         this.put(ae.aeid, ae.path, bundle);       // 播放完回收对象
         ae.params && ae.params.onPlayComplete && ae.params.onPlayComplete(ae.aeid, ae.path, bundle);
-        // console.log(`【音效】回收，池中剩余音效播放器【${this.pool.size()}】`);
+        console.log(`【音效】回收，池中剩余音效播放器【${this.pool.size()}】`);
     }
 
     /**
@@ -179,35 +178,26 @@ export class AudioEffectPool {
 
     /** 停止播放所有音效 */
     stop() {
-        this.effects.forEach(ae => {
-            ae.stop();
-        });
+        this.effects.forEach(ae => ae.stop());
     }
 
     /** 恢复所有音效 */
     play() {
         if (!this.switch) return;
-
-        this.effects.forEach(ae => {
-            ae.play();
-        });
+        this.effects.forEach(ae => ae.play());
     }
 
     /** 暂停所有音效 */
     pause() {
         if (!this.switch) return;
 
-        this.effects.forEach(ae => {
-            ae.pause();
-        });
+        this.effects.forEach(ae => ae.pause());
     }
 
     /** 释放所有音效资源与对象池中播放器 */
     release() {
         // 释放正在播放的音效
-        this.effects.forEach(ae => {
-            ae.node.destroy();
-        });
+        this.effects.forEach(ae => ae.node.destroy());
         this.effects.clear();
 
         // 释放音效资源
