@@ -48,46 +48,51 @@ export class AudioEffectPool {
 
     /**
      * 加载与播放音效
-     * @param url                  音效资源地址与音效资源
-     * @param bundleName           资源包名
-     * @param onPlayComplete       播放完成回调
+     * @param path               音效资源地址与音效资源
+     * @param params            音效附加参数
      * @returns 
      */
-    async loadAndPlay(url: string | AudioClip, params?: IAudioParams): Promise<number> {
+    async loadAndPlay(path: string | AudioClip, params?: IAudioParams): Promise<number> {
         return new Promise(async (resolve, reject) => {
             if (!this.switch) return resolve(-1);
 
-            let bundleName = resLoader.defaultBundleName;
-            let loop = false;
-            let volume = this.volume;
-            let onPlayComplete: Function = null!;
-            if (params) {
-                if (params.bundle != null) bundleName = params.bundle;
-                if (params.loop != null) loop = params.loop;
-                if (params.volume != null) volume = params.volume;
-                if (params.onPlayComplete != null) onPlayComplete = params.onPlayComplete;
+            if (params == null) {
+                params = {
+                    bundle: resLoader.defaultBundleName,
+                    volume: this.volume,
+                    loop: false,
+                }
             }
+            else {
+                if (params.bundle == null) params.bundle = resLoader.defaultBundleName;
+                if (params.volume == null) params.volume = this.volume;
+                if (params.loop == null) params.loop = false;
+            }
+
+            let bundle = params.bundle!;
+            let volume = params.volume!;
+            let loop = params.loop!;
 
             // 创建音效资源
             let clip: AudioClip;
-            if (url instanceof AudioClip) {
-                clip = url;
+            if (path instanceof AudioClip) {
+                clip = path;
             }
             else {
-                clip = resLoader.get(url, AudioClip, bundleName)!;
+                clip = resLoader.get(path, AudioClip, bundle)!;
 
                 // 加载音效资源
                 if (clip == null) {
-                    let urls = this.res.get(bundleName);
+                    let urls = this.res.get(bundle);
                     if (urls == null) {
                         urls = [];
-                        this.res.set(bundleName, urls);
-                        urls.push(url);
+                        this.res.set(bundle, urls);
+                        urls.push(path);
                     }
-                    else if (urls.indexOf(url) == -1) {
-                        urls.push(url);
+                    else if (urls.indexOf(path) == -1) {
+                        urls.push(path);
                     }
-                    clip = await resLoader.loadAsync(bundleName, url, AudioClip);
+                    clip = await resLoader.loadAsync(bundle, path, AudioClip);
                 }
             }
 
@@ -97,35 +102,38 @@ export class AudioEffectPool {
                 return;
             }
 
-            let aeid = this.getAeId();
-            let key: string;
-            if (url instanceof AudioClip) {
-                key = url.uuid;
-            }
-            else {
-                key = `${bundleName}_${url}`;
-            }
-            key += "_" + aeid;
-
             // 获取音效果播放器播放音乐
+            let aeid: number = -1;
+            let key: string = null!;
             let ae: AudioEffect;
             let node: Node = null!;
             if (this.pool.size() == 0) {
+                aeid = this.getAeId();
+                if (path instanceof AudioClip) {
+                    key = path.uuid;
+                }
+                else {
+                    key = `${bundle}_${path}`;
+                }
+                key += "_" + aeid;
+
                 node = new Node();
                 node.name = "AudioEffect";
                 node.parent = oops.audio.node;
                 ae = node.addComponent(AudioEffect)!;
-                ae.onComplete = () => {
-                    this.put(aeid, url, bundleName);       // 播放完回收对象
-                    onPlayComplete && onPlayComplete(aeid, url, bundleName);
-                    // console.log(`【音效】回收，池中剩余音效播放器【${this.pool.size()}】`);
-                };
+                ae.key = key;
+                ae.aeid = aeid;
+                ae.path = path;
+                ae.params = params;
+                ae.onComplete = this.onAudioEffectPlayComplete.bind(this);
             }
             else {
                 node = this.pool.get()!;
+                node.parent = oops.audio.node;
                 ae = node.getComponent(AudioEffect)!;
+                aeid = ae.aeid;
+                key = ae.key;
             }
-
             // 记录正在播放的音效播放器
             this.effects.set(key, ae);
 
@@ -134,9 +142,15 @@ export class AudioEffectPool {
             ae.volume = volume;
             ae.currentTime = 0;
             ae.play();
-
             resolve(aeid);
         });
+    }
+
+    private onAudioEffectPlayComplete(ae: AudioEffect) {
+        const bundle = ae.params!.bundle!;
+        this.put(ae.aeid, ae.path, bundle);       // 播放完回收对象
+        ae.params && ae.params.onPlayComplete && ae.params.onPlayComplete(ae.aeid, ae.path, bundle);
+        // console.log(`【音效】回收，池中剩余音效播放器【${this.pool.size()}】`);
     }
 
     /**
