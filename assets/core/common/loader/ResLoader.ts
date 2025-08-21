@@ -117,12 +117,13 @@ oops.res.loadRemote<ImageAsset>(this.url, opt, onComplete);
     /**
      * 加载资源包
      * @param name       资源地址
+     * @param options    资源参数，例：{ version: "74fbe" }
      * @example
-        await oops.res.loadBundle(name);
+        await oops.res.loadBundle(name, options);
      */
-    loadBundle(name: string): Promise<AssetManager.Bundle> {
+    loadBundle(name: string, options: { [k: string]: any; version?: string; } | null = null): Promise<AssetManager.Bundle> {
         return new Promise<AssetManager.Bundle>((resolve, reject) => {
-            assetManager.loadBundle(name, (err, bundle: AssetManager.Bundle) => {
+            assetManager.loadBundle(name, options, (err, bundle: AssetManager.Bundle) => {
                 if (err) {
                     resolve(null!);
                     return;
