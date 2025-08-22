@@ -87,7 +87,6 @@ export class ResLoader {
      */
     loadRemote<T extends Asset>(url: string, options: IRemoteOptions | null = null): Promise<T> {
         return new Promise<T>((resolve, reject) => {
-            let options: IRemoteOptions | null = null;
             assetManager.loadRemote<T>(url, options, (err, data: T) => {
                 if (err) {
                     reject(null);
