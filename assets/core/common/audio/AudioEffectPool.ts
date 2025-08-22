@@ -4,6 +4,7 @@ import { resLoader } from "../loader/ResLoader";
 import { AudioEffect } from "./AudioEffect";
 import { IAudioParams } from "./IAudio";
 
+/** 音乐效缓冲编号最大值 */
 const AE_ID_MAX = 30000;
 
 /** 音效池 */
@@ -31,12 +32,14 @@ export class AudioEffectPool {
         });
     }
 
-    /** 音效播放器对象池 */
+    /** 音效播放器节点对象池 */
     private pool: NodePool = new NodePool();
     /** 对象池集合 */
     private effects: Map<string, AudioEffect> = new Map();
     /** 用过的音效资源记录 */
     private res: Map<string, string[]> = new Map();
+    /** 外网远程资源记录(地址、音效对象) */
+    private res_remote: Map<string, AudioClip> = new Map();
 
     private _aeId: number = 0;
     /** 获取请求唯一编号 */
@@ -70,15 +73,27 @@ export class AudioEffectPool {
             }
 
             let bundle = params.bundle!;
-            let volume = params.volume!;
-            let loop = params.loop!;
 
-            // 创建音效资源
-            let clip: AudioClip;
+            let key: string = null!;
+            let clip: AudioClip | undefined;
+            // 通过预制自动加载的音效资源（音效内存跟随预制体的内存一并释放）
             if (path instanceof AudioClip) {
                 clip = path;
+                key = path.uuid;
             }
+            // 非引擎管理的远程资源加载
+            else if (path.indexOf("http") == 0) {
+                key = path;
+                clip = this.res_remote.get(path);
+                if (clip == null) {
+                    const extension = path.split('.').pop();
+                    clip = await resLoader.loadRemote<AudioClip>(path, { ext: `.${extension}` });
+                    this.res_remote.set(path, clip);
+                }
+            }
+            // 资源加载
             else {
+                key = `${bundle}_${path}`;
                 clip = resLoader.get(path, AudioClip, bundle)!;
 
                 // 加载音效资源
@@ -104,42 +119,35 @@ export class AudioEffectPool {
 
             // 获取音效果播放器播放音乐
             let aeid: number = -1;
-            let key: string = null!;
             let ae: AudioEffect;
             let node: Node = null!;
             if (this.pool.size() == 0) {
                 aeid = this.getAeId();
-                if (path instanceof AudioClip) {
-                    key = path.uuid;
-                }
-                else {
-                    key = `${bundle}_${path}`;
-                }
                 key += "_" + aeid;
 
                 node = new Node("AudioEffect");
-                node.parent = oops.audio.node;
 
                 ae = node.addComponent(AudioEffect);
                 ae.key = key;
                 ae.aeid = aeid;
                 ae.path = path;
                 ae.params = params;
-                ae.clip = clip;
                 ae.onComplete = this.onAudioEffectPlayComplete.bind(this);
             }
             else {
                 node = this.pool.get()!;
-                node.parent = oops.audio.node;
                 ae = node.getComponent(AudioEffect)!;
-                aeid = ae.aeid;
-                key = ae.key;
+                ae.key = ae.key;
+                ae.aeid = ae.aeid;
             }
+
             // 记录正在播放的音效播放器
             this.effects.set(key, ae);
 
-            ae.loop = loop;
-            ae.volume = volume;
+            node.parent = oops.audio.node;
+            ae.loop = params.loop!;
+            ae.volume = params.volume!;
+            ae.clip = clip;
             ae.play();
             resolve(aeid);
         });
@@ -149,22 +157,25 @@ export class AudioEffectPool {
         const bundle = ae.params!.bundle!;
         this.put(ae.aeid, ae.path, bundle);       // 播放完回收对象
         ae.params && ae.params.onPlayComplete && ae.params.onPlayComplete(ae.aeid, ae.path, bundle);
-        console.log(`【音效】回收，池中剩余音效播放器【${this.pool.size()}】`);
+        // console.log(`【音效】回收，池中剩余音效播放器【${this.pool.size()}】`);
     }
 
     /**
      * 回收音效播放器
      * @param aeid          播放器编号
-     * @param url           音效路径
+     * @param path          音效路径
      * @param bundleName    资源包名
      */
-    put(aeid: number, url: string | AudioClip, bundleName: string = resLoader.defaultBundleName) {
+    put(aeid: number, path: string | AudioClip, bundleName: string = resLoader.defaultBundleName) {
         let key: string;
-        if (url instanceof AudioClip) {
-            key = url.uuid;
+        if (path instanceof AudioClip) {
+            key = path.uuid;
+        }
+        else if (path.indexOf("http") == 0) {
+            key = path;
         }
         else {
-            key = `${bundleName}_${url}`;
+            key = `${bundleName}_${path}`;
         }
         key += "_" + aeid;
 
@@ -190,22 +201,42 @@ export class AudioEffectPool {
     /** 暂停所有音效 */
     pause() {
         if (!this.switch) return;
-
         this.effects.forEach(ae => ae.pause());
     }
 
     /** 释放所有音效资源与对象池中播放器 */
     release() {
-        // 释放正在播放的音效
+        // 释放池中音乐播放器
+        this.releasePool();
+
+        // 释放各个资源包中的音效资源
+        this.releaseRes();
+
+        // 释放外网远程音效资源
+        this.releaseResRemote();
+    }
+
+    /** 释放池中音乐播放器 */
+    releasePool() {
+        this.pool.clear();
+
+        // 释放正在播放的音效对象
         this.effects.forEach(ae => ae.node.destroy());
         this.effects.clear();
+    }
 
-        // 释放音效资源
-        this.res.forEach((urls: string[], bundleName: string) => {
-            urls.forEach(url => resLoader.release(url, bundleName));
+    /** 释放各个资源包中的音效资源 */
+    releaseRes() {
+        this.res.forEach((paths: string[], bundleName: string) => {
+            paths.forEach(path => resLoader.release(path, bundleName));
         });
+    }
 
-        // 释放池中播放器
-        this.pool.clear();
+    /** 释放外网远程音效资源 */
+    releaseResRemote() {
+        this.res_remote.forEach((clip: AudioClip, path: string) => {
+            clip.decRef();
+        });
+        this.res_remote.clear();
     }
 }

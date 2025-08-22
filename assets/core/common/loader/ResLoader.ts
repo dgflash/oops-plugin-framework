@@ -75,32 +75,29 @@ export class ResLoader {
      * @param options       资源参数，例：{ ext: ".png" }
      * @param onComplete    加载完成回调
      * @example
-var opt: IRemoteOptions = { ext: ".png" };
-var onComplete = (err: Error | null, data: ImageAsset) => {
-    const texture = new Texture2D();
-    texture.image = data;
-    
-    const spriteFrame = new SpriteFrame();
-    spriteFrame.texture = texture;
-    
-    var sprite = this.sprite.addComponent(Sprite);
-    sprite.spriteFrame = spriteFrame;
-}
-oops.res.loadRemote<ImageAsset>(this.url, opt, onComplete);
+        var opt: IRemoteOptions = { ext: ".png" };
+        var data = await oops.res.loadRemote<ImageAsset>(this.url, opt);
+        const texture = new Texture2D();
+        texture.image = data;
+
+        const spriteFrame = new SpriteFrame();
+        spriteFrame.texture = texture;
+
+        var sprite = this.sprite.addComponent(Sprite);
+        sprite.spriteFrame = spriteFrame;
      */
-    loadRemote<T extends Asset>(url: string, options: IRemoteOptions | null, onComplete?: CompleteCallback): void;
-    loadRemote<T extends Asset>(url: string, onComplete?: CompleteCallback): void;
-    loadRemote<T extends Asset>(url: string, ...args: any): void {
-        let options: IRemoteOptions | null = null;
-        let onComplete: CompleteCallback = null;
-        if (args.length == 2) {
-            options = args[0];
-            onComplete = args[1];
-        }
-        else {
-            onComplete = args[0];
-        }
-        assetManager.loadRemote<T>(url, options, onComplete);
+    loadRemote<T extends Asset>(url: string, options: IRemoteOptions | null): Promise<T>;
+    loadRemote<T extends Asset>(url: string): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
+            let options: IRemoteOptions | null = null;
+            assetManager.loadRemote<T>(url, options, (err, data: T) => {
+                if (err) {
+                    reject(null);
+                    return;
+                }
+                resolve(data);
+            });
+        });
     }
     //#endregion
 

@@ -183,9 +183,9 @@ export class EffectSingleCase {
      */
     put(node: Node) {
         //@ts-ignore
-        let name = node.res_path;
+        const name = node.res_path;
         if (name) {
-            let np = this.effects.get(name);
+            const np = this.effects.get(name);
             if (np) {
                 // 回收使用的节点
                 this.effects_use.delete(node);
@@ -202,7 +202,7 @@ export class EffectSingleCase {
      */
     clear(path?: string) {
         if (path) {
-            var np = this.effects.get(path);
+            const np = this.effects.get(path);
             if (np) np.clear();
         }
         else {

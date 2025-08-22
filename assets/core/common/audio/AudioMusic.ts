@@ -62,15 +62,15 @@ export class AudioMusic extends AudioSource {
 
     /**
      * 加载音乐并播放
-     * @param url          音乐资源地址
+     * @param path          音乐资源地址
      * @param params        背景音乐资源播放参数
      */
-    async loadAndPlay(url: string, params?: IAudioParams) {
+    async loadAndPlay(path: string, params?: IAudioParams) {
         if (!this.switch) return;           // 禁止播放音乐
 
         // 下一个加载的背景音乐资源
         if (this._isLoading) {
-            this._nextUrl = url;
+            this._nextUrl = path;
             this._nextParams = params!;
             return;
         }
@@ -88,33 +88,40 @@ export class AudioMusic extends AudioSource {
         };
 
         this._isLoading = true;
-        var clip: AudioClip = await resLoader.loadAsync(bundleName, url, AudioClip);
-        if (clip) {
-            this._isLoading = false;
 
-            // 处理等待加载的背景音乐
-            if (this._nextUrl != null) {
-                // 加载等待播放的背景音乐
-                this.loadAndPlay(this._nextUrl, this._nextParams);
-                this._nextUrl = null!;
-                this._nextParams = null!;
+        let clip: AudioClip = null!;
+        if (path.indexOf("http") == 0) {
+            const extension = path.split('.').pop();
+            clip = await resLoader.loadRemote<AudioClip>(path, { ext: `.${extension}` });
+        }
+        else {
+            clip = await resLoader.loadAsync(bundleName, path, AudioClip);
+        }
+
+        this._isLoading = false;
+
+        // 处理等待加载的背景音乐
+        if (this._nextUrl != null) {
+            // 加载等待播放的背景音乐
+            this.loadAndPlay(this._nextUrl, this._nextParams);
+            this._nextUrl = null!;
+            this._nextParams = null!;
+        }
+        else {
+            // 正在播放的时候先关闭
+            if (this.playing) {
+                this.stop();
             }
-            else {
-                // 正在播放的时候先关闭
-                if (this.playing) {
-                    this.stop();
-                }
 
-                // 删除当前正在播放的音乐
-                this.release();
+            // 删除当前正在播放的音乐
+            this.release();
 
-                // 播放背景音乐
-                this.clip = clip;
-                this.loop = loop;
-                this.volume = volume;
-                this.currentTime = 0;
-                this.play();
-            }
+            // 播放背景音乐
+            this.clip = clip;
+            this.loop = loop;
+            this.volume = volume;
+            this.currentTime = 0;
+            this.play();
         }
     }
 
