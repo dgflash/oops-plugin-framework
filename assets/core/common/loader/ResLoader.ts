@@ -73,7 +73,6 @@ export class ResLoader {
      * 加载远程资源
      * @param url           资源地址
      * @param options       资源参数，例：{ ext: ".png" }
-     * @param onComplete    加载完成回调
      * @example
         var opt: IRemoteOptions = { ext: ".png" };
         var data = await oops.res.loadRemote<ImageAsset>(this.url, opt);
@@ -86,8 +85,7 @@ export class ResLoader {
         var sprite = this.sprite.addComponent(Sprite);
         sprite.spriteFrame = spriteFrame;
      */
-    loadRemote<T extends Asset>(url: string, options: IRemoteOptions | null): Promise<T>;
-    loadRemote<T extends Asset>(url: string): Promise<T> {
+    loadRemote<T extends Asset>(url: string, options: IRemoteOptions | null = null): Promise<T> {
         return new Promise<T>((resolve, reject) => {
             let options: IRemoteOptions | null = null;
             assetManager.loadRemote<T>(url, options, (err, data: T) => {
