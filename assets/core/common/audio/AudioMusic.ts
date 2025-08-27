@@ -6,7 +6,8 @@
  */
 import { AudioClip, AudioSource, _decorator } from 'cc';
 import { resLoader } from '../loader/ResLoader';
-import { IAudioParams } from './IAudio';
+import { AudioEffectType } from './AudioManager';
+import { IAudioData, IAudioParams } from './IAudio';
 
 const { ccclass } = _decorator;
 
@@ -16,20 +17,48 @@ const { ccclass } = _decorator;
  */
 @ccclass('AudioMusic')
 export class AudioMusic extends AudioSource {
+    /** 音效配置数据 */
+    private data: { [node: string]: IAudioData } = null!;
+
     private _progress: number = 0;
     private _isLoading: boolean = false;
     private _nextUrl: string = null!;
     private _nextParams: IAudioParams = null!;
     private _params: IAudioParams = null!;
 
-    /** 背景音乐开关 */
-    private _switch: boolean = true;
-    get switch(): boolean {
-        return this._switch;
+    /**
+     * 音效开关
+     * @param type      音效类型
+     * @returns         音效开关
+     */
+    get switch() {
+        return this.data[AudioEffectType.Music].switch;
     }
+    /**
+     * 音效音量设置
+     * @param type      音效类型
+     * @param value     音效开关
+     */
     set switch(value: boolean) {
-        this._switch = value;
+        this.data[AudioEffectType.Music].switch = value;
         if (!value) this.stop();
+    }
+
+    /**
+     * 音效音量获取
+     * @param type      音效类型
+     * @returns         音效音量
+     */
+    get volume() {
+        return this.data[AudioEffectType.Music].volume;
+    }
+    /**
+     * 音效音量设置
+     * @param value     音效音量
+     */
+    set volume(value: number) {
+        this.data[AudioEffectType.Music].volume = value;
+        super.volume = value;
     }
 
     /** 获取音乐播放进度 */
@@ -125,6 +154,17 @@ export class AudioMusic extends AudioSource {
         }
     }
 
+    /** 恢复当前暂停的音乐与音效播放 */
+    resume() {
+        if (!this.playing && this.progress > 0) super.play();
+    }
+
+    /** 暂停当前音乐与音效的播放 */
+    pause() {
+        if (this.playing) super.pause();
+    }
+
+    /** 停止当前音乐与音效的播放 */
     stop(): void {
         if (this.switch && this.playing) {
             super.stop();

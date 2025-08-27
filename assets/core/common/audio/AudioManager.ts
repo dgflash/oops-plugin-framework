@@ -2,9 +2,17 @@ import { AudioClip, Component } from "cc";
 import { oops } from "../../Oops";
 import { AudioEffectPool } from "./AudioEffectPool";
 import { AudioMusic } from "./AudioMusic";
-import { IAudioParams } from "./IAudio";
+import { IAudioData, IAudioParams } from "./IAudio";
 
 const LOCAL_STORE_KEY = "game_audio";
+
+/** 音乐音效默认类型 */
+export enum AudioEffectType {
+    /** 背景音乐 */
+    Music = "music",
+    /** 音乐音效 */
+    Effect = "effect",
+}
 
 /**
  * 音频管理
@@ -20,7 +28,7 @@ export class AudioManager extends Component {
     effect: AudioEffectPool = new AudioEffectPool();
 
     /** 音乐管理状态数据 */
-    private localData: any = {};
+    private data: { [node: string]: IAudioData } = {};
 
     /**
      * 播放音效
@@ -38,13 +46,12 @@ export class AudioManager extends Component {
 
     /** 恢复当前暂停的音乐与音效播放 */
     resumeAll() {
-        if (!this.music.playing && this.music.progress > 0) this.music.play();
-        this.effect.play();
+        this.music.resume();
     }
 
     /** 暂停当前音乐与音效的播放 */
     pauseAll() {
-        if (this.music.playing) this.music.pause();
+        this.music.pause();
         this.effect.pause();
     }
 
@@ -56,20 +63,15 @@ export class AudioManager extends Component {
 
     /** 保存音乐音效的音量、开关配置数据到本地 */
     save() {
-        this.localData.volume_music = this.music.volume;
-        this.localData.volume_effect = this.effect.volume;
-        this.localData.switch_music = this.music.switch;
-        this.localData.switch_effect = this.effect.switch;
-
-        oops.storage.set(LOCAL_STORE_KEY, this.localData);
+        oops.storage.set(LOCAL_STORE_KEY, this.data);
     }
 
     /** 本地加载音乐音效的音量、开关配置数据并设置到游戏中 */
     load() {
         this.music = this.getComponent(AudioMusic) || this.addComponent(AudioMusic)!;
 
-        this.localData = oops.storage.getJson(LOCAL_STORE_KEY);
-        if (this.localData) {
+        this.data = oops.storage.getJson(LOCAL_STORE_KEY);
+        if (this.data) {
             try {
                 this.setState();
             }
@@ -83,17 +85,37 @@ export class AudioManager extends Component {
     }
 
     private setState() {
-        this.music.volume = this.localData.volume_music;
-        this.effect.volume = this.localData.volume_effect;
-        this.music.switch = this.localData.switch_music;
-        this.effect.switch = this.localData.switch_effect;
+        for (let type in this.data) {
+            let iad = this.data[type];
+            switch (type) {
+                case "music":
+                    this.music.switch = this.data.music.switch;
+                    this.music.volume = this.data.music.volume;
+                    break;
+                default:
+                    this.effect.setSwitch(type, iad.switch);
+                    this.effect.setVolume(type, iad.volume);
+                    break;
+            }
+        }
     }
 
     private setStateDefault() {
-        this.localData = {};
+        this.data = {
+            music: { switch: true, volume: 1 },
+            effect: { switch: true, volume: 1 },
+        };
+
+        //@ts-ignore
+        this.music.data = this.data;
+        this.music.switch = true
         this.music.volume = 1;
-        this.effect.volume = 1;
-        this.music.switch = true;
-        this.effect.switch = true;
+
+        //@ts-ignore
+        this.effect.data = this.data;
+        this.effect.setSwitch(AudioEffectType.Effect, true);
+        this.effect.setVolume(AudioEffectType.Effect, 1);
+
+        this.save();
     }
 }
