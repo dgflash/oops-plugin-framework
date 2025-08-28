@@ -168,28 +168,27 @@ export class AudioEffectPool {
                 key += "_" + aeid;
 
                 node = new Node("AudioEffect");
-
                 ae = node.addComponent(AudioEffect);
                 ae.key = key;
                 ae.aeid = aeid;
-                ae.path = path;
-                ae.params = params;
                 ae.onComplete = this.onAudioEffectPlayComplete.bind(this);
             }
             else {
                 node = this.pool.get()!;
                 ae = node.getComponent(AudioEffect)!;
-                key = ae.key;
             }
 
             // 记录正在播放的音效播放器
-            this.effects.set(key, ae);
+            this.effects.set(ae.key, ae);
 
             node.parent = oops.audio.node;
+            ae.path = path;
+            ae.params = params;
             ae.loop = params.loop!;
             ae.volume = params.volume!;
             ae.clip = clip;
             ae.play();
+
             resolve(ae);
         });
     }
@@ -208,8 +207,8 @@ export class AudioEffectPool {
     put(ae: AudioEffect) {
         let effect = this.effects.get(ae.key);
         if (effect && effect.clip) {
-            effect.stop();
-            effect.clip = null;
+            effect.reset();
+
             this.effects.delete(ae.key);
             this.pool.put(effect.node);
         }

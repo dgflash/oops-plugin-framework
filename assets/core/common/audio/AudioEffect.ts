@@ -4,8 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 10:22:36
  */
-import { AudioClip } from 'cc';
-import { AudioSource, _decorator } from 'cc';
+import { AudioClip, AudioSource, _decorator } from 'cc';
 import { IAudioParams } from './IAudio';
 const { ccclass } = _decorator;
 
@@ -29,5 +28,12 @@ export class AudioEffect extends AudioSource {
 
     private onAudioEnded() {
         this.onComplete && this.onComplete(this);
+    }
+
+    reset() {
+        this.stop();
+        this.clip = null;
+        this.path = null!;
+        this.params = null!;
     }
 }
