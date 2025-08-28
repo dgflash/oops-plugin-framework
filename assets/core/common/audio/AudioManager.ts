@@ -1,5 +1,6 @@
 import { AudioClip, Component } from "cc";
 import { oops } from "../../Oops";
+import { AudioEffect } from "./AudioEffect";
 import { AudioEffectPool } from "./AudioEffectPool";
 import { AudioMusic } from "./AudioMusic";
 import { IAudioData, IAudioParams } from "./IAudio";
@@ -35,13 +36,13 @@ export class AudioManager extends Component {
      * @param url        资源地址
      * @param params     音效参数
      */
-    playEffect(url: string | AudioClip, params?: IAudioParams): Promise<number> {
+    playEffect(url: string | AudioClip, params?: IAudioParams): Promise<AudioEffect> {
         return this.effect.loadAndPlay(url, params);
     }
 
     /** 回收音效播放器 */
-    putEffect(aeid: number, url: string | AudioClip, bundleName?: string) {
-        this.effect.put(aeid, url, bundleName);
+    putEffect(ae: AudioEffect) {
+        this.effect.put(ae);
     }
 
     /** 恢复当前暂停的音乐与音效播放 */
