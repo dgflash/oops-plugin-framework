@@ -107,13 +107,11 @@ export class AudioMusic extends AudioSource {
         let bundleName = resLoader.defaultBundleName;
         let loop = false;
         let volume = this.volume;
-        let onPlayComplete: Function = null!;
         if (params) {
             this._params = params!
             if (params.bundle != null) bundleName = params.bundle;
             if (params.loop != null) loop = params.loop;
             if (params.volume != null) volume = params.volume;
-            if (params.onPlayComplete != null) onPlayComplete = params.onPlayComplete;
         };
 
         this._isLoading = true;
