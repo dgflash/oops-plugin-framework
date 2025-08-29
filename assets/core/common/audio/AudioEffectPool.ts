@@ -42,7 +42,7 @@ export class AudioEffectPool {
      * @param type      音效类型
      * @returns         音效开关
      */
-    getSwitch(type: string) {
+    getSwitch(type: string = AudioEffectType.Effect) {
         let iad = this.data[type];
         if (iad == null) console.error(`类型为【${type}】的音效配置不存在`);
         return iad.switch;
@@ -52,7 +52,7 @@ export class AudioEffectPool {
      * @param type      音效类型
      * @param value     音效开关
      */
-    setSwitch(type: string, value: boolean) {
+    setSwitch(value: boolean, type: string = AudioEffectType.Effect) {
         let iad = this.data[type];
         if (iad == null) console.error(`类型为【${type}】的音效配置不存在`);
         iad.switch = value;
@@ -65,7 +65,7 @@ export class AudioEffectPool {
      * @param type      音效类型
      * @returns         音效音量
      */
-    getVolume(type: string) {
+    getVolume(type: string = AudioEffectType.Effect) {
         let iad = this.data[type];
         if (iad == null) console.error(`类型为【${type}】的音效配置不存在`);
         return iad.volume;
@@ -73,10 +73,10 @@ export class AudioEffectPool {
 
     /**
      * 音效音量设置
-     * @param type      音效类型
      * @param value     音效音量
+     * @param type      音效类型
      */
-    setVolume(type: string, value: number) {
+    setVolume(value: number, type: string = AudioEffectType.Effect) {
         let iad = this.data[type];
         if (iad == null) console.error(`类型为【${type}】的音效配置不存在`);
         iad.volume = value;
@@ -94,15 +94,17 @@ export class AudioEffectPool {
         return new Promise(async (resolve, reject) => {
             if (params == null) {
                 params = {
+                    type: AudioEffectType.Effect,
                     bundle: resLoader.defaultBundleName,
                     loop: false,
-                    type: AudioEffectType.Effect
+                    destroy: false
                 }
             }
             else {
+                if (params.type == null) params.type = AudioEffectType.Effect;
                 if (params.bundle == null) params.bundle = resLoader.defaultBundleName;
                 if (params.loop == null) params.loop = false;
-                if (params.type == null) params.type = AudioEffectType.Effect;      // 默认音效类型
+                if (params.type == null) params.destroy = false;
             }
 
             let iad = this.data[params.type!];
@@ -195,9 +197,17 @@ export class AudioEffectPool {
 
     /** 音效播放完成 */
     private onAudioEffectPlayComplete(ae: AudioEffect) {
-        this.put(ae);
+        if (ae.params.destroy) {
+            if (ae.path instanceof AudioClip) {
+                ae.path.decRef();
+            }
+            else {
+                resLoader.release(ae.path, ae.params!.bundle);
+            }
+        }
         ae.params && ae.params.onPlayComplete && ae.params.onPlayComplete(ae);
-        console.log(`【音效】回收，池中剩余音效播放器【${this.pool.size()}】`);
+        this.put(ae);
+        // console.log(`【音效】回收，池中剩余音效播放器【${this.pool.size()}】`);
     }
 
     /**
@@ -235,16 +245,6 @@ export class AudioEffectPool {
             this.onAudioEffectPlayComplete(ae);
         });
         this.effects.clear();
-    }
-
-    /** 施放音乐资源对象 */
-    releaseAudioClip(ae: AudioEffect) {
-        if (ae.path instanceof AudioClip) {
-            ae.path.decRef();
-        }
-        else {
-            resLoader.release(ae.path, ae.params!.bundle)
-        }
     }
 
     /** 释放所有音效资源与对象池中播放器 */

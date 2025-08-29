@@ -7,6 +7,8 @@ export interface IAudioParams {
     loop?: boolean;
     /** 音效音量 */
     volume?: number;
+    /** 是否在播放完后自动释放音乐资源（默认不释放） */
+    destroy?: boolean;
     /** 播放完成事件 */
     onPlayComplete?: Function;
 }

@@ -300,17 +300,6 @@ export class GameComponent extends Component {
         }
     }
 
-    /** 释放音效资源 */
-    releaseAudioEffect() {
-        if (this.audioEffects) {
-            this.audioEffects.forEach((ae: AudioEffect) => {
-                ae.stop();
-                oops.audio.effect.releaseAudioClip(ae);
-            });
-            this.audioEffects.clear();
-        }
-    }
-
     /**
      * 设置图片资源
      * @param target  目标精灵对象
@@ -343,9 +332,6 @@ export class GameComponent extends Component {
         oops.audio.music.loadAndPlay(url, params);
     }
 
-    /** 音效缓存 */
-    private audioEffects: Map<string, AudioEffect> = null!;
-
     /**
      * 播放音效
      * @param url           资源地址
@@ -355,17 +341,8 @@ export class GameComponent extends Component {
         return new Promise(async (resolve, reject) => {
             // 音效播放完，关闭正在播放状态的音乐效果
             if (params == null) params = {};
-            params.onPlayComplete = (ae: AudioEffect) => {
-                // 音效播放完前，界面被释放
-                if (!this.isValid) return;
-
-                // 删除界面音效的播放记录
-                this.audioEffects.delete(ae.key);
-            }
-
             let ae = await oops.audio.playEffect(url, params);
-            if (this.audioEffects == null) this.audioEffects = new Map();
-            this.audioEffects.set(ae.key, ae);
+            this.addPathToRecord(ResType.Load, ae.params!.bundle!, url);
             resolve(ae);
         });
     }
@@ -523,7 +500,5 @@ export class GameComponent extends Component {
             this.resPaths.clear();
             this.resPaths = null!;
         }
-        
-        this.releaseAudioEffect();
     }
 }

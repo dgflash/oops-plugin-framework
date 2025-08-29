@@ -18,7 +18,7 @@ export class AudioEffect extends AudioSource {
     /** 音效果资源路径 */
     path: string | AudioClip = null!
     /** 音效参数 */
-    params?: IAudioParams;
+    params: IAudioParams = null!
     /** 背景音乐播放完成回调 */
     onComplete: Function | null = null;
 

@@ -73,12 +73,7 @@ export class AudioManager extends Component {
 
         this.data = oops.storage.getJson(LOCAL_STORE_KEY);
         if (this.data) {
-            try {
-                this.setState();
-            }
-            catch {
-                this.setStateDefault();
-            }
+            this.setState();
         }
         else {
             this.setStateDefault();
@@ -86,19 +81,10 @@ export class AudioManager extends Component {
     }
 
     private setState() {
-        for (let type in this.data) {
-            let iad = this.data[type];
-            switch (type) {
-                case "music":
-                    this.music.switch = this.data.music.switch;
-                    this.music.volume = this.data.music.volume;
-                    break;
-                default:
-                    this.effect.setSwitch(type, iad.switch);
-                    this.effect.setVolume(type, iad.volume);
-                    break;
-            }
-        }
+        //@ts-ignore
+        this.music.data = this.data;
+        //@ts-ignore
+        this.effect.data = this.data;
     }
 
     private setStateDefault() {
@@ -109,13 +95,13 @@ export class AudioManager extends Component {
 
         //@ts-ignore
         this.music.data = this.data;
-        this.music.switch = true
-        this.music.volume = 1;
+        this.music.setSwitch(true);
+        this.music.setVolume(1);
 
         //@ts-ignore
         this.effect.data = this.data;
-        this.effect.setSwitch(AudioEffectType.Effect, true);
-        this.effect.setVolume(AudioEffectType.Effect, 1);
+        this.effect.setSwitch(true, AudioEffectType.Effect);
+        this.effect.setVolume(1, AudioEffectType.Effect);
 
         this.save();
     }

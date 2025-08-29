@@ -31,7 +31,7 @@ export class AudioMusic extends AudioSource {
      * @param type      音效类型
      * @returns         音效开关
      */
-    get switch() {
+    getSwitch() {
         return this.data[AudioEffectType.Music].switch;
     }
     /**
@@ -39,7 +39,7 @@ export class AudioMusic extends AudioSource {
      * @param type      音效类型
      * @param value     音效开关
      */
-    set switch(value: boolean) {
+    setSwitch(value: boolean) {
         this.data[AudioEffectType.Music].switch = value;
         if (!value) this.stop();
     }
@@ -49,16 +49,16 @@ export class AudioMusic extends AudioSource {
      * @param type      音效类型
      * @returns         音效音量
      */
-    get volume() {
+    getVolume(): number {
         return this.data[AudioEffectType.Music].volume;
     }
     /**
      * 音效音量设置
      * @param value     音效音量
      */
-    set volume(value: number) {
+    setVolume(value: number) {
         this.data[AudioEffectType.Music].volume = value;
-        super.volume = value;
+        this.volume = value;
     }
 
     /** 获取音乐播放进度 */
@@ -95,7 +95,7 @@ export class AudioMusic extends AudioSource {
      * @param params        背景音乐资源播放参数
      */
     async loadAndPlay(path: string, params?: IAudioParams) {
-        if (!this.switch) return;           // 禁止播放音乐
+        if (!this.getSwitch()) return;           // 禁止播放音乐
 
         // 下一个加载的背景音乐资源
         if (this._isLoading) {
@@ -105,7 +105,7 @@ export class AudioMusic extends AudioSource {
         }
 
         let bundleName = resLoader.defaultBundleName;
-        let loop = false;
+        let loop = true;
         let volume = this.volume;
         if (params) {
             this._params = params!
@@ -164,7 +164,7 @@ export class AudioMusic extends AudioSource {
 
     /** 停止当前音乐与音效的播放 */
     stop(): void {
-        if (this.switch && this.playing) {
+        if (this.getSwitch() && this.playing) {
             super.stop();
         }
     }
