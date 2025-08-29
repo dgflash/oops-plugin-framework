@@ -6,7 +6,7 @@
  */
 import { AudioClip, AudioSource, _decorator } from 'cc';
 import { resLoader } from '../loader/ResLoader';
-import { AudioEffectType } from './AudioManager';
+import { AudioEffectType } from './AudioEnum';
 import { IAudioData, IAudioParams } from './IAudio';
 
 const { ccclass } = _decorator;

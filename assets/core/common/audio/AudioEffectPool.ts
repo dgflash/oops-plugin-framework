@@ -2,7 +2,7 @@ import { AudioClip, Node, NodePool } from "cc";
 import { oops } from "../../Oops";
 import { resLoader } from "../loader/ResLoader";
 import { AudioEffect } from "./AudioEffect";
-import { AudioEffectType } from "./AudioManager";
+import { AudioEffectType } from "./AudioEnum";
 import { IAudioData, IAudioParams } from "./IAudio";
 
 /** 音乐效缓冲编号最大值 */

@@ -2,18 +2,12 @@ import { AudioClip, Component } from "cc";
 import { oops } from "../../Oops";
 import { AudioEffect } from "./AudioEffect";
 import { AudioEffectPool } from "./AudioEffectPool";
+import { AudioEffectType } from "./AudioEnum";
 import { AudioMusic } from "./AudioMusic";
 import { IAudioData, IAudioParams } from "./IAudio";
 
 const LOCAL_STORE_KEY = "game_audio";
 
-/** 音乐音效默认类型 */
-export enum AudioEffectType {
-    /** 背景音乐 */
-    Music = "music",
-    /** 音乐音效 */
-    Effect = "effect",
-}
 
 /**
  * 音频管理
@@ -88,21 +82,28 @@ export class AudioManager extends Component {
     }
 
     private setStateDefault() {
-        this.data = {
-            music: { switch: true, volume: 1 },
-            effect: { switch: true, volume: 1 },
-        };
-
-        //@ts-ignore
-        this.music.data = this.data;
-        this.music.setSwitch(true);
-        this.music.setVolume(1);
-
-        //@ts-ignore
-        this.effect.data = this.data;
-        this.effect.setSwitch(true, AudioEffectType.Effect);
-        this.effect.setVolume(1, AudioEffectType.Effect);
-
+        this.data = {};
+        for (const key in AudioEffectType) {
+            //@ts-ignore
+            const value = AudioEffectType[key];
+            if (typeof value === 'string') {
+                this.data[value] = { switch: true, volume: 1 };
+                switch (value) {
+                    case AudioEffectType.Music:
+                        //@ts-ignore
+                        this.music.data = this.data;
+                        this.music.setSwitch(true);
+                        this.music.setVolume(1);
+                        break;
+                    default:
+                        //@ts-ignore
+                        this.effect.data = this.data;
+                        this.effect.setSwitch(true, value);
+                        this.effect.setVolume(1, value);
+                        break;
+                }
+            }
+        }
         this.save();
     }
 }
