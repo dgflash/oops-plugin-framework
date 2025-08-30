@@ -16,8 +16,8 @@ export class AudioEffectPool {
     private pool: NodePool = new NodePool();
     /** 对象池集合 */
     private effects: Map<string, AudioEffect> = new Map();
-    /** 用过的音效资源记录 */
-    private res: Map<string, string[]> = new Map();
+    /** 记录项目资源库中使用过的音乐资源 */
+    private res_project: Map<string, string[]> = new Map();
     /** 外网远程资源记录(地址、音效对象) */
     private res_remote: Map<string, AudioClip> = new Map();
 
@@ -140,23 +140,21 @@ export class AudioEffectPool {
                 key = `${params.type}_${bundle}_${path}`;
                 clip = resLoader.get(path, AudioClip, bundle)!;
 
-                // 加载音效资源
+                // 加载音效资源 - 如果一个预制上加载了了音乐同一个音乐资源，此处不会记录音乐资源路径数据，资源内存由预制释放时一起释放
                 if (clip == null) {
-                    let urls = this.res.get(bundle);
-                    if (urls == null) {
-                        urls = [];
-                        this.res.set(bundle, urls);
-                        urls.push(path);
+                    let paths = this.res_project.get(bundle);
+                    if (paths == null) {
+                        paths = [];
+                        this.res_project.set(bundle, paths);
                     }
-                    else if (urls.indexOf(path) == -1) {
-                        urls.push(path);
-                    }
+                    if (paths.indexOf(path) == -1) paths.push(path);
                     clip = await resLoader.loadAsync(bundle, path, AudioClip);
                 }
             }
 
             // 资源已被释放
             if (!clip.isValid) {
+                console.warn(`音效资源【${key}】已被释放`);
                 resolve(null!);
                 return;
             }
@@ -270,7 +268,7 @@ export class AudioEffectPool {
 
     /** 释放各个资源包中的音效资源 */
     releaseRes() {
-        this.res.forEach((paths: string[], bundleName: string) => {
+        this.res_project.forEach((paths: string[], bundleName: string) => {
             paths.forEach(path => resLoader.release(path, bundleName));
         });
     }
