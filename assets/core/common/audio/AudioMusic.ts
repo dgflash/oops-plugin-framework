@@ -104,15 +104,20 @@ export class AudioMusic extends AudioSource {
             return;
         }
 
-        let bundleName = resLoader.defaultBundleName;
-        let loop = true;
-        let volume = this.volume;
-        if (params) {
-            this._params = params!
-            if (params.bundle != null) bundleName = params.bundle;
-            if (params.loop != null) loop = params.loop;
-            if (params.volume != null) volume = params.volume;
-        };
+        if (params == null) {
+            params = {
+                type: AudioEffectType.Music,
+                bundle: resLoader.defaultBundleName,
+                loop: true,
+                volume: this.getVolume()
+            }
+        }
+        else {
+            if (params.type == null) params.type = AudioEffectType.Music;
+            if (params.bundle == null) params.bundle = resLoader.defaultBundleName;
+            if (params.loop == null) params.loop = true;
+            if (params.volume == null) params.volume = this.getVolume()
+        }
 
         this._isLoading = true;
 
@@ -122,7 +127,7 @@ export class AudioMusic extends AudioSource {
             clip = await resLoader.loadRemote<AudioClip>(path, { ext: `.${extension}` });
         }
         else {
-            clip = await resLoader.loadAsync(bundleName, path, AudioClip);
+            clip = await resLoader.loadAsync(params.bundle!, path, AudioClip);
         }
 
         this._isLoading = false;
@@ -145,8 +150,8 @@ export class AudioMusic extends AudioSource {
 
             // 播放背景音乐
             this.clip = clip;
-            this.loop = loop;
-            this.volume = volume;
+            this.loop = params.loop!;
+            this.volume = params.volume!;
             this.currentTime = 0;
             this.play();
         }
