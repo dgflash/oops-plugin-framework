@@ -8,7 +8,6 @@ import { IAudioData, IAudioParams } from "./IAudio";
 
 const LOCAL_STORE_KEY = "game_audio";
 
-
 /**
  * 音频管理
  * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037893&doc_id=2873565
@@ -26,12 +25,21 @@ export class AudioManager extends Component {
     private data: { [node: string]: IAudioData } = {};
 
     /**
-     * 播放音效
-     * @param url        资源地址
-     * @param params     音效参数
+     * 播放背景音乐
+     * @param path      资源路径
+     * @param params    音效参数
      */
-    playEffect(url: string | AudioClip, params?: IAudioParams): Promise<AudioEffect> {
-        return this.effect.loadAndPlay(url, params);
+    playMusic(path: string, params?: IAudioParams) {
+        this.music.loadAndPlay(path, params);
+    }
+
+    /**
+     * 播放音效
+     * @param path      资源路径
+     * @param params    音效参数
+     */
+    playEffect(path: string | AudioClip, params?: IAudioParams): Promise<AudioEffect> {
+        return this.effect.loadAndPlay(path, params);
     }
 
     /** 回收音效播放器 */
