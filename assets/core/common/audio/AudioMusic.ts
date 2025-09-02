@@ -4,27 +4,26 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-05-16 09:11:30
  */
-import { AudioClip, AudioSource, _decorator } from 'cc';
+import { AudioClip, Node } from 'cc';
 import { resLoader } from '../loader/ResLoader';
+import { AudioEffect } from './AudioEffect';
 import { AudioEffectType } from './AudioEnum';
 import { IAudioData, IAudioParams } from './IAudio';
 
-const { ccclass } = _decorator;
-
 /** 
  * 背景音乐 
- * 1、播放一个新背景音乐时，先加载音乐资源，然后停止正在播放的背景资源同时施放当前背景音乐资源，最后播放新的背景音乐
+ * 1、播放一个新背景音乐时，先加载音乐资源，然后停止正在播放的背景资源同时释放当前背景音乐资源，最后播放新的背景音乐
+ * 2、背景音乐循环播放时，不会触发播放完成事件
  */
-@ccclass('AudioMusic')
-export class AudioMusic extends AudioSource {
+export class AudioMusic extends Node {
     /** 音效配置数据 */
     private data: { [node: string]: IAudioData } = null!;
 
     private _progress: number = 0;
     private _isLoading: boolean = false;
-    private _nextUrl: string = null!;
+    private _nextPath: string = null!;
     private _nextParams: IAudioParams = null!;
-    private _params: IAudioParams = null!;
+    private _ae: AudioEffect = null!;
 
     /**
      * 音效开关
@@ -58,13 +57,11 @@ export class AudioMusic extends AudioSource {
      */
     setVolume(value: number) {
         this.data[AudioEffectType.Music].volume = value;
-        this.volume = value;
     }
 
     /** 获取音乐播放进度 */
     get progress(): number {
-        if (this.duration > 0)
-            this._progress = this.currentTime / this.duration;
+        if (this._ae.duration > 0) this._progress = this._ae.currentTime / this._ae.duration;
         return this._progress;
     }
     /**
@@ -73,20 +70,19 @@ export class AudioMusic extends AudioSource {
      */
     set progress(value: number) {
         this._progress = value;
-        this.currentTime = value * this.duration;
+        this._ae.currentTime = value * this._ae.duration;
     }
 
-    start() {
-        // this.node.on(AudioSource.EventType.STARTED, this.onAudioStarted, this);
-        this.node.on(AudioSource.EventType.ENDED, this.onAudioEnded, this);
+    constructor() {
+        super();
+        this.name = "AudioMusic";
+        this._ae = this.addComponent(AudioEffect);
+        this._ae.onComplete = this.onAudioEffectPlayComplete.bind(this);
     }
 
-    // private onAudioStarted() { }
-
-    private onAudioEnded() {
-        if (this._params && this._params.onPlayComplete) {
-            this._params.onPlayComplete();
-        }
+    /** 音效播放完成 */
+    private onAudioEffectPlayComplete(ae: AudioEffect) {
+        ae.params && ae.params.onPlayComplete && ae.params.onPlayComplete(ae);
     }
 
     /**
@@ -99,7 +95,7 @@ export class AudioMusic extends AudioSource {
 
         // 下一个加载的背景音乐资源
         if (this._isLoading) {
-            this._nextUrl = path;
+            this._nextPath = path;
             this._nextParams = params!;
             return;
         }
@@ -133,53 +129,53 @@ export class AudioMusic extends AudioSource {
         this._isLoading = false;
 
         // 处理等待加载的背景音乐
-        if (this._nextUrl != null) {
+        if (this._nextPath != null) {
             // 加载等待播放的背景音乐
-            this.loadAndPlay(this._nextUrl, this._nextParams);
-            this._nextUrl = null!;
+            this.loadAndPlay(this._nextPath, this._nextParams);
+            this._nextPath = null!;
             this._nextParams = null!;
         }
         else {
             // 正在播放的时候先关闭
-            if (this.playing) {
-                this.stop();
-            }
+            if (this._ae.playing) this.stop();
 
             // 删除当前正在播放的音乐
             this.release();
 
             // 播放背景音乐
-            this.clip = clip;
-            this.loop = params.loop!;
-            this.volume = params.volume!;
-            this.currentTime = 0;
-            this.play();
+            this._ae.params = params;
+            this._ae.path = path;
+            this._ae.clip = clip;
+            this._ae.loop = params.loop!;
+            this._ae.volume = params.volume!;
+            this._ae.currentTime = 0;
+            this._ae.play();
         }
     }
 
     /** 恢复当前暂停的音乐与音效播放 */
     resume() {
-        if (!this.playing && this.progress > 0) super.play();
+        if (!this._ae.playing && this.progress > 0) this._ae.play();
     }
 
     /** 暂停当前音乐与音效的播放 */
     pause() {
-        if (this.playing) super.pause();
+        if (this._ae.playing) this._ae.pause();
     }
 
     /** 停止当前音乐与音效的播放 */
     stop(): void {
-        if (this.getSwitch() && this.playing) {
-            super.stop();
+        if (this.getSwitch() && this._ae.playing) {
+            this._ae.stop();
         }
     }
 
     /** 释放当前背景音乐资源 */
     release() {
-        if (this.clip) {
+        if (this._ae.clip) {
             this.stop();
-            this.clip.decRef();
-            this.clip = null;
+            this._ae.clip.decRef();
+            this._ae.clip = null;
         }
     }
 }
