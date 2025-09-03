@@ -4,15 +4,14 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 13:44:12
  */
-import { BlockInputEvents, Layers, Node, Widget, instantiate } from "cc";
+import { BlockInputEvents, Node, instantiate } from "cc";
 import { EDITOR } from "cc/env";
 import { ViewUtil } from "../../utils/ViewUtil";
 import { PromptResType } from "../GuiEnum";
 import { Notify } from "../prompt/Notify";
+import { LayerHelper } from "./LayerHelper";
 
-/*
- * 滚动消息提示层
- */
+/* 滚动消息提示层 */
 export class LayerNotify extends Node {
     private black!: BlockInputEvents;
     /** 等待提示资源 */
@@ -24,14 +23,8 @@ export class LayerNotify extends Node {
 
     constructor(name: string) {
         super(name);
+        LayerHelper.setFullScreen(this);
 
-        const widget: Widget = this.addComponent(Widget);
-        widget.isAlignLeft = widget.isAlignRight = widget.isAlignTop = widget.isAlignBottom = true;
-        widget.left = widget.right = widget.top = widget.bottom = 0;
-        widget.alignMode = 2;
-        widget.enabled = true;
-
-        this.layer = Layers.Enum.UI_2D;
         this.black = this.addComponent(BlockInputEvents);
         this.black.enabled = false;
     }

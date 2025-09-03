@@ -8,11 +8,11 @@ import { Component, Node, _decorator } from "cc";
 import { oops } from "../../Oops";
 import { UIConfig } from "./UIConfig";
 
-const { ccclass } = _decorator;
-
 const EventOnAdded: string = "onAdded";
 const EventOnBeforeRemove: string = "onBeforeRemove";
 const EventOnRemoved: string = "onRemoved";
+
+const { ccclass } = _decorator;
 
 /** 窗口元素组件 */
 @ccclass('LayerUIElement')
@@ -22,7 +22,7 @@ export class LayerUIElement extends Component {
     /** 关闭窗口之前 */
     onCloseWindowBefore: Function = null!;
     /** 界面关闭回调 - 包括关闭动画播放完（辅助框架内存业务流程使用） */
-    onCloseWindow: Function = null!;
+    private onCloseWindow: Function = null!;
 
     /** 窗口添加 */
     add(): Promise<boolean> {
@@ -56,25 +56,20 @@ export class LayerUIElement extends Component {
 
             //  通知外部对象窗口组件上移除之前的事件（关闭窗口前的关闭动画处理）
             if (typeof this.params.callbacks.onBeforeRemove === "function") {
-                this.params.callbacks.onBeforeRemove(
-                    this.node,
-                    this.onBeforeRemoveNext.bind(this, isDestroy));
+                this.params.callbacks.onBeforeRemove(this.node, this.onBeforeRemoveNext.bind(this, isDestroy));
             }
             else {
-                this.removed(this.params, isDestroy);
+                this.onBeforeRemoveNext(isDestroy);
             }
         }
         else {
-            this.removed(this.params, isDestroy);
+            this.onBeforeRemoveNext(isDestroy);
         }
     }
 
     /** 窗口关闭前动画处理完后的回调方法，主要用于释放资源 */
     private onBeforeRemoveNext(isDestroy?: boolean) {
-        if (this.onCloseWindowBefore) {
-            this.onCloseWindowBefore();
-            this.onCloseWindowBefore = null!;
-        }
+        this.onCloseWindowBefore && this.onCloseWindowBefore();
         this.removed(this.params, isDestroy);
     }
 

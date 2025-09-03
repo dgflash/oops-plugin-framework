@@ -32,6 +32,12 @@ export default class UIButton extends Button {
     /** 触摸结束时间 */
     private _touchEndTime = 0;
 
+    private static effectPath: string = null!;
+    /** 批量设置触摸音效 */
+    static setBatchEffect(path: string) {
+        this.effectPath = path;
+    }
+
     /** 触摸结束 */
     protected _onTouchEnded(event: EventTouch) {
         if (!this._interactable || !this.enabledInHierarchy) {
@@ -74,7 +80,10 @@ export default class UIButton extends Button {
 
     /** 短按触摸音效 */
     protected playEffect() {
-        if (this.effect) {
+        if (UIButton.effectPath) {
+            oops.audio.playEffect(UIButton.effectPath);
+        }
+        else if (this.effect) {
             oops.audio.playEffect(this.effect);
         }
     }

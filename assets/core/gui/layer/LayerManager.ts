@@ -1,14 +1,14 @@
 import { Camera, Layers, Node, ResolutionPolicy, SafeArea, Widget, screen, view, warn } from "cc";
 import { resLoader } from "../../common/loader/ResLoader";
 import { oops } from "../../Oops";
-import { LayerUIElement, UICallbacks } from "./LayerUIElement";
 import { LayerDialog } from "./LayerDialog";
 import { LayerCustomType, LayerTypeCls, UIConfigMap, Uiid } from "./LayerEnum";
-import { LayerGame } from "./LayerGame";
 import { LayerNotify } from "./LayerNotify";
 import { LayerPopUp } from "./LayerPopup";
 import { LayerUI } from "./LayerUI";
+import { LayerUIElement, UICallbacks } from "./LayerUIElement";
 import { UIConfig } from "./UIConfig";
+import { LayerGame } from "./LayerGame";
 
 /** 界面层级管理器 */
 export class LayerManager {
@@ -372,7 +372,7 @@ export class LayerManager {
      * @example
      * oops.gui.clear();
      */
-    clear(isDestroy: boolean = false) {
+    clear(isDestroy: boolean = true) {
         this.uiLayers.forEach((layer: LayerUI) => {
             layer.clear(isDestroy);
         })

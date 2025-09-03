@@ -6,6 +6,7 @@
  */
 import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, Prefab, Sprite, SpriteFrame, __private, _decorator, input, isValid } from "cc";
 import { oops } from "../../core/Oops";
+import { AudioEffect } from "../../core/common/audio/AudioEffect";
 import { IAudioParams } from "../../core/common/audio/IAudio";
 import { EventDispatcher } from "../../core/common/event/EventDispatcher";
 import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage";
@@ -17,8 +18,7 @@ const { ccclass } = _decorator;
 /** 加载资源类型 */
 enum ResType {
     Load,
-    LoadDir,
-    Audio
+    LoadDir
 }
 
 /** 资源加载记录 */
@@ -32,7 +32,6 @@ interface ResRecord {
     /** 资源编号 */
     resId?: number
 }
-
 
 /**
  * 游戏显示对象组件模板
@@ -138,7 +137,7 @@ export class GameComponent extends Component {
      * @param bundleName    资源包名
      * @param paths         资源路径
      */
-    private addPathToRecord<T>(type: ResType, bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null, resId?: number) {
+    private addPathToRecord<T>(type: ResType, bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null) {
         if (this.resPaths == null) this.resPaths = new Map();
 
         var rps = this.resPaths.get(type);
@@ -151,45 +150,44 @@ export class GameComponent extends Component {
             let realBundle = bundleName;
             for (let index = 0; index < paths.length; index++) {
                 let realPath = paths[index];
-                let key = this.getResKey(realBundle, realPath, resId);
+                let key = this.getResKey(realBundle, realPath);
                 let rp = rps.get(key);
                 if (rp) {
                     rp.refCount++;
                 }
                 else {
-                    rps.set(key, { path: realPath, bundle: realBundle, refCount: 1, resId: resId });
+                    rps.set(key, { path: realPath, bundle: realBundle, refCount: 1 });
                 }
             }
         }
         else if (typeof paths === "string") {
             let realBundle = bundleName;
             let realPath = paths;
-            let key = this.getResKey(realBundle, realPath, resId);
+            let key = this.getResKey(realBundle, realPath);
             let rp = rps.get(key);
             if (rp) {
                 rp.refCount++;
             }
             else {
-                rps.set(key, { path: realPath, bundle: realBundle, refCount: 1, resId: resId });
+                rps.set(key, { path: realPath, bundle: realBundle, refCount: 1 });
             }
         }
         else {
             let realBundle = oops.res.defaultBundleName;
             let realPath = bundleName;
-            let key = this.getResKey(realBundle, realPath, resId);
+            let key = this.getResKey(realBundle, realPath);
             let rp = rps.get(key);
             if (rp) {
                 rp.refCount++;
             }
             else {
-                rps.set(key, { path: realPath, bundle: realBundle, refCount: 1, resId: resId });
+                rps.set(key, { path: realPath, bundle: realBundle, refCount: 1 });
             }
         }
     }
 
-    private getResKey(realBundle: string, realPath: string, resId?: number): string {
+    private getResKey(realBundle: string, realPath: string): string {
         let key = `${realBundle}:${realPath}`;
-        if (resId != null) key += ":" + resId;
         return key;
     }
 
@@ -302,18 +300,6 @@ export class GameComponent extends Component {
         }
     }
 
-    /** 释放音效资源 */
-    releaseAudioEffect() {
-        if (this.resPaths) {
-            const rps = this.resPaths.get(ResType.Audio);
-            if (rps) {
-                rps.forEach((value: ResRecord) => {
-                    oops.audio.putEffect(value.resId!, value.path, value.bundle);       // 回收音乐效到音效池中等下次使用
-                });
-            }
-        }
-    }
-
     /**
      * 设置图片资源
      * @param target  目标精灵对象
@@ -351,32 +337,13 @@ export class GameComponent extends Component {
      * @param url           资源地址
      * @param params        音效播放参数
      */
-    async playEffect(url: string, params?: IAudioParams): Promise<number> {
+    async playEffect(url: string, params?: IAudioParams): Promise<AudioEffect> {
         return new Promise(async (resolve, reject) => {
-            let bundleName = resLoader.defaultBundleName;
-            if (params == null) {
-                params = { bundle: bundleName }
-            }
-            else if (params.bundle != null) {
-                bundleName = params.bundle;
-            }
-
             // 音效播放完，关闭正在播放状态的音乐效果
-            params.onPlayComplete = (aeid: number, url: string, bundleName: string) => {
-                // 音效播放完前，界面被释放
-                if (!this.isValid) return;
-
-                // 删除界面音效的播放记录
-                const rps = this.resPaths.get(ResType.Audio);
-                if (rps) {
-                    const key = this.getResKey(bundleName, url, aeid);
-                    rps.delete(key);
-                }
-            }
-
-            let resId = await oops.audio.playEffect(url, params);
-            this.addPathToRecord(ResType.Audio, bundleName, url, resId);        // 支持界面释放时，立即停止所有音效的播放
-            resolve(resId);
+            if (params == null) params = {};
+            let ae = await oops.audio.playEffect(url, params);
+            this.addPathToRecord(ResType.Load, ae.params!.bundle!, url);
+            resolve(ae);
         });
     }
     //#endregion
@@ -528,7 +495,6 @@ export class GameComponent extends Component {
 
         // 自动释放资源
         if (this.resPaths) {
-            this.releaseAudioEffect();
             this.release();
             this.releaseDir();
             this.resPaths.clear();

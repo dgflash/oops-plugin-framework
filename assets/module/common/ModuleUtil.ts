@@ -1,14 +1,15 @@
 import { Node, __private } from "cc";
 import { oops } from "../../core/Oops";
 import { resLoader } from "../../core/common/loader/ResLoader";
-import { LayerUIElement, UICallbacks } from "../../core/gui/layer/LayerUIElement";
 import { Uiid } from "../../core/gui/layer/LayerEnum";
-import { UIConfig } from "../../core/gui/layer/UIConfig";
+import { LayerUIElement, UICallbacks } from "../../core/gui/layer/LayerUIElement";
 import { ViewUtil } from "../../core/utils/ViewUtil";
 import { ecs } from "../../libs/ecs/ECS";
 import { CompType } from "../../libs/ecs/ECSModel";
 import { CCComp } from "./CCComp";
 import { CCVMParentComp } from "./CCVMParentComp";
+
+export type ECSCtor<T extends ecs.Comp> = __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>;
 
 export class ModuleUtil {
     /**
@@ -18,11 +19,7 @@ export class ModuleUtil {
      * @param uiId     界面资源编号
      * @param uiArgs   界面参数
      */
-    static addViewUi<T extends CCVMParentComp | CCComp>(
-        ent: ecs.Entity,
-        ctor: __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>,
-        uiId: number,
-        uiArgs: any = null) {
+    static addViewUi<T extends CCVMParentComp | CCComp>(ent: ecs.Entity, ctor: ECSCtor<T>, uiId: Uiid, uiArgs: any = null) {
         const uic: UICallbacks = {
             onAdded: (node: Node, params: any) => {
                 const comp = node.getComponent(ctor) as ecs.Comp;
@@ -41,11 +38,7 @@ export class ModuleUtil {
      * @param uiArgs   界面参数
      * @returns 界面节点
      */
-    static addViewUiAsync<T extends CCVMParentComp | CCComp>(
-        ent: ecs.Entity,
-        ctor: __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>,
-        uiId: number | UIConfig,
-        uiArgs: any = null): Promise<Node | null> {
+    static addViewUiAsync<T extends CCVMParentComp | CCComp>(ent: ecs.Entity, ctor: ECSCtor<T>, uiId: Uiid, uiArgs: any = null): Promise<Node | null> {
         return new Promise<Node | null>((resolve, reject) => {
             const uic: UICallbacks = {
                 onAdded: (node: Node, params: any) => {
@@ -69,12 +62,7 @@ export class ModuleUtil {
      * @param url        显示资源地址
      * @param bundleName 资源包名称
      */
-    static addView<T extends CCVMParentComp | CCComp>(
-        ent: ecs.Entity,
-        ctor: __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>,
-        parent: Node,
-        url: string,
-        bundleName: string = resLoader.defaultBundleName) {
+    static addView<T extends CCVMParentComp | CCComp>(ent: ecs.Entity, ctor: ECSCtor<T>, parent: Node, url: string, bundleName: string = resLoader.defaultBundleName) {
         const node = ViewUtil.createPrefabNode(url, bundleName);
         const comp = node.getComponent(ctor)!;
         ent.add(comp);
@@ -98,28 +86,12 @@ export class ModuleUtil {
 
         const comp = node.getComponent(LayerUIElement);
         if (comp) {
-            if (comp.params.callbacks.onBeforeRemove) {
-                comp.onCloseWindowBefore = () => {
-                    ent.remove(ctor, isDestroy);
-                    if (onRemoved) onRemoved();
-                };
-            }
-            else if (comp.params.callbacks.onRemoved) {
-                comp.onCloseWindow = () => {
-                    ent.remove(ctor, isDestroy);
-                    if (onRemoved) onRemoved();
-                };
-            }
-            else {
-                ent.remove(ctor, isDestroy);
+            comp.onCloseWindowBefore = () => {
+                // 移除ECS显示组件
+                if (isDestroy) ent.remove(ctor, isDestroy);
                 if (onRemoved) onRemoved();
-            }
+            };
+            oops.gui.remove(uiId, isDestroy);
         }
-        else {
-            ent.remove(ctor, isDestroy);
-            if (onRemoved) onRemoved();
-        }
-
-        oops.gui.remove(uiId, isDestroy);
     }
 }

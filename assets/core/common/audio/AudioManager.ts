@@ -1,8 +1,10 @@
 import { AudioClip, Component } from "cc";
 import { oops } from "../../Oops";
+import { AudioEffect } from "./AudioEffect";
 import { AudioEffectPool } from "./AudioEffectPool";
+import { AudioEffectType } from "./AudioEnum";
 import { AudioMusic } from "./AudioMusic";
-import { IAudioParams } from "./IAudio";
+import { IAudioData, IAudioParams } from "./IAudio";
 
 const LOCAL_STORE_KEY = "game_audio";
 
@@ -20,31 +22,39 @@ export class AudioManager extends Component {
     effect: AudioEffectPool = new AudioEffectPool();
 
     /** 音乐管理状态数据 */
-    private localData: any = {};
+    private data: { [node: string]: IAudioData } = {};
+
+    /**
+     * 播放背景音乐
+     * @param path      资源路径
+     * @param params    音效参数
+     */
+    playMusic(path: string, params?: IAudioParams) {
+        this.music.loadAndPlay(path, params);
+    }
 
     /**
      * 播放音效
-     * @param url        资源地址
-     * @param params     音效参数
+     * @param path      资源路径
+     * @param params    音效参数
      */
-    playEffect(url: string | AudioClip, params?: IAudioParams): Promise<number> {
-        return this.effect.loadAndPlay(url, params);
+    playEffect(path: string | AudioClip, params?: IAudioParams): Promise<AudioEffect> {
+        return this.effect.loadAndPlay(path, params);
     }
 
     /** 回收音效播放器 */
-    putEffect(aeid: number, url: string | AudioClip, bundleName?: string) {
-        this.effect.put(aeid, url, bundleName);
+    putEffect(ae: AudioEffect) {
+        this.effect.put(ae);
     }
 
     /** 恢复当前暂停的音乐与音效播放 */
     resumeAll() {
-        if (!this.music.playing && this.music.progress > 0) this.music.play();
-        this.effect.play();
+        this.music.resume();
     }
 
     /** 暂停当前音乐与音效的播放 */
     pauseAll() {
-        if (this.music.playing) this.music.pause();
+        this.music.pause();
         this.effect.pause();
     }
 
@@ -56,26 +66,17 @@ export class AudioManager extends Component {
 
     /** 保存音乐音效的音量、开关配置数据到本地 */
     save() {
-        this.localData.volume_music = this.music.volume;
-        this.localData.volume_effect = this.effect.volume;
-        this.localData.switch_music = this.music.switch;
-        this.localData.switch_effect = this.effect.switch;
-
-        oops.storage.set(LOCAL_STORE_KEY, this.localData);
+        oops.storage.set(LOCAL_STORE_KEY, this.data);
     }
 
     /** 本地加载音乐音效的音量、开关配置数据并设置到游戏中 */
     load() {
-        this.music = this.getComponent(AudioMusic) || this.addComponent(AudioMusic)!;
+        this.music = new AudioMusic();
+        this.music.parent = this.node;
 
-        this.localData = oops.storage.getJson(LOCAL_STORE_KEY);
-        if (this.localData) {
-            try {
-                this.setState();
-            }
-            catch {
-                this.setStateDefault();
-            }
+        this.data = oops.storage.getJson(LOCAL_STORE_KEY);
+        if (this.data) {
+            this.setState();
         }
         else {
             this.setStateDefault();
@@ -83,17 +84,36 @@ export class AudioManager extends Component {
     }
 
     private setState() {
-        this.music.volume = this.localData.volume_music;
-        this.effect.volume = this.localData.volume_effect;
-        this.music.switch = this.localData.switch_music;
-        this.effect.switch = this.localData.switch_effect;
+        //@ts-ignore
+        this.music.data = this.data;
+        //@ts-ignore
+        this.effect.data = this.data;
     }
 
+    /** 默认音乐配置数据 */
     private setStateDefault() {
-        this.localData = {};
-        this.music.volume = 1;
-        this.effect.volume = 1;
-        this.music.switch = true;
-        this.effect.switch = true;
+        this.data = {};
+        for (const key in AudioEffectType) {
+            //@ts-ignore
+            const value = AudioEffectType[key];
+            if (typeof value === 'string') {
+                this.data[value] = { switch: true, volume: 1 };
+                switch (value) {
+                    case AudioEffectType.Music:
+                        //@ts-ignore
+                        this.music.data = this.data;
+                        this.music.setSwitch(true);
+                        this.music.setVolume(1);
+                        break;
+                    default:
+                        //@ts-ignore
+                        this.effect.data = this.data;
+                        this.effect.setSwitch(true, value);
+                        this.effect.setVolume(1, value);
+                        break;
+                }
+            }
+        }
+        this.save();
     }
 }
