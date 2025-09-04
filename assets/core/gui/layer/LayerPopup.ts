@@ -59,8 +59,8 @@ export class LayerPopUp extends LayerUI {
         if (this.ui_nodes.size == 0) {
             if (this.black) this.black.enabled = false;
             this.closeVacancyRemove();
-            this.closeMask();
         }
+        this.closeMask();
     }
 
     /** 关闭遮罩 */
@@ -75,7 +75,15 @@ export class LayerPopUp extends LayerUI {
             }
         }
 
-        if (flag) this.mask.parent = null;
+        if (flag) {
+            if (this.ui_nodes.size == 0) {
+                this.mask.uiSprite.enabled = true;
+                this.mask.parent = null;
+            }
+            else {
+                this.mask.uiSprite.enabled = false;
+            }
+        }
     }
 
     /** 启动触摸非窗口区域关闭 */
