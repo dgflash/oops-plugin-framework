@@ -36,6 +36,8 @@ export default class VMParent extends GameComponent {
      */
     onLoad() {
         if (this.data == null) return;
+        this.onBind();
+
         this.tag = '_temp' + '<' + this.node.uuid.replace('.', '') + '>';
         VM.add(this.data, this.tag);
         // log(VM['_mvs'],this.tag)
@@ -47,8 +49,6 @@ export default class VMParent extends GameComponent {
             this.replaceVMPath(comp, this.tag)
         }
         // console.groupEnd()
-
-        this.onBind();
     }
 
     /**在 onLoad 完成 和 start() 之前调用，你可以在这里进行初始化数据等操作 */

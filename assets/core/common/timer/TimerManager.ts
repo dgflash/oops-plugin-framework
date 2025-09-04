@@ -45,7 +45,7 @@ export class TimerManager extends Component {
 
     /** 触发倒计时完成事件 */
     private onTimerComplete(data: any) {
-        if (data.onComplete) data.onComplete.call(data.object);
+        if (data.onComplete) data.onComplete.call(data.target, data.object);
         if (data.event) this.node.dispatchEvent(data.event);
 
         delete this.times[data.id];
@@ -55,6 +55,7 @@ export class TimerManager extends Component {
      * 在指定对象上注册一个倒计时的回调管理器
      * @param object        注册定时器的对象
      * @param field         时间字段
+     * @param target        触发事件的对象
      * @param onSecond      每秒事件
      * @param onComplete    倒计时完成事件
      * @returns 
@@ -76,7 +77,7 @@ export class TimerManager extends Component {
         }
     }
      */
-    register(object: any, field: string, onSecond: Function, onComplete: Function): string {
+    register(object: any, field: string, target: object, onSecond: Function, onComplete: Function): string {
         const timer = new Timer();
         timer.step = 1;
 
@@ -87,6 +88,7 @@ export class TimerManager extends Component {
         data.field = field;                                     // 时间字段
         data.onSecond = onSecond;                               // 每秒事件
         data.onComplete = onComplete;                           // 倒计时完成事件
+        data.target = target
         this.times[data.id] = data;
         return data.id;
     }

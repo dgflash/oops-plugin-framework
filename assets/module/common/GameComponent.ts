@@ -4,8 +4,10 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-12-13 11:36:00
  */
-import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, Sprite, SpriteFrame, __private, _decorator, input, isValid } from "cc";
+import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, Prefab, Sprite, SpriteFrame, __private, _decorator, input, isValid } from "cc";
 import { oops } from "../../core/Oops";
+import { AudioEffect } from "../../core/common/audio/AudioEffect";
+import { IAudioParams } from "../../core/common/audio/IAudio";
 import { EventDispatcher } from "../../core/common/event/EventDispatcher";
 import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage";
 import { AssetType, CompleteCallback, Paths, ProgressCallback, resLoader } from "../../core/common/loader/ResLoader";
@@ -16,8 +18,7 @@ const { ccclass } = _decorator;
 /** 加载资源类型 */
 enum ResType {
     Load,
-    LoadDir,
-    Audio
+    LoadDir
 }
 
 /** 资源加载记录 */
@@ -26,11 +27,13 @@ interface ResRecord {
     bundle: string,
     /** 资源路径 */
     path: string,
+    /** 引用计数 */
+    refCount: number,
     /** 资源编号 */
     resId?: number
 }
 
-/** 
+/**
  * 游戏显示对象组件模板
  * 1、当前对象加载的资源，会在对象释放时，自动释放引用的资源
  * 2、当前对象支持启动游戏引擎提供的各种常用逻辑事件
@@ -63,8 +66,8 @@ export class GameComponent extends Component {
         this.event.off(event);
     }
 
-    /** 
-     * 触发全局事件 
+    /**
+     * 触发全局事件
      * @param event      事件名
      * @param args       事件参数
      */
@@ -76,7 +79,7 @@ export class GameComponent extends Component {
     //#region 预制节点管理
 
     /** 摊平的节点集合（所有节点不能重名） */
-    private nodes: Map<string, Node> = null!;
+    nodes: Map<string, Node> = null!;
 
     /** 通过节点名获取预制上的节点，整个预制不能有重名节点 */
     getNode(name: string): Node | undefined {
@@ -106,7 +109,11 @@ export class GameComponent extends Component {
      * @param bundleName 资源包名
      */
     createPrefabNodeAsync(path: string, bundleName: string = oops.res.defaultBundleName): Promise<Node> {
-        return ViewUtil.createPrefabNodeAsync(path, bundleName);
+        return new Promise(async (resolve, reject) => {
+            await this.loadAsync(bundleName, path, Prefab);
+            let node = ViewUtil.createPrefabNode(path, bundleName);
+            resolve(node);
+        });
     }
     //#endregion
 
@@ -130,7 +137,7 @@ export class GameComponent extends Component {
      * @param bundleName    资源包名
      * @param paths         资源路径
      */
-    private addPathToRecord<T>(type: ResType, bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null, resId?: number) {
+    private addPathToRecord<T>(type: ResType, bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null) {
         if (this.resPaths == null) this.resPaths = new Map();
 
         var rps = this.resPaths.get(type);
@@ -143,33 +150,44 @@ export class GameComponent extends Component {
             let realBundle = bundleName;
             for (let index = 0; index < paths.length; index++) {
                 let realPath = paths[index];
-                let key = this.getResKey(realBundle, realPath, resId);
-                if (!rps.has(key)) {
-                    rps.set(key, { path: realPath, bundle: realBundle, resId: resId });
+                let key = this.getResKey(realBundle, realPath);
+                let rp = rps.get(key);
+                if (rp) {
+                    rp.refCount++;
+                }
+                else {
+                    rps.set(key, { path: realPath, bundle: realBundle, refCount: 1 });
                 }
             }
         }
         else if (typeof paths === "string") {
             let realBundle = bundleName;
             let realPath = paths;
-            let key = this.getResKey(realBundle, realPath, resId);
-            if (!rps.has(key)) {
-                rps.set(key, { path: realPath, bundle: realBundle, resId: resId });
+            let key = this.getResKey(realBundle, realPath);
+            let rp = rps.get(key);
+            if (rp) {
+                rp.refCount++;
+            }
+            else {
+                rps.set(key, { path: realPath, bundle: realBundle, refCount: 1 });
             }
         }
         else {
             let realBundle = oops.res.defaultBundleName;
             let realPath = bundleName;
-            let key = this.getResKey(realBundle, realPath, resId);
-            if (!rps.has(key)) {
-                rps.set(key, { path: realPath, bundle: realBundle, resId: resId });
+            let key = this.getResKey(realBundle, realPath);
+            let rp = rps.get(key);
+            if (rp) {
+                rp.refCount++;
+            }
+            else {
+                rps.set(key, { path: realPath, bundle: realBundle, refCount: 1 });
             }
         }
     }
 
-    private getResKey(realBundle: string, realPath: string, resId?: number): string {
+    private getResKey(realBundle: string, realPath: string): string {
         let key = `${realBundle}:${realPath}`;
-        if (resId != null) key += ":" + resId;
         return key;
     }
 
@@ -261,7 +279,9 @@ export class GameComponent extends Component {
             const rps = this.resPaths.get(ResType.Load);
             if (rps) {
                 rps.forEach((value: ResRecord) => {
-                    oops.res.release(value.path, value.bundle);
+                    for (let i = 0; i < value.refCount; i++) {
+                        oops.res.release(value.path, value.bundle);
+                    }
                 });
                 rps.clear();
             }
@@ -275,18 +295,6 @@ export class GameComponent extends Component {
             if (rps) {
                 rps.forEach((value: ResRecord) => {
                     oops.res.releaseDir(value.path, value.bundle);
-                });
-            }
-        }
-    }
-
-    /** 释放音效资源 */
-    releaseAudioEffect() {
-        if (this.resPaths) {
-            const rps = this.resPaths.get(ResType.Audio);
-            if (rps) {
-                rps.forEach((value: ResRecord) => {
-                    oops.audio.putEffect(value.resId!, value.path, value.bundle);
                 });
             }
         }
@@ -309,6 +317,7 @@ export class GameComponent extends Component {
             }
             return;
         }
+        spriteFrame.addRef();
         target.spriteFrame = spriteFrame;
     }
     //#endregion
@@ -317,50 +326,36 @@ export class GameComponent extends Component {
     /**
      * 播放背景音乐（不受自动释放资源管理）
      * @param url           资源地址
-     * @param callback      资源加载完成回调
-     * @param bundleName    资源包名
+     * @param params        背景音乐资源播放参数
      */
-    playMusic(url: string, callback?: Function, bundleName?: string) {
-        oops.audio.playMusic(url, callback, bundleName);
-    }
-
-    /**
-     * 循环播放背景音乐（不受自动释放资源管理）
-     * @param url           资源地址
-     * @param bundleName    资源包名
-     */
-    playMusicLoop(url: string, bundleName?: string) {
-        oops.audio.stopMusic();
-        oops.audio.playMusicLoop(url, bundleName);
+    playMusic(url: string, params?: IAudioParams) {
+        oops.audio.music.loadAndPlay(url, params);
     }
 
     /**
      * 播放音效
      * @param url           资源地址
-     * @param callback      资源加载完成回调
-     * @param bundleName    资源包名
+     * @param params        音效播放参数
      */
-    async playEffect(url: string, bundleName?: string) {
-        if (bundleName == null) bundleName = oops.res.defaultBundleName;
-        const id = await oops.audio.playEffect(url, bundleName, () => {
-            const rps = this.resPaths.get(ResType.Audio);
-            if (rps) {
-                const key = this.getResKey(bundleName, url, id);
-                rps.delete(key);
-            }
+    async playEffect(url: string, params?: IAudioParams): Promise<AudioEffect> {
+        return new Promise(async (resolve, reject) => {
+            // 音效播放完，关闭正在播放状态的音乐效果
+            if (params == null) params = {};
+            let ae = await oops.audio.playEffect(url, params);
+            this.addPathToRecord(ResType.Load, ae.params!.bundle!, url);
+            resolve(ae);
         });
-        this.addPathToRecord(ResType.Audio, bundleName, url, id);
     }
     //#endregion
 
     //#region 游戏逻辑事件
-    /** 
+    /**
      * 批量设置当前界面按钮事件
      * @param bindRootEvent  是否对预制根节点绑定触摸事件
      * @example
      * 注：按钮节点Label1、Label2必须绑定UIButton等类型的按钮组件才会生效，方法名必须与节点名一致
      * this.setButton();
-     * 
+     *
      * Label1(event: EventTouch) { console.log(event.target.name); }
      * Label2(event: EventTouch) { console.log(event.target.name); }
      */
@@ -400,12 +395,12 @@ export class GameComponent extends Component {
         });
     }
 
-    /** 
-     * 批量设置全局事件 
+    /**
+     * 批量设置全局事件
      * @example
      *  this.setEvent("onGlobal");
      *  this.dispatchEvent("onGlobal", "全局事件");
-     * 
+     *
      *  onGlobal(event: string, args: any) { console.log(args) };
      */
     protected setEvent(...args: string[]) {
@@ -485,7 +480,6 @@ export class GameComponent extends Component {
     /** 游戏旋转屏幕事件回调 */
     protected onGameOrientation(): void { }
     //#endregion
-
     protected onDestroy() {
         // 释放消息对象
         if (this._event) {
@@ -501,7 +495,6 @@ export class GameComponent extends Component {
 
         // 自动释放资源
         if (this.resPaths) {
-            this.releaseAudioEffect();
             this.release();
             this.releaseDir();
             this.resPaths.clear();

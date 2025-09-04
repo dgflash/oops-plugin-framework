@@ -90,7 +90,7 @@ export class EffectSingleCase {
             await resLoader.loadAsync(bundleName, path, Prefab);
 
             for (let i = 0; i < count; i++) {
-                let node = ViewUtil.createPrefabNode(path);
+                let node = ViewUtil.createPrefabNode(path, bundleName);
                 //@ts-ignore
                 node.res_path = path;
                 np.put(node);
@@ -144,7 +144,9 @@ export class EffectSingleCase {
         var node: Node;
         // 创建池中新显示对象
         if (np.size() == 0) {
-            node = ViewUtil.createPrefabNode(path);
+            var bundleName = resLoader.defaultBundleName;
+            if (params && params.bundleName) bundleName = params.bundleName;
+            node = ViewUtil.createPrefabNode(path, bundleName);
             //@ts-ignore
             node.res_path = path;
             if (params && params.isPlayFinishedRelease) {
@@ -181,9 +183,9 @@ export class EffectSingleCase {
      */
     put(node: Node) {
         //@ts-ignore
-        let name = node.res_path;
+        const name = node.res_path;
         if (name) {
-            let np = this.effects.get(name);
+            const np = this.effects.get(name);
             if (np) {
                 // 回收使用的节点
                 this.effects_use.delete(node);
@@ -200,8 +202,8 @@ export class EffectSingleCase {
      */
     clear(path?: string) {
         if (path) {
-            var np = this.effects.get(path)!;
-            np.clear();
+            const np = this.effects.get(path);
+            if (np) np.clear();
         }
         else {
             this.effects.forEach(np => {

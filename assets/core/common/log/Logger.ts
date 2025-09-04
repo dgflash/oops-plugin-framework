@@ -25,6 +25,10 @@ var names = {
     "32": "标准日志",
 }
 
+export interface ILoggerConsole {
+    trace(content: string, color: string): void;
+}
+
 /** 
  * 日志管理 
  * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037904&doc_id=2873565
@@ -37,9 +41,24 @@ oops.log.logBusiness("蓝色业务日志");
 oops.log.logView("绿色视图日志");
  */
 export class Logger {
-    private static tags: number = 0;
+    private static _instance: Logger;
+    static get instance(): Logger {
+        if (this._instance == null) {
+            this._instance = new Logger();
+            this._instance.init();
+        }
+        return this._instance;
+    }
 
-    private static init(): void {
+    private tags: number = 0;
+    private lc: ILoggerConsole = null!;
+
+    /** 设置界面日志控制台 */
+    setLoggerConsole(lc: ILoggerConsole) {
+        this.lc = lc;
+    }
+
+    private init(): void {
         this.tags =
             LogType.Net |
             LogType.Model |
@@ -54,7 +73,7 @@ export class Logger {
      * @example
 oops.log.setTags(LogType.View|LogType.Business)
      */
-    static setTags(tag: LogType = null!) {
+    setTags(tag: LogType = null!) {
         if (tag) {
             this.tags = tag;
         }
@@ -70,7 +89,7 @@ oops.log.start();
 ...
 oops.log.end();
      */
-    static start(describe: string = "Time"): void {
+    start(describe: string = "Time"): void {
         console.time(describe);
     }
 
@@ -84,7 +103,7 @@ oops.log.start();
 ...
 oops.log.end();
      */
-    static end(describe: string = "Time"): void {
+    end(describe: string = "Time"): void {
         console.timeEnd(describe);
     }
 
@@ -96,7 +115,7 @@ oops.log.end();
 var object:any = {uid:1000, name:"oops"};
 oops.log.table(object);
      */
-    static table(msg: any, describe?: string) {
+    table(msg: any, describe?: string) {
         if (!this.isOpen(LogType.Trace)) {
             return;
         }
@@ -107,14 +126,8 @@ oops.log.table(object);
      * 打印标准日志
      * @param msg       日志消息
      */
-    static trace(msg: any, color: string = "color:#ffffff;") {
-        // 标记没有打开，不打印该日志
-        if (!this.isOpen(LogType.Trace)) {
-            return;
-
-        }
-        var backLog = console.log || log;
-        backLog.call(null, "%c%s%s", color, this.getDateString(), msg);
+    trace(msg: any, color: string = "#000000") {
+        this.print(LogType.Trace, msg, color);
     }
 
     /**
@@ -122,7 +135,7 @@ oops.log.table(object);
      * @param msg       日志消息
      * @param describe  标题描述
      */
-    static logNet(msg: any, describe?: string) {
+    logNet(msg: any, describe?: string) {
         this.orange(LogType.Net, msg, describe);
     }
 
@@ -131,7 +144,7 @@ oops.log.table(object);
      * @param msg       日志消息
      * @param describe  标题描述
      */
-    static logModel(msg: any, describe?: string) {
+    logModel(msg: any, describe?: string) {
         this.violet(LogType.Model, msg, describe);
     }
 
@@ -140,7 +153,7 @@ oops.log.table(object);
      * @param msg       日志消息
      * @param describe  标题描述
      */
-    static logBusiness(msg: any, describe?: string) {
+    logBusiness(msg: any, describe?: string) {
         this.blue(LogType.Business, msg, describe);
     }
 
@@ -149,41 +162,41 @@ oops.log.table(object);
      * @param msg       日志消息
      * @param describe  标题描述
      */
-    static logView(msg: any, describe?: string) {
+    logView(msg: any, describe?: string) {
         this.green(LogType.View, msg, describe);
     }
 
     /** 打印配置日志 */
-    static logConfig(msg: any, describe?: string) {
+    logConfig(msg: any, describe?: string) {
         this.gray(LogType.Config, msg, describe);
     }
 
     // 橙色
-    private static orange(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, "color:#ee7700;", describe)
+    private orange(tag: LogType, msg: any, describe?: string) {
+        this.print(tag, msg, "#ee7700", describe)
     }
 
     // 紫色
-    private static violet(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, "color:Violet;", describe)
+    private violet(tag: LogType, msg: any, describe?: string) {
+        this.print(tag, msg, "#800080", describe)
     }
 
     // 蓝色
-    private static blue(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, "color:#3a5fcd;", describe)
+    private blue(tag: LogType, msg: any, describe?: string) {
+        this.print(tag, msg, "#3a5fcd", describe)
     }
 
     // 绿色
-    private static green(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, "color:green;", describe)
+    private green(tag: LogType, msg: any, describe?: string) {
+        this.print(tag, msg, "#008000", describe)
     }
 
     // 灰色
-    private static gray(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, "color:gray;", describe)
+    private gray(tag: LogType, msg: any, describe?: string) {
+        this.print(tag, msg, "#808080", describe)
     }
 
-    private static isOpen(tag: LogType): boolean {
+    private isOpen(tag: LogType): boolean {
         return (this.tags & tag) != 0;
     }
 
@@ -194,23 +207,29 @@ oops.log.table(object);
      * @param color     日志文本颜色
      * @param describe  日志标题描述
      */
-    private static print(tag: LogType, msg: any, color: string, describe?: string) {
+    private print(tag: LogType, msg: any, color: string, describe?: string) {
         // 标记没有打开，不打印该日志
         if (!this.isOpen(tag)) {
             return;
-
         }
-        const backLog = console.log || log;
+
         const type = names[tag];
-        if (describe) {
-            backLog.call(null, "%c%s%s%s:%s%o", color, this.getDateString(), '[' + type + ']', this.stack(5), describe, msg);
+        if (this.lc == null) {
+            const backLog = console.log || log;
+            color = "color:" + color + ";";
+            if (describe) {
+                backLog.call(null, "%c%s%s%s:%s%o", color, this.getDateString(), '[' + type + ']', this.stack(5), describe, msg);
+            }
+            else {
+                backLog.call(null, "%c%s%s%s:%o", color, this.getDateString(), '[' + type + ']', this.stack(5), msg);
+            }
         }
         else {
-            backLog.call(null, "%c%s%s%s:%o", color, this.getDateString(), '[' + type + ']', this.stack(5), msg);
+            this.lc.trace(`${this.getDateString()}[${type}]${msg}`, color);
         }
     }
 
-    private static stack(index: number): string {
+    private stack(index: number): string {
         const e = new Error();
         const lines = e.stack!.split("\n");
         const result: Array<any> = [];
@@ -259,7 +278,7 @@ oops.log.table(object);
         return "";
     }
 
-    private static getDateString(): string {
+    private getDateString(): string {
         let d = new Date();
         let str = d.getHours().toString();
         let timeStr = "";
@@ -277,6 +296,3 @@ oops.log.table(object);
         return timeStr;
     }
 }
-
-// @ts-ignore
-Logger.init();

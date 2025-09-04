@@ -3,14 +3,12 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 13:44:28
  */
-
-import { BlockInputEvents, EventTouch, Layers, Node } from "cc";
+import { BlockInputEvents, EventTouch, Node } from "cc";
 import { ViewUtil } from "../../utils/ViewUtil";
-import { ViewParams } from "./Defines";
-import { UIConfig } from "./LayerManager";
+import { PromptResType } from "../GuiEnum";
 import { LayerUI } from "./LayerUI";
-
-const Mask: string = 'common/prefab/mask';
+import { UIParams } from "./LayerUIElement";
+import { UIConfig } from "./UIConfig";
 
 /* 弹窗层，允许同时弹出多个窗口 */
 export class LayerPopUp extends LayerUI {
@@ -21,42 +19,48 @@ export class LayerPopUp extends LayerUI {
 
     constructor(name: string) {
         super(name);
-        this.init();
+
+        this.on(Node.EventType.CHILD_ADDED, this.onChildAdded, this);
+        this.on(Node.EventType.CHILD_REMOVED, this.onChildRemoved, this);
     }
 
-    private init() {
-        this.layer = Layers.Enum.UI_2D;
-        this.black = this.addComponent(BlockInputEvents);
-        this.black.enabled = false;
+    private onChildAdded(child: Node) {
+        if (this.mask) this.mask.setSiblingIndex(this.children.length - 2);
     }
 
-    protected async showUi(vp: ViewParams): Promise<boolean> {
-        const r = await super.showUi(vp);
-        if (r) {
-            // 界面加载完成显示时，启动触摸非窗口区域关闭
-            this.openVacancyRemove(vp.config);
-
-            // 界面加载完成显示时，层级事件阻挡
-            this.black.enabled = true;
-        }
-        return r;
+    private onChildRemoved(child: Node) {
+        if (this.mask) this.mask.setSiblingIndex(this.children.length - 2);
     }
 
-    protected onCloseWindow(vp: ViewParams) {
-        super.onCloseWindow(vp);
+    protected showUi(uip: UIParams): Promise<boolean> {
+        return new Promise(async (resolve) => {
+            const r = await super.showUi(uip);
+            if (r) {
+                // 界面加载完成显示时，启动触摸非窗口区域关闭
+                this.openVacancyRemove(uip.config);
+
+                // 界面加载完成显示时，层级事件阻挡
+                this.black.enabled = true;
+            }
+            resolve(r);
+        });
+    }
+
+    protected onCloseWindow(uip: UIParams) {
+        super.onCloseWindow(uip);
 
         // 界面关闭后，关闭触摸事件阻挡、关闭触摸非窗口区域关闭、关闭遮罩
-        this.setBlackDisable();
+        this.closeUI();
     }
 
     /** 设置触摸事件阻挡 */
-    protected setBlackDisable() {
+    protected closeUI() {
         // 所有弹窗关闭后，关闭事件阻挡功能
         if (this.ui_nodes.size == 0) {
-            this.black.enabled = false;
+            if (this.black) this.black.enabled = false;
             this.closeVacancyRemove();
-            this.closeMask();
         }
+        this.closeMask();
     }
 
     /** 关闭遮罩 */
@@ -72,24 +76,28 @@ export class LayerPopUp extends LayerUI {
         }
 
         if (flag) {
-            this.mask.parent = null;
+            if (this.ui_nodes.size == 0) {
+                this.mask.uiSprite.enabled = true;
+                this.mask.parent = null;
+            }
+            else {
+                this.mask.uiSprite.enabled = false;
+            }
         }
     }
 
     /** 启动触摸非窗口区域关闭 */
     protected openVacancyRemove(config: UIConfig) {
-        if (!this.hasEventListener(Node.EventType.TOUCH_END, this.onTouchEnd, this)) {
-            this.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
-        }
-
         // 背景半透明遮罩
         if (this.mask == null) {
-            this.mask = ViewUtil.createPrefabNode(Mask);
+            this.mask = ViewUtil.createPrefabNode(PromptResType.Mask);
+            this.mask.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
+
+            this.black = this.mask.addComponent(BlockInputEvents);
+            this.black.enabled = false;
         }
-        if (config.mask) {
-            this.mask.parent = this;
-            this.mask.setSiblingIndex(0);
-        }
+
+        if (config.mask) this.mask.parent = this;
     }
 
     /** 关闭触摸非窗口区域关闭 */
@@ -107,21 +115,18 @@ export class LayerPopUp extends LayerUI {
         }
     }
 
+    /** 触摸非窗口区域关闭 */
     private onTouchEnd(event: EventTouch) {
-        if (event.target === this) {
-            this.ui_nodes.forEach(vp => {
-                // 关闭已显示的界面
-                if (vp.valid && vp.config.vacancy) {
-                    this.remove(vp.config.prefab, vp.config.destroy);
-                }
-            });
+        if (this.ui_nodes.size > 0) {
+            let vp = this.ui_nodes.array[this.ui_nodes.size - 1];
+            if (vp.valid && vp.config.vacancy) {
+                this.remove(vp.config.prefab, vp.config.destroy);
+            }
         }
     }
 
     clear(isDestroy: boolean) {
         super.clear(isDestroy)
-        this.black.enabled = false;
-        this.closeVacancyRemove();
-        this.closeMask();
+        this.closeUI();
     }
 }

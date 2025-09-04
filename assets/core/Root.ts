@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-08-28 10:02:57
  */
-import { _decorator, Component, director, Game, game, JsonAsset, Node, screen, sys } from "cc";
+import { _decorator, Component, director, Game, game, JsonAsset, Node, resources, screen, sys } from "cc";
 import { GameConfig } from "../module/config/GameConfig";
 import { GameQueryConfig } from "../module/config/GameQueryConfig";
 import { oops, version } from "./Oops";
@@ -19,8 +19,6 @@ import { GameManager } from "./game/GameManager";
 import { LayerManager } from "./gui/layer/LayerManager";
 
 const { property } = _decorator;
-
-let isInited = false;
 
 /** 框架显示层根节点 */
 export class Root extends Component {
@@ -42,67 +40,69 @@ export class Root extends Component {
     private persist: Node = null!
 
     onLoad() {
-        if (!isInited) {
-            isInited = true;      // 注：这里是规避cc3.8在编辑器模式下运行时，关闭游戏会两次初始化报错
+        console.log(`Oops Framework ${version}`);
+        this.enabled = false;
 
-            console.log(`Oops Framework v${version}`);
-            this.enabled = false;
-            this.iniStart();
-            this.loadConfig().then();
-        }
+        this.initModule();
+        this.iniStart();
+        this.loadConfig().then();
     }
 
-    private async loadConfig() {
+    private initModule() {
         // 创建持久根节点
         this.persist = new Node("OopsFrameworkPersistNode");
         director.addPersistRootNode(this.persist);
-
+        // oops.config.btc = new BuildTimeConstants();
+        // Web平台查询参数管理
+        oops.config.query = new GameQueryConfig();
         // 资源管理模块
         oops.res = resLoader;
+        // 全局消息
+        oops.message = message;
+        // 创建时间模块
+        oops.timer = this.persist.addComponent(TimerManager)!;
+        // 游戏场景管理
+        oops.game = new GameManager(this.game);
+        // 创建游戏界面管理对象
+        oops.gui = new LayerManager();
+    }
 
+    private async loadConfig() {
         const config_name = "config";
-        const config = await oops.res.loadAsync(config_name, JsonAsset);
-        if (config) {
-            // oops.config.btc = new BuildTimeConstants();
-            oops.config.query = new GameQueryConfig();
-            oops.config.game = new GameConfig(config);
+        resources.load(config_name, JsonAsset, (err, config) => {
+            if (err) {
+                this.loadConfig().then();
+                return;
+            }
 
-            // 设置默认资源包
-            oops.res.defaultBundleName = oops.config.game.bundleDefault;
-            oops.res.init(oops.config.game.data.bundle);
+            oops.config.game = new GameConfig(config);
 
             // 本地存储模块
             oops.storage = new StorageManager();
             oops.storage.init(new StorageSecuritySimple);
             // oops.storage.init(new StorageSecurityCrypto);
 
-            // 全局消息
-            oops.message = message;
-
             // 创建音频模块
             oops.audio = this.persist.addComponent(AudioManager);
             oops.audio.load();
 
-            // 创建时间模块
-            oops.timer = this.persist.addComponent(TimerManager)!;
-
-            // 游戏场景管理
-            oops.game = new GameManager(this.game);
+            // 设置默认资源包
+            oops.res.defaultBundleName = oops.config.game.bundleDefault;
 
             // 游戏界面管理
-            oops.gui = new LayerManager(this.gui);
+            oops.gui.mobileSafeArea = oops.config.game.mobileSafeArea;
+            //@ts-ignore
+            oops.gui.initLayer(this.gui, config.json.gui);
 
-            game.frameRate = oops.config.game.frameRate;                                         // 初始化每秒传输帧数
+            // 初始化每秒传输帧数
+            game.frameRate = oops.config.game.frameRate;
 
             this.enabled = true;
             this.init();
             this.run();
 
-            oops.res.release(config_name);
-        }
-        else {
-            this.loadConfig().then();
-        }
+            resources.release(config_name);
+        });
     }
 
     update(dt: number) {

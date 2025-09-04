@@ -2,6 +2,7 @@ import { Label, _decorator } from "cc";
 import { oops } from "../../../core/Oops";
 import { EventMessage } from "../../../core/common/event/EventMessage";
 import { TimeUtil } from "../../../core/utils/TimeUtils";
+import { EDITOR } from "cc/env";
 
 const { ccclass, property, menu } = _decorator;
 
@@ -28,6 +29,11 @@ export default class LabelTime extends Label {
         tooltip: "是否有00"
     })
     zeroize: boolean = true;
+
+    @property({
+        tooltip: "游戏进入后台时间暂时",
+    })
+    paused: boolean = false;
 
     private backStartTime: number = 0;      // 进入后台开始时间
     private dateDisable!: boolean;          // 时间能否由天数显示
@@ -135,18 +141,27 @@ export default class LabelTime extends Label {
     }
 
     start() {
-        oops.message.on(EventMessage.GAME_SHOW, this.onGameShow, this);
-        oops.message.on(EventMessage.GAME_HIDE, this.onGameHide, this);
+        if (!EDITOR) {
+            oops.message.on(EventMessage.GAME_SHOW, this.onGameShow, this);
+            oops.message.on(EventMessage.GAME_HIDE, this.onGameHide, this);
+        }
         this.timing_start();
         this.format();
     }
 
     onDestroy() {
-        oops.message.off(EventMessage.GAME_SHOW, this.onGameShow, this);
-        oops.message.off(EventMessage.GAME_HIDE, this.onGameHide, this);
+        if (!EDITOR) {
+            oops.message.off(EventMessage.GAME_SHOW, this.onGameShow, this);
+            oops.message.off(EventMessage.GAME_HIDE, this.onGameHide, this);
+        }
     }
 
     private onGameShow() {
+        // 时间到了
+        if (this.countDown <= 0) return;
+        // 时间暂停
+        if (this.paused) return;
+
         const interval = Math.floor((oops.timer.getTime() - (this.backStartTime || oops.timer.getTime())) / 1000);
         this.countDown -= interval;
         if (this.countDown < 0) {

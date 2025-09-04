@@ -1,4 +1,4 @@
-import { Asset, AssetManager, __private, assetManager, error, js, resources, warn } from "cc";
+import { __private, AnimationClip, Asset, AssetManager, assetManager, AudioClip, Font, ImageAsset, js, JsonAsset, Material, Mesh, Prefab, resources, sp, SpriteFrame, Texture2D, warn } from "cc";
 
 export type AssetType<T = Asset> = __private.__types_globals__Constructor<T> | null;
 export type Paths = string | string[];
@@ -35,8 +35,6 @@ export class ResLoader {
     //#region 资源配置数据
     /** 全局默认加载的资源包名 */
     defaultBundleName: string = "resources";
-    /** 是否使用远程 CDN 资源 */
-    cdn: boolean = false;
 
     /** 下载时的最大并发数 - 项目设置 -> 项目数据 -> 资源下载并发数，设置默认值；初始值为15 */
     get maxConcurrency() {
@@ -70,68 +68,59 @@ export class ResLoader {
         assetManager.downloader.retryInterval = value;
     }
 
-    /** 资源包配置 */
-    private bundles: Map<string, string> = new Map<string, string>();
-    //#endregion
-
-    init(config: any) {
-        this.cdn = config.enable;
-        for (let bundleName in config.packages) {
-            this.bundles.set(bundleName, config.packages[bundleName]);
-        }
-    }
-
     //#region 加载远程资源
     /**
      * 加载远程资源
      * @param url           资源地址
      * @param options       资源参数，例：{ ext: ".png" }
-     * @param onComplete    加载完成回调
      * @example
-var opt: IRemoteOptions = { ext: ".png" };
-var onComplete = (err: Error | null, data: ImageAsset) => {
-    const texture = new Texture2D();
-    texture.image = data;
-    
-    const spriteFrame = new SpriteFrame();
-    spriteFrame.texture = texture;
-    
-    var sprite = this.sprite.addComponent(Sprite);
-    sprite.spriteFrame = spriteFrame;
-}
-oops.res.loadRemote<ImageAsset>(this.url, opt, onComplete);
+        var opt: IRemoteOptions = { ext: ".png" };
+        var data = await oops.res.loadRemote<ImageAsset>(this.url, opt);
+        const texture = new Texture2D();
+        texture.image = data;
+
+        const spriteFrame = new SpriteFrame();
+        spriteFrame.texture = texture;
+
+        var sprite = this.sprite.addComponent(Sprite);
+        sprite.spriteFrame = spriteFrame;
      */
-    loadRemote<T extends Asset>(url: string, options: IRemoteOptions | null, onComplete?: CompleteCallback): void;
-    loadRemote<T extends Asset>(url: string, onComplete?: CompleteCallback): void;
-    loadRemote<T extends Asset>(url: string, ...args: any): void {
-        let options: IRemoteOptions | null = null;
-        let onComplete: CompleteCallback = null;
-        if (args.length == 2) {
-            options = args[0];
-            onComplete = args[1];
-        }
-        else {
-            onComplete = args[0];
-        }
-        assetManager.loadRemote<T>(url, options, onComplete);
+    loadRemote<T extends Asset>(url: string, options: IRemoteOptions | null = null): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
+            assetManager.loadRemote<T>(url, options, (err, data: T) => {
+                if (err) {
+                    reject(null);
+                    return;
+                }
+                resolve(data);
+            });
+        });
     }
     //#endregion
 
     //#region 资源包管理
+
+    /**
+     * 获取资源包
+     * @param name 资源包名
+     */
+    getBundle(name: string) {
+        return assetManager.bundles.get(name);
+    }
+
     /**
      * 加载资源包
-     * @param url       资源地址
-     * @param v         资源MD5版本号
+     * @param name       资源地址
+     * @param options    资源参数，例：{ version: "74fbe" }
      * @example
-var serverUrl = "http://192.168.1.8:8080/";         // 服务器地址
-var md5 = "8e5c0";                                  // Cocos Creator 构建后的MD5字符
-await oops.res.loadBundle(serverUrl,md5);
+        await oops.res.loadBundle(name, options);
      */
-    loadBundle(url: string, v?: string) {
+    loadBundle(name: string, options: { [k: string]: any; version?: string; } | null = null): Promise<AssetManager.Bundle> {
         return new Promise<AssetManager.Bundle>((resolve, reject) => {
-            assetManager.loadBundle(url, { version: v }, (err, bundle: AssetManager.Bundle) => {
+            assetManager.loadBundle(name, options, (err, bundle: AssetManager.Bundle) => {
                 if (err) {
-                    return error(err);
+                    resolve(null!);
+                    return;
                 }
                 resolve(bundle);
             });
@@ -364,12 +353,14 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
      * @param path          资源路径
      * @param bundleName    远程资源包名
      */
-    release(path: string, bundleName: string = this.defaultBundleName) {
+    release(path: string, bundleName?: string) {
+        if (bundleName == undefined) bundleName = this.defaultBundleName;
+
         const bundle = assetManager.getBundle(bundleName);
         if (bundle) {
             const asset = bundle.get(path);
             if (asset) {
-                this.releasePrefabtDepsRecursively(asset);
+                this.releasePrefabtDepsRecursively(bundleName, asset);
             }
         }
     }
@@ -385,7 +376,7 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
             var infos = bundle.getDirWithPath(path);
             if (infos) {
                 infos.map((info) => {
-                    this.releasePrefabtDepsRecursively(info.uuid);
+                    this.releasePrefabtDepsRecursively(bundleName, info.uuid);
                 });
             }
 
@@ -395,18 +386,77 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
         }
     }
 
+    /**
+     * 获取资源路径
+     * @param bundleName 资源包名
+     * @param uuid       资源唯一编号
+     * @returns 
+     */
+    getAssetPath(bundleName: string, uuid: string): string {
+        let b = this.getBundle(bundleName)!;
+        let info = b.getAssetInfo(uuid)!;
+        //@ts-ignore
+        return info.path;
+    }
+
     /** 释放预制依赖资源 */
-    private releasePrefabtDepsRecursively(uuid: string | Asset) {
+    private releasePrefabtDepsRecursively(bundleName: string, uuid: string | Asset) {
         if (uuid instanceof Asset) {
             uuid.decRef();
             // assetManager.releaseAsset(uuid);
+            // this.debugLogReleasedAsset(bundleName, uuid);
         }
         else {
             const asset = assetManager.assets.get(uuid);
             if (asset) {
                 asset.decRef();
                 // assetManager.releaseAsset(asset);
+                // this.debugLogReleasedAsset(bundleName, asset);
             }
+        }
+    }
+
+    private debugLogReleasedAsset(bundleName: string, asset: Asset) {
+        if (asset.refCount == 0) {
+            let path = this.getAssetPath(bundleName, asset.uuid);
+            let content: string = "";
+            if (asset instanceof JsonAsset) {
+                content = "【释放资源】Json【路径】" + path;
+            }
+            else if (asset instanceof Prefab) {
+                content = "【释放资源】Prefab【路径】" + path;
+            }
+            else if (asset instanceof SpriteFrame) {
+                content = "【释放资源】SpriteFrame【路径】" + path;
+            }
+            else if (asset instanceof Texture2D) {
+                content = "【释放资源】Texture2D【路径】" + path;
+            }
+            else if (asset instanceof ImageAsset) {
+                content = "【释放资源】ImageAsset【路径】" + path;
+            }
+            else if (asset instanceof AudioClip) {
+                content = "【释放资源】AudioClip【路径】" + path;
+            }
+            else if (asset instanceof AnimationClip) {
+                content = "【释放资源】AnimationClip【路径】" + path;
+            }
+            else if (asset instanceof Font) {
+                content = "【释放资源】Font【路径】" + path;
+            }
+            else if (asset instanceof Material) {
+                content = "【释放资源】Material【路径】" + path;
+            }
+            else if (asset instanceof Mesh) {
+                content = "【释放资源】Mesh【路径】" + path;
+            }
+            else if (asset instanceof sp.SkeletonData) {
+                content = "【释放资源】Spine【路径】" + path;
+            }
+            else {
+                content = "【释放资源】未知【路径】" + path;
+            }
+            console.log(content);
         }
     }
 
@@ -481,8 +531,7 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
             }
             // 自动加载资源包
             else {
-                const v = this.cdn ? this.bundles.get(args.bundle) : "";
-                bundle = await this.loadBundle(args.bundle, v);
+                bundle = await this.loadBundle(args.bundle);
                 if (bundle) this.loadByBundleAndArgs(bundle, args);
             }
         }
@@ -495,7 +544,7 @@ oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
     /** 打印缓存中所有资源信息 */
     dump() {
         assetManager.assets.forEach((value: Asset, key: string) => {
-            console.log(assetManager.assets.get(key));
+            console.log(`引用数量:${value.refCount}`, assetManager.assets.get(key));
         })
         console.log(`当前资源总数:${assetManager.assets.count}`);
     }

@@ -22,14 +22,14 @@ import { GameManager } from "./game/GameManager";
 import { LayerManager } from "./gui/layer/LayerManager";
 
 /** 框架版本号 */
-export var version: string = "2.0.0.20241030";
+export var version: string = "2.0.0.20250514";
 
 /** 框架核心模块访问入口 */
 export class oops {
     /** ----------核心模块---------- */
 
     /** 日志管理 */
-    static log = Logger;
+    static log = Logger.instance;
     /** 游戏配置 */
     static config = new Config();
     /** 本地存储 */

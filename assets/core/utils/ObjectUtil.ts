@@ -60,4 +60,25 @@ export class ObjectUtil {
     static copy(target: object): object {
         return JSON.parse(JSON.stringify(target));
     }
+
+    /**
+     * @function 检测是否为非法对象，比如"",null, undefined, NaN, [], {}
+     * @param {any} obj 任意基础数据对象，如：number、string、array、object等
+     * @returns boolean 非法为trre, 否则为false
+     */
+    static isIllegalObject(obj: any): boolean {
+        // 检查是否为空或未定义
+        if (obj == null || obj == undefined) return true;
+        // 检查是否是特殊值
+        if (obj === Infinity || obj === -Infinity) return true;
+        // 检测是否包含空格的字符串
+        if (typeof obj === "string" && obj.trim() === "") return true;
+        // 检查是否是无效的数字
+        if (Number.isNaN(obj)) return true;
+        // 检查是否是空数组
+        if (Array.isArray(obj) && obj.length <= 0) return true;
+        // 检查是否是空对象
+        if (typeof (obj) == "object" && Object.keys(obj).length <= 0) return true;
+        return false;
+    }
 }

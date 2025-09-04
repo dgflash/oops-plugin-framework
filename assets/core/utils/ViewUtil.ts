@@ -20,8 +20,11 @@ export class ViewUtil {
         let items = parent.children;
         for (let i = 0; i < items.length; i++) {
             let _node = items[i];
-            if (_node.name.indexOf(" ") < 0) {
-                map.set(_node.name, _node);
+            if (_node.name.length > 0) {
+                if (map.has(_node.name))
+                    console.error(`使用ViewUtil.nodeTreeInfoLite方法时发现重复的节点名称【${_node.name}】`);
+                else
+                    map.set(_node.name, _node);
             }
             ViewUtil.nodeTreeInfoLite(_node, map);
         }

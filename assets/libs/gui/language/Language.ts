@@ -73,7 +73,7 @@ export class LanguageManager {
         }
 
         this.loadLanguageAssets(language, (lang: string) => {
-            Logger.logConfig(`当前语言为【${language}】`);
+            Logger.instance.logConfig(`当前语言为【${language}】`);
             const oldLanguage = LanguageData.current;
             LanguageData.current = language;
             this._languagePack.updateLanguage(language);

@@ -4,16 +4,14 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 13:44:12
  */
-import { BlockInputEvents, Layers, Node, Widget, instantiate } from "cc";
+import { BlockInputEvents, Node, instantiate } from "cc";
+import { EDITOR } from "cc/env";
 import { ViewUtil } from "../../utils/ViewUtil";
+import { PromptResType } from "../GuiEnum";
 import { Notify } from "../prompt/Notify";
+import { LayerHelper } from "./LayerHelper";
 
-const ToastPrefabPath: string = 'common/prefab/notify';
-const WaitPrefabPath: string = 'common/prefab/wait';
-
-/*
- * 滚动消息提示层
- */
+/* 滚动消息提示层 */
 export class LayerNotify extends Node {
     private black!: BlockInputEvents;
     /** 等待提示资源 */
@@ -25,24 +23,24 @@ export class LayerNotify extends Node {
 
     constructor(name: string) {
         super(name);
+        LayerHelper.setFullScreen(this);
 
-        const widget: Widget = this.addComponent(Widget);
-        widget.isAlignLeft = widget.isAlignRight = widget.isAlignTop = widget.isAlignBottom = true;
-        widget.left = widget.right = widget.top = widget.bottom = 0;
-        widget.alignMode = 2;
-        widget.enabled = true;
-        this.init();
-    }
-
-    private init() {
-        this.layer = Layers.Enum.UI_2D;
         this.black = this.addComponent(BlockInputEvents);
         this.black.enabled = false;
     }
 
     /** 打开等待提示 */
-    waitOpen() {
-        if (this.wait == null) this.wait = ViewUtil.createPrefabNode(WaitPrefabPath);
+    async waitOpen() {
+        if (this.wait == null) {
+            // 兼容编辑器预览模式
+            if (EDITOR) {
+                this.wait = await ViewUtil.createPrefabNodeAsync(PromptResType.Wait);
+            }
+            else {
+                this.wait = ViewUtil.createPrefabNode(PromptResType.Wait);
+            }
+        }
+
         if (this.wait.parent == null) {
             this.wait.parent = this;
             this.black.enabled = true;
@@ -62,9 +60,15 @@ export class LayerNotify extends Node {
      * @param content 文本表示
      * @param useI18n 是否使用多语言
      */
-    toast(content: string, useI18n: boolean) {
+    async toast(content: string, useI18n: boolean) {
         if (this.notify == null) {
-            this.notify = ViewUtil.createPrefabNode(ToastPrefabPath);
+            // 兼容编辑器预览模式
+            if (EDITOR) {
+                this.notify = await ViewUtil.createPrefabNodeAsync(PromptResType.Toast);
+            }
+            else {
+                this.notify = ViewUtil.createPrefabNode(PromptResType.Toast);
+            }
             this.notifyItem = this.notify.children[0];
             this.notifyItem.parent = null;
         }
