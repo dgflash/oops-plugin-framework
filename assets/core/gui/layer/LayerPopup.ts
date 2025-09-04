@@ -25,38 +25,36 @@ export class LayerPopUp extends LayerUI {
     }
 
     private onChildAdded(child: Node) {
-        if (this.mask) {
-            this.mask.setSiblingIndex(this.children.length - 2);
-        }
+        if (this.mask) this.mask.setSiblingIndex(this.children.length - 2);
     }
 
     private onChildRemoved(child: Node) {
-        if (this.mask) {
-            this.mask.setSiblingIndex(this.children.length - 2);
-        }
+        if (this.mask) this.mask.setSiblingIndex(this.children.length - 2);
     }
 
-    protected async showUi(uip: UIParams): Promise<boolean> {
-        const r = await super.showUi(uip);
-        if (r) {
-            // 界面加载完成显示时，启动触摸非窗口区域关闭
-            this.openVacancyRemove(uip.config);
+    protected showUi(uip: UIParams): Promise<boolean> {
+        return new Promise(async (resolve) => {
+            const r = await super.showUi(uip);
+            if (r) {
+                // 界面加载完成显示时，启动触摸非窗口区域关闭
+                this.openVacancyRemove(uip.config);
 
-            // 界面加载完成显示时，层级事件阻挡
-            this.black.enabled = true;
-        }
-        return r;
+                // 界面加载完成显示时，层级事件阻挡
+                this.black.enabled = true;
+            }
+            resolve(r);
+        });
     }
 
     protected onCloseWindow(uip: UIParams) {
         super.onCloseWindow(uip);
 
         // 界面关闭后，关闭触摸事件阻挡、关闭触摸非窗口区域关闭、关闭遮罩
-        this.setBlackDisable();
+        this.closeUI();
     }
 
     /** 设置触摸事件阻挡 */
-    protected setBlackDisable() {
+    protected closeUI() {
         // 所有弹窗关闭后，关闭事件阻挡功能
         if (this.ui_nodes.size == 0) {
             if (this.black) this.black.enabled = false;
@@ -77,9 +75,7 @@ export class LayerPopUp extends LayerUI {
             }
         }
 
-        if (flag) {
-            this.mask.parent = null;
-        }
+        if (flag) this.mask.parent = null;
     }
 
     /** 启动触摸非窗口区域关闭 */
@@ -93,19 +89,7 @@ export class LayerPopUp extends LayerUI {
             this.black.enabled = false;
         }
 
-        if (config.mask) {
-            this.mask.parent = this;
-        }
-    }
-
-    /** 触摸非窗口区域关闭 */
-    private onTouchEnd(event: EventTouch) {
-        if (this.ui_nodes.size > 0) {
-            let vp = this.ui_nodes.array[this.ui_nodes.size - 1];
-            if (vp.valid && vp.config.vacancy) {
-                this.remove(vp.config.prefab, vp.config.destroy);
-            }
-        }
+        if (config.mask) this.mask.parent = this;
     }
 
     /** 关闭触摸非窗口区域关闭 */
@@ -123,10 +107,18 @@ export class LayerPopUp extends LayerUI {
         }
     }
 
+    /** 触摸非窗口区域关闭 */
+    private onTouchEnd(event: EventTouch) {
+        if (this.ui_nodes.size > 0) {
+            let vp = this.ui_nodes.array[this.ui_nodes.size - 1];
+            if (vp.valid && vp.config.vacancy) {
+                this.remove(vp.config.prefab, vp.config.destroy);
+            }
+        }
+    }
+
     clear(isDestroy: boolean) {
         super.clear(isDestroy)
-        if (this.black) this.black.enabled = false;
-        this.closeVacancyRemove();
-        this.closeMask();
+        this.closeUI();
     }
 }

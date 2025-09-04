@@ -65,7 +65,7 @@ export class LayerDialog extends LayerPopUp {
         setTimeout(this.next.bind(this), 0);
     }
 
-    protected setBlackDisable() {
+    protected closeUI() {
         if (this.params.length == 0) {
             this.black.enabled = false;
             this.closeVacancyRemove();
