@@ -29,7 +29,6 @@ export class PlatformUtil {
     static async copyText(text: string) {
         if (sys.isNative) {
             native.copyTextToClipboard(text);
-
         }
         else {
             await navigator.clipboard.writeText(text)
