@@ -146,16 +146,16 @@ export class StringUtil {
 
     /**
      * 是否为空
-     * @param str
+     * @param str 字符串
      */
-    public static IsEmpty(str: string): boolean {
+    static isEmpty(str: string): boolean {
         return str == null || str == undefined || str.length == 0;
     }
 
     /**
      * 参数替换
-     * @param  str
-     * @param  rest
+     * @param  str  字符串
+     * @param  rest 参数
      *
      * @example
      *
@@ -164,7 +164,7 @@ export class StringUtil {
      *
      * "here is some info '15.4' and true"
      */
-    public static substitute(str: string, ...rest: any[]): string {
+    static substitute(str: string, ...rest: any[]): string {
         if (str == null) return '';
 
         let len: number = rest.length;
