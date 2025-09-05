@@ -67,9 +67,7 @@ export class LayerDialog extends LayerPopUp {
 
     protected closeUI() {
         if (this.params.length == 0) {
-            this.black.enabled = false;
-            this.closeVacancyRemove();
-            this.closeMask()
+            super.closeUI();
         }
     }
 
