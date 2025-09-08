@@ -4,18 +4,22 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-02-14 14:27:22
  */
-
 import { oops } from "../../core/Oops";
+
+export enum GameConfigCustomType {
+    /** 开发环境 */
+    Dev = "dev",
+    /** 测试环境 */
+    Test = "test",
+    /** 生产环境 */
+    Prod = "prod",
+}
 
 /* 游戏配置解析，对应 resources/config/config.json 配置 */
 export class GameConfig {
     /** 客户端版本号配置 */
     get version(): string {
-        return this._data["config"]["version"];
-    }
-    /** 包名 */
-    get package(): string {
-        return this._data["config"]["package"];
+        return this._data.config.version;
     }
     /** 游戏每秒传输帧数 */
     get frameRate(): number {
@@ -55,21 +59,9 @@ export class GameConfig {
         return this._data.language.default || "zh";
     }
 
-    /** 是否启用远程资源 */
-    get bundleEnable(): string {
-        return this._data.bundle.enable;
-    }
-    /** 远程资源服务器地址 */
-    get bundleServer(): string {
-        return this._data.bundle.server;
-    }
     /** 远程资源名 */
     get bundleDefault(): string {
         return this._data.bundle.default;
-    }
-    /** 远程所有资源包配置 */
-    get bundlePackages(): string {
-        return this._data.bundle.packages;
     }
 
     /** 加载界面资源超时提示 */
@@ -82,7 +74,7 @@ export class GameConfig {
         return this._data.config.mobileSafeArea || false;
     }
 
-    private readonly _data: any = null;
+    private _data: any = null;
     /** 游戏配置数据 */
     get data(): any {
         return this._data;
@@ -92,5 +84,20 @@ export class GameConfig {
         this._data = Object.freeze(config.json);
 
         oops.log.logConfig(this._data, "游戏配置");
+    }
+
+    private _customType: GameConfigCustomType = GameConfigCustomType.Dev;
+
+    /**
+     * 设置自定义游戏参数配置类型
+     * @param type 
+     */
+    setCustomType(type: GameConfigCustomType) {
+        this._customType = type;
+    }
+
+    /** 获取游戏自定义配置 */
+    get custom(): any {
+        return this.data.custom[this._customType];
     }
 }
