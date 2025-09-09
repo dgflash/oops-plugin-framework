@@ -18,6 +18,7 @@ export class ModuleUtil {
      * @param ent      模块实体
      * @param ctor     界面逻辑组件
      * @param uiArgs   界面参数
+     * @param anim     界面打开与关闭动画
      * @returns 界面节点
      */
     static addGui<T extends CCVMParentComp | CCComp>(ent: ecs.Entity, ctor: ECSCtor<T>, uiArgs?: any, anim?: UICallbacks): Promise<Node | null> {
@@ -50,8 +51,7 @@ export class ModuleUtil {
      * 业务实体上移除界面组件
      * @param ent            模块实体
      * @param ctor           界面逻辑组件
-     * @param isDestroy      是否释放界面缓存（默认为释放界面缓存）
-     * @param onRemoved      窗口关闭完成事件
+     * @param params         界面关闭参数
      */
     static removeGui(ent: ecs.Entity, ctor: CompType<ecs.IComp>, params?: UIRemove) {
         if (params == null) {
