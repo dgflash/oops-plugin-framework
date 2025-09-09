@@ -22,7 +22,7 @@ export namespace gui {
         configs[key] = config;
     }
 
-    /** 获取所有界面组件配置 */
+    /** 初始化界面组件配置 */
     export function initConfigs(uicm: UIConfigMap) {
         for (const key in uicm) {
             configs[key] = uicm[key];

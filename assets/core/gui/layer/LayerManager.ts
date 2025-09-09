@@ -1,10 +1,11 @@
-import { Camera, Layers, Node, ResolutionPolicy, SafeArea, Widget, screen, view, warn } from "cc";
+import { Camera, Node, ResolutionPolicy, SafeArea, screen, view, warn } from "cc";
 import { resLoader } from "../../common/loader/ResLoader";
 import { oops } from "../../Oops";
 import { gui } from "../Gui";
 import { LayerDialog } from "./LayerDialog";
 import { LayerCustomType, LayerTypeCls, UIConfigMap, Uiid } from "./LayerEnum";
 import { LayerGame } from "./LayerGame";
+import { LayerHelper } from "./LayerHelper";
 import { LayerNotify } from "./LayerNotify";
 import { LayerPopUp } from "./LayerPopup";
 import { LayerUI } from "./LayerUI";
@@ -31,8 +32,6 @@ export class LayerManager {
 
     /** 消息提示控制器，请使用show方法来显示 */
     private notify!: LayerNotify;
-    /** UI配置 */
-    // private configs: UIConfigMap = {};
     /** 界面层集合 - 无自定义类型 */
     private uiLayers: Map<string, LayerUI> = new Map();
     /** 界面层组件集合 */
@@ -182,17 +181,14 @@ export class LayerManager {
         if (typeof uiid === 'object') {
             if (uiid.bundle == null) uiid.bundle = resLoader.defaultBundleName;
             key = uiid.bundle + "_" + uiid.prefab;
-            // config = this.configs[key];
             config = gui.getConfig(key);
             if (config == null) {
                 config = uiid;
-                // this.configs[key] = uiid;
                 gui.setConfig(key, uiid);
             }
         }
         else {
             key = uiid.toString();
-            // config = this.configs[uiid];
             config = gui.getConfig(key);
             if (config == null) {
                 console.error(`打开编号为【${uiid}】的界面失败，配置信息不存在`);
@@ -280,7 +276,6 @@ export class LayerManager {
             if (comp && comp.params) {
                 // 释放显示的界面
                 if (node.parent) {
-                    // let uiid = this.configs[comp.params.uiid];
                     let uiid = gui.getConfig(comp.params.uiid);
                     this.remove(uiid, isDestroy);
                 }
@@ -387,12 +382,7 @@ export class LayerManager {
 
     private create_node(name: string) {
         const node = new Node(name);
-        node.layer = Layers.Enum.UI_2D;
-        const w: Widget = node.addComponent(Widget);
-        w.isAlignLeft = w.isAlignRight = w.isAlignTop = w.isAlignBottom = true;
-        w.left = w.right = w.top = w.bottom = 0;
-        w.alignMode = 2;
-        w.enabled = true;
+        LayerHelper.setFullScreen(node);
         return node;
     }
 }
