@@ -24,7 +24,7 @@ export class LayerUIElement extends Component {
     /** 界面关闭回调 - 包括关闭动画播放完（辅助框架内存业务流程使用） */
     private onCloseWindow: Function = null!;
 
-    /** 窗口添加 */
+    /** 添加界面且界面设置到父节点之前 */
     add(): Promise<boolean> {
         return new Promise(async (resolve, reject) => {
             // 触发窗口组件上添加到父节点后的事件

@@ -58,7 +58,7 @@ export abstract class CCVMParentComp extends VMParent implements ecs.IComp {
     remove(params?: UIRemove) {
         const cct = ECSModel.compCtors[this.tid];
         if (this.ent) {
-            ModuleUtil.remove(this.ent, cct, params);
+            ModuleUtil.removeGui(this.ent, cct, params);
         }
         else {
             console.error(`组件 ${this.name} 移除失败，实体不存在`);
