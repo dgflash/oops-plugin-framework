@@ -153,7 +153,7 @@ export namespace ecs {
                     ECSModel.compAddOrRemove.set(ctor.tid, []);
                 }
                 else {
-                    throw new Error(`重复注册组件： ${name}.`);
+                    throw new Error(`ECS 组件重复注册: ${name}.`);
                 }
             }
         }

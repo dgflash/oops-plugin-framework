@@ -1,7 +1,7 @@
 import { UIConfig } from "./UIConfig";
 
 /** 界面编号 */
-export type Uiid = number | string | UIConfig;
+export type Uiid = number | string | UIConfig | Function;
 /** 界面配置集合 */
 export type UIConfigMap = { [key: string]: UIConfig }
 

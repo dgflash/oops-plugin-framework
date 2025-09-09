@@ -45,7 +45,12 @@ export abstract class CCComp extends GameComponent implements ecs.IComp {
     /** 从父节点移除自己 */
     remove(params?: UIRemove) {
         const cct = ECSModel.compCtors[this.tid];
-        ModuleUtil.remove(this.ent, cct, params);
+        if (this.ent) {
+            ModuleUtil.remove(this.ent, cct, params);
+        }
+        else {
+            console.error(`组件 ${this.name} 移除失败，实体不存在`);
+        }
     }
 
     abstract reset(): void;

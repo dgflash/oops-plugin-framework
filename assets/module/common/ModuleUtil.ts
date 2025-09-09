@@ -1,6 +1,7 @@
 import { Node, __private } from "cc";
 import { oops } from "../../core/Oops";
 import { resLoader } from "../../core/common/loader/ResLoader";
+import { gui } from "../../core/gui/Gui";
 import { Uiid } from "../../core/gui/layer/LayerEnum";
 import { LayerUIElement, UICallbacks, UIRemove } from "../../core/gui/layer/LayerUIElement";
 import { ViewUtil } from "../../core/utils/ViewUtil";
@@ -33,7 +34,7 @@ export class ModuleUtil {
             };
 
             //@ts-ignore
-            const key = ctor.oopsGuiKey;
+            const key = ctor[gui.internal.GUI_KEY];
             if (key) {
                 oops.gui.open(key, uiArgs, uic);
             }
@@ -59,7 +60,7 @@ export class ModuleUtil {
         }
 
         //@ts-ignore
-        const key = ctor.oopsGuiKey;
+        const key = ctor[gui.internal.GUI_KEY];
         if (key) {
             const node = oops.gui.get(key);
             if (node == null) {

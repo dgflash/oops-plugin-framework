@@ -135,11 +135,9 @@ export class LayerManager {
     /**
      * 初始化所有UI的配置对象
      * @param configs 配置对象
-     * @deprecated 后续将界面配置通过界面视图组件注册，使用gui.register注册每一个界面 
      */
     init(configs: UIConfigMap): void {
-        // this.configs = configs;
-        gui.initConfigs(configs);
+        gui.internal.initConfigs(configs);
     }
 
     /**
@@ -177,19 +175,26 @@ export class LayerManager {
         let key = "";
         let config: UIConfig = null!;
 
-        // 确定 key 和 config
+        // 界面配置
         if (typeof uiid === 'object') {
             if (uiid.bundle == null) uiid.bundle = resLoader.defaultBundleName;
             key = uiid.bundle + "_" + uiid.prefab;
-            config = gui.getConfig(key);
+            config = gui.internal.getConfig(key);
             if (config == null) {
                 config = uiid;
-                gui.setConfig(key, uiid);
+                gui.internal.setConfig(key, uiid);
             }
         }
+        // 界面对象 - 配合gui.register使用
+        else if (uiid instanceof Function) {
+            //@ts-ignore
+            key = uiid[gui.internal.GUI_KEY];
+            config = gui.internal.getConfig(key);
+        }
+        // 界面唯一标记
         else {
             key = uiid.toString();
-            config = gui.getConfig(key);
+            config = gui.internal.getConfig(key);
             if (config == null) {
                 console.error(`打开编号为【${uiid}】的界面失败，配置信息不存在`);
             }
@@ -276,7 +281,7 @@ export class LayerManager {
             if (comp && comp.params) {
                 // 释放显示的界面
                 if (node.parent) {
-                    let uiid = gui.getConfig(comp.params.uiid);
+                    let uiid = gui.internal.getConfig(comp.params.uiid);
                     this.remove(uiid, isDestroy);
                 }
                 // 释放缓存中的界面
