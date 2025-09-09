@@ -42,6 +42,7 @@ export namespace ecs {
     export interface IComp {
         canRecycle: boolean;
         ent: Entity;
+        tid: number;
 
         reset(): void;
     }
@@ -145,12 +146,9 @@ export namespace ecs {
                 if (ctor.tid === -1) {
                     ctor.tid = ECSModel.compTid++;
                     ctor.compName = name;
+                    ECSModel.compCtors.push(ctor);              // 注册不同类型的组件
                     if (canNew) {
-                        ECSModel.compCtors.push(ctor);              // 注册不同类型的组件
                         ECSModel.compPools.set(ctor.tid, []);
-                    }
-                    else {
-                        ECSModel.compCtors.push(null!);
                     }
                     ECSModel.compAddOrRemove.set(ctor.tid, []);
                 }

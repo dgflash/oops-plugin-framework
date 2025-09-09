@@ -5,11 +5,11 @@
  * @LastEditTime: 2022-09-06 17:22:05
  */
 
-import { _decorator } from 'cc';
+import { UIRemove } from '../../core/gui/layer/LayerUIElement';
 import { ecs } from '../../libs/ecs/ECS';
+import { ECSModel } from '../../libs/ecs/ECSModel';
 import VMParent from '../../libs/model-view/VMParent';
-
-const { ccclass, property } = _decorator;
+import { ModuleUtil } from './ModuleUtil';
 
 /** 
  * 支持 MVVM 功能的游戏显示对象组件
@@ -46,13 +46,19 @@ export class LoadingViewComp extends CCVMParentComp {
     }
 }
  */
-@ccclass('CCVMParentComp')
 export abstract class CCVMParentComp extends VMParent implements ecs.IComp {
     static tid: number = -1;
     static compName: string;
 
     canRecycle!: boolean;
     ent!: ecs.Entity;
+    tid: number = -1;
+
+    /** 从父节点移除自己 */
+    remove(params?: UIRemove) {
+        const cct = ECSModel.compCtors[this.tid];
+        ModuleUtil.remove(this.ent, cct, params);
+    }
 
     abstract reset(): void;
 }

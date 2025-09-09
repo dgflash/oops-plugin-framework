@@ -91,7 +91,7 @@ export class LayerUIElement extends Component {
             // 释放界面相关资源
             oops.res.release(uip.config.prefab, uip.config.bundle);
 
-            oops.log.logView(`【界面管理】释放【${uip.config.prefab}】界面资源`);
+            // oops.log.logView(`【界面管理】释放【${uip.config.prefab}】界面资源`);
         }
         else {
             this.node.removeFromParent();
@@ -132,6 +132,14 @@ export class UIParams {
     valid: boolean = true;
     /** 界面根节点 */
     node: Node = null!;
+}
+
+/** 界面关闭参数 */
+export interface UIRemove {
+    /** 关闭是否释放资源内存 */
+    isDestroy?: boolean;
+    /** 界面动画播放完关闭事件 */
+    onRemoved?: Function;
 }
 
 /*** 界面回调参数对象定义 */

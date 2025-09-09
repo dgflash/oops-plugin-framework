@@ -5,11 +5,11 @@
  * @LastEditTime: 2022-09-06 17:20:51
  */
 
-import { _decorator } from 'cc';
-import { GameComponent } from './GameComponent';
+import { UIRemove } from '../../core/gui/layer/LayerUIElement';
 import { ecs } from '../../libs/ecs/ECS';
-
-const { ccclass, property } = _decorator;
+import { ECSModel } from '../../libs/ecs/ECSModel';
+import { GameComponent } from './GameComponent';
+import { ModuleUtil } from './ModuleUtil';
 
 /** 
  * 游戏显示对象组件
@@ -34,13 +34,19 @@ export class RoleViewComp extends CCComp {
     }
 }
  */
-@ccclass('CCComp')
 export abstract class CCComp extends GameComponent implements ecs.IComp {
     static tid: number = -1;
     static compName: string;
 
     canRecycle!: boolean;
     ent!: ecs.Entity;
+    tid: number = -1;
+
+    /** 从父节点移除自己 */
+    remove(params?: UIRemove) {
+        const cct = ECSModel.compCtors[this.tid];
+        ModuleUtil.remove(this.ent, cct, params);
+    }
 
     abstract reset(): void;
 }

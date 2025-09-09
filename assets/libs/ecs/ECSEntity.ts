@@ -154,6 +154,7 @@ export class ECSEntity {
             // @ts-ignore
             this[ctor.compName] = comp;
             this.compTid2Ctor.set(compTid, ctor);
+            comp.tid = compTid;
             comp.ent = this;
             // 广播实体添加组件的消息
             broadcastCompAddOrRemove(this, compTid);
@@ -173,9 +174,11 @@ export class ECSEntity {
             this[tmpCtor.compName] = ctor;
             this.compTid2Ctor.set(compTid, tmpCtor);
             //@ts-ignore
-            ctor.ent = this;
+            ctor.tid = compTid;
             //@ts-ignore
             ctor.canRecycle = false;
+            //@ts-ignore
+            ctor.ent = this;
             broadcastCompAddOrRemove(this, compTid);
 
             return this;

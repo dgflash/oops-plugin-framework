@@ -6,6 +6,7 @@
  */
 import { oops } from "../../core/Oops";
 
+/** 游戏自定义参数分组类型 */
 export enum GameConfigCustomType {
     /** 开发环境 */
     Dev = "dev",

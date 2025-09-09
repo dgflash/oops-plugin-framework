@@ -1,14 +1,15 @@
 import { Camera, Layers, Node, ResolutionPolicy, SafeArea, Widget, screen, view, warn } from "cc";
 import { resLoader } from "../../common/loader/ResLoader";
 import { oops } from "../../Oops";
+import { gui } from "../Gui";
 import { LayerDialog } from "./LayerDialog";
 import { LayerCustomType, LayerTypeCls, UIConfigMap, Uiid } from "./LayerEnum";
+import { LayerGame } from "./LayerGame";
 import { LayerNotify } from "./LayerNotify";
 import { LayerPopUp } from "./LayerPopup";
 import { LayerUI } from "./LayerUI";
 import { LayerUIElement, UICallbacks } from "./LayerUIElement";
 import { UIConfig } from "./UIConfig";
-import { LayerGame } from "./LayerGame";
 
 /** 界面层级管理器 */
 export class LayerManager {
@@ -31,7 +32,7 @@ export class LayerManager {
     /** 消息提示控制器，请使用show方法来显示 */
     private notify!: LayerNotify;
     /** UI配置 */
-    private configs: UIConfigMap = {};
+    // private configs: UIConfigMap = {};
     /** 界面层集合 - 无自定义类型 */
     private uiLayers: Map<string, LayerUI> = new Map();
     /** 界面层组件集合 */
@@ -135,9 +136,11 @@ export class LayerManager {
     /**
      * 初始化所有UI的配置对象
      * @param configs 配置对象
+     * @deprecated 后续将界面配置通过界面视图组件注册，使用gui.register注册每一个界面 
      */
     init(configs: UIConfigMap): void {
-        this.configs = configs;
+        // this.configs = configs;
+        gui.initConfigs(configs);
     }
 
     /**
@@ -179,15 +182,18 @@ export class LayerManager {
         if (typeof uiid === 'object') {
             if (uiid.bundle == null) uiid.bundle = resLoader.defaultBundleName;
             key = uiid.bundle + "_" + uiid.prefab;
-            config = this.configs[key];
+            // config = this.configs[key];
+            config = gui.getConfig(key);
             if (config == null) {
                 config = uiid;
-                this.configs[key] = uiid;
+                // this.configs[key] = uiid;
+                gui.setConfig(key, uiid);
             }
         }
         else {
             key = uiid.toString();
-            config = this.configs[uiid];
+            // config = this.configs[uiid];
+            config = gui.getConfig(key);
             if (config == null) {
                 console.error(`打开编号为【${uiid}】的界面失败，配置信息不存在`);
             }
@@ -274,7 +280,8 @@ export class LayerManager {
             if (comp && comp.params) {
                 // 释放显示的界面
                 if (node.parent) {
-                    let uiid = this.configs[comp.params.uiid];
+                    // let uiid = this.configs[comp.params.uiid];
+                    let uiid = gui.getConfig(comp.params.uiid);
                     this.remove(uiid, isDestroy);
                 }
                 // 释放缓存中的界面
