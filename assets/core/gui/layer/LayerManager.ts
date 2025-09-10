@@ -9,7 +9,7 @@ import { LayerHelper } from "./LayerHelper";
 import { LayerNotify } from "./LayerNotify";
 import { LayerPopUp } from "./LayerPopup";
 import { LayerUI } from "./LayerUI";
-import { LayerUIElement, UICallbacks } from "./LayerUIElement";
+import { LayerUIElement, UIParam } from "./LayerUIElement";
 import { UIConfig } from "./UIConfig";
 
 /** 界面层级管理器 */
@@ -171,13 +171,13 @@ export class LayerManager {
         this.notify.waitClose();
     }
 
+    /** 获取界面信息 */
     private getInfo(uiid: Uiid): { key: string; config: UIConfig } {
         let key = "";
         let config: UIConfig = null!;
 
         // 界面配置
         if (typeof uiid === 'object') {
-            if (uiid.bundle == null) uiid.bundle = resLoader.defaultBundleName;
             key = uiid.bundle + "_" + uiid.prefab;
             config = gui.internal.getConfig(key);
             if (config == null) {
@@ -205,8 +205,7 @@ export class LayerManager {
     /**
      * 同步打开一个窗口
      * @param uiid          窗口唯一编号
-     * @param uiArgs        窗口参数
-     * @param callbacks     回调对象
+     * @param param         窗口参数
      * @example
     var uic: UICallbacks = {
         onAdded: (node: Node, params: any) => {
@@ -218,11 +217,26 @@ export class LayerManager {
     };
     oops.gui.open(UIID.Loading, null, uic);
      */
-    open(uiid: Uiid, uiArgs: any = null, callbacks?: UICallbacks): void {
+    open(uiid: Uiid, param?: UIParam): Promise<Node> {
+        return new Promise<Node>(async (resolve, reject) => {
+            let info = this.getInfo(uiid);
+            let layer = this.uiLayers.get(info.config.layer);
+            if (layer) {
+                let node = await layer.add(info.key, info.config, param);
+                resolve(node);
+            }
+            else {
+                console.error(`打开编号为【${uiid}】的界面失败，界面层不存在`);
+            }
+        });
+    }
+
+    /** 显示指定界面 */
+    show(uiid: Uiid) {
         let info = this.getInfo(uiid);
         let layer = this.uiLayers.get(info.config.layer);
         if (layer) {
-            layer.add(info.key, info.config, uiArgs, callbacks);
+            layer.show(info.config.prefab);
         }
         else {
             console.error(`打开编号为【${uiid}】的界面失败，界面层不存在`);
@@ -230,38 +244,16 @@ export class LayerManager {
     }
 
     /**
-     * 异步打开一个窗口
-     * @param uiid          窗口唯一编号
-     * @param uiArgs        窗口参数
-     * @example 
-     * var node = await oops.gui.openAsync(UIID.Loading);
-     */
-    async openAsync(uiid: Uiid, uiArgs: any = null): Promise<Node | null> {
-        return new Promise<Node | null>((resolve, reject) => {
-            const callbacks: UICallbacks = {
-                onAdded: (node: Node, params: any) => {
-                    resolve(node);
-                },
-                onLoadFailure: () => {
-                    resolve(null);
-                }
-            };
-            this.open(uiid, uiArgs, callbacks);
-        });
-    }
-
-    /**
      * 移除指定标识的窗口
      * @param uiid         窗口唯一标识
-     * @param isDestroy    移除后是否释放（默认释放内存）
      * @example
      * oops.gui.remove(UIID.Loading);
      */
-    remove(uiid: Uiid, isDestroy: boolean = true) {
+    remove(uiid: Uiid) {
         let info = this.getInfo(uiid);
         let layer = this.uiLayers.get(info.config.layer);
         if (layer) {
-            layer.remove(info.config.prefab, isDestroy);
+            layer.remove(info.config.prefab);
         }
         else {
             console.error(`移除编号为【${uiid}】的界面失败，界面层不存在`);
@@ -271,25 +263,24 @@ export class LayerManager {
     /**
      * 通过界面节点移除
      * @param node          窗口节点
-     * @param isDestroy     移除后是否释放资源（默认释放内存）
      * @example
      * oops.gui.removeByNode(cc.Node);
      */
-    removeByNode(node: Node, isDestroy: boolean = true) {
+    removeByNode(node: Node) {
         if (node instanceof Node) {
             let comp = node.getComponent(LayerUIElement);
-            if (comp && comp.params) {
+            if (comp && comp.state) {
                 // 释放显示的界面
                 if (node.parent) {
-                    let uiid = gui.internal.getConfig(comp.params.uiid);
-                    this.remove(uiid, isDestroy);
+                    let uiid = gui.internal.getConfig(comp.state.uiid);
+                    this.remove(uiid);
                 }
                 // 释放缓存中的界面
-                else if (isDestroy) {
-                    let layer = this.uiLayers.get(comp.params.config.layer);
+                else {
+                    let layer = this.uiLayers.get(comp.state.config.layer);
                     if (layer) {
                         // @ts-ignore 注：不对外使用
-                        layer.removeCache(comp.params.config.prefab);
+                        layer.removeCache(comp.state.config.prefab);
                     }
                 }
             }
@@ -303,34 +294,14 @@ export class LayerManager {
     /**
      * 场景替换
      * @param removeUiId  移除场景编号
-     * @param openUiId    新打开场景编号
-     * @param uiArgs      新打开场景参数
+     * @param openUiid    新打开场景编号
+     * @param param       新打开场景参数
      */
-    replace(removeUiId: Uiid, openUiId: Uiid, uiArgs: any = null) {
-        const callbacks: UICallbacks = {
-            onAdded: (node: Node, params: any) => {
-                this.remove(removeUiId);
-            }
-        };
-        this.open(openUiId, uiArgs, callbacks);
-    }
-
-    /**
-     * 异步场景替换
-     * @param removeUiId  移除场景编号
-     * @param openUiId    新打开场景编号
-     * @param uiArgs      新打开场景参数
-     */
-    replaceAsync(removeUiId: Uiid, openUiId: Uiid, uiArgs: any = null): Promise<Node | null> {
-        return new Promise<Node | null>(async (resolve, reject) => {
-            const node = await this.openAsync(openUiId, uiArgs);
-            if (node) {
-                this.remove(removeUiId);
-                resolve(node);
-            }
-            else {
-                resolve(null);
-            }
+    replace(removeUiId: Uiid, openUiid: Uiid, param?: UIParam): Promise<Node> {
+        return new Promise<Node>(async (resolve, reject) => {
+            let node = await this.open(openUiid, param);
+            this.remove(removeUiId);
+            resolve(node);
         });
     }
 

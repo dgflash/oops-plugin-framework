@@ -11,7 +11,7 @@ import { IAudioParams } from "../../core/common/audio/IAudio";
 import { EventDispatcher } from "../../core/common/event/EventDispatcher";
 import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage";
 import { AssetType, CompleteCallback, Paths, ProgressCallback, resLoader } from "../../core/common/loader/ResLoader";
-import { LayerUIElement, UIRemove } from "../../core/gui/layer/LayerUIElement";
+import { LayerUIElement } from "../../core/gui/layer/LayerUIElement";
 import { ViewUtil } from "../../core/utils/ViewUtil";
 
 const { ccclass } = _decorator;
@@ -483,18 +483,10 @@ export class GameComponent extends Component {
     //#endregion
 
     /** 移除自己 */
-    remove(params?: UIRemove) {
-        if (params == null) {
-            params = { isDestroy: true };
-        }
-        else {
-            if (params.isDestroy == null) params.isDestroy = true;
-        }
-
+    remove() {
         const comp = this.node.getComponent(LayerUIElement);
         if (comp) {
-            if (params.onRemoved) comp.onCloseWindowBefore = params.onRemoved;
-            oops.gui.removeByNode(this.node, params.isDestroy);
+            oops.gui.removeByNode(this.node);
         }
     }
 

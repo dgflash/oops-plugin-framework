@@ -5,7 +5,6 @@
  * @LastEditTime: 2022-09-06 17:20:51
  */
 
-import { UIRemove } from '../../core/gui/layer/LayerUIElement';
 import { ecs } from '../../libs/ecs/ECS';
 import { ECSModel } from '../../libs/ecs/ECSModel';
 import { GameComponent } from './GameComponent';
@@ -43,13 +42,13 @@ export abstract class CCComp extends GameComponent implements ecs.IComp {
     tid: number = -1;
 
     /** 从父节点移除自己 */
-    remove(params?: UIRemove) {
+    remove() {
         const cct = ECSModel.compCtors[this.tid];
         if (this.ent) {
-            ModuleUtil.removeGui(this.ent, cct, params);
+            ModuleUtil.removeGui(this.ent, cct);
         }
         else {
-            console.error(`组件 ${this.name} 移除失败，实体不存在`);
+            console.error(`组件 ${this.name} 移除失败，组件未注册`);
         }
     }
 
