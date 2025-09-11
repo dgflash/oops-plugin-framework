@@ -7,11 +7,11 @@
 
 import { ecs } from '../../libs/ecs/ECS';
 import { ECSModel } from '../../libs/ecs/ECSModel';
+import { CCEntity } from './CCEntity';
 import { GameComponent } from './GameComponent';
-import { ModuleUtil } from './ModuleUtil';
 
 /** 
- * 游戏显示对象组件
+ * ECS 游戏显示对象组件
  * 
  * 功能介绍：
  * 1. 对象拥有 cc.Component 组件功能与 ecs.Comp 组件功能
@@ -38,14 +38,14 @@ export abstract class CCComp extends GameComponent implements ecs.IComp {
     static compName: string;
 
     canRecycle!: boolean;
-    ent!: ecs.Entity;
+    ent!: CCEntity;
     tid: number = -1;
 
     /** 从父节点移除自己 */
     remove() {
         const cct = ECSModel.compCtors[this.tid];
         if (this.ent) {
-            ModuleUtil.removeGui(this.ent, cct);
+            this.ent.removeUi(cct);
         }
         else {
             console.error(`组件 ${this.name} 移除失败，组件未注册`);
