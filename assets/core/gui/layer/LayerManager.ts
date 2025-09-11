@@ -215,7 +215,7 @@ export class LayerManager {
                     
         }
     };
-    oops.gui.open(UIID.Loading, null, uic);
+    oops.gui.open(UIID.Loading);
      */
     open(uiid: Uiid, param?: UIParam): Promise<Node> {
         return new Promise<Node>(async (resolve, reject) => {

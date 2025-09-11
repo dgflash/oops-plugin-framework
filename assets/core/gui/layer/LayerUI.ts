@@ -27,6 +27,7 @@ export class LayerUI extends Node {
 
     /**
      * 添加一个预制件节点到层容器中，该方法将返回一个唯一`uuid`来标识该操作节点
+     * @param uiid       窗口唯一标识
      * @param config     界面配置数据
      * @param params     自定义参数
      * @returns ture为成功,false为失败
@@ -40,7 +41,7 @@ export class LayerUI extends Node {
 
             // 检查缓存中是否存界面
             let state = this.initUIConfig(uiid, config, params);
-            await this.load(state, config.bundle);
+            await this.load(state);
             resolve(state.node);
         });
     }
@@ -70,13 +71,13 @@ export class LayerUI extends Node {
      * @param state        显示参数
      * @param bundle     远程资源包名，如果为空就是默认本地资源包
      */
-    protected async load(state: UIState, bundle: string = resLoader.defaultBundleName): Promise<Node> {
+    protected async load(state: UIState): Promise<Node> {
         return new Promise<Node>(async (resolve, reject) => {
             // 加载界面资源超时提示
             let timerId = setTimeout(this.onLoadingTimeoutGui, oops.config.game.loadingTimeoutGui);
             if (state.node == null) {
                 // 优先加载配置的指定资源包中资源，如果没配置则加载默认资源包资源
-                const res = await resLoader.loadAsync(bundle, state.config.prefab, Prefab);
+                const res = await resLoader.loadAsync(state.config.bundle!, state.config.prefab, Prefab);
                 if (res) {
                     state.node = instantiate(res);
 

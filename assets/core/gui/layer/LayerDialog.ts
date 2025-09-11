@@ -36,11 +36,7 @@ export class LayerDialog extends LayerPopUp {
         return new Promise<Node>(async (resolve, reject) => {
             // 控制同一时间只能显示一个模式窗口
             if (this.ui_nodes.size > 0) {
-                this.params.push({
-                    uiid: uiid,
-                    config: config,
-                    params: params
-                });
+                this.params.push({ uiid: uiid, config: config, params: params });
                 resolve(this.current);
             }
             else {
@@ -54,7 +50,7 @@ export class LayerDialog extends LayerPopUp {
     private showDialog(uiid: string, config: UIConfig, param?: UIParam): Promise<Node> {
         return new Promise<Node>(async (resolve, reject) => {
             let state = this.initUIConfig(uiid, config, param);
-            let node = await this.load(state, config.bundle);
+            let node = await this.load(state);
             resolve(node);
         });
     }
