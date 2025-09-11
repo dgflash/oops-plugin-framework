@@ -132,13 +132,13 @@ export class LayerUI extends Node {
     }
 
     /** 窗口关闭事件 */
-    protected uiClose(state: UIState) {
+    protected closeUi(state: UIState) {
         this.ui_nodes.delete(state.config.prefab);
     }
 
     /** 打开窗口失败逻辑 */
     protected failure(state: UIState) {
-        this.uiClose(state);
+        this.closeUi(state);
         this.onOpenFailure && this.onOpenFailure();
     }
 
@@ -177,7 +177,7 @@ export class LayerUI extends Node {
     private removeCache(prefabPath: string) {
         let vp = this.ui_cache.get(prefabPath);
         if (vp) {
-            this.uiClose(vp);
+            this.closeUi(vp);
             this.ui_cache.delete(prefabPath);
             const node = vp.node;
             const comp = node.getComponent(LayerUIElement)!;

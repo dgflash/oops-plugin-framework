@@ -75,7 +75,7 @@ export class LayerUIElement extends Component {
 
         // 关闭动画播放完后，界面移除舞台
         //@ts-ignore
-        this.node.parent.uiClose(this.state);
+        this.node.parent.closeUi(this.state);
 
         // 关闭动画播放完后，界面移除舞台事件
         this.onClose && this.onClose();

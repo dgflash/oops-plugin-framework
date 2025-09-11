@@ -59,8 +59,8 @@ export class LayerDialog extends LayerPopUp {
         });
     }
 
-    protected uiClose(state: UIState) {
-        super.uiClose(state);
+    protected closeUi(state: UIState) {
+        super.closeUi(state);
         setTimeout(this.next.bind(this), 0);
     }
 
