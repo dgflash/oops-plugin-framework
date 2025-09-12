@@ -31,7 +31,7 @@ export interface UIConfig {
     layer: string;
     /** 预制资源相对路径 */
     prefab: string;
-    /** 是否自动施放（默认不自动释放） */
+    /** 是否自动施放（默认自动释放） */
     destroy?: boolean;
 
     /** -----弹窗属性----- */

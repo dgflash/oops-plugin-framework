@@ -162,26 +162,20 @@ export class LayerUI extends Node {
      * @param prefabPath   预制路径
      */
     remove(prefabPath: string): void {
-        let release: boolean = true;
-
-        // 界面移出舞台
         const state = this.ui_nodes.get(prefabPath);
         if (state) {
-            // 优先使用参数中控制的释放条件，如果未传递参数则用配置中的释放条件，默认不缓存关闭的界面
-            release = state.config.destroy !== undefined ? state.config.destroy : true;
+            let release: boolean = state.config.destroy!;
 
             // 不释放界面，缓存起来待下次使用
             if (release === false) this.ui_cache.set(state.config.prefab, state);
 
+            // 界面移出舞台
             const comp = state.node.getComponent(LayerUIElement)!;
             comp.remove(release);
         }
-
-        // 验证是否删除后台缓存界面
-        if (release) this.removeCache(prefabPath);
     }
 
-    /** 删除缓存的界面，当缓存界面被移除舞台时，可通过此方法删除缓存界面 */
+    /** 删除缓存的界面，当调用 remove 移除舞台时，可通过此方法删除缓存界面 */
     removeCache(prefabPath: string) {
         const state = this.ui_cache.get(prefabPath);
         if (state) {

@@ -5,6 +5,7 @@ import { LayerUIElement, UIParam } from "../../core/gui/layer/LayerUIElement";
 import { oops } from "../../core/Oops";
 import { ViewUtil } from "../../core/utils/ViewUtil";
 import { ecs } from "../../libs/ecs/ECS";
+import { ECSEntity } from "../../libs/ecs/ECSEntity";
 import { CompType } from "../../libs/ecs/ECSModel";
 import { CCComp } from "./CCComp";
 import { CCVMParentComp } from "./CCVMParentComp";
@@ -13,6 +14,33 @@ export type ECSCtor<T extends ecs.Comp> = __private.__types_globals__Constructor
 
 /** ECS 游戏模块实体 */
 export class CCEntity extends ecs.Entity {
+    /** 单例子实体 */
+    private singletons: Map<any, ECSEntity> = null!;
+
+    /** 添加单例子实体 */
+    addChildSingleton<T>(cls: any): T {
+        if (this.singletons == null) this.singletons = new Map();
+
+        let entity = cls.create()
+        this.singletons.set(cls, entity);
+        this.addChild(entity);
+        return entity as T;
+    }
+
+    /** 获取单例子实体 */
+    getChildSingleton<T>(cls: any): T {
+        return this.singletons.get(cls) as T;
+    }
+
+    /** 移除单例子实体 */
+    removeChildSingleton(cls: any) {
+        let entity = this.singletons.get(cls);
+        if (entity) {
+            this.singletons.delete(cls);
+            this.removeChild(entity);
+        }
+    }
+
     /**
      * 通过资源内存中获取预制上的组件添加到ECS实体中
      * @param ctor       界面逻辑组件

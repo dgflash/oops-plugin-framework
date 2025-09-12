@@ -81,22 +81,30 @@ export class ECSEntity {
         this._parent = value;
     }
 
-    private _children: Map<number, ECSEntity> | null = null;
-    /** 子实体集合 */
-    get children(): Map<number, ECSEntity> {
-        if (this._children == null) {
-            this._children = new Map<number, ECSEntity>();
-        }
-        return this._children;
+    /** 子实体 */
+    private childs: Map<number, ECSEntity> = null!;
+
+    /** 获取子实体 */
+    getChild<T>(eid: number) {
+        return this.childs.get(eid) as T;
     }
 
     /**
      * 添加子实体
      * @param entity 被添加的实体对象
+     * @returns      子实体的唯一编号, -1表示添加失败
      */
-    addChild(entity: ECSEntity) {
+    addChild(entity: ECSEntity): number {
+        if (this.childs == null) this.childs = new Map<number, ECSEntity>();
+
+        if (this.childs.has(entity.eid)) {
+            console.warn(`子实体${entity.name}已存在`);
+            return -1;
+        }
+
         entity._parent = this;
-        this.children.set(entity.eid, entity);
+        this.childs.set(entity.eid, entity);
+        return entity.eid;
     }
 
     /**
@@ -106,10 +114,10 @@ export class ECSEntity {
      * @returns 
      */
     removeChild(entity: ECSEntity, isDestroy = true) {
-        if (this.children == null) return;
+        if (this.childs == null) return;
 
         entity.parent = null;
-        this.children.delete(entity.eid);
+        this.childs.delete(entity.eid);
         if (isDestroy) entity.destroy();
     }
 
@@ -275,11 +283,11 @@ export class ECSEntity {
         }
 
         // 移除模块上所有子模块
-        if (this._children) {
-            this._children.forEach(e => {
+        if (this.childs) {
+            this.childs.forEach(e => {
                 this.removeChild(e);
             });
-            this._children = null;
+            this.childs = null!;
         }
 
         // 移除实体上所有组件
