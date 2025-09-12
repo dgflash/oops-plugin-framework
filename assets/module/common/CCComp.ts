@@ -38,13 +38,13 @@ export abstract class CCComp extends GameComponent implements ecs.IComp {
     static compName: string;
 
     canRecycle!: boolean;
-    ent!: CCEntity;
+    ent!: ecs.Entity;
     tid: number = -1;
 
     /** 从父节点移除自己 */
     remove() {
         const cct = ECSModel.compCtors[this.tid];
-        if (this.ent) {
+        if (this.ent && this.ent instanceof CCEntity) {
             this.ent.removeUi(cct);
         }
         else {

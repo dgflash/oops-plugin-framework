@@ -11,7 +11,6 @@ import { IAudioParams } from "../../core/common/audio/IAudio";
 import { EventDispatcher } from "../../core/common/event/EventDispatcher";
 import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage";
 import { AssetType, CompleteCallback, Paths, ProgressCallback, resLoader } from "../../core/common/loader/ResLoader";
-import { LayerUIElement } from "../../core/gui/layer/LayerUIElement";
 import { ViewUtil } from "../../core/utils/ViewUtil";
 
 const { ccclass } = _decorator;
@@ -484,10 +483,7 @@ export class GameComponent extends Component {
 
     /** 移除自己 */
     remove() {
-        const comp = this.node.getComponent(LayerUIElement);
-        if (comp) {
-            oops.gui.removeByNode(this.node);
-        }
+        oops.gui.removeByNode(this.node);
     }
 
     protected onDestroy() {
