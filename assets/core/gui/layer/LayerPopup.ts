@@ -18,25 +18,16 @@ export class LayerPopUp extends LayerUI {
     protected mask!: Node;
 
     protected onChildAdded(child: Node) {
-        this.mask.setSiblingIndex(this.children.length - 2);
+        this.mask && this.mask.setSiblingIndex(this.children.length - 2);
     }
 
     protected onChildRemoved(child: Node) {
-        this.mask.setSiblingIndex(this.children.length - 2);
+        this.mask && this.mask.setSiblingIndex(this.children.length - 2);
         super.onChildRemoved(child);
     }
 
     protected uiInit(state: UIState): Promise<boolean> {
         return new Promise(async (resolve) => {
-            // 背景半透明遮罩
-            if (this.mask == null) {
-                this.mask = ViewUtil.createPrefabNode(PromptResType.Mask);
-                this.mask.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
-
-                this.black = this.mask.addComponent(BlockInputEvents);
-                this.black.enabled = false;
-            }
-
             const r = await super.uiInit(state);
             if (r) {
                 // 界面加载完成显示时，启动触摸非窗口区域关闭
@@ -60,7 +51,7 @@ export class LayerPopUp extends LayerUI {
     protected closeBlack() {
         // 所有弹窗关闭后，关闭事件阻挡功能
         if (this.ui_nodes.size == 0) {
-            this.black.enabled = false;
+            if (this.black) this.black.enabled = false;
             this.closeVacancyRemove();
         }
         this.closeMask();

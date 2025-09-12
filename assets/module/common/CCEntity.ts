@@ -44,7 +44,7 @@ export class CCEntity extends ecs.Entity {
                     params.preload = true;
                 }
 
-                let node = await oops.gui.open(key, params);
+                const node = await oops.gui.open(key, params);
                 const comp = node.getComponent(ctor) as ecs.Comp;
                 this.add(comp);
                 oops.gui.show(key);
