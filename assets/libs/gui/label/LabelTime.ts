@@ -1,32 +1,32 @@
 import { Label, _decorator } from "cc";
+import { EDITOR } from "cc/env";
 import { oops } from "../../../core/Oops";
 import { EventMessage } from "../../../core/common/event/EventMessage";
 import { TimeUtil } from "../../../core/utils/TimeUtils";
-import { EDITOR } from "cc/env";
 
 const { ccclass, property, menu } = _decorator;
 
 /** 倒计时标签 */
 @ccclass("LabelTime")
-@menu('OopsFramework/Label/LabelTime （倒计时标签）')
+@menu("OopsFramework/Label/LabelTime （倒计时标签）")
 export default class LabelTime extends Label {
     @property({
-        tooltip: "到计时间总时间（单位秒）"
+        tooltip: "到计时间总时间（单位秒）",
     })
     countDown: number = 1000;
 
     @property({
-        tooltip: "天数数据格式化"
+        tooltip: "天数数据格式化",
     })
     dayFormat: string = "{0} day";
 
     @property({
-        tooltip: "时间格式化"
+        tooltip: "时间格式化",
     })
     timeFormat: string = "{0}:{1}:{2}";
 
     @property({
-        tooltip: "是否有00"
+        tooltip: "是否有00",
     })
     zeroize: boolean = true;
 
@@ -35,9 +35,9 @@ export default class LabelTime extends Label {
     })
     paused: boolean = false;
 
-    private backStartTime: number = 0;      // 进入后台开始时间
-    private dateDisable!: boolean;          // 时间能否由天数显示
-    private result!: string;                // 时间结果字符串
+    private backStartTime: number = 0;  // 进入后台开始时间
+    private dateDisable!: boolean;      // 时间能否由天数显示
+    private result!: string;            // 时间结果字符串
 
     /** 每秒触发事件 */
     onSecond: Function = null!;
@@ -45,10 +45,9 @@ export default class LabelTime extends Label {
     onComplete: Function = null!;
 
     private replace(value: string, ...args: any): string {
-        return value.replace(/\{(\d+)\}/g,
-            function (m, i) {
-                return args[i];
-            });
+        return value.replace(/\{(\d+)\}/g, function (m, i) {
+            return args[i];
+        });
     }
 
     /** 格式化字符串 */
@@ -84,23 +83,15 @@ export default class LabelTime extends Label {
             if (date < 2) {
                 df = df.replace("days", "day");
             }
-            this.result = this.replace(df, date, hours);                      // 如果天大于1，则显示 "1 Day..."
+            this.result = this.replace(df, date, hours); // 如果天大于1，则显示 "1 Day..."
         }
         else {
             hours += date * 24;
             if (this.zeroize) {
-                this.result = this.replace(
-                    this.timeFormat,
-                    this.coverString(hours),
-                    this.coverString(minutes),
-                    this.coverString(seconds));                                            // 否则显示 "01:12:24"
+                this.result = this.replace(this.timeFormat, this.coverString(hours), this.coverString(minutes), this.coverString(seconds)); // 否则显示 "01:12:24"
             }
             else {
-                this.result = this.replace(
-                    this.timeFormat,
-                    hours,
-                    minutes,
-                    seconds);
+                this.result = this.replace(this.timeFormat, hours, minutes, seconds);
             }
         }
         this.string = this.result;
@@ -108,8 +99,7 @@ export default class LabelTime extends Label {
 
     /** 个位数的时间数据将字符串补位 */
     private coverString(value: number) {
-        if (value < 10)
-            return "0" + value;
+        if (value < 10) return "0" + value;
         return value.toString();
     }
 
@@ -123,7 +113,7 @@ export default class LabelTime extends Label {
      * @param second        倒计时时间（单位秒）
      */
     setTime(second: number) {
-        this.countDown = second;                                             // 倒计时，初始化显示字符串
+        this.countDown = second; // 倒计时，初始化显示字符串
         this.timing_end();
         this.timing_start();
         this.format();
@@ -140,13 +130,31 @@ export default class LabelTime extends Label {
         this.format();
     }
 
-    start() {
+    onLoad() {
         if (!EDITOR) {
             oops.message.on(EventMessage.GAME_SHOW, this.onGameShow, this);
             oops.message.on(EventMessage.GAME_HIDE, this.onGameHide, this);
         }
+    }
+
+    start() {
+        if (this.countDown <= 0) return;
         this.timing_start();
         this.format();
+    }
+
+    onEnable() {
+        super.onEnable();
+        if (!EDITOR) {
+            this.onGameShow();
+        }
+    }
+
+    onDisable() {
+        super.onDisable();
+        if (!EDITOR) {
+            this.onGameHide();
+        }
     }
 
     onDestroy() {
@@ -175,6 +183,12 @@ export default class LabelTime extends Label {
     }
 
     private onScheduleSecond() {
+        if (this.countDown == 0) {
+            this.format();
+            this.onScheduleComplete();
+            return;
+        }
+
         this.countDown--;
         this.format();
         if (this.onSecond) this.onSecond(this.node);
@@ -187,15 +201,17 @@ export default class LabelTime extends Label {
     private onScheduleComplete() {
         this.timing_end();
         this.format();
+        this.unschedule(this.onScheduleSecond);
         if (this.onComplete) this.onComplete(this.node);
     }
 
     /** 开始计时 */
-    private timing_start() {
+    timing_start() {
         this.schedule(this.onScheduleSecond, 1);
     }
 
-    private timing_end() {
+    /** 关闭计时 */
+    timing_end() {
         this.unscheduleAllCallbacks();
     }
 }

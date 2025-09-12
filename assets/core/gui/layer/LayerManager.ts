@@ -1,5 +1,4 @@
 import { Camera, Node, ResolutionPolicy, SafeArea, screen, view, warn } from "cc";
-import { resLoader } from "../../common/loader/ResLoader";
 import { oops } from "../../Oops";
 import { gui } from "../Gui";
 import { LayerDialog } from "./LayerDialog";
@@ -254,6 +253,23 @@ export class LayerManager {
         let layer = this.uiLayers.get(info.config.layer);
         if (layer) {
             layer.remove(info.config.prefab);
+        }
+        else {
+            console.error(`移除编号为【${uiid}】的界面失败，界面层不存在`);
+        }
+    }
+
+    /**
+     * 清理指定界面的缓存
+     * @param uiid         窗口唯一标识
+     * @example
+     * oops.gui.removeCache(UIID.Loading);
+     */
+    removeCache(uiid: Uiid) {
+        let info = this.getInfo(uiid);
+        let layer = this.uiLayers.get(info.config.layer);
+        if (layer) {
+            layer.removeCache(info.config.prefab);
         }
         else {
             console.error(`移除编号为【${uiid}】的界面失败，界面层不存在`);

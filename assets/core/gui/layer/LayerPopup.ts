@@ -17,19 +17,13 @@ export class LayerPopUp extends LayerUI {
     /** 半透明遮罩资源 */
     protected mask!: Node;
 
-    constructor(name: string) {
-        super(name);
-
-        this.on(Node.EventType.CHILD_ADDED, this.onChildAdded, this);
-        this.on(Node.EventType.CHILD_REMOVED, this.onChildRemoved, this);
-    }
-
-    private onChildAdded(child: Node) {
+    protected onChildAdded(child: Node) {
         this.mask.setSiblingIndex(this.children.length - 2);
     }
 
-    private onChildRemoved(child: Node) {
+    protected onChildRemoved(child: Node) {
         this.mask.setSiblingIndex(this.children.length - 2);
+        super.onChildRemoved(child);
     }
 
     protected uiInit(state: UIState): Promise<boolean> {

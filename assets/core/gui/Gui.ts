@@ -17,6 +17,12 @@ export namespace gui {
     export namespace internal {
         /** 界面唯一标记变量名 */
         export const GUI_KEY = "OOPS_GUI_KEY";
+
+        /** 获取界面唯一关键字 */
+        export function getKey(ctor: any) {
+            return ctor[GUI_KEY];
+        }
+
         /** 获取界面组件配置 */
         export function getConfig(key: string) {
             return configs[key];

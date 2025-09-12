@@ -35,8 +35,7 @@ export class CCEntity extends ecs.Entity {
      */
     addUi<T extends CCVMParentComp | CCComp>(ctor: ECSCtor<T>, params?: UIParam): Promise<Node> {
         return new Promise<Node>(async (resolve, reject) => {
-            //@ts-ignore
-            const key = ctor[gui.internal.GUI_KEY];
+            const key = gui.internal.getKey(ctor);
             if (key) {
                 if (params == null) {
                     params = { preload: true };
@@ -62,8 +61,7 @@ export class CCEntity extends ecs.Entity {
      * @param ctor      界面逻辑组件
      */
     removeUi(ctor: CompType<ecs.IComp>) {
-        //@ts-ignore
-        const key = ctor[gui.internal.GUI_KEY];
+        const key = gui.internal.getKey(ctor);
         if (key) {
             const node = oops.gui.get(key);
             if (node == null) {
@@ -73,9 +71,8 @@ export class CCEntity extends ecs.Entity {
 
             const comp = node.getComponent(LayerUIElement);
             if (comp) {
-                comp.onClose = () => {
-                    if (comp.state.config.destroy) this.remove(ctor);
-                };
+                // 处理界面关闭动画播放完成后，移除ECS组件，避免使用到组件实体数据还在动画播放时在使用导致的空对象问题
+                comp.onClose = this.remove.bind(this, ctor);
                 oops.gui.remove(key);
             }
         }

@@ -23,6 +23,20 @@ export class LayerUI extends Node {
     constructor(name: string) {
         super(name);
         LayerHelper.setFullScreen(this);
+
+        this.on(Node.EventType.CHILD_ADDED, this.onChildAdded, this);
+        this.on(Node.EventType.CHILD_REMOVED, this.onChildRemoved, this);
+    }
+
+    protected onChildAdded(child: Node) {
+
+    }
+
+    protected onChildRemoved(child: Node) {
+        const comp = child.getComponent(LayerUIElement);
+        if (comp) {
+            this.closeUi(comp.state);
+        }
     }
 
     /**
@@ -74,8 +88,9 @@ export class LayerUI extends Node {
     protected async load(state: UIState): Promise<Node> {
         return new Promise<Node>(async (resolve, reject) => {
             // 加载界面资源超时提示
-            let timerId = setTimeout(this.onLoadingTimeoutGui, oops.config.game.loadingTimeoutGui);
             if (state.node == null) {
+                let timerId = setTimeout(this.onLoadingTimeoutGui, oops.config.game.loadingTimeoutGui);
+
                 // 优先加载配置的指定资源包中资源，如果没配置则加载默认资源包资源
                 const res = await resLoader.loadAsync(state.config.bundle!, state.config.prefab, Prefab);
                 if (res) {
@@ -92,14 +107,13 @@ export class LayerUI extends Node {
                     console.warn(`路径为【${state.config.prefab}】的预制加载失败`);
                     this.failure(state);
                 }
+
+                // 关闭界面资源超时提示
+                oops.gui.waitClose();
+                clearTimeout(timerId);
             }
 
-            // 关闭界面资源超时提示
-            oops.gui.waitClose();
-            clearTimeout(timerId);
-
             await this.uiInit(state);
-
             resolve(state.node);
         });
     }
@@ -157,40 +171,30 @@ export class LayerUI extends Node {
             release = state.config.destroy !== undefined ? state.config.destroy : true;
 
             // 不释放界面，缓存起来待下次使用
-            if (release === false) {
-                this.ui_cache.set(state.config.prefab, state);
-            }
+            if (release === false) this.ui_cache.set(state.config.prefab, state);
 
-            const node = state.node;
-            const comp = node.getComponent(LayerUIElement)!;
+            const comp = state.node.getComponent(LayerUIElement)!;
             comp.remove(release);
         }
 
-        // 清理界面缓存
-        const cache = this.ui_cache.get(prefabPath);
-        if (cache) {
-            // 验证是否删除后台缓存界面
-            if (release) this.removeCache(prefabPath);
-        }
+        // 验证是否删除后台缓存界面
+        if (release) this.removeCache(prefabPath);
     }
 
     /** 删除缓存的界面，当缓存界面被移除舞台时，可通过此方法删除缓存界面 */
-    private removeCache(prefabPath: string) {
-        let vp = this.ui_cache.get(prefabPath);
-        if (vp) {
-            this.closeUi(vp);
+    removeCache(prefabPath: string) {
+        const state = this.ui_cache.get(prefabPath);
+        if (state) {
             this.ui_cache.delete(prefabPath);
-            const node = vp.node;
-            const comp = node.getComponent(LayerUIElement)!;
+            const comp = state.node.getComponent(LayerUIElement)!;
             comp.remove(true);
-            node.destroy();
         }
     }
 
     /** 显示界面 */
     show(prefabPath: string) {
-        const vp = this.ui_nodes.get(prefabPath);
-        if (vp) vp.node.parent = this;
+        const state = this.ui_nodes.get(prefabPath);
+        if (state) state.node.parent = this;
     }
 
     /**
@@ -198,8 +202,8 @@ export class LayerUI extends Node {
      * @param prefabPath  预制路径
      */
     get(prefabPath: string): Node {
-        const vp = this.ui_nodes.get(prefabPath);
-        if (vp) return vp.node;
+        const state = this.ui_nodes.get(prefabPath);
+        if (state) return state.node;
         return null!;
     }
 
