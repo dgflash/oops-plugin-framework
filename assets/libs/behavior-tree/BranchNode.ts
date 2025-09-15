@@ -10,7 +10,7 @@ import { BTreeNode } from './BTreeNode';
 /** 复合节点 */
 export abstract class BranchNode extends BTreeNode {
     /** 子节点数组 */
-    public children: Array<BTreeNode>;
+    children: Array<BTreeNode>;
     /** 当前任务索引 */
     protected _actualTask!: number;
     /** 正在运行的节点 */
@@ -19,17 +19,17 @@ export abstract class BranchNode extends BTreeNode {
     /** 外部参数对象 */
     protected _blackboard: any;
 
-    public constructor(nodes: Array<BTreeNode>) {
+    constructor(nodes: Array<BTreeNode>) {
         super();
         this.children = nodes || [];
     }
 
-    public start() {
+    start() {
         this._actualTask = 0;
         super.start();
     }
 
-    public run(blackboard?: any) {
+    run(blackboard?: any) {
         if (this.children.length == 0) {                        // 没有子任务直接视为执行失败
             this._control.fail();
         }
@@ -53,17 +53,17 @@ export abstract class BranchNode extends BTreeNode {
         node.run(this._blackboard);
     }
 
-    public running(node: BTreeNode) {
+    running(node: BTreeNode) {
         this._nodeRunning = node;
         this._control.running(node);
     }
 
-    public success() {
+    success() {
         this._nodeRunning = null;
         this._runningNode.end(this._blackboard);
     }
 
-    public fail() {
+    fail() {
         this._nodeRunning = null;
         this._runningNode.end(this._blackboard);
     }

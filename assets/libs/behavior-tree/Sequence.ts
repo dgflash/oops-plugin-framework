@@ -16,7 +16,7 @@ export class Sequence extends BranchNode {
         super(nodes);
     }
 
-    public success() {
+    success() {
         super.success();
 
         this._actualTask += 1;
@@ -28,7 +28,7 @@ export class Sequence extends BranchNode {
         }
     }
 
-    public fail() {
+    fail() {
         super.fail();
         this._control.fail();
     }

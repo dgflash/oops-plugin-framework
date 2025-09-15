@@ -17,7 +17,7 @@ export class BehaviorTree implements IControl {
     private _blackboard: any;
 
     /** 是否已开始执行 */
-    public get started(): boolean {
+    get started(): boolean {
         return this._started;
     }
 
@@ -26,7 +26,7 @@ export class BehaviorTree implements IControl {
      * @param node          根节点
      * @param blackboard    外部参数对象
      */
-    public constructor(node: BTreeNode, blackboard?: any) {
+    constructor(node: BTreeNode, blackboard?: any) {
         countUnnamed += 1;
         this.title = node.constructor.name + '(btree_' + (countUnnamed) + ')';
         this._root = node;
@@ -34,12 +34,12 @@ export class BehaviorTree implements IControl {
     }
 
     /** 设置行为逻辑中的共享数据 */
-    public setObject(blackboard: any) {
+    setObject(blackboard: any) {
         this._blackboard = blackboard;
     }
 
     /** 执行行为树逻辑 */
-    public run() {
+    run() {
         if (this._started) {
             console.error(`行为树【${this.title}】未调用步骤，在最后一次调用步骤时有一个任务未完成`);
         }
@@ -52,16 +52,16 @@ export class BehaviorTree implements IControl {
         node.run(this._blackboard);
     }
 
-    public running(node: BTreeNode) {
+    running(node: BTreeNode) {
         this._started = false;
     }
 
-    public success() {
+    success() {
         this._current.end(this._blackboard);
         this._started = false;
     }
 
-    public fail() {
+    fail() {
         this._current.end(this._blackboard);
         this._started = false;
     }

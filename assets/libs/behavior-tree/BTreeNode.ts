@@ -10,35 +10,35 @@ import { IControl } from './IControl';
 export abstract class BTreeNode implements IControl {
     protected _control!: IControl;
 
-    public title: string;
+    title: string;
 
-    public constructor() {
+    constructor() {
         this.title = this.constructor.name;
     }
 
-    public start(blackboard?: any) {
+    start(blackboard?: any) {
 
     }
 
-    public end(blackboard?: any) {
+    end(blackboard?: any) {
 
     }
 
-    public abstract run(blackboard?: any): void;
+    abstract run(blackboard?: any): void;
 
-    public setControl(control: IControl) {
+    setControl(control: IControl) {
         this._control = control;
     }
 
-    public running(blackboard?: any) {
+    running(blackboard?: any) {
         this._control.running(this);
     }
 
-    public success() {
+    success() {
         this._control.success();
     }
 
-    public fail() {
+    fail() {
         this._control.fail();
     }
 }
