@@ -50,13 +50,13 @@ export abstract class CCVMParentComp extends VMParent implements ecs.IComp {
     static compName: string;
 
     canRecycle!: boolean;
-    ent!: ecs.Entity;
+    ent!: CCEntity;
     tid: number = -1;
 
     /** 从父节点移除自己 */
     remove() {
         const cct = ECSModel.compCtors[this.tid];
-        if (this.ent && this.ent instanceof CCEntity) {
+        if (this.ent) {
             this.ent.removeUi(cct);
         }
         else {

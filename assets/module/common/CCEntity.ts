@@ -21,7 +21,7 @@ export class CCEntity extends ecs.Entity {
     addChildSingleton<T>(cls: any): T {
         if (this.singletons == null) this.singletons = new Map();
 
-        let entity = cls.create()
+        let entity = cls.create();
         this.singletons.set(cls, entity);
         this.addChild(entity);
         return entity as T;
