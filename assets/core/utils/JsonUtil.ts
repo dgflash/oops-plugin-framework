@@ -70,6 +70,7 @@ export class JsonUtil {
                 zipNames.forEach(name => {
                     data.set(name, ZipLoader.getJson(pathZip, `${name}.json`));
                 });
+                ZipLoader.release(pathZip);
                 resolve();
             }
             else {
@@ -96,7 +97,6 @@ export class JsonUtil {
      */
     static release(name: string) {
         data.delete(name);
-        if (this.zip) ZipLoader.release(pathZip);
     }
 
     /** 清理所有数据 */
