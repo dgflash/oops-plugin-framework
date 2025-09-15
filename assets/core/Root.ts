@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-08-28 10:02:57
  */
-import { _decorator, Component, director, Game, game, JsonAsset, Node, resources, screen, sys } from "cc";
+import { _decorator, Component, director, Game, game, JsonAsset, Node, profiler, resources, screen, sys } from "cc";
 import { GameConfig } from "../module/config/GameConfig";
 import { GameQueryConfig } from "../module/config/GameQueryConfig";
 import { oops, version } from "./Oops";
@@ -94,6 +94,8 @@ export class Root extends Component {
             //@ts-ignore
             oops.gui.initLayer(this.gui, config.json.gui);
 
+            // 初始化统计信息
+            oops.config.game.stats ? profiler.showStats() : profiler.hideStats();
             // 初始化每秒传输帧数
             game.frameRate = oops.config.game.frameRate;
 
