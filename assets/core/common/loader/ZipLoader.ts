@@ -1,5 +1,5 @@
 import { BufferAsset, SpriteFrame, Texture2D } from "cc";
-import { oops } from "db://oops-framework/core/Oops";
+import { resLoader } from "./ResLoader";
 
 /** 
  * 加载Zip资源
@@ -18,7 +18,7 @@ export class ZipLoader {
      */
     static load(url: string): Promise<JSZip> {
         return new Promise((resolve, reject) => {
-            oops.res.load(url, BufferAsset, async (error: Error | null, asset: BufferAsset) => {
+            resLoader.load(url, BufferAsset, async (error: Error | null, asset: BufferAsset) => {
                 if (error) return reject(error);
 
                 var zip = await JSZip.loadAsync(asset.buffer());
@@ -76,11 +76,11 @@ export class ZipLoader {
     /** 释放Zip资源 */
     static release(url?: string) {
         if (url) {
-            oops.res.release(url);
+            resLoader.release(url);
         }
         else {
             this.zips.forEach((value: JSZip, key: string) => {
-                oops.res.release(key);
+                resLoader.release(key);
             });
         }
     }

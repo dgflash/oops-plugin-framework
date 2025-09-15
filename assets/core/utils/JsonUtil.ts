@@ -20,7 +20,7 @@ const data: Map<string, any> = new Map();
 /** JSON数据表工具 */
 export class JsonUtil {
     /** 是否使用压缩包加载配置表 */
-    static zip: boolean = false;
+    static zip: boolean = true;
 
     /**
      * 通知资源名从缓存中获取一个Json数据表
