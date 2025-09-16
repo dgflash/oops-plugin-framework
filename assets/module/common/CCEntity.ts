@@ -13,7 +13,7 @@ import { CCVMParentComp } from "./CCVMParentComp";
 export type ECSCtor<T extends ecs.Comp> = __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>;
 
 /** ECS 游戏模块实体 */
-export class CCEntity extends ecs.Entity {
+export abstract class CCEntity extends ecs.Entity {
     /** 单例子实体 */
     private singletons: Map<any, ECSEntity> = null!;
 
