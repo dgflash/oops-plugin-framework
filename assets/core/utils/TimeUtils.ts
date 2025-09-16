@@ -6,7 +6,7 @@ export class TimeUtil {
      * @param time2 结束时间
      * @returns 
      */
-    public static daysBetween(time1: number | string | Date, time2: number | string | Date): number {
+    static daysBetween(time1: number | string | Date, time2: number | string | Date): number {
         if (time2 == undefined) {
             time2 = +new Date();
         }
@@ -18,7 +18,7 @@ export class TimeUtil {
     }
 
     /** 间隔秒数，时间顺序无要求，最后会获取绝对值 */
-    public static secsBetween(time1: number, time2: number) {
+    static secsBetween(time1: number, time2: number) {
         let dates = Math.abs((time2 - time1)) / (1000);
         dates = Math.floor(dates) + 1;
         return dates;
@@ -28,7 +28,7 @@ export class TimeUtil {
      * 代码休眠时间
      * @param ms 毫秒
      */
-    public static async sleep(ms: number) {
+    static async sleep(ms: number) {
         return new Promise<void>((resolve) => {
             setTimeout(() => {
                 resolve();

@@ -40,9 +40,6 @@ export class DeviceUtil {
     /** 是否为字节小游戏 */
     static get isByteDance() { return sys.platform === sys.Platform.BYTEDANCE_MINI_GAME; }
 
-    /** 是否为百度小游戏 */
-    static get isBaidu() { return sys.platform === sys.Platform.BAIDU_MINI_GAME; }
-
     /** 是否为 vivo 小游戏 */
     static get isVivo() { return sys.platform === sys.Platform.VIVO_MINI_GAME; }
 
