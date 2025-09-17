@@ -18,7 +18,7 @@ export default class LabelTime extends Label {
     @property({
         tooltip: "天数数据格式化",
     })
-    dayFormat: string = "{0}天{1}时";
+    dayFormat: string = "{0}天{1}小时";
 
     @property({
         tooltip: "时间格式化",
