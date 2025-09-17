@@ -18,7 +18,7 @@ export default class LabelTime extends Label {
     @property({
         tooltip: "天数数据格式化",
     })
-    dayFormat: string = "{0} day";
+    dayFormat: string = "{0}天{1}时";
 
     @property({
         tooltip: "时间格式化",
@@ -26,7 +26,7 @@ export default class LabelTime extends Label {
     timeFormat: string = "{0}:{1}:{2}";
 
     @property({
-        tooltip: "是否有00",
+        tooltip: "时间是否有固定二位数据",
     })
     zeroize: boolean = true;
 
@@ -74,7 +74,7 @@ export default class LabelTime extends Label {
             let dataFormat = this.dayFormat;
             let index = dataFormat.indexOf("{1}");
             if (hours == 0 && index > -1) {
-                dataFormat = dataFormat.substring(0, index - 1);
+                dataFormat = dataFormat.substring(0, index);
             }
             let df = dataFormat;
             if (date > 1 && dataFormat.indexOf("days") < 0) {
@@ -83,7 +83,13 @@ export default class LabelTime extends Label {
             if (date < 2) {
                 df = df.replace("days", "day");
             }
-            this.result = this.replace(df, date, hours); // 如果天大于1，则显示 "1 Day..."
+
+            if (this.zeroize) {
+                this.result = this.replace(df, date, this.coverString(hours));
+            }
+            else {
+                this.result = this.replace(df, date, hours); // 如果天大于1，则显示 "1 Day..."
+            }
         }
         else {
             hours += date * 24;
