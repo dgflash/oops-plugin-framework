@@ -27,6 +27,7 @@ export class CCBusiness {
     }
 
     //#region 全局事件管理
+    
     private _event: EventDispatcher | null = null;
     /** 全局事件管理器 */
     private get event(): EventDispatcher {
@@ -81,5 +82,4 @@ export class CCBusiness {
     }
 
     //#endregion
-
 }
