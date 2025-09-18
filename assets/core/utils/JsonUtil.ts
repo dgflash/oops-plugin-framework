@@ -54,6 +54,9 @@ export class JsonUtil {
                     resLoader.release(url);
                     resolve(content.json);
                 }
+                else {
+                    resolve(null);
+                }
             }
         });
     }
