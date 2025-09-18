@@ -13,7 +13,7 @@ import { CCEntity } from "./CCEntity";
 export class CCBusiness {
     ent!: CCEntity;
 
-    /** 业务逻辑初台化 */
+    /** 业务逻辑初始化 */
     protected init() {
 
     }
@@ -27,7 +27,7 @@ export class CCBusiness {
     }
 
     //#region 全局事件管理
-    
+
     private _event: EventDispatcher | null = null;
     /** 全局事件管理器 */
     private get event(): EventDispatcher {
