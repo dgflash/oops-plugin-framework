@@ -7,20 +7,25 @@ import { ViewUtil } from "../../core/utils/ViewUtil";
 import { ecs } from "../../libs/ecs/ECS";
 import { ECSEntity } from "../../libs/ecs/ECSEntity";
 import { CompType } from "../../libs/ecs/ECSModel";
-import { CCComp } from "./CCComp";
-import { CCVMParentComp } from "./CCVMParentComp";
+import { CCBusiness } from "./CCBusiness";
+import { CCView } from "./CCView";
+import { CCViewVM } from "./CCViewVM";
 
 export type ECSCtor<T extends ecs.Comp> = __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>;
 
 /** ECS 游戏模块实体 */
 export abstract class CCEntity extends ecs.Entity {
+    //#region 子模块管理
     /** 单例子实体 */
     private singletons: Map<any, ECSEntity> = null!;
 
     /** 添加单例子实体 */
     addChildSingleton<T>(cls: any): T {
         if (this.singletons == null) this.singletons = new Map();
-
+        if (this.singletons.has(cls)) {
+            console.error(`${cls.name} 单例子实体已存在`);
+            return null!;
+        }
         let entity = cls.create();
         this.singletons.set(cls, entity);
         this.addChild(entity);
@@ -40,7 +45,9 @@ export abstract class CCEntity extends ecs.Entity {
             this.removeChild(entity);
         }
     }
+    //#endregion
 
+    //#region 游戏视图层管理
     /**
      * 通过资源内存中获取预制上的组件添加到ECS实体中
      * @param ctor       界面逻辑组件
@@ -48,7 +55,7 @@ export abstract class CCEntity extends ecs.Entity {
      * @param path       显示资源地址
      * @param bundleName 资源包名称
      */
-    addPrefab<T extends CCVMParentComp | CCComp>(ctor: ECSCtor<T>, parent: Node, path: string, bundleName: string = resLoader.defaultBundleName) {
+    addPrefab<T extends CCViewVM | CCView>(ctor: ECSCtor<T>, parent: Node, path: string, bundleName: string = resLoader.defaultBundleName) {
         const node = ViewUtil.createPrefabNode(path, bundleName);
         const comp = node.getComponent(ctor)!;
         this.add(comp);
@@ -61,7 +68,7 @@ export abstract class CCEntity extends ecs.Entity {
      * @param params   界面参数
      * @returns 界面节点
      */
-    addUi<T extends CCVMParentComp | CCComp>(ctor: ECSCtor<T>, params?: UIParam): Promise<Node> {
+    addUi<T extends CCViewVM | CCView>(ctor: ECSCtor<T>, params?: UIParam): Promise<Node> {
         return new Promise<Node>(async (resolve, reject) => {
             const key = gui.internal.getKey(ctor);
             if (key) {
@@ -107,5 +114,65 @@ export abstract class CCEntity extends ecs.Entity {
         else {
             this.remove(ctor);
         }
+    }
+    //#endregion
+
+    //#region 游戏业务层管理
+    /** 模块业务逻辑组件 */
+    private businesss: Map<any, CCBusiness> = null!;
+
+    /**
+    * 批量添加组件
+    * @param ctors 组件类
+    * @returns 
+    */
+    addBusinesss<T extends CCBusiness>(...clss: any[]) {
+        for (let ctor of clss) {
+            this.addBusiness<T>(ctor);
+        }
+    }
+
+    /**
+     * 添加业务逻辑组件
+     * @param cls 业务逻辑组件类
+     * @returns 业务逻辑组件实例
+     */
+    addBusiness<T extends CCBusiness>(cls: any): T {
+        if (this.businesss == null) this.businesss = new Map();
+        if (this.businesss.has(cls)) {
+            console.error(`${cls.name} 业务逻辑组件已存在`);
+            return null!;
+        }
+        let business = new cls();
+        business.ent = this;
+        business.init();
+        this.businesss.set(cls, business);
+        return business as T;
+    }
+
+    /**
+     * 获取业务逻辑组件
+     * @param cls 业务逻辑组件类
+     * @returns 业务逻辑组件实例
+     */
+    getBusiness<T extends CCBusiness>(cls: any): T {
+        return this.businesss.get(cls) as T;
+    }
+
+    /**
+     * 移除业务逻辑组件
+     * @param cls 业务逻辑组件类
+     */
+    removeBusiness(cls: any) {
+        let business = this.businesss.get(cls);
+        if (business) this.businesss.delete(cls);
+    }
+    //#endregion
+
+    destroy(): void {
+        this.singletons.clear();
+        this.businesss.forEach(business => business.destroy());
+        this.businesss.clear();
+        super.destroy();
     }
 }

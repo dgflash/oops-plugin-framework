@@ -15,13 +15,13 @@ export type ListenerFunc = (event: string, ...args: any) => void
 /** 框架内部全局事件  */
 export enum EventMessage {
     /** 游戏从后台进入事件 */
-    GAME_SHOW = "GAME_ENTER",
+    GAME_SHOW = "onGameShow",
     /** 游戏切到后台事件 */
-    GAME_HIDE = "GAME_EXIT",
+    GAME_HIDE = "onGameHide",
     /** 游戏画笔尺寸变化事件 */
-    GAME_RESIZE = "GAME_RESIZE",
+    GAME_RESIZE = "onGameResize",
     /** 游戏全屏事件 */
-    GAME_FULL_SCREEN = "GAME_FULL_SCREEN",
+    GAME_FULL_SCREEN = "onGameFullScreen",
     /** 游戏旋转屏幕事件 */
-    GAME_ORIENTATION = "GAME_ORIENTATION"
+    GAME_ORIENTATION = "onGameOrientation"
 }
