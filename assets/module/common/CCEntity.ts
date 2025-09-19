@@ -170,9 +170,16 @@ export abstract class CCEntity extends ecs.Entity {
     //#endregion
 
     destroy(): void {
-        this.singletons.clear();
-        this.businesss.forEach(business => business.destroy());
-        this.businesss.clear();
+        if (this.singletons) {
+            this.singletons.clear();
+            this.singletons = null!;
+        }
+
+        if (this.businesss) {
+            this.businesss.forEach(business => business.destroy());
+            this.businesss.clear();
+            this.businesss = null!;
+        }
         super.destroy();
     }
 }
