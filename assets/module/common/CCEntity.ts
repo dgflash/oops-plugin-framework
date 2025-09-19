@@ -119,14 +119,14 @@ export abstract class CCEntity extends ecs.Entity {
 
     //#region 游戏业务层管理
     /** 模块业务逻辑组件 */
-    private businesss: Map<any, CCBusiness> = null!;
+    private businesss: Map<any, CCBusiness<CCEntity>> = null!;
 
     /**
     * 批量添加组件
     * @param ctors 组件类
     * @returns 
     */
-    addBusinesss<T extends CCBusiness>(...clss: any[]) {
+    addBusinesss<T extends CCBusiness<CCEntity>>(...clss: any[]) {
         for (let ctor of clss) {
             this.addBusiness<T>(ctor);
         }
@@ -137,7 +137,7 @@ export abstract class CCEntity extends ecs.Entity {
      * @param cls 业务逻辑组件类
      * @returns 业务逻辑组件实例
      */
-    addBusiness<T extends CCBusiness>(cls: any): T {
+    addBusiness<T extends CCBusiness<CCEntity>>(cls: any): T {
         if (this.businesss == null) this.businesss = new Map();
         if (this.businesss.has(cls)) {
             console.error(`${cls.name} 业务逻辑组件已存在`);
@@ -155,7 +155,7 @@ export abstract class CCEntity extends ecs.Entity {
      * @param cls 业务逻辑组件类
      * @returns 业务逻辑组件实例
      */
-    getBusiness<T extends CCBusiness>(cls: any): T {
+    getBusiness<T extends CCBusiness<CCEntity>>(cls: any): T {
         return this.businesss.get(cls) as T;
     }
 

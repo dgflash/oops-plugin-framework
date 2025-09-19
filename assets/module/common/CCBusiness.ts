@@ -10,8 +10,8 @@ import { ListenerFunc } from "../../core/common/event/EventMessage";
 import { CCEntity } from "./CCEntity";
 
 /** 业务逻辑 */
-export class CCBusiness {
-    ent!: CCEntity;
+export class CCBusiness<T extends CCEntity> {
+    ent!: T;
 
     /** 业务逻辑初始化 */
     protected init() {
