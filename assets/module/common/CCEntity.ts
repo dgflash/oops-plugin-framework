@@ -12,6 +12,7 @@ import { CCView } from "./CCView";
 import { CCViewVM } from "./CCViewVM";
 
 export type ECSCtor<T extends ecs.Comp> = __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>;
+export type ECSView = CCViewVM<CCEntity> | CCView<CCEntity>;
 
 /** ECS 游戏模块实体 */
 export abstract class CCEntity extends ecs.Entity {
@@ -55,7 +56,7 @@ export abstract class CCEntity extends ecs.Entity {
      * @param path       显示资源地址
      * @param bundleName 资源包名称
      */
-    addPrefab<T extends CCViewVM | CCView>(ctor: ECSCtor<T>, parent: Node, path: string, bundleName: string = resLoader.defaultBundleName) {
+    addPrefab<T extends ECSView>(ctor: ECSCtor<T>, parent: Node, path: string, bundleName: string = resLoader.defaultBundleName) {
         const node = ViewUtil.createPrefabNode(path, bundleName);
         const comp = node.getComponent(ctor)!;
         this.add(comp);
@@ -68,7 +69,7 @@ export abstract class CCEntity extends ecs.Entity {
      * @param params   界面参数
      * @returns 界面节点
      */
-    addUi<T extends CCViewVM | CCView>(ctor: ECSCtor<T>, params?: UIParam): Promise<Node> {
+    addUi<T extends ECSView>(ctor: ECSCtor<T>, params?: UIParam): Promise<Node> {
         return new Promise<Node>(async (resolve, reject) => {
             const key = gui.internal.getKey(ctor);
             if (key) {

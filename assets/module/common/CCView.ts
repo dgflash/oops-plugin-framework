@@ -24,7 +24,7 @@ import { GameComponent } from './GameComponent';
  * @example
 @ccclass('RoleViewComp')
 @ecs.register('RoleView', false)
-export class RoleViewComp extends CCView {
+export class RoleViewComp extends CCView<Role> {
     @property({ type: sp.Skeleton, tooltip: '角色动画' })
     spine: sp.Skeleton = null!;
 
@@ -33,12 +33,12 @@ export class RoleViewComp extends CCView {
     }
 }
  */
-export abstract class CCView extends GameComponent implements ecs.IComp {
+export abstract class CCView<T extends CCEntity> extends GameComponent implements ecs.IComp {
     static tid: number = -1;
     static compName: string;
 
     canRecycle!: boolean;
-    ent!: CCEntity;
+    ent!: T;
     tid: number = -1;
 
     /** 从父节点移除自己 */

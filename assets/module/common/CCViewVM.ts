@@ -25,7 +25,7 @@ import { CCEntity } from './CCEntity';
  * @example
 @ccclass('LoadingViewComp')
 @ecs.register('LoadingView', false)
-export class LoadingViewComp extends CCViewVM {
+export class LoadingViewComp extends CCViewVM<Initialize> {
     // VM 组件绑定数据
     data: any = {
         // 加载资源当前进度
@@ -45,12 +45,12 @@ export class LoadingViewComp extends CCViewVM {
     }
 }
  */
-export abstract class CCViewVM extends VMParent implements ecs.IComp {
+export abstract class CCViewVM<T extends CCEntity> extends VMParent implements ecs.IComp {
     static tid: number = -1;
     static compName: string;
 
     canRecycle!: boolean;
-    ent!: CCEntity;
+    ent!: T;
     tid: number = -1;
 
     /** 从父节点移除自己 */
