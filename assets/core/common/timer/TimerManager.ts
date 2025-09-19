@@ -82,7 +82,7 @@ export class TimerManager extends Component {
         
         start() {
             // 在指定对象上注册一个倒计时的回调管理器
-            this.timeId = oops.timer.register(this, "countDown", this.onSecond, this.onComplete);
+            this.timeId = oops.timer.register(this, "countDown", this, this.onSecond, this.onComplete);
         }
         
         private onSecond() {
@@ -94,7 +94,7 @@ export class TimerManager extends Component {
         }
     }
      */
-    register(object: any, field: string, target: object, onSecond: Function, onComplete: Function): string {
+    register(object: any, field: string, target: object, onSecond?: Function, onComplete?: Function): string {
         const timer = new Timer();
         timer.step = 1;
 
@@ -121,7 +121,7 @@ export class TimerManager extends Component {
      * @param onSecond      每秒事件
      * @param onComplete    倒计时完成事件
      */
-    addCallback(id: string, onSecond: Function, onComplete: Function) {
+    addCallback(id: string, onSecond?: Function, onComplete?: Function) {
         let data = this.times[id];
         if (data) {
             if (onSecond) data.onSeconds.push(onSecond);
