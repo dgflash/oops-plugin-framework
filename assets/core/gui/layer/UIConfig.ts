@@ -31,7 +31,7 @@ export interface UIConfig {
     layer: string;
     /** 预制资源相对路径 */
     prefab: string;
-    /** 是否自动施放（默认不自动释放） */
+    /** 是否自动施放（默认自动释放） */
     destroy?: boolean;
 
     /** -----弹窗属性----- */
@@ -39,7 +39,7 @@ export interface UIConfig {
     vacancy?: boolean,
     /** 是否打开窗口后显示背景遮罩（默认关闭） */
     mask?: boolean;
-    /** 是否启动真机安全区域显示 */
+    /** 是否启动真机安全区域显示（默认关闭） */
     safeArea?: boolean;
     /** 界面弹出时的节点排序索引 */
     siblingIndex?: number;

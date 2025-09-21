@@ -18,13 +18,11 @@ const { ccclass } = _decorator;
 @ccclass('LayerUIElement')
 export class LayerUIElement extends Component {
     /** 视图参数 */
-    params: UIParams = null!;
+    state: UIState = null!;
     /** 关闭窗口之前 */
-    onCloseWindowBefore: Function = null!;
-    /** 界面关闭回调 - 包括关闭动画播放完（辅助框架内存业务流程使用） */
-    private onCloseWindow: Function = null!;
+    onClose: Function = null!;
 
-    /** 窗口添加 */
+    /** 添加界面且界面设置到父节点之前 */
     add(): Promise<boolean> {
         return new Promise(async (resolve, reject) => {
             // 触发窗口组件上添加到父节点后的事件
@@ -32,7 +30,7 @@ export class LayerUIElement extends Component {
                 const component: any = this.node.components[i];
                 const func = component[EventOnAdded];
                 if (func) {
-                    if (await func.call(component, this.params.params) == false) {
+                    if (await func.call(component, this.state.params.data) == false) {
                         resolve(false);
                         return;
                     }
@@ -40,8 +38,8 @@ export class LayerUIElement extends Component {
             }
 
             // 触发外部窗口显示前的事件（辅助实现自定义动画逻辑）
-            if (typeof this.params.callbacks.onAdded === "function") {
-                this.params.callbacks.onAdded(this.node, this.params.params);
+            if (typeof this.state.params.onAdded === "function") {
+                this.state.params.onAdded(this.node, this.state.params.data);
             }
 
             resolve(true);
@@ -49,14 +47,14 @@ export class LayerUIElement extends Component {
     }
 
     /** 删除节点，该方法只能调用一次，将会触发onBeforeRemoved回调 */
-    remove(isDestroy?: boolean) {
-        if (this.params.valid) {
+    remove(isDestroy: boolean) {
+        if (this.state.valid) {
             // 触发窗口移除舞台之前事件
-            this.applyComponentsFunction(this.node, EventOnBeforeRemove, this.params.params);
+            this.applyComponentsFunction(this.node, EventOnBeforeRemove, this.state.params.data);
 
             //  通知外部对象窗口组件上移除之前的事件（关闭窗口前的关闭动画处理）
-            if (typeof this.params.callbacks.onBeforeRemove === "function") {
-                this.params.callbacks.onBeforeRemove(this.node, this.onBeforeRemoveNext.bind(this, isDestroy));
+            if (typeof this.state.params.onBeforeRemove === "function") {
+                this.state.params.onBeforeRemove(this.node, this.onBeforeRemoveNext.bind(this, isDestroy));
             }
             else {
                 this.onBeforeRemoveNext(isDestroy);
@@ -68,37 +66,31 @@ export class LayerUIElement extends Component {
     }
 
     /** 窗口关闭前动画处理完后的回调方法，主要用于释放资源 */
-    private onBeforeRemoveNext(isDestroy?: boolean) {
-        this.onCloseWindowBefore && this.onCloseWindowBefore();
-        this.removed(this.params, isDestroy);
-    }
+    private onBeforeRemoveNext(isDestroy: boolean) {
+        this.state.valid = false;
 
-    /** 窗口组件中触发移除事件与释放窗口对象 */
-    private removed(uip: UIParams, isDestroy?: boolean) {
-        uip.valid = false;
-
-        if (uip.callbacks && typeof uip.callbacks.onRemoved === "function") {
-            uip.callbacks.onRemoved(this.node, uip.params);
+        if (this.state.params && typeof this.state.params.onRemoved === "function") {
+            this.state.params.onRemoved(this.node, this.state.params.data);
         }
 
-        // 界面移除舞台事件
-        this.onCloseWindow && this.onCloseWindow(uip);
+        // 关闭动画播放完后，界面移除舞台事件
+        this.onClose && this.onClose();
 
         if (isDestroy) {
             // 释放界面显示对象
             this.node.destroy();
 
             // 释放界面相关资源
-            oops.res.release(uip.config.prefab, uip.config.bundle);
+            oops.res.release(this.state.config.prefab, this.state.config.bundle);
 
-            oops.log.logView(`【界面管理】释放【${uip.config.prefab}】界面资源`);
+            // oops.log.logView(`【界面管理】释放【${uip.config.prefab}】界面资源`);
         }
         else {
             this.node.removeFromParent();
         }
 
         // 触发窗口组件上窗口移除之后的事件
-        this.applyComponentsFunction(this.node, EventOnRemoved, this.params.params);
+        this.applyComponentsFunction(this.node, EventOnRemoved, this.state.params.data);
     }
 
     private applyComponentsFunction(node: Node, funName: string, params: any) {
@@ -112,43 +104,39 @@ export class LayerUIElement extends Component {
     }
 
     onDestroy() {
-        this.params = null!;
-        this.onCloseWindowBefore = null!;
-        this.onCloseWindow = null!;
+        this.state = null!;
+        this.onClose = null!;
     }
 }
 
 /** 本类型仅供gui模块内部使用，请勿在功能逻辑中使用 */
-export class UIParams {
+export class UIState {
     /** 界面唯一编号 */
     uiid: string = null!;
     /** 界面配置 */
     config: UIConfig = null!;
-    /** 传递给打开界面的参数 */
-    params: any = null!;
     /** 窗口事件 */
-    callbacks: UICallbacks = null!;
+    params: UIParam = null!;
     /** 是否在使用状态 */
     valid: boolean = true;
     /** 界面根节点 */
     node: Node = null!;
 }
 
-/*** 界面回调参数对象定义 */
-export interface UICallbacks {
+/*** 界面打开参数 */
+export interface UIParam {
+    /** 自定义传递参数 */
+    data?: any;
+
+    /** 是否开启预加载（默认不开启 - 开启后加载完不显示界面） */
+    preload?: boolean;
+
     /**
      * 节点添加到层级以后的回调
      * @param node   当前界面节点
      * @param params 外部传递参数
      */
     onAdded?: (node: Node, params: any) => void,
-
-    /**
-     * 窗口节点 destroy 之后回调
-     * @param node   当前界面节点
-     * @param params 外部传递参数
-     */
-    onRemoved?: (node: Node | null, params: any) => void,
 
     /** 
      * 如果指定onBeforeRemoved，则next必须调用，否则节点不会被正常删除。
@@ -159,6 +147,10 @@ export interface UICallbacks {
      */
     onBeforeRemove?: (node: Node, next: Function) => void,
 
-    /** 网络异常时，窗口加载失败回调 */
-    onLoadFailure?: () => void;
+    /**
+     * 窗口节点 destroy 之后回调
+     * @param node   当前界面节点
+     * @param params 外部传递参数
+     */
+    onRemoved?: (node: Node, params: any) => void
 }

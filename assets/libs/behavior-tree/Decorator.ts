@@ -12,7 +12,7 @@ import { BTreeNode } from './BTreeNode';
  * 如果装饰器是true 它所在的子树会被执行，如果是false 所在的子树不会被执行
  */
 export class Decorator extends BTreeNode {
-    public node!: BTreeNode;
+    node!: BTreeNode;
 
     constructor(node?: string | BTreeNode) {
         super()
@@ -25,17 +25,17 @@ export class Decorator extends BTreeNode {
         this.node = BehaviorTree.getNode(node);
     }
 
-    public start() {
+    start() {
         this.node.setControl(this);
         this.node.start();
         super.start();
     }
 
-    public end() {
+    end() {
         this.node.end();
     }
 
-    public run(blackboard: any) {
+    run(blackboard: any) {
         this.node.run(blackboard);
     }
 }

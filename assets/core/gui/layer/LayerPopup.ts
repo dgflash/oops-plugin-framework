@@ -7,7 +7,7 @@ import { BlockInputEvents, EventTouch, Node } from "cc";
 import { ViewUtil } from "../../utils/ViewUtil";
 import { PromptResType } from "../GuiEnum";
 import { LayerUI } from "./LayerUI";
-import { UIParams } from "./LayerUIElement";
+import { UIState } from "./LayerUIElement";
 import { UIConfig } from "./UIConfig";
 
 /* 弹窗层，允许同时弹出多个窗口 */
@@ -17,27 +17,21 @@ export class LayerPopUp extends LayerUI {
     /** 半透明遮罩资源 */
     protected mask!: Node;
 
-    constructor(name: string) {
-        super(name);
-
-        this.on(Node.EventType.CHILD_ADDED, this.onChildAdded, this);
-        this.on(Node.EventType.CHILD_REMOVED, this.onChildRemoved, this);
+    protected onChildAdded(child: Node) {
+        this.mask && this.mask.setSiblingIndex(this.children.length - 2);
     }
 
-    private onChildAdded(child: Node) {
-        if (this.mask) this.mask.setSiblingIndex(this.children.length - 2);
+    protected onChildRemoved(child: Node) {
+        this.mask && this.mask.setSiblingIndex(this.children.length - 2);
+        super.onChildRemoved(child);
     }
 
-    private onChildRemoved(child: Node) {
-        if (this.mask) this.mask.setSiblingIndex(this.children.length - 2);
-    }
-
-    protected showUi(uip: UIParams): Promise<boolean> {
+    protected uiInit(state: UIState): Promise<boolean> {
         return new Promise(async (resolve) => {
-            const r = await super.showUi(uip);
+            const r = await super.uiInit(state);
             if (r) {
                 // 界面加载完成显示时，启动触摸非窗口区域关闭
-                this.openVacancyRemove(uip.config);
+                this.openVacancyRemove(state.config);
 
                 // 界面加载完成显示时，层级事件阻挡
                 this.black.enabled = true;
@@ -46,15 +40,15 @@ export class LayerPopUp extends LayerUI {
         });
     }
 
-    protected onCloseWindow(uip: UIParams) {
-        super.onCloseWindow(uip);
+    protected closeUi(state: UIState) {
+        super.closeUi(state);
 
         // 界面关闭后，关闭触摸事件阻挡、关闭触摸非窗口区域关闭、关闭遮罩
-        this.closeUI();
+        this.closeBlack();
     }
 
     /** 设置触摸事件阻挡 */
-    protected closeUI() {
+    protected closeBlack() {
         // 所有弹窗关闭后，关闭事件阻挡功能
         if (this.ui_nodes.size == 0) {
             if (this.black) this.black.enabled = false;
@@ -120,13 +114,13 @@ export class LayerPopUp extends LayerUI {
         if (this.ui_nodes.size > 0) {
             let vp = this.ui_nodes.array[this.ui_nodes.size - 1];
             if (vp.valid && vp.config.vacancy) {
-                this.remove(vp.config.prefab, vp.config.destroy);
+                this.remove(vp.config.prefab);
             }
         }
     }
 
     clear(isDestroy: boolean) {
         super.clear(isDestroy)
-        this.closeUI();
+        this.closeBlack();
     }
 }

@@ -54,7 +54,9 @@ export class GameManager {
             }
 
             // 自定义节点排序索引
-            if (params && params.siblingIndex) node.setSiblingIndex(params.siblingIndex);
+            if (params) {
+                if (params.siblingIndex) node.setSiblingIndex(params.siblingIndex);
+            }
 
             resolve(node);
         });

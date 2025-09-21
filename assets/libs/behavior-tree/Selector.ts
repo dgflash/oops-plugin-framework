@@ -11,12 +11,12 @@ import { BranchNode } from './BranchNode';
  * 只要子节点有一个返回true，则停止执行其它子节点，并且Selector返回true。如果所有子节点都返回false，则Selector返回false。
  */
 export class Selector extends BranchNode {
-    public success() {
+    success() {
         super.success()
         this._control.success();
     }
 
-    public fail() {
+    fail() {
         super.fail()
 
         this._actualTask += 1;

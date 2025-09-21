@@ -480,6 +480,12 @@ export class GameComponent extends Component {
     /** 游戏旋转屏幕事件回调 */
     protected onGameOrientation(): void { }
     //#endregion
+
+    /** 移除自己 */
+    remove() {
+        oops.gui.removeByNode(this.node);
+    }
+
     protected onDestroy() {
         // 释放消息对象
         if (this._event) {

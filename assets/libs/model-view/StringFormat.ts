@@ -1,3 +1,5 @@
+import { LanguageData } from "../gui/language/LanguageData";
+
 /**
  * 数值格式化函数, 通过语义解析自动设置值的范围
  *     //整数
@@ -93,19 +95,20 @@ class StringFormat {
     }
 
     /** 将数字缩短显示为KMBT单位 大写,目前只支持英文 */
-    private kmbt(value: number, lang: string = 'en') {
+    private kmbt(value: number) {
         //10^4=万, 10^8=亿,10^12=兆,10^16=京，
-        let counts = [1000, 1000000, 1000000000, 1000000000000];
-        let units = ['', 'K', 'M', 'B', 'T'];
+        let counts: number[] = null!;
+        let units: string[] = null!;
 
-        switch (lang) {
+        switch (LanguageData.current) {
             case 'zh':
                 //10^4=万, 10^8=亿,10^12=兆,10^16=京，
                 counts = [10000, 100000000, 1000000000000, 10000000000000000];
                 units = ['', '万', '亿', '兆', '京'];
                 break;
-
             default:
+                counts = [1000, 1000000, 1000000000, 1000000000000];
+                units = ['', 'K', 'M', 'B', 'T'];
                 break;
         }
 

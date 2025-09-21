@@ -44,7 +44,7 @@ export class LanguagePack {
     /** 多语言Excel配置表数据 */
     private loadTable(lang: string): Promise<void> {
         return new Promise(async (resolve, reject) => {
-            let json = await JsonUtil.loadAsync("Language");
+            let json = await JsonUtil.load("Language");
             if (json) {
                 LanguageData.language.set(LanguageDataType.Excel, json);
                 Logger.instance.logConfig("config/game/Language", "下载语言包 table 资源");

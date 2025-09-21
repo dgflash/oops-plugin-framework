@@ -14,18 +14,18 @@ import { ECSEntity } from "./ECSEntity";
 export abstract class ECSComp implements ecs.IComp {
     /** 组件的类型编号，-1表示未给该组件分配编号 */
     static tid: number = -1;
-
     /** 组件名 */
     static compName: string;
-
-    /** 拥有该组件的实体 */
-    ent!: ECSEntity;
 
     /**
      * 是否可回收组件对象，默认情况下都是可回收的
      * 注：如果该组件对象是由ecs系统外部创建的，则不可回收，需要用户自己手动进行回收
      */
     canRecycle: boolean = true;
+    /** 拥有该组件的实体 */
+    ent!: ECSEntity;
+    /** 组件的类型编号 */
+    tid: number = -1;
 
     /**
      * 组件被回收时会调用这个接口。可以在这里重置数据，或者解除引用

@@ -59,7 +59,7 @@ export default class ButtonSimple extends Component {
     }
 
     /** 短按触摸音效 */
-    protected async playEffect() {
+    protected playEffect() {
         if (ButtonSimple.effectPath) {
             oops.audio.playEffect(ButtonSimple.effectPath);
         }
