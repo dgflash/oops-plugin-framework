@@ -7,7 +7,7 @@ exports.createScript = exports.createScriptBll = exports.createScriptModule = ex
 const fs_1 = require("fs");
 const path_1 = __importDefault(require("path"));
 /** 写入文件 */
-function createView(directoryPath, fileName, content, isEcsComp = true) {
+function createView(directoryPath, fileName, content, moduleName, isEcsComp = true) {
     return new Promise(async (resolve, reject) => {
         // 创建脚本
         let className = fileName + "View";
@@ -20,6 +20,7 @@ function createView(directoryPath, fileName, content, isEcsComp = true) {
         }
         if (!(0, fs_1.existsSync)(scriptUrl)) {
             content = content.replace(/<%Name%>/g, className);
+            content = content.replace(/<%ModuleName%>/g, moduleName);
             await Editor.Message.request('asset-db', 'create-asset', scriptUrl, content);
         }
         // 创建预制

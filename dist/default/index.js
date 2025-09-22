@@ -45,9 +45,11 @@ module.exports = Editor.Panel.define({
                 break;
             case "View":
                 title = `i18n:oops-framework.createView`;
+                showModule = true;
                 break;
             case "ViewMvvm":
                 title = `i18n:oops-framework.createViewMvvm`;
+                showModule = true;
                 break;
         }
         // 创建框架配置界面
@@ -79,7 +81,7 @@ module.exports = Editor.Panel.define({
                         }
                         switch (type) {
                             case "GameComponent":
-                                await (0, create_script_1.createView)(path, filename, GameComponent_1.TemplateGameComponent, false);
+                                await (0, create_script_1.createView)(path, filename, GameComponent_1.TemplateGameComponent, null, false);
                                 break;
                             case "Module":
                                 await (0, create_script_1.createScriptModule)(path, filename, Module_1.TemplateModule);
@@ -91,10 +93,10 @@ module.exports = Editor.Panel.define({
                                 await (0, create_script_1.createScriptBll)(path, filename, ModuleBll_1.TemplateBll, moduleName);
                                 break;
                             case "View":
-                                await (0, create_script_1.createView)(path, filename, ModuleView_1.TemplateView);
+                                await (0, create_script_1.createView)(path, filename, ModuleView_1.TemplateView, moduleName);
                                 break;
                             case "ViewMvvm":
-                                await (0, create_script_1.createView)(path, filename, ModuleViewVM_1.TemplateViewMvvm);
+                                await (0, create_script_1.createView)(path, filename, ModuleViewVM_1.TemplateViewMvvm, moduleName);
                                 break;
                         }
                         close();
