@@ -71,7 +71,6 @@ export class JsonUtil {
             if (this.zip) {
                 let zip = await ZipLoader.load(pathZip);
                 for (let key in zip.files) {
-                    let f = zip.files[key];
                     let name = key.replace(".json", "");
                     data.set(name, ZipLoader.getJson(pathZip, `${name}.json`));
                 }
