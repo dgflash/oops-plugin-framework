@@ -66,13 +66,15 @@ export class JsonUtil {
      * @param isZip     是否为压缩包
      * @param zipNames  压缩包内的资源名列表
      */
-    static loadDir(zipNames?: string[]): Promise<void> {
+    static loadDir(): Promise<void> {
         return new Promise(async (resolve, reject) => {
-            if (this.zip && zipNames) {
-                await ZipLoader.load(pathZip);
-                zipNames.forEach(name => {
+            if (this.zip) {
+                let zip = await ZipLoader.load(pathZip);
+                for (let key in zip.files) {
+                    let f = zip.files[key];
+                    let name = key.replace(".json", "");
                     data.set(name, ZipLoader.getJson(pathZip, `${name}.json`));
-                });
+                }
                 ZipLoader.release(pathZip);
                 resolve();
             }
