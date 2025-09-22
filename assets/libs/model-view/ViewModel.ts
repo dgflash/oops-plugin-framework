@@ -61,12 +61,12 @@ class ViewModel<T> {
 
             if (this.emitToRootPath) director.emit(VM_EMIT_HEAD + this._tag, n, o, path);   // 通知主路径
 
-            if (path.length >= 2) {
-                for (let i = 0; i < path.length - 1; i++) {
-                    const e = path[i];
-                    //log('中端路径');
-                }
-            }
+            // if (path.length >= 2) {
+            //     for (let i = 0; i < path.length - 1; i++) {
+            //         const e = path[i];
+            //         log('中端路径', e);
+            //     }
+            // }
         }
     }
 

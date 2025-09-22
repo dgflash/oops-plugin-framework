@@ -21,8 +21,8 @@ export default class VMParent extends GameComponent {
     /** 需要绑定的私有数据 */
     protected data: any = {};
 
-    /**VM 管理 */
-    public VM = VM;
+    /** VM 管理 */
+    VM = VM;
 
     /**
      * [注意]不能直接覆盖此方法，如果需要覆盖。
@@ -46,7 +46,7 @@ export default class VMParent extends GameComponent {
         // console.group();
         for (let i = 0; i < comps.length; i++) {
             const comp = comps[i];
-            this.replaceVMPath(comp, this.tag)
+            this.replaceVMPath(comp, this.tag);
         }
         // console.groupEnd()
     }
