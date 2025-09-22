@@ -46,9 +46,11 @@ module.exports = Editor.Panel.define({
                 break;
             case "View":
                 title = `i18n:oops-framework.createView`;
+                showModule = true;
                 break;
             case "ViewMvvm":
                 title = `i18n:oops-framework.createViewMvvm`;
+                showModule = true;
                 break;
         }
 
@@ -82,7 +84,7 @@ module.exports = Editor.Panel.define({
 
                         switch (type) {
                             case "GameComponent":
-                                await createView(path, filename, TemplateGameComponent, false);
+                                await createView(path, filename, TemplateGameComponent, null!, false);
                                 break;
                             case "Module":
                                 await createScriptModule(path, filename, TemplateModule);
@@ -94,10 +96,10 @@ module.exports = Editor.Panel.define({
                                 await createScriptBll(path, filename, TemplateBll, moduleName);
                                 break;
                             case "View":
-                                await createView(path, filename, TemplateView);
+                                await createView(path, filename, TemplateView, moduleName);
                                 break;
                             case "ViewMvvm":
-                                await createView(path, filename, TemplateViewMvvm);
+                                await createView(path, filename, TemplateViewMvvm, moduleName);
                                 break;
                         }
                         close();
