@@ -348,7 +348,7 @@ export class GameComponent extends Component {
             }
             let ae = await oops.audio.playEffect(url, params);
             if (ae) {
-                this.addPathToRecord(ResType.Load, ae.params!.bundle!, url);
+                this.addPathToRecord(ResType.Load, ae.params.bundle!, url);
                 resolve(ae);
             }
             else {
