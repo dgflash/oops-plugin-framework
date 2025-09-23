@@ -340,10 +340,20 @@ export class GameComponent extends Component {
     async playEffect(url: string, params?: IAudioParams): Promise<AudioEffect> {
         return new Promise(async (resolve, reject) => {
             // 音效播放完，关闭正在播放状态的音乐效果
-            if (params == null) params = {};
+            if (params == null) {
+                params = { bundle: resLoader.defaultBundleName };
+            }
+            else if (params.bundle == null) {
+                params.bundle = resLoader.defaultBundleName;
+            }
             let ae = await oops.audio.playEffect(url, params);
-            this.addPathToRecord(ResType.Load, ae.params!.bundle!, url);
-            resolve(ae);
+            if (ae) {
+                this.addPathToRecord(ResType.Load, ae.params!.bundle!, url);
+                resolve(ae);
+            }
+            else {
+                resolve(null!);
+            }
         });
     }
     //#endregion
