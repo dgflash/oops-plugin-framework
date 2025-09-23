@@ -20,21 +20,39 @@ export abstract class CCEntity extends ecs.Entity {
     /** 单例子实体 */
     private singletons: Map<any, ECSEntity> = null!;
 
-    /** 添加单例子实体 */
-    addChildSingleton<T>(cls: any): T {
+    /**
+     * 批量添加单例子实体
+     * @param clss 单例子实体类数组
+     */
+    addChildSingletons<T extends CCEntity>(...clss: any[]) {
+        for (let ctor of clss) {
+            this.addChildSingleton<T>(ctor);
+        }
+    }
+
+    /**
+     * 添加单例子实体
+     * @param cls 单例子实体类
+     * @returns   单例子实体
+     */
+    addChildSingleton<T extends CCEntity>(cls: any): T {
         if (this.singletons == null) this.singletons = new Map();
         if (this.singletons.has(cls)) {
             console.error(`${cls.name} 单例子实体已存在`);
             return null!;
         }
-        let entity = cls.create();
+        let entity = ecs.getEntity<T>(cls);
         this.singletons.set(cls, entity);
         this.addChild(entity);
         return entity as T;
     }
 
-    /** 获取单例子实体 */
-    getChildSingleton<T>(cls: any): T {
+    /**
+     * 获取单例子实体
+     * @param cls 单例子实体类
+     * @returns   单例子实体
+     */
+    getChildSingleton<T extends CCEntity>(cls: any): T {
         return this.singletons.get(cls) as T;
     }
 
