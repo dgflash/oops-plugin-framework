@@ -165,9 +165,7 @@ export class AudioMusic extends Node {
 
     /** 停止当前音乐与音效的播放 */
     stop(): void {
-        if (this.getSwitch() && this._ae.playing) {
-            this._ae.stop();
-        }
+        if (this._ae.playing) this._ae.stop();
     }
 
     /** 释放当前背景音乐资源 */
