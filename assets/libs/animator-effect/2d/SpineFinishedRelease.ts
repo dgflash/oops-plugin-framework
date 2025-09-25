@@ -36,7 +36,7 @@ export class SpineFinishedRelease extends Component {
     }
 
     private async loadSkeletonData() {
-        let sd = await oops.res.load(this.resPath, sp.SkeletonData);
+        let sd = await oops.res.loadAsync(this.resPath, sp.SkeletonData);
         if (sd) {
             this.spine.skeletonData = sd;
             this.spine.setAnimation(0, "animation", false);

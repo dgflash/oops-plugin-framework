@@ -18,7 +18,7 @@ export class ZipLoader {
      */
     static load(url: string): Promise<JSZip> {
         return new Promise(async (resolve, reject) => {
-            let asset = await resLoader.load(url, BufferAsset);
+            let asset = await resLoader.loadAsync(url, BufferAsset);
             var zip = await JSZip.loadAsync(asset.buffer());
             this.zips.set(url, zip);
             resolve(zip);
