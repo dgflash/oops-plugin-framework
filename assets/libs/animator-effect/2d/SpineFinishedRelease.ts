@@ -5,7 +5,7 @@
  * @LastEditTime: 2022-04-08 15:42:16
  */
 
-import { Component, sp, _decorator } from 'cc';
+import { _decorator, Component, sp } from 'cc';
 import { oops } from '../../../core/Oops';
 const { ccclass, property } = _decorator;
 
@@ -28,17 +28,17 @@ export class SpineFinishedRelease extends Component {
         this.spine.setCompleteListener(this.onSpineComplete.bind(this));
 
         if (this.resPath) {
-            oops.res.load(this.resPath, sp.SkeletonData, (err: Error | null, sd: sp.SkeletonData) => {
-                if (err) {
-                    console.error(`加载【${this.resPath}】的 SPINE 资源不存在`);
-                    return;
-                }
-
-                this.spine.skeletonData = sd;
-                this.spine.setAnimation(0, "animation", false);
-            });
+            this.loadSkeletonData();
         }
         else {
+            this.spine.setAnimation(0, "animation", false);
+        }
+    }
+
+    private async loadSkeletonData() {
+        let sd = await oops.res.loadAsync(this.resPath, sp.SkeletonData);
+        if (sd) {
+            this.spine.skeletonData = sd;
             this.spine.setAnimation(0, "animation", false);
         }
     }

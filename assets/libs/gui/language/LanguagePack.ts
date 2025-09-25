@@ -83,11 +83,12 @@ export class LanguagePack {
                 return;
             }
 
-            resLoader.load(path, TTFFont, (err: Error | null, font: TTFFont) => {
-                if (err == null) Logger.instance.logConfig(path, "下载语言包 ttf 资源");
+            const font = await resLoader.loadAsync(path, TTFFont);
+            if (font) {
                 LanguageData.font = font;
-                resolve();
-            });
+                Logger.instance.logConfig(path, "下载语言包 ttf 资源");
+            }
+            resolve();
         });
     }
 
