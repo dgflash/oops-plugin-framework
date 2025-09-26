@@ -49,7 +49,7 @@ export class LayerGame extends Node {
     addAsync(prefab: string, config: GameElementConfig = {}): Promise<Node> {
         return new Promise(async (resolve, reject) => {
             let bundleName = config.bundle ? config.bundle : resLoader.defaultBundleName;
-            await resLoader.loadAsync(bundleName, prefab, Prefab);
+            await resLoader.load(bundleName, prefab, Prefab);
             let node = this.add(prefab, config);
             resolve(node);
         });
@@ -88,7 +88,7 @@ export class LayerGame extends Node {
     addPoolAsync(prefab: string, config: GameElementConfig = {}): Promise<Node> {
         return new Promise(async (resolve, reject) => {
             let bundleName = config.bundle ? config.bundle : resLoader.defaultBundleName;
-            await resLoader.loadAsync(bundleName, prefab, Prefab);
+            await resLoader.load(bundleName, prefab, Prefab);
             let node = this.addPool(prefab, config);
             resolve(node);
         });

@@ -26,30 +26,22 @@ export class StorageSecuritySimple implements IStorageSecurity {
      * 加密字符串
      */
     encrypt(data: string): string {
-        if (!data) return '';
-        return this.xorEncrypt(data);
+        let encryptedText = '';
+        for (let i = 0; i < data.length; i++) {
+            let charCode = data.charCodeAt(i);
+            encryptedText += String.fromCharCode(charCode + this.secretkey.length);
+        }
+        return encryptedText;
     }
 
     /** 解密字符串 */
     decrypt(encryptedData: string): string {
-        if (!encryptedData) return '';
-        return this.xorDecrypt(encryptedData);
-    }
-
-    /** 异或加密 */
-    private xorEncrypt(data: string): string {
-        let result = '';
-        for (let i = 0; i < data.length; i++) {
-            const keyChar = this.secretkey.charCodeAt(i % this.secretkey.length);
-            const dataChar = data.charCodeAt(i);
-            result += String.fromCharCode(dataChar ^ keyChar);
+        let decryptedText = '';
+        for (let i = 0; i < encryptedData.length; i++) {
+            let charCode = encryptedData.charCodeAt(i);
+            decryptedText += String.fromCharCode(charCode - this.secretkey.length);
         }
-        return result;
-    }
-
-    /** 异或解密 */
-    private xorDecrypt(encryptedData: string): string {
-        return this.xorEncrypt(encryptedData); // 异或操作是可逆的
+        return decryptedText;
     }
 
     encryptKey(str: string): string {

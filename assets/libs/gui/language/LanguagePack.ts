@@ -73,7 +73,7 @@ export class LanguagePack {
     private loadJson(lang: string): Promise<void> {
         return new Promise(async (resolve, reject) => {
             const path = `${LanguageData.path_json}/${lang}`;
-            const jsonAsset = await resLoader.loadAsync(path, JsonAsset);
+            const jsonAsset = await resLoader.load(path, JsonAsset);
             if (jsonAsset) {
                 LanguageData.language.set(LanguageDataType.Json, jsonAsset.json);
                 Logger.instance.logConfig(path, "下载语言包 json 资源");
@@ -83,7 +83,7 @@ export class LanguagePack {
                 return;
             }
 
-            const font = await resLoader.loadAsync(path, TTFFont);
+            const font = await resLoader.load(path, TTFFont);
             if (font) {
                 LanguageData.font = font;
                 Logger.instance.logConfig(path, "下载语言包 ttf 资源");

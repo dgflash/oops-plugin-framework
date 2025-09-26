@@ -148,7 +148,7 @@ export class AudioEffectPool {
                         this.res_project.set(bundle, paths);
                     }
                     if (paths.indexOf(path) == -1) paths.push(path);
-                    clip = await resLoader.loadAsync(bundle, path, AudioClip);
+                    clip = await resLoader.load(bundle, path, AudioClip);
                 }
             }
 

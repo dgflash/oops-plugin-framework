@@ -12,25 +12,20 @@
 //  * 2、需要下载 CryptoES 加密库
 //  */
 // export class StorageSecurityCrypto implements IStorageSecurity {
-//     private _key: string = null!;
-//     private _iv: string = null!;
-
 //     constructor() {
-//         const key = oops.config.game.localDataKey;
-//         const iv = oops.config.game.localDataIv;
-
+//         let key = oops.config.game.localDataKey;
+//         let iv = oops.config.game.localDataIv;
+//         key = EncryptUtil.md5(key);
+//         iv = EncryptUtil.md5(iv);
 //         EncryptUtil.initCrypto(key, iv);
-
-//         this._key = EncryptUtil.md5(key);
-//         this._iv = EncryptUtil.md5(iv);
 //     }
 
 //     decrypt(str: string): string {
-//         return EncryptUtil.aesDecrypt(str, this._key, this._iv);
+//         return EncryptUtil.aesDecrypt(str);
 //     }
 
 //     encrypt(str: string): string {
-//         return EncryptUtil.aesEncrypt(str, this._key, this._iv);
+//         return EncryptUtil.aesEncrypt(str);
 //     }
 
 //     encryptKey(str: string): string {

@@ -87,7 +87,7 @@ export class EffectSingleCase {
             }
 
             this.res.set(path, bundleName);
-            await resLoader.loadAsync(bundleName, path, Prefab);
+            await resLoader.load(bundleName, path, Prefab);
 
             for (let i = 0; i < count; i++) {
                 let node = ViewUtil.createPrefabNode(path, bundleName);
@@ -111,11 +111,11 @@ export class EffectSingleCase {
             if (np == undefined) {
                 if (params && params.bundleName) {
                     this.res.set(path, params.bundleName);
-                    await resLoader.loadAsync(params.bundleName, path, Prefab);
+                    await resLoader.load(params.bundleName, path, Prefab);
                 }
                 else {
                     this.res.set(path, resLoader.defaultBundleName);
-                    await resLoader.loadAsync(path, Prefab);
+                    await resLoader.load(path, Prefab);
                 }
 
                 const node = this.show(path, parent, params);

@@ -46,7 +46,7 @@ export class JsonUtil {
                     content = await ZipLoader.getJson(pathZip, `${name}.json`);
                 }
                 else {
-                    content = await resLoader.loadAsync(url, JsonAsset);
+                    content = await resLoader.load(url, JsonAsset);
                 }
 
                 if (content) {
