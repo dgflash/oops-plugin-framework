@@ -1,3 +1,4 @@
+// import { oops } from "../../Oops";
 // import { EncryptUtil } from "../../utils/EncryptUtil";
 // import { IStorageSecurity } from "./StorageManager";
 
@@ -11,13 +12,12 @@
 //  * 2、需要下载 CryptoES 加密库
 //  */
 // export class StorageSecurityCrypto implements IStorageSecurity {
-//     key: string = null!;
-//     iv: string = null!;
-
-//     init() {
-//         this.key = EncryptUtil.md5(this.key);
-//         this.iv = EncryptUtil.md5(this.iv);
-//         EncryptUtil.initCrypto(this.key, this.iv);
+//     constructor() {
+//         let key = oops.config.game.localDataKey;
+//         let iv = oops.config.game.localDataIv;
+//         key = EncryptUtil.md5(key);
+//         iv = EncryptUtil.md5(iv);
+//         EncryptUtil.initCrypto(key, iv);
 //     }
 
 //     decrypt(str: string): string {

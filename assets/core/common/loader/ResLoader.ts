@@ -37,37 +37,36 @@ export class ResLoader {
     defaultBundleName: string = "resources";
 
     /** 下载时的最大并发数 - 项目设置 -> 项目数据 -> 资源下载并发数，设置默认值；初始值为15 */
-    get maxConcurrency(): number {
+    get maxConcurrency() {
         return assetManager.downloader.maxConcurrency;
     }
-    set maxConcurrency(value: number) {
+    set maxConcurrency(value) {
         assetManager.downloader.maxConcurrency = value;
     }
 
     /** 下载时每帧可以启动的最大请求数 - 默认值为15 */
-    get maxRequestsPerFrame(): number {
+    get maxRequestsPerFrame() {
         return assetManager.downloader.maxRequestsPerFrame;
     }
-    set maxRequestsPerFrame(value: number) {
+    set maxRequestsPerFrame(value) {
         assetManager.downloader.maxRequestsPerFrame = value;
     }
 
     /** 失败重试次数 - 默认值为0 */
-    get maxRetryCount(): number {
+    get maxRetryCount() {
         return assetManager.downloader.maxRetryCount;
     }
-    set maxRetryCount(value: number) {
+    set maxRetryCount(value) {
         assetManager.downloader.maxRetryCount = value;
     }
 
     /** 重试的间隔时间，单位为毫秒 - 默认值为2000毫秒 */
-    get retryInterval(): number {
+    get retryInterval() {
         return assetManager.downloader.retryInterval;
     }
-    set retryInterval(value: number) {
+    set retryInterval(value) {
         assetManager.downloader.retryInterval = value;
     }
-    //#endregion
 
     //#region 加载远程资源
     /**
@@ -79,10 +78,10 @@ export class ResLoader {
         var data = await oops.res.loadRemote<ImageAsset>(this.url, opt);
         const texture = new Texture2D();
         texture.image = data;
-    
+
         const spriteFrame = new SpriteFrame();
         spriteFrame.texture = texture;
-    
+
         var sprite = this.sprite.addComponent(Sprite);
         sprite.spriteFrame = spriteFrame;
      */
@@ -231,10 +230,12 @@ export class ResLoader {
      * @param bundleName    远程包名
      * @param paths         资源路径
      * @param type          资源类型
+     * @param onProgress    加载进度回调
+     * @param onComplete    加载完成回调
      * @example
         const sd = await oops.res.load("spine_path", sp.SkeletonData);
      */
-    load<T extends Asset>(bundleName: string, paths: Paths | AssetType<T>, type?: AssetType<T>) {
+    load<T extends Asset>(bundleName: string, paths: Paths | AssetType<T>, type?: AssetType<T> | ProgressCallback, onProgress?: ProgressCallback) {
         return new Promise<T>((resolve, reject) => {
             let onComplete = (err: Error | null, data: T) => {
                 if (err) {
@@ -246,35 +247,15 @@ export class ResLoader {
 
             let args: ILoadResArgs<T> | null = null;
             if (typeof paths === "string" || paths instanceof Array) {
-                args = this.parseLoadResArgs(paths, type, onComplete);
+                args = this.parseLoadResArgs(paths, type, onProgress, onComplete);
                 args.bundle = bundleName;
             }
             else {
-                args = this.parseLoadResArgs(bundleName, paths, onComplete);
+                args = this.parseLoadResArgs(bundleName, paths, type, onComplete);
                 args.bundle = this.defaultBundleName;
             }
             this.loadByArgs(args);
         });
-    }
-
-    /**
-     * 加载指定资源包中的多个任意类型资源
-     * @param bundleName    远程包名
-     * @param paths         资源路径
-     * @param onProgress    加载进度回调
-     * @param onComplete    加载完成回调
-     */
-    loadAny<T extends Asset>(bundleName: string | string[], paths: string[] | ProgressCallback, onProgress?: ProgressCallback | CompleteCallback, onComplete?: CompleteCallback): void {
-        let args: ILoadResArgs<T> | null = null;
-        if (typeof bundleName === "string" && paths instanceof Array) {
-            args = this.parseLoadResArgs(paths, onProgress, onComplete);
-            args.bundle = bundleName;
-        }
-        else {
-            args = this.parseLoadResArgs(bundleName, paths, onProgress);
-            args.bundle = this.defaultBundleName;
-        }
-        this.loadByArgs(args);
     }
 
     /**
@@ -289,7 +270,7 @@ export class ResLoader {
         var onProgressCallback = (finished: number, total: number, item: any) => {
             console.log("资源加载进度", finished, total);
         }
-    
+
         // 加载完成事件
         var onCompleteCallback = () => {
             console.log("资源加载完成");
@@ -336,7 +317,7 @@ export class ResLoader {
         if (bundle) {
             const asset = bundle.get(path);
             if (asset) {
-                this.releasePrefabtDepsRecursively(asset);
+                this.releasePrefabtDepsRecursively(bundleName, asset);
             }
         }
     }
@@ -354,7 +335,7 @@ export class ResLoader {
             var infos = bundle.getDirWithPath(path);
             if (infos) {
                 infos.map((info) => {
-                    this.releasePrefabtDepsRecursively(info.uuid);
+                    this.releasePrefabtDepsRecursively(bundleName, info.uuid);
                 });
             }
 
@@ -378,25 +359,20 @@ export class ResLoader {
     }
 
     /** 释放预制依赖资源 */
-    private releasePrefabtDepsRecursively(uuid: string | Asset) {
-        let asset: Asset | null | undefined;
+    private releasePrefabtDepsRecursively(bundleName: string, uuid: string | Asset) {
         if (uuid instanceof Asset) {
-            asset = uuid;
             uuid.decRef();
+            // assetManager.releaseAsset(uuid);
+            // this.debugLogReleasedAsset(bundleName, uuid);
         }
         else {
-            asset = assetManager.assets.get(uuid);
-            if (asset) asset.decRef();
+            const asset = assetManager.assets.get(uuid);
+            if (asset) {
+                asset.decRef();
+                // assetManager.releaseAsset(asset);
+                // this.debugLogReleasedAsset(bundleName, asset);
+            }
         }
-
-        // 释放预制引用资源
-        // if (asset instanceof Prefab) {
-        //     const uuids: string[] = assetManager.dependUtil.getDepsRecursively(asset.uuid)!;
-        //     uuids.forEach(uuid => {
-        //         const asset = assetManager.assets.get(uuid);
-        //         if (asset) asset.decRef();
-        //     });
-        // }
     }
 
     /**
