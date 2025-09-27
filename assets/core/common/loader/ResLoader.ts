@@ -230,12 +230,10 @@ export class ResLoader {
      * @param bundleName    远程包名
      * @param paths         资源路径
      * @param type          资源类型
-     * @param onProgress    加载进度回调
-     * @param onComplete    加载完成回调
      * @example
         const sd = await oops.res.load("spine_path", sp.SkeletonData);
      */
-    load<T extends Asset>(bundleName: string, paths: Paths | AssetType<T>, type?: AssetType<T> | ProgressCallback, onProgress?: ProgressCallback) {
+    load<T extends Asset>(bundleName: string, paths: Paths | AssetType<T>, type?: AssetType<T>) {
         return new Promise<T>((resolve, reject) => {
             let onComplete = (err: Error | null, data: T) => {
                 if (err) {
@@ -247,15 +245,35 @@ export class ResLoader {
 
             let args: ILoadResArgs<T> | null = null;
             if (typeof paths === "string" || paths instanceof Array) {
-                args = this.parseLoadResArgs(paths, type, onProgress, onComplete);
+                args = this.parseLoadResArgs(paths, type, onComplete);
                 args.bundle = bundleName;
             }
             else {
-                args = this.parseLoadResArgs(bundleName, paths, type, onComplete);
+                args = this.parseLoadResArgs(bundleName, paths, onComplete);
                 args.bundle = this.defaultBundleName;
             }
             this.loadByArgs(args);
         });
+    }
+
+    /**
+     * 加载指定资源包中的多个任意类型资源
+     * @param bundleName    远程包名
+     * @param paths         资源路径
+     * @param onProgress    加载进度回调
+     * @param onComplete    加载完成回调
+     */
+    loadAny<T extends Asset>(bundleName: string | string[], paths: string[] | ProgressCallback, onProgress?: ProgressCallback | CompleteCallback, onComplete?: CompleteCallback): void {
+        let args: ILoadResArgs<T> | null = null;
+        if (typeof bundleName === "string" && paths instanceof Array) {
+            args = this.parseLoadResArgs(paths, onProgress, onComplete);
+            args.bundle = bundleName;
+        }
+        else {
+            args = this.parseLoadResArgs(bundleName, paths, onProgress);
+            args.bundle = this.defaultBundleName;
+        }
+        this.loadByArgs(args);
     }
 
     /**
