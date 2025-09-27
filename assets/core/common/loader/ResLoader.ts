@@ -37,36 +37,37 @@ export class ResLoader {
     defaultBundleName: string = "resources";
 
     /** 下载时的最大并发数 - 项目设置 -> 项目数据 -> 资源下载并发数，设置默认值；初始值为15 */
-    get maxConcurrency() {
+    get maxConcurrency(): number {
         return assetManager.downloader.maxConcurrency;
     }
-    set maxConcurrency(value) {
+    set maxConcurrency(value: number) {
         assetManager.downloader.maxConcurrency = value;
     }
 
     /** 下载时每帧可以启动的最大请求数 - 默认值为15 */
-    get maxRequestsPerFrame() {
+    get maxRequestsPerFrame(): number {
         return assetManager.downloader.maxRequestsPerFrame;
     }
-    set maxRequestsPerFrame(value) {
+    set maxRequestsPerFrame(value: number) {
         assetManager.downloader.maxRequestsPerFrame = value;
     }
 
     /** 失败重试次数 - 默认值为0 */
-    get maxRetryCount() {
+    get maxRetryCount(): number {
         return assetManager.downloader.maxRetryCount;
     }
-    set maxRetryCount(value) {
+    set maxRetryCount(value: number) {
         assetManager.downloader.maxRetryCount = value;
     }
 
     /** 重试的间隔时间，单位为毫秒 - 默认值为2000毫秒 */
-    get retryInterval() {
+    get retryInterval(): number {
         return assetManager.downloader.retryInterval;
     }
-    set retryInterval(value) {
+    set retryInterval(value: number) {
         assetManager.downloader.retryInterval = value;
     }
+    //#endregion
 
     //#region 加载远程资源
     /**
@@ -78,10 +79,10 @@ export class ResLoader {
         var data = await oops.res.loadRemote<ImageAsset>(this.url, opt);
         const texture = new Texture2D();
         texture.image = data;
-
+    
         const spriteFrame = new SpriteFrame();
         spriteFrame.texture = texture;
-
+    
         var sprite = this.sprite.addComponent(Sprite);
         sprite.spriteFrame = spriteFrame;
      */
@@ -288,7 +289,7 @@ export class ResLoader {
         var onProgressCallback = (finished: number, total: number, item: any) => {
             console.log("资源加载进度", finished, total);
         }
-
+    
         // 加载完成事件
         var onCompleteCallback = () => {
             console.log("资源加载完成");
