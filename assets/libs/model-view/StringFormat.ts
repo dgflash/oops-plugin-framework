@@ -2,8 +2,7 @@ import { LanguageData } from "../gui/language/LanguageData";
 
 /**
  * 数值格式化函数, 通过语义解析自动设置值的范围
- *     //整数
- * 1:def(0)//显示一个默认值
+ * 1:def(0) // 显示一个默认值
  */
 class StringFormat {
     deal(value: number | string, format: string): string {
