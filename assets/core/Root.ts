@@ -52,7 +52,7 @@ export class Root extends Component {
         // 创建持久根节点
         this.persist = new Node("OopsFrameworkPersistNode");
         director.addPersistRootNode(this.persist);
-        // oops.config.btc = new BuildTimeConstants();
+
         // Web平台查询参数管理
         oops.config.query = new GameQueryConfig();
         // 资源管理模块
