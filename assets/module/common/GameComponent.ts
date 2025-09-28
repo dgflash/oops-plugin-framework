@@ -102,15 +102,6 @@ export class GameComponent extends Component {
     createPrefabNode(path: string, bundleName: string = oops.res.defaultBundleName): Node {
         return ViewUtil.createPrefabNode(path, bundleName);
     }
-
-    /**
-     * 加载预制并创建预制节点
-     * @param path       资源路径
-     * @param bundleName 资源包名
-     */
-    createPrefabNodeAsync(path: string, bundleName: string = oops.res.defaultBundleName): Promise<Node> {
-        return ViewUtil.createPrefabNodeAsync(path, bundleName);
-    }
     //#endregion
 
     //#region 资源加载管理
@@ -194,9 +185,26 @@ export class GameComponent extends Component {
      * @param type          资源类型
      * @param onProgress    加载进度回调
      */
-    load<T extends Asset>(bundleName: string, paths: Paths | AssetType<T>, type?: AssetType<T> | ProgressCallback, onProgress?: ProgressCallback) {
+    load<T extends Asset>(bundleName: string, paths: Paths | AssetType<T>, type?: AssetType<T>) {
         this.addPathToRecord(ResType.Load, bundleName, paths);
-        return oops.res.load(bundleName, paths, type, onProgress);
+        return oops.res.load(bundleName, paths, type);
+    }
+
+    /**
+     * 加载指定资源包中的多个任意类型资源
+     * @param bundleName    远程包名
+     * @param paths         资源路径
+     * @param onProgress    加载进度回调
+     * @param onComplete    加载完成回调
+     */
+    loadAny(bundleName: string | string[], paths: string[] | ProgressCallback, onProgress?: ProgressCallback | CompleteCallback, onComplete?: CompleteCallback): void {
+        if (typeof bundleName === "string" && paths instanceof Array) {
+            this.addPathToRecord(ResType.Load, bundleName, paths);
+        }
+        else {
+            this.addPathToRecord(ResType.Load, resLoader.defaultBundleName, bundleName);
+        }
+        oops.res.loadAny(bundleName, paths, onProgress, onComplete);
     }
 
     /**
