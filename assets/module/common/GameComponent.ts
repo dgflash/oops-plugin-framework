@@ -309,7 +309,7 @@ export class GameComponent extends Component {
      * @param url           资源地址
      * @param params        音效播放参数
      */
-    async playEffect(url: string, params?: IAudioParams): Promise<AudioEffect> {
+    playEffect(url: string, params?: IAudioParams): Promise<AudioEffect> {
         return new Promise(async (resolve, reject) => {
             // 音效播放完，关闭正在播放状态的音乐效果
             if (params == null) {
