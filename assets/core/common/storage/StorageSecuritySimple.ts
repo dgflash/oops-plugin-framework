@@ -1,4 +1,3 @@
-import { oops } from '../../Oops';
 import { IStorageSecurity } from './StorageManager';
 
 /**
@@ -14,12 +13,12 @@ import { IStorageSecurity } from './StorageManager';
  * 1、加密强度小
  */
 export class StorageSecuritySimple implements IStorageSecurity {
+    key: string = null!;
+    iv: string = null!;
     private secretkey: string = null!;
 
-    constructor() {
-        const key = oops.config.game.localDataKey;
-        const iv = oops.config.game.localDataIv;
-        this.secretkey = key + iv;
+    init() {
+        this.secretkey = this.key + this.iv;
     }
 
     /**
