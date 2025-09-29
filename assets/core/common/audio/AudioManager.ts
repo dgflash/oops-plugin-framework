@@ -5,8 +5,7 @@ import { AudioEffectPool } from "./AudioEffectPool";
 import { AudioEffectType } from "./AudioEnum";
 import { AudioMusic } from "./AudioMusic";
 import { IAudioData, IAudioParams } from "./IAudio";
-
-const LOCAL_STORE_KEY = "game_audio";
+import { GameStorage } from "db://oops-framework/module/common/GameStorage";
 
 /**
  * 音频管理
@@ -66,7 +65,7 @@ export class AudioManager extends Component {
 
     /** 保存音乐音效的音量、开关配置数据到本地 */
     save() {
-        oops.storage.set(LOCAL_STORE_KEY, this.data);
+        oops.storage.set(GameStorage.Audio, this.data);
     }
 
     /** 本地加载音乐音效的音量、开关配置数据并设置到游戏中 */
@@ -74,7 +73,7 @@ export class AudioManager extends Component {
         this.music = new AudioMusic();
         this.music.parent = this.node;
 
-        this.data = oops.storage.getJson(LOCAL_STORE_KEY);
+        this.data = oops.storage.getJson(GameStorage.Audio);
         if (this.data) {
             this.setState();
         }
