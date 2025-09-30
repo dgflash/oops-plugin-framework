@@ -203,9 +203,13 @@ export class AudioEffectPool {
                 resLoader.release(ae.path, ae.params!.bundle);
             }
         }
-        ae.params && ae.params.onPlayComplete && ae.params.onPlayComplete(ae);
-        this.put(ae);
-        // console.log(`【音效】回收，池中剩余音效播放器【${this.pool.size()}】`);
+
+        // 循环播放的音效或自动释放音乐资源的音效，自动回收音乐播放器
+        if (!ae.params.loop || ae.params.destroy) {
+            ae.params && ae.params.onPlayComplete && ae.params.onPlayComplete(ae);
+            this.put(ae);
+            // console.log(`【音效】回收，池中剩余音效播放器【${this.pool.size()}】`);
+        }
     }
 
     /**
