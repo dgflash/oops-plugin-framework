@@ -41,10 +41,12 @@ export class GameManager {
             else {
                 bundleName = resLoader.defaultBundleName;
             }
+
             let node: Node = null!;
             // 自动内存管理
             if (parent instanceof GameComponent) {
-                node = await parent.createPrefabNodeAsync(prefabPath, bundleName);
+                await parent.load(bundleName, prefabPath);
+                node = parent.createPrefabNode(prefabPath, bundleName);
                 node.parent = parent.node;
             }
             // 手动内存管理
