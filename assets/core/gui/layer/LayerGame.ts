@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2025-08-15 10:06:47
  */
-import { Node, NodePool, Prefab, Vec3, warn } from "cc";
+import { Node, NodePool, Vec3, warn } from "cc";
 import { resLoader } from "../../common/loader/ResLoader";
 import { ViewUtil } from "../../utils/ViewUtil";
 import { LayerCustomType } from "./LayerEnum";
@@ -29,11 +29,8 @@ export class LayerGame extends Node {
      */
     add(prefab: string, config: GameElementConfig = {}): Promise<Node> {
         return new Promise(async (resolve, reject) => {
-            let bundleName = config.bundle ? config.bundle : resLoader.defaultBundleName;
-            if (resLoader.get(prefab, Prefab, bundleName)) await resLoader.load(bundleName, prefab, Prefab);
-
             let params = this.setParams(prefab, config, false);
-            let node = ViewUtil.createPrefabNode(prefab, params.config.bundle);
+            let node = await ViewUtil.createPrefabNodeAsync(prefab, params.config.bundle);
             if (node) {
                 // 设置自定义属性
                 this.setNode(node, config);
@@ -59,9 +56,7 @@ export class LayerGame extends Node {
                 node = params.pool.get()!;
             }
             else {
-                let bundleName = config.bundle ? config.bundle : resLoader.defaultBundleName;
-                await resLoader.load(bundleName, prefab, Prefab);
-                node = ViewUtil.createPrefabNode(prefab, params.config.bundle);
+                node = await ViewUtil.createPrefabNodeAsync(prefab, params.config.bundle);
                 node.addComponent(LayerGameElement);
             }
 
@@ -130,6 +125,7 @@ export class LayerGame extends Node {
             }
             this.elements.set(uuid, params);
         }
+        params.config.bundle = bundleName;
         return params;
     }
 
