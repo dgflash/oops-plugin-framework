@@ -105,7 +105,7 @@ export abstract class CCEntity extends ecs.Entity {
                 resolve(node);
             }
             else {
-                console.error(`${key} 界面组件未使用 gui.register 注册`);
+                console.error(`${ctor.name} 界面组件未使用 gui.register 注册`);
             }
         });
     }
