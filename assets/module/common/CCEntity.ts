@@ -74,11 +74,12 @@ export abstract class CCEntity extends ecs.Entity {
      * @param path       显示资源地址
      * @param bundleName 资源包名称
      */
-    addPrefab<T extends ECSView>(ctor: ECSCtor<T>, parent: Node, path: string, bundleName: string = resLoader.defaultBundleName) {
+    addPrefab<T extends ECSView>(ctor: ECSCtor<T>, parent: Node, path: string, bundleName: string = resLoader.defaultBundleName): Node {
         const node = ViewUtil.createPrefabNode(path, bundleName);
         const comp = node.getComponent(ctor)!;
         this.add(comp);
         node.parent = parent;
+        return node;
     }
 
     /**
