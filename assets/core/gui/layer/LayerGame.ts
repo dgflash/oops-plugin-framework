@@ -99,7 +99,7 @@ export class LayerGame extends Node {
                         resLoader.release(lge.params.config.prefab!, lge.params.config.bundle);
                     }
                 }
-                node.removeFromParent();
+                node.destroy();
             }
         }
         else {

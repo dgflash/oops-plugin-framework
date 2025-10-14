@@ -5,9 +5,9 @@
  * @LastEditTime: 2022-09-02 12:09:55
  */
 import { Node, director } from 'cc';
-import { ViewUtil } from '../utils/ViewUtil';
-import { resLoader } from '../common/loader/ResLoader';
 import { GameComponent } from '../../module/common/GameComponent';
+import { resLoader } from '../common/loader/ResLoader';
+import { ViewUtil } from '../utils/ViewUtil';
 
 /** 游戏元素打开参数 */
 export interface ElementParams {
@@ -45,8 +45,7 @@ export class GameManager {
             let node: Node = null!;
             // 自动内存管理
             if (parent instanceof GameComponent) {
-                await parent.load(bundleName, prefabPath);
-                node = parent.createPrefabNode(prefabPath, bundleName);
+                node = await parent.createPrefabNode(prefabPath, bundleName);
                 node.parent = parent.node;
             }
             // 手动内存管理

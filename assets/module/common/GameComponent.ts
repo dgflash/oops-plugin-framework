@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-12-13 11:36:00
  */
-import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, Sprite, SpriteFrame, __private, _decorator, input, isValid } from "cc";
+import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, Prefab, Sprite, SpriteFrame, __private, _decorator, input, instantiate, isValid } from "cc";
 import { oops } from "../../core/Oops";
 import { AudioEffect } from "../../core/common/audio/AudioEffect";
 import { IAudioParams } from "../../core/common/audio/IAudio";
@@ -99,8 +99,12 @@ export class GameComponent extends Component {
      * 从资源缓存中找到预制资源名并创建一个显示对象
      * @param path 资源路径
      */
-    createPrefabNode(path: string, bundleName: string = oops.res.defaultBundleName): Node {
-        return ViewUtil.createPrefabNode(path, bundleName);
+    createPrefabNode(path: string, bundleName: string = oops.res.defaultBundleName): Promise<Node> {
+        return new Promise(async (resolve, reject) => {
+            const prefab = await this.load(bundleName, path, Prefab);
+            const node = instantiate(prefab);
+            resolve(node);
+        });
     }
     //#endregion
 
