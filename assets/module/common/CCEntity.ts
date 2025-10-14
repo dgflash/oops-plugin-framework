@@ -10,6 +10,7 @@ import { CompType } from "../../libs/ecs/ECSModel";
 import { CCBusiness } from "./CCBusiness";
 import { CCView } from "./CCView";
 import { CCViewVM } from "./CCViewVM";
+import { GameComponent } from "./GameComponent";
 
 export type ECSCtor<T extends ecs.Comp> = __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>;
 export type ECSView = CCViewVM<CCEntity> | CCView<CCEntity>;
@@ -74,12 +75,25 @@ export abstract class CCEntity extends ecs.Entity {
      * @param path       显示资源地址
      * @param bundleName 资源包名称
      */
-    addPrefab<T extends ECSView>(ctor: ECSCtor<T>, parent: Node, path: string, bundleName: string = resLoader.defaultBundleName): Node {
-        const node = ViewUtil.createPrefabNode(path, bundleName);
-        const comp = node.getComponent(ctor)!;
-        this.add(comp);
-        node.parent = parent;
-        return node;
+    addPrefab<T extends ECSView>(ctor: ECSCtor<T>, parent: Node | GameComponent, path: string, bundleName: string = resLoader.defaultBundleName): Promise<Node> {
+        return new Promise(async (resolve, reject) => {
+            let node: Node = null!;
+            // 跟随父节点施放自动释放当前资源
+            if (parent instanceof GameComponent) {
+                node = await parent.createPrefabNode(path, bundleName);
+                const comp = node.getComponent(ctor)!;
+                this.add(comp);
+                node.parent = parent.node;
+            }
+            // 手动内存管理
+            else {
+                node = await ViewUtil.createPrefabNodeAsync(path, bundleName);
+                const comp = node.getComponent(ctor)!;
+                this.add(comp);
+                node.parent = parent;
+            }
+            resolve(node);
+        });
     }
 
     /**
