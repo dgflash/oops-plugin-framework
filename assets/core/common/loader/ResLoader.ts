@@ -336,7 +336,7 @@ export class ResLoader {
         if (bundle) {
             const asset = bundle.get(path);
             if (asset) {
-                this.releasePrefabtDepsRecursively(bundleName, asset);
+                this.releasePrefabtDepsRecursively(asset);
             }
         }
     }
@@ -354,7 +354,7 @@ export class ResLoader {
             var infos = bundle.getDirWithPath(path);
             if (infos) {
                 infos.map((info) => {
-                    this.releasePrefabtDepsRecursively(bundleName, info.uuid);
+                    this.releasePrefabtDepsRecursively(info.uuid);
                 });
             }
 
@@ -378,20 +378,25 @@ export class ResLoader {
     }
 
     /** 释放预制依赖资源 */
-    private releasePrefabtDepsRecursively(bundleName: string, uuid: string | Asset) {
+    private releasePrefabtDepsRecursively(uuid: string | Asset) {
+        let asset: Asset | null | undefined;
         if (uuid instanceof Asset) {
+            asset = uuid;
             uuid.decRef();
-            // assetManager.releaseAsset(uuid);
-            // this.debugLogReleasedAsset(bundleName, uuid);
         }
         else {
-            const asset = assetManager.assets.get(uuid);
-            if (asset) {
-                asset.decRef();
-                // assetManager.releaseAsset(asset);
-                // this.debugLogReleasedAsset(bundleName, asset);
-            }
+            asset = assetManager.assets.get(uuid);
+            if (asset) asset.decRef();
         }
+
+        // 释放预制引用资源
+        // if (asset instanceof Prefab) {
+        //     const uuids: string[] = assetManager.dependUtil.getDepsRecursively(asset.uuid)!;
+        //     uuids.forEach(uuid => {
+        //         const asset = assetManager.assets.get(uuid);
+        //         if (asset) asset.decRef();
+        //     });
+        // }
     }
 
     /**
