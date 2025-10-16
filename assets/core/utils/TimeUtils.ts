@@ -36,9 +36,8 @@ export class TimeUtil {
         });
     }
 
-    /** 格式化字符串 */
+    /** 倒计时时秒格式为时间格式 */
     static format(countDown: number) {
-        let result: string = "";
         let c: number = countDown;
         let date: number = Math.floor(c / 86400);
         c = c - date * 86400;
@@ -48,19 +47,24 @@ export class TimeUtil {
         c = c - minutes * 60;
         let seconds: number = c;
 
+        let result: string = "";
+        let timeFormat: string = "{0}:{1}:{2}";
         if (date == 0 && hours == 0 && minutes == 0 && seconds == 0) {
-            result = "00:00:00";
+            result = this.replace(timeFormat, "00", "00", "00");
         }
         else {
             hours += date * 24;
-            result = `${this.coverString(hours)}:${this.coverString(minutes)}:${this.coverString(seconds)}`;
+            result = this.replace(timeFormat, this.coverString(hours), this.coverString(minutes), this.coverString(seconds)); // 否则显示 "01:12:24"
         }
         return result;
     }
 
-    /** 个位数的时间数据将字符串补位 */
     private static coverString(value: number) {
         if (value < 10) return "0" + value;
         return value.toString();
+    }
+
+    private static replace(value: string, ...args: any): string {
+        return value.replace(/\{(\d+)\}/g, function (m, i) { return args[i]; });
     }
 }
