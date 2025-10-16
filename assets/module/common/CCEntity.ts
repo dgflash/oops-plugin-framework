@@ -190,7 +190,10 @@ export abstract class CCEntity extends ecs.Entity {
      * @returns 业务逻辑组件实例
      */
     getBusiness<T extends CCBusiness<CCEntity>>(cls: any): T {
-        return this.businesss.get(cls) as T;
+        if (this.businesss) {
+            return this.businesss.get(cls) as T;
+        }
+        return null!;
     }
 
     /**
