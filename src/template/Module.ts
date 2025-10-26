@@ -1,8 +1,9 @@
 export const TemplateModule = `import { ecs } from "db://oops-framework/libs/ecs/ECS";
+import { CCEntity } from 'db://oops-framework/module/common/CCEntity';
 
 /** <%Name%> 模块 */
 @ecs.register('<%Name%>')
-export class <%Name%> extends ecs.Entity {
+export class <%Name%> extends CCEntity {
     /** ---------- 数据层 ---------- */
     // <%Name%>Model!: <%Name%>ModelComp;
 
@@ -14,6 +15,6 @@ export class <%Name%> extends ecs.Entity {
 
     /** 初始添加的数据层组件 */
     protected init() {
-        // this.addComponents<ecs.Comp>();
+        // this.addComponents();
     }
 }`;

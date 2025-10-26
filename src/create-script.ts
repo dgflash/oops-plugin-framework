@@ -2,7 +2,7 @@ import { existsSync } from 'fs';
 import path from 'path';
 
 /** 写入文件 */
-export function createView(directoryPath: string, fileName: string, content: string, isEcsComp: boolean = true): Promise<void> {
+export function createView(directoryPath: string, fileName: string, content: string, moduleName: string, isEcsComp: boolean = true): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
         // 创建脚本
         let className = fileName + "View";
@@ -16,6 +16,7 @@ export function createView(directoryPath: string, fileName: string, content: str
 
         if (!existsSync(scriptUrl)) {
             content = content.replace(/<%Name%>/g, className);
+            content = content.replace(/<%ModuleName%>/g, moduleName);
             await Editor.Message.request('asset-db', 'create-asset', scriptUrl, content);
         }
 

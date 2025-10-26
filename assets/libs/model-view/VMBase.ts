@@ -1,4 +1,4 @@
-import { Component, log, _decorator } from 'cc';
+import { _decorator, Component, log } from 'cc';
 import { DEBUG } from 'cc/env';
 import { VM } from './ViewModel';
 import { VMEnv } from './VMEnv';

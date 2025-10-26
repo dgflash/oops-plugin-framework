@@ -1,4 +1,4 @@
-import { _decorator, CCString, error } from 'cc';
+import { _decorator, CCString, error, Node } from 'cc';
 import { StringFormatFunction } from './StringFormat';
 import { VMBase } from './VMBase';
 import { VMEnv } from './VMEnv';
@@ -22,6 +22,22 @@ const LABEL_TYPE = {
 @menu('OopsFramework/Mvvm/VM-Label （标签）')
 @help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037641&doc_id=2873565')
 export default class VMLabel extends VMBase {
+    /**
+     * 动态绑定组件
+     * @param node          目标节点
+     * @param watchPath     监听数据路径
+     */
+    static bind(node: Node, watchPath: string | string[]) {
+        let label = node.addComponent(VMLabel);
+        if (watchPath instanceof Array) {
+            label.templateMode = true;
+            label.watchPathArr = watchPath;
+        }
+        else {
+            label.watchPath = watchPath;
+        }
+    }
+
     @property({
         tooltip: '是否启用模板代码,只能在运行时之前设置,\n将会动态解析模板语法 {{0}},并且自动设置监听的路径'
     })

@@ -2,6 +2,9 @@ import { sys } from "cc";
 import { PREVIEW } from "cc/env";
 
 export interface IStorageSecurity {
+    key: string;
+    iv: string;
+    init(): void;
     decrypt(str: string): string;
     encrypt(str: string): string;
     encryptKey(str: string): string;
@@ -23,6 +26,7 @@ export class StorageManager {
     /** 本地存储数据加密方式初始化 */
     init(iis: IStorageSecurity) {
         this.iss = iis;
+        this.iss.init();
     }
 
     /**

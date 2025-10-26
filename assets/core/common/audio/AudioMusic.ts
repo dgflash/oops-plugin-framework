@@ -123,7 +123,7 @@ export class AudioMusic extends Node {
             clip = await resLoader.loadRemote<AudioClip>(path, { ext: `.${extension}` });
         }
         else {
-            clip = await resLoader.loadAsync(params.bundle!, path, AudioClip);
+            clip = await resLoader.load(params.bundle!, path, AudioClip);
         }
 
         this._isLoading = false;

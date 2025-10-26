@@ -194,7 +194,7 @@ export class TimerManager extends Component {
         }
     }
 
-    /** 游戏最大化时回复时间数据 */
+    /** 游戏最大化时恢复时间数据 */
     load(): void {
         for (let key in this.times) {
             let data = this.times[key];
@@ -203,9 +203,6 @@ export class TimerManager extends Component {
             if (data.object[data.field] <= 0) {
                 data.object[data.field] = 0;
                 this.onTimerComplete(data);
-            }
-            else {
-                data.object[data.field] = 0;
             }
         }
     }

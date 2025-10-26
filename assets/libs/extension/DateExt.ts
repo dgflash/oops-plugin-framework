@@ -32,7 +32,7 @@ Date.prototype.format = function (format: string): string {
 
     let r = format
         .replace('yy', year.toString())
-        .replace('mm', (month < 10 ? '0' : '') + month)
+        .replace('MM', (month < 10 ? '0' : '') + month)
         .replace('dd', (day < 10 ? '0' : '') + day)
         .replace('hh', (hours < 10 ? '0' : '') + hours)
         .replace('mm', (minutes < 10 ? '0' : '') + minutes)

@@ -92,7 +92,7 @@ export class LayerUI extends Node {
                 let timerId = setTimeout(this.onLoadingTimeoutGui, oops.config.game.loadingTimeoutGui);
 
                 // 优先加载配置的指定资源包中资源，如果没配置则加载默认资源包资源
-                const res = await resLoader.loadAsync(state.config.bundle!, state.config.prefab, Prefab);
+                const res = await resLoader.load(state.config.bundle!, state.config.prefab, Prefab);
                 if (res) {
                     state.node = instantiate(res);
 

@@ -107,7 +107,7 @@ export class ViewUtil {
      */
     static createPrefabNodeAsync(path: string, bundleName: string = resLoader.defaultBundleName): Promise<Node> {
         return new Promise(async (resolve, reject) => {
-            const p = await resLoader.loadAsync(bundleName, path, Prefab);
+            const p = await resLoader.load(bundleName, path, Prefab);
             if (p) {
                 resolve(instantiate(p));
             }

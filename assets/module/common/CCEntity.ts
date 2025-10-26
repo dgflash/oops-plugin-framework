@@ -10,6 +10,7 @@ import { CompType } from "../../libs/ecs/ECSModel";
 import { CCBusiness } from "./CCBusiness";
 import { CCView } from "./CCView";
 import { CCViewVM } from "./CCViewVM";
+import { GameComponent } from "./GameComponent";
 
 export type ECSCtor<T extends ecs.Comp> = __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>;
 export type ECSView = CCViewVM<CCEntity> | CCView<CCEntity>;
@@ -20,21 +21,39 @@ export abstract class CCEntity extends ecs.Entity {
     /** 单例子实体 */
     private singletons: Map<any, ECSEntity> = null!;
 
-    /** 添加单例子实体 */
-    addChildSingleton<T>(cls: any): T {
+    /**
+     * 批量添加单例子实体
+     * @param clss 单例子实体类数组
+     */
+    addChildSingletons<T extends CCEntity>(...clss: any[]) {
+        for (let ctor of clss) {
+            this.addChildSingleton<T>(ctor);
+        }
+    }
+
+    /**
+     * 添加单例子实体
+     * @param cls 单例子实体类
+     * @returns   单例子实体
+     */
+    addChildSingleton<T extends CCEntity>(cls: any): T {
         if (this.singletons == null) this.singletons = new Map();
         if (this.singletons.has(cls)) {
             console.error(`${cls.name} 单例子实体已存在`);
             return null!;
         }
-        let entity = cls.create();
+        let entity = ecs.getEntity<T>(cls);
         this.singletons.set(cls, entity);
         this.addChild(entity);
         return entity as T;
     }
 
-    /** 获取单例子实体 */
-    getChildSingleton<T>(cls: any): T {
+    /**
+     * 获取单例子实体
+     * @param cls 单例子实体类
+     * @returns   单例子实体
+     */
+    getChildSingleton<T extends CCEntity>(cls: any): T {
         return this.singletons.get(cls) as T;
     }
 
@@ -56,11 +75,25 @@ export abstract class CCEntity extends ecs.Entity {
      * @param path       显示资源地址
      * @param bundleName 资源包名称
      */
-    addPrefab<T extends ECSView>(ctor: ECSCtor<T>, parent: Node, path: string, bundleName: string = resLoader.defaultBundleName) {
-        const node = ViewUtil.createPrefabNode(path, bundleName);
-        const comp = node.getComponent(ctor)!;
-        this.add(comp);
-        node.parent = parent;
+    addPrefab<T extends ECSView>(ctor: ECSCtor<T>, parent: Node | GameComponent, path: string, bundleName: string = resLoader.defaultBundleName): Promise<Node> {
+        return new Promise(async (resolve, reject) => {
+            let node: Node = null!;
+            // 跟随父节点施放自动释放当前资源
+            if (parent instanceof GameComponent) {
+                node = await parent.createPrefabNode(path, bundleName);
+                const comp = node.getComponent(ctor)!;
+                this.add(comp);
+                node.parent = parent.node;
+            }
+            // 手动内存管理
+            else {
+                node = await ViewUtil.createPrefabNodeAsync(path, bundleName);
+                const comp = node.getComponent(ctor)!;
+                this.add(comp);
+                node.parent = parent;
+            }
+            resolve(node);
+        });
     }
 
     /**
@@ -87,7 +120,7 @@ export abstract class CCEntity extends ecs.Entity {
                 resolve(node);
             }
             else {
-                console.error(`${key} 界面组件未使用 gui.register 注册`);
+                console.error(`${ctor.name} 界面组件未使用 gui.register 注册`);
             }
         });
     }
@@ -157,6 +190,7 @@ export abstract class CCEntity extends ecs.Entity {
      * @returns 业务逻辑组件实例
      */
     getBusiness<T extends CCBusiness<CCEntity>>(cls: any): T {
+        if (this.businesss == null) return null!;
         return this.businesss.get(cls) as T;
     }
 
@@ -165,8 +199,10 @@ export abstract class CCEntity extends ecs.Entity {
      * @param cls 业务逻辑组件类
      */
     removeBusiness(cls: any) {
-        let business = this.businesss.get(cls);
-        if (business) this.businesss.delete(cls);
+        if (this.businesss) {
+            let business = this.businesss.get(cls);
+            if (business) this.businesss.delete(cls);
+        }
     }
     //#endregion
 

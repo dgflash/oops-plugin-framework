@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-12-13 11:36:00
  */
-import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, Prefab, Sprite, SpriteFrame, __private, _decorator, input, isValid } from "cc";
+import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, Prefab, Sprite, SpriteFrame, __private, _decorator, input, instantiate, isValid } from "cc";
 import { oops } from "../../core/Oops";
 import { AudioEffect } from "../../core/common/audio/AudioEffect";
 import { IAudioParams } from "../../core/common/audio/IAudio";
@@ -99,19 +99,10 @@ export class GameComponent extends Component {
      * 从资源缓存中找到预制资源名并创建一个显示对象
      * @param path 资源路径
      */
-    createPrefabNode(path: string, bundleName: string = oops.res.defaultBundleName): Node {
-        return ViewUtil.createPrefabNode(path, bundleName);
-    }
-
-    /**
-     * 加载预制并创建预制节点
-     * @param path       资源路径
-     * @param bundleName 资源包名
-     */
-    createPrefabNodeAsync(path: string, bundleName: string = oops.res.defaultBundleName): Promise<Node> {
+    createPrefabNode(path: string, bundleName: string = oops.res.defaultBundleName): Promise<Node> {
         return new Promise(async (resolve, reject) => {
-            await this.loadAsync(bundleName, path, Prefab);
-            let node = ViewUtil.createPrefabNode(path, bundleName);
+            const prefab = await this.load(bundleName, path, Prefab);
+            const node = instantiate(prefab);
             resolve(node);
         });
     }
@@ -197,42 +188,27 @@ export class GameComponent extends Component {
      * @param paths         资源路径
      * @param type          资源类型
      * @param onProgress    加载进度回调
-     * @param onComplete    加载完成回调
      */
-    load<T extends Asset>(bundleName: string, paths: Paths, type: AssetType<T>, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    load<T extends Asset>(bundleName: string, paths: Paths, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    load<T extends Asset>(bundleName: string, paths: Paths, onComplete?: CompleteCallback): void;
-    load<T extends Asset>(bundleName: string, paths: Paths, type: AssetType<T>, onComplete?: CompleteCallback): void;
-    load<T extends Asset>(paths: Paths, type: AssetType<T>, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    load<T extends Asset>(paths: Paths, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    load<T extends Asset>(paths: Paths, onComplete?: CompleteCallback): void;
-    load<T extends Asset>(paths: Paths, type: AssetType<T>, onComplete?: CompleteCallback): void;
-    load<T extends Asset>(
-        bundleName: string,
-        paths?: Paths | AssetType<T> | ProgressCallback | CompleteCallback,
-        type?: AssetType<T> | ProgressCallback | CompleteCallback,
-        onProgress?: ProgressCallback | CompleteCallback,
-        onComplete?: CompleteCallback,
-    ) {
+    load<T extends Asset>(bundleName: string, paths: Paths | AssetType<T>, type?: AssetType<T>) {
         this.addPathToRecord(ResType.Load, bundleName, paths);
-        oops.res.load(bundleName, paths, type, onProgress, onComplete);
+        return oops.res.load(bundleName, paths, type);
     }
 
     /**
-     * 异步加载一个资源
+     * 加载指定资源包中的多个任意类型资源
      * @param bundleName    远程包名
      * @param paths         资源路径
-     * @param type          资源类型
+     * @param onProgress    加载进度回调
+     * @param onComplete    加载完成回调
      */
-    loadAsync<T extends Asset>(bundleName: string, paths: Paths, type: AssetType<T>): Promise<T>;
-    loadAsync<T extends Asset>(bundleName: string, paths: Paths): Promise<T>;
-    loadAsync<T extends Asset>(paths: Paths, type: AssetType<T>): Promise<T>;
-    loadAsync<T extends Asset>(paths: Paths): Promise<T>;
-    loadAsync<T extends Asset>(bundleName: string,
-        paths?: Paths | AssetType<T> | ProgressCallback | CompleteCallback,
-        type?: AssetType<T> | ProgressCallback | CompleteCallback): Promise<T> {
-        this.addPathToRecord(ResType.Load, bundleName, paths);
-        return oops.res.loadAsync(bundleName, paths, type);
+    loadAny(bundleName: string | string[], paths: string[] | ProgressCallback, onProgress?: ProgressCallback | CompleteCallback, onComplete?: CompleteCallback): void {
+        if (typeof bundleName === "string" && paths instanceof Array) {
+            this.addPathToRecord(ResType.Load, bundleName, paths);
+        }
+        else {
+            this.addPathToRecord(ResType.Load, resLoader.defaultBundleName, bundleName);
+        }
+        oops.res.loadAny(bundleName, paths, onProgress, onComplete);
     }
 
     /**
@@ -307,7 +283,7 @@ export class GameComponent extends Component {
      * @param bundle  资源包名
      */
     async setSprite(target: Sprite, path: string, bundle: string = resLoader.defaultBundleName) {
-        const spriteFrame = await this.loadAsync(bundle, path, SpriteFrame);
+        const spriteFrame = await this.load(bundle, path, SpriteFrame);
         if (!spriteFrame || !isValid(target)) {
             const rps = this.resPaths.get(ResType.Load);
             if (rps) {
@@ -337,13 +313,23 @@ export class GameComponent extends Component {
      * @param url           资源地址
      * @param params        音效播放参数
      */
-    async playEffect(url: string, params?: IAudioParams): Promise<AudioEffect> {
+    playEffect(url: string, params?: IAudioParams): Promise<AudioEffect> {
         return new Promise(async (resolve, reject) => {
             // 音效播放完，关闭正在播放状态的音乐效果
-            if (params == null) params = {};
+            if (params == null) {
+                params = { bundle: resLoader.defaultBundleName };
+            }
+            else if (params.bundle == null) {
+                params.bundle = resLoader.defaultBundleName;
+            }
             let ae = await oops.audio.playEffect(url, params);
-            this.addPathToRecord(ResType.Load, ae.params!.bundle!, url);
-            resolve(ae);
+            if (ae) {
+                this.addPathToRecord(ResType.Load, ae.params.bundle!, url);
+                resolve(ae);
+            }
+            else {
+                resolve(null!);
+            }
         });
     }
     //#endregion

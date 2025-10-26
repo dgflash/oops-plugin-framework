@@ -12,7 +12,7 @@ import { AudioManager } from "./common/audio/AudioManager";
 import { EventMessage } from "./common/event/EventMessage";
 import { message } from "./common/event/MessageManager";
 import { resLoader } from "./common/loader/ResLoader";
-import { StorageManager } from "./common/storage/StorageManager";
+import { IStorageSecurity, StorageManager } from "./common/storage/StorageManager";
 import { StorageSecuritySimple } from "./common/storage/StorageSecuritySimple";
 import { TimerManager } from "./common/timer/TimerManager";
 import { GameManager } from "./game/GameManager";
@@ -52,7 +52,7 @@ export class Root extends Component {
         // 创建持久根节点
         this.persist = new Node("OopsFrameworkPersistNode");
         director.addPersistRootNode(this.persist);
-        // oops.config.btc = new BuildTimeConstants();
+
         // Web平台查询参数管理
         oops.config.query = new GameQueryConfig();
         // 资源管理模块
@@ -79,8 +79,10 @@ export class Root extends Component {
 
             // 本地存储模块
             oops.storage = new StorageManager();
-            oops.storage.init(new StorageSecuritySimple);
-            // oops.storage.init(new StorageSecurityCrypto);
+            let security: IStorageSecurity = new StorageSecuritySimple();       // new StorageSecurityCrypto();
+            security.key = oops.config.game.localDataKey;
+            security.iv = oops.config.game.localDataIv;
+            oops.storage.init(security);
 
             // 创建音频模块
             oops.audio = this.persist.addComponent(AudioManager);

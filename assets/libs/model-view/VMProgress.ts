@@ -27,7 +27,7 @@ export default class VMProgress extends VMCustom {
     })
     protected watchPathArr: string[] = ['[min]', '[max]'];
 
-    public templateMode: boolean = true;
+    templateMode: boolean = true;
 
     @property({
         visible: function () {

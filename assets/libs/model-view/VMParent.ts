@@ -1,15 +1,16 @@
 import { Component, _decorator } from 'cc';
 import { GameComponent } from '../../module/common/GameComponent';
 import { VM } from './ViewModel';
+import { VMBase } from './VMBase';
 
 const { ccclass, help, executionOrder } = _decorator;
 
 /**
  * 提供VM环境，控制旗下所有VM节点
- * 一般用于 非全局的 VM绑定,VM 环境与 组件紧密相连
+ * 一般用于 非全局的 VM绑定,VM 环境与组件紧密相连
  * （Prefab 模式绑定）
  * VMParent 必须必其他组件优先执行
- * v0.1 修复bug ，现在可以支持 Parent 嵌套 （但是注意性能问题，不要频繁嵌套）
+ * 现在可以支持 Parent 嵌套（但是注意性能问题，不要频繁嵌套）
  */
 @ccclass
 @executionOrder(-1)
@@ -21,9 +22,6 @@ export default class VMParent extends GameComponent {
     /** 需要绑定的私有数据 */
     protected data: any = {};
 
-    /**VM 管理 */
-    public VM = VM;
-
     /**
      * [注意]不能直接覆盖此方法，如果需要覆盖。
      * 只能在该方法内部调用父类的实现 
@@ -32,7 +30,6 @@ export default class VMParent extends GameComponent {
      *           super.onLoad();
      *       }
      *   ``` 
-     * 
      */
     onLoad() {
         if (this.data == null) return;
@@ -46,20 +43,16 @@ export default class VMParent extends GameComponent {
         // console.group();
         for (let i = 0; i < comps.length; i++) {
             const comp = comps[i];
-            this.replaceVMPath(comp, this.tag)
+            this.replaceVMPath(comp, this.tag);
         }
         // console.groupEnd()
     }
 
     /**在 onLoad 完成 和 start() 之前调用，你可以在这里进行初始化数据等操作 */
-    protected onBind() {
-
-    }
+    protected onBind() { }
 
     /**在 onDestroy() 后调用,此时仍然可以获取绑定的 data 数据*/
-    protected onUnBind() {
-
-    }
+    protected onUnBind() { }
 
     private replaceVMPath(comp: Component, tag: string) {
         // @ts-ignore
@@ -88,13 +81,13 @@ export default class VMParent extends GameComponent {
 
     /** 未优化的遍历节点，获取VM 组件 */
     private getVMComponents() {
-        let comps = this.node.getComponentsInChildren('VMBase');
-        let parents = this.node.getComponentsInChildren('VMParent').filter(v => v.uuid !== this.uuid);  // 过滤掉自己
+        let comps = this.node.getComponentsInChildren(VMBase);
+        let parents = this.node.getComponentsInChildren(VMParent).filter(v => v.uuid !== this.uuid);  // 过滤掉自己
 
         //过滤掉不能赋值的parent
         let filters: any[] = [];
         parents.forEach((node: Component) => {
-            filters = filters.concat(node.getComponentsInChildren('VMBase'));
+            filters = filters.concat(node.getComponentsInChildren(VMBase));
         })
 
         comps = comps.filter((v) => filters.indexOf(v) < 0);

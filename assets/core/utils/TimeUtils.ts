@@ -35,4 +35,32 @@ export class TimeUtil {
             }, ms)
         });
     }
+
+    /** 格式化字符串 */
+    static format(countDown: number) {
+        let result: string = "";
+        let c: number = countDown;
+        let date: number = Math.floor(c / 86400);
+        c = c - date * 86400;
+        let hours: number = Math.floor(c / 3600);
+        c = c - hours * 3600;
+        let minutes: number = Math.floor(c / 60);
+        c = c - minutes * 60;
+        let seconds: number = c;
+
+        if (date == 0 && hours == 0 && minutes == 0 && seconds == 0) {
+            result = "00:00:00";
+        }
+        else {
+            hours += date * 24;
+            result = `${this.coverString(hours)}:${this.coverString(minutes)}:${this.coverString(seconds)}`;
+        }
+        return result;
+    }
+
+    /** 个位数的时间数据将字符串补位 */
+    private static coverString(value: number) {
+        if (value < 10) return "0" + value;
+        return value.toString();
+    }
 }

@@ -30,7 +30,7 @@ export class JsonOb<T> {
 
     private _callback;
 
-    /**对象属性劫持 */
+    /** 对象属性劫持 */
     private observe<T>(obj: T, path?: any) {
         if (OP.toString.call(obj) === types.array) {
             this.overrideArrayProto(obj, path);
@@ -55,7 +55,7 @@ export class JsonOb<T> {
                 set: function (newVal) {
                     //cc.log(newVal);
                     if (oldVal !== newVal) {
-                        if (OP.toString.call(newVal) === '[object Object]') {
+                        if (OP.toString.call(newVal) === types.obj) {
                             self.observe(newVal, pathArray);
                         }
 
@@ -67,11 +67,11 @@ export class JsonOb<T> {
             })
 
             // @ts-ignore
-            if (OP.toString.call(obj[key]) === types.obj || OP.toString.call(obj[key]) === types.array) {
-                // @ts-ignore
-                this.observe(obj[key], pathArray);
+            const o = obj[key];
+            if (OP.toString.call(o) === types.obj || OP.toString.call(o) === types.array) {
+                this.observe(o, pathArray);
             }
-        }, this)
+        }, this);
     }
 
     /**
@@ -92,9 +92,9 @@ export class JsonOb<T> {
             Object.defineProperty(overrideProto, method, {
                 value: function () {
                     var oldVal = this.slice();
-                    //调用原始原型上的方法  
+                    // 调用原始原型上的方法  
                     result = originalProto[method].apply(this, arguments);
-                    //继续监听新数组  
+                    // 继续监听新数组  
                     self.observe(this, path);
                     self._callback(this, oldVal, path);
                     return result;

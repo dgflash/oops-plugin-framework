@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2025-08-15 10:06:47
  */
-import { Node, NodePool, Prefab, Vec3, warn } from "cc";
+import { Node, NodePool, Vec3, warn } from "cc";
 import { resLoader } from "../../common/loader/ResLoader";
 import { ViewUtil } from "../../utils/ViewUtil";
 import { LayerCustomType } from "./LayerEnum";
@@ -23,61 +23,24 @@ export class LayerGame extends Node {
     }
 
     /**
-     * 添加游戏元素
-     * @param prefab    资源地址
-     * @param config    游戏元素自定义配置
-     */
-    add(prefab: string, config: GameElementConfig = {}): Node {
-        let params = this.setParams(prefab, config, false);
-        let node = ViewUtil.createPrefabNode(prefab, params.config.bundle);
-        if (node) {
-            // 设置自定义属性
-            this.setNode(node, config);
-
-            let lge = node.addComponent(LayerGameElement);
-            lge.params = params;
-            params.nodes.push(node);
-        }
-        return node;
-    }
-
-    /**
      * 加载资源并添加游戏元素
      * @param prefab    资源地址
      * @param config    游戏元素自定义配置
      */
-    addAsync(prefab: string, config: GameElementConfig = {}): Promise<Node> {
+    add(prefab: string, config: GameElementConfig = {}): Promise<Node> {
         return new Promise(async (resolve, reject) => {
-            let bundleName = config.bundle ? config.bundle : resLoader.defaultBundleName;
-            await resLoader.loadAsync(bundleName, prefab, Prefab);
-            let node = this.add(prefab, config);
+            let params = this.setParams(prefab, config, false);
+            let node = await ViewUtil.createPrefabNodeAsync(prefab, params.config.bundle);
+            if (node) {
+                // 设置自定义属性
+                this.setNode(node, config);
+
+                let lge = node.addComponent(LayerGameElement);
+                lge.params = params;
+                params.nodes.push(node);
+            }
             resolve(node);
         });
-    }
-
-    /**
-     * 添加游戏元素 - 支持对象池
-     * @param prefab    资源地址
-     * @param config    游戏元素自定义配置
-     */
-    addPool(prefab: string, config: GameElementConfig = {}): Node {
-        let params = this.setParams(prefab, config, true);
-        let node: Node = null!;
-        if (params.pool.size() > 0) {
-            node = params.pool.get()!;
-        }
-        else {
-            node = ViewUtil.createPrefabNode(prefab, params.config.bundle);
-            node.addComponent(LayerGameElement);
-        }
-
-        // 设置自定义属性
-        this.setNode(node, config);
-
-        let lge = node.getComponent(LayerGameElement)!;
-        lge.params = params;
-
-        return node;
     }
 
     /**
@@ -85,11 +48,24 @@ export class LayerGame extends Node {
      * @param prefab    资源地址
      * @param config    游戏元素自定义配置
      */
-    addPoolAsync(prefab: string, config: GameElementConfig = {}): Promise<Node> {
+    addPool(prefab: string, config: GameElementConfig = {}): Promise<Node> {
         return new Promise(async (resolve, reject) => {
-            let bundleName = config.bundle ? config.bundle : resLoader.defaultBundleName;
-            await resLoader.loadAsync(bundleName, prefab, Prefab);
-            let node = this.addPool(prefab, config);
+            let params = this.setParams(prefab, config, true);
+            let node: Node = null!;
+            if (params.pool.size() > 0) {
+                node = params.pool.get()!;
+            }
+            else {
+                node = await ViewUtil.createPrefabNodeAsync(prefab, params.config.bundle);
+                node.addComponent(LayerGameElement);
+            }
+
+            // 设置自定义属性
+            this.setNode(node, config);
+
+            let lge = node.getComponent(LayerGameElement)!;
+            lge.params = params;
+
             resolve(node);
         });
     }
@@ -123,7 +99,7 @@ export class LayerGame extends Node {
                         resLoader.release(lge.params.config.prefab!, lge.params.config.bundle);
                     }
                 }
-                node.removeFromParent();
+                node.destroy();
             }
         }
         else {
@@ -149,6 +125,7 @@ export class LayerGame extends Node {
             }
             this.elements.set(uuid, params);
         }
+        params.config.bundle = bundleName;
         return params;
     }
 
