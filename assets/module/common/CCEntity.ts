@@ -190,6 +190,7 @@ export abstract class CCEntity extends ecs.Entity {
      * @returns 业务逻辑组件实例
      */
     getBusiness<T extends CCBusiness<CCEntity>>(cls: any): T {
+        if (this.businesss == null) return null!;
         return this.businesss.get(cls) as T;
     }
 
@@ -198,8 +199,10 @@ export abstract class CCEntity extends ecs.Entity {
      * @param cls 业务逻辑组件类
      */
     removeBusiness(cls: any) {
-        let business = this.businesss.get(cls);
-        if (business) this.businesss.delete(cls);
+        if (this.businesss) {
+            let business = this.businesss.get(cls);
+            if (business) this.businesss.delete(cls);
+        }
     }
     //#endregion
 
