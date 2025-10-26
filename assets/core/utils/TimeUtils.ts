@@ -35,36 +35,4 @@ export class TimeUtil {
             }, ms)
         });
     }
-
-    /** 倒计时时秒格式为时间格式 */
-    static format(countDown: number) {
-        let c: number = countDown;
-        let date: number = Math.floor(c / 86400);
-        c = c - date * 86400;
-        let hours: number = Math.floor(c / 3600);
-        c = c - hours * 3600;
-        let minutes: number = Math.floor(c / 60);
-        c = c - minutes * 60;
-        let seconds: number = c;
-
-        let result: string = "";
-        let timeFormat: string = "{0}:{1}:{2}";
-        if (date == 0 && hours == 0 && minutes == 0 && seconds == 0) {
-            result = this.replace(timeFormat, "00", "00", "00");
-        }
-        else {
-            hours += date * 24;
-            result = this.replace(timeFormat, this.coverString(hours), this.coverString(minutes), this.coverString(seconds)); // 否则显示 "01:12:24"
-        }
-        return result;
-    }
-
-    private static coverString(value: number) {
-        if (value < 10) return "0" + value;
-        return value.toString();
-    }
-
-    private static replace(value: string, ...args: any): string {
-        return value.replace(/\{(\d+)\}/g, function (m, i) { return args[i]; });
-    }
 }
