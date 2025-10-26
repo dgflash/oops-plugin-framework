@@ -22,6 +22,8 @@ export class LabelChange extends LabelNumber {
     private speed: number = 0;               // 变化速度
     private end: number = 0;                 // 最终值
 
+    private _data: number = 0;
+
     /**
      * 变化到某值,如果从当前开始的begin传入null
      * @param {number} duration 
@@ -66,6 +68,7 @@ export class LabelChange extends LabelNumber {
         this.callback = callback;
         this.speed = (end - begin) / duration;
 
+        this._data = begin;
         this.num = begin;
         this.isBegin = true;
     }
@@ -87,25 +90,25 @@ export class LabelChange extends LabelNumber {
                 if (this.callback) this.callback();
                 return;
             }
-            let num = this.num + dt * this.speed;
+            this._data += dt * this.speed;
 
-            if (this.isInteger){
-                if(this.end < this.num)
-                {
-                    num = Math.floor(num);
+            if (this.isInteger) {
+                if (this.end < this._data) {
+                    this.num = Math.floor(this._data);
                 }
-                else{
-                    num = Math.ceil(num);
+                else {
+                    this.num = Math.ceil(this._data);
                 }
             }
-
+            else {
+                this.num = this._data;
+            }
             /** 变化完成 */
-            if (this.isEnd(num)) {
-                num = this.end;
+            if (this.isEnd(this._data)) {
+                this.num = this.end;
                 this.isBegin = false;
                 if (this.callback) this.callback();
-            }
-            this.num = num;
+            } 
         }
     }
 }
