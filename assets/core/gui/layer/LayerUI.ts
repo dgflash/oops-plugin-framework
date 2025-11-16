@@ -170,8 +170,10 @@ export class LayerUI extends Node {
             if (release === false) this.ui_cache.set(state.config.prefab, state);
 
             // 界面移出舞台
-            const comp = state.node.getComponent(LayerUIElement)!;
-            comp.remove(release);
+            if (state.valid) {
+                const comp = state.node.getComponent(LayerUIElement);
+                comp && comp.remove(release);
+            }
         }
     }
 
@@ -180,8 +182,8 @@ export class LayerUI extends Node {
         const state = this.ui_cache.get(prefabPath);
         if (state) {
             this.ui_cache.delete(prefabPath);
-            const comp = state.node.getComponent(LayerUIElement)!;
-            comp.remove(true);
+            const comp = state.node.getComponent(LayerUIElement);
+            comp && comp.remove(true);
         }
     }
 
