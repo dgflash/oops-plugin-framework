@@ -192,15 +192,43 @@ export class MessageManager {
      */
     dispatchEvent(event: string, ...args: any) {
         let list = this.events.get(event);
-
         if (list != null) {
             let eds: Array<EventData> = list.concat();
             let length = eds.length;
             for (let i = 0; i < length; i++) {
-                let eventBin = eds[i];
-                eventBin.listener.call(eventBin.object, event, ...args);
+                const ed = eds[i];
+                ed.listener.call(ed.object, event, ...args);
             }
         }
+    }
+
+    /** 
+     * 触发全局事件,支持同步与异步处理
+     * @param event      事件名
+     * @param args       事件参数
+     * @example          事件响应示例
+        onTest(event: string, args: any): Promise<void> {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    console.log("异步事逻辑");
+                    resolve();
+                }, 2000);
+            });
+        }
+     */
+    dispatchEventAsync(event: string, ...args: any): Promise<void> {
+        return new Promise(async (resolve, reject) => {
+            let list = this.events.get(event);
+            if (list != null) {
+                let eds: Array<EventData> = list.concat();
+                let length = eds.length;
+                for (let i = 0; i < length; i++) {
+                    const ed = eds[i];
+                    await Promise.resolve(ed.listener.call(ed.object, event, ...args));
+                }
+            }
+            resolve();
+        });
     }
 }
 
