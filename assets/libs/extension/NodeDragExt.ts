@@ -1,17 +1,18 @@
 
-import { EventTouch, Node, Vec2, js, v3 } from "cc";
+import type { EventTouch } from 'cc';
+import { Node, Vec2, js, v3 } from 'cc';
 
 /** 节点拖拽功能 */
 //@ts-ignore
-if (!Node.prototype["__$NodeDragExt$__"]) {
+if (!Node.prototype['__$NodeDragExt$__']) {
     //@ts-ignore
-    Node.prototype["__$NodeDragExt$__"] = true;
+    Node.prototype['__$NodeDragExt$__'] = true;
 
-    let _DragEvent = {
-        DRAG_START: "drag_start",
-        DRAG_MOVE: "drag_move",
-        DRAG_END: "drag_end"
-    }
+    const _DragEvent = {
+        DRAG_START: 'drag_start',
+        DRAG_MOVE: 'drag_move',
+        DRAG_END: 'drag_end'
+    };
 
     js.mixin(Node, {
         DragEvent: _DragEvent
@@ -45,14 +46,14 @@ if (!Node.prototype["__$NodeDragExt$__"]) {
             // DEV && console.log(`NodeDragExt -> onTouchBegin_0  ${this.name}`);
 
             // event.preventSwallow = true;
-            let pos = event.getUILocation();
+            const pos = event.getUILocation();
             this._dragStartPoint.set(pos);
             this._dragTesting = true;
         },
         onTouchMove_0: function (event: EventTouch) {
             if (!this._dragging && this._draggable && this._dragTesting) {
-                let sensitivity = 10;
-                let pos = event.getUILocation();
+                const sensitivity = 10;
+                const pos = event.getUILocation();
                 if (Math.abs(this._dragStartPoint.x - pos.x) < sensitivity
                     && Math.abs(this._dragStartPoint.y - pos.y) < sensitivity) {
                     return;
@@ -65,10 +66,10 @@ if (!Node.prototype["__$NodeDragExt$__"]) {
             }
 
             if (this._dragging) {
-                let delta = event.getUIDelta();
+                const delta = event.getUIDelta();
                 // /** 这里除以 世界缩放，在有缩放的时候拖拽不至于很怪 */
                 // this.position = this.position.add(v3(delta.x / this.worldScale.x, delta.y / this.worldScale.y, 0));
-                let newPos = v3(delta.x, delta.y, 0).add(this.position);
+                const newPos = v3(delta.x, delta.y, 0).add(this.position);
                 this.position = newPos;
                 this.emit(Node.DragEvent.DRAG_MOVE, event);
             }
@@ -127,7 +128,7 @@ if (!Node.prototype["__$NodeDragExt$__"]) {
     });
 
     // 如果 node 设置 node.draggable = true, 则启用 拖拽
-    Object.defineProperty(Node.prototype, "draggable", {
+    Object.defineProperty(Node.prototype, 'draggable', {
         get: function () {
             return this._draggable;
         },
@@ -141,7 +142,7 @@ if (!Node.prototype["__$NodeDragExt$__"]) {
         configurable: true
     });
 
-    Object.defineProperty(Node.prototype, "dragTesting", {
+    Object.defineProperty(Node.prototype, 'dragTesting', {
         get: function () {
             return this._dragTesting;
         },
@@ -156,7 +157,7 @@ if (!Node.prototype["__$NodeDragExt$__"]) {
     //----------------   Node 添加 拖拽属性 ----------------
 }
 
-declare module "cc" {
+declare module 'cc' {
     // 这里使用 interface 进行扩展，如果使用 class 则会与现有的 d.ts 有冲突
     export interface Node {
         /** 是否启动拖拽 - true为启动 */

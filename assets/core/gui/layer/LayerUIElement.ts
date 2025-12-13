@@ -4,13 +4,14 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-01-09 11:55:03
  */
-import { Component, Node, _decorator } from "cc";
-import { oops } from "../../Oops";
-import { UIConfig } from "./UIConfig";
+import type { Node } from 'cc';
+import { Component, _decorator } from 'cc';
+import { oops } from '../../Oops';
+import type { UIConfig } from './UIConfig';
 
-const EventOnAdded: string = "onAdded";
-const EventOnBeforeRemove: string = "onBeforeRemove";
-const EventOnRemoved: string = "onRemoved";
+const EventOnAdded = 'onAdded';
+const EventOnBeforeRemove = 'onBeforeRemove';
+const EventOnRemoved = 'onRemoved';
 
 const { ccclass } = _decorator;
 
@@ -38,7 +39,7 @@ export class LayerUIElement extends Component {
             }
 
             // 触发外部窗口显示前的事件（辅助实现自定义动画逻辑）
-            if (typeof this.state.params.onAdded === "function") {
+            if (typeof this.state.params.onAdded === 'function') {
                 this.state.params.onAdded(this.node, this.state.params.data);
             }
 
@@ -53,7 +54,7 @@ export class LayerUIElement extends Component {
             this.applyComponentsFunction(this.node, EventOnBeforeRemove, this.state.params.data);
 
             //  通知外部对象窗口组件上移除之前的事件（关闭窗口前的关闭动画处理）
-            if (typeof this.state.params.onBeforeRemove === "function") {
+            if (typeof this.state.params.onBeforeRemove === 'function') {
                 this.state.params.onBeforeRemove(this.node, this.onBeforeRemoveNext.bind(this, isDestroy));
             }
             else {
@@ -69,7 +70,7 @@ export class LayerUIElement extends Component {
     private onBeforeRemoveNext(isDestroy: boolean) {
         this.state.valid = false;
 
-        if (this.state.params && typeof this.state.params.onRemoved === "function") {
+        if (this.state.params && typeof this.state.params.onRemoved === 'function') {
             this.state.params.onRemoved(this.node, this.state.params.data);
         }
 
@@ -118,7 +119,7 @@ export class UIState {
     /** 窗口事件 */
     params: UIParam = null!;
     /** 是否在使用状态 */
-    valid: boolean = true;
+    valid = true;
     /** 界面根节点 */
     node: Node = null!;
 }
@@ -138,9 +139,9 @@ export interface UIParam {
      */
     onAdded?: (node: Node, params: any) => void,
 
-    /** 
+    /**
      * 如果指定onBeforeRemoved，则next必须调用，否则节点不会被正常删除。
-     * 
+     *
      * 比如希望节点做一个FadeOut然后删除，则可以在`onBeforeRemoved`当中播放action动画，动画结束后调用next
      * @param node   当前界面节点
      * @param next   回调方法

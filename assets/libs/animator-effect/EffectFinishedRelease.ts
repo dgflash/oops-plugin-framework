@@ -9,21 +9,21 @@ import { Animation, Component, ParticleSystem, _decorator, sp } from 'cc';
 import { EffectEvent } from './EffectEvent';
 import { message } from '../../core/common/event/MessageManager';
 
-const { ccclass, property } = _decorator;
+const { ccclass } = _decorator;
 
 /** 动画播放完释放特效 - Animation、ParticleSystem */
 @ccclass('EffectFinishedRelease')
 export class EffectFinishedRelease extends Component {
     /** 动画最大播放时间 */
-    private maxDuration: number = 0;
+    private maxDuration = 0;
 
     protected onEnable() {
         // SPINE动画
-        let spine = this.getComponent(sp.Skeleton);
+        const spine = this.getComponent(sp.Skeleton);
         if (spine) {
             // 播放第一个动画
-            let json = (spine.skeletonData!.skeletonJson! as any).animations;
-            for (let name in json) {
+            const json = (spine.skeletonData!.skeletonJson! as any).animations;
+            for (const name in json) {
                 spine.setCompleteListener(this.onRecovery.bind(this));
                 spine.setAnimation(0, name, false);
                 break;
@@ -31,14 +31,14 @@ export class EffectFinishedRelease extends Component {
         }
         else {
             // COCOS动画
-            let anims: Animation[] = this.node.getComponentsInChildren(Animation);
+            const anims: Animation[] = this.node.getComponentsInChildren(Animation);
             if (anims.length > 0) {
-                anims.forEach(animator => {
-                    let aniName = animator.defaultClip?.name;
+                anims.forEach((animator) => {
+                    const aniName = animator.defaultClip?.name;
                     if (aniName) {
-                        let aniState = animator.getState(aniName);
+                        const aniState = animator.getState(aniName);
                         if (aniState) {
-                            let duration = aniState.duration;
+                            const duration = aniState.duration;
                             this.maxDuration = duration > this.maxDuration ? duration : this.maxDuration;
                         }
                     }
@@ -48,13 +48,13 @@ export class EffectFinishedRelease extends Component {
             }
             // 粒子动画
             else if (ParticleSystem) {
-                let particles: ParticleSystem[] = this.node.getComponentsInChildren(ParticleSystem);
-                particles.forEach(particle => {
+                const particles: ParticleSystem[] = this.node.getComponentsInChildren(ParticleSystem);
+                particles.forEach((particle) => {
                     particle.clear();
                     particle.stop();
-                    particle.play()
+                    particle.play();
 
-                    let duration: number = particle.duration;
+                    const duration: number = particle.duration;
                     this.maxDuration = duration > this.maxDuration ? duration : this.maxDuration;
                 });
                 this.scheduleOnce(this.onRecovery.bind(this), this.maxDuration);

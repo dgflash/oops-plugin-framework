@@ -5,9 +5,9 @@
  * @LastEditTime: 2022-11-01 15:47:16
  */
 
-import { BuildTimeConstants } from "./BuildTimeConstants";
-import { GameConfig } from "./GameConfig";
-import { GameQueryConfig } from "./GameQueryConfig";
+import { BuildTimeConstants } from './BuildTimeConstants';
+import type { GameConfig } from './GameConfig';
+import type { GameQueryConfig } from './GameQueryConfig';
 
 /** 游戏配置静态访问类 */
 export class Config {

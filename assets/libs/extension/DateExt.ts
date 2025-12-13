@@ -53,11 +53,11 @@ Date.prototype.format = function (format: string): string {
 
 Date.prototype.addTime = function (addMillis: number): Date {
     return new Date(this.getTime() + addMillis);
-}
+};
 
 Date.prototype.range = function (d1: number | Date, d2: number | Date): boolean {
-    let t1: number = -1;
-    let t2: number = -1;
+    let t1 = -1;
+    let t2 = -1;
     if (d1 instanceof Date)
         t1 = d1.getTime();
     else
@@ -67,11 +67,11 @@ Date.prototype.range = function (d1: number | Date, d2: number | Date): boolean 
     else
         t2 = d2;
 
-    let now = this.getTime();
+    const now = this.getTime();
     if (now >= t1 && now < t2) {
         return true;
     }
     return false;
-}
+};
 
 export { };

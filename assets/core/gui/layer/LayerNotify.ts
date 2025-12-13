@@ -4,12 +4,12 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 13:44:12
  */
-import { BlockInputEvents, Node, instantiate } from "cc";
-import { EDITOR } from "cc/env";
-import { ViewUtil } from "../../utils/ViewUtil";
-import { PromptResType } from "../GuiEnum";
-import { Notify } from "../prompt/Notify";
-import { LayerHelper } from "./LayerHelper";
+import { BlockInputEvents, Node, instantiate } from 'cc';
+import { EDITOR } from 'cc/env';
+import { ViewUtil } from '../../utils/ViewUtil';
+import { PromptResType } from '../GuiEnum';
+import { Notify } from '../prompt/Notify';
+import { LayerHelper } from './LayerHelper';
 
 /* 滚动消息提示层 */
 export class LayerNotify extends Node {
@@ -74,9 +74,9 @@ export class LayerNotify extends Node {
         }
 
         this.notify.parent = this;
-        let childNode = instantiate(this.notifyItem);
-        let prompt = childNode.getChildByName("prompt")!;
-        let toastCom = prompt.getComponent(Notify)!;
+        const childNode = instantiate(this.notifyItem);
+        const prompt = childNode.getChildByName('prompt')!;
+        const toastCom = prompt.getComponent(Notify)!;
         childNode.parent = this.notify;
 
         toastCom.onComplete = () => {

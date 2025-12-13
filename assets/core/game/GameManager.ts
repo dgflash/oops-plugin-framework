@@ -4,7 +4,8 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 12:09:55
  */
-import { Node, director } from 'cc';
+import type { Node } from 'cc';
+import { director } from 'cc';
 import { GameComponent } from '../../module/common/GameComponent';
 import { resLoader } from '../common/loader/ResLoader';
 import { ViewUtil } from '../utils/ViewUtil';
@@ -34,7 +35,7 @@ export class GameManager {
      */
     open(parent: Node | GameComponent, prefabPath: string, params?: ElementParams): Promise<Node> {
         return new Promise(async (resolve, reject) => {
-            let bundleName: string = null!
+            let bundleName: string = null!;
             if (params && params.bundle) {
                 bundleName = params.bundle;
             }

@@ -1,4 +1,4 @@
-import { _decorator, Component, Enum, Label, lerp } from "cc";
+import { _decorator, Component, Enum, Label, lerp } from 'cc';
 
 const { ccclass, property, menu } = _decorator;
 
@@ -24,23 +24,23 @@ type CustomCallback = (curValue: number, targetValue: number) => string;
  * 将会使用 lerp 自动滚动数字到目标数值
  */
 @ccclass
-@menu("OopsFramework/UI/Roll Number （滚动数字）")
+@menu('OopsFramework/UI/Roll Number （滚动数字）')
 export class BhvRollNumber extends Component {
     @property({
         type: Label,
         tooltip: '需要滚动的 Label 组件,如果不进行设置，就会从自己的节点自动查找'
     })
-    label: Label | null = null;
+        label: Label | null = null;
 
     @property({
         tooltip: '当前的滚动值(开始的滚动值)'
     })
-    value: number = 0;
+        value = 0;
 
     @property({
         tooltip: '是否显示正负符号'
     })
-    showPlusSymbol: boolean = false;
+        showPlusSymbol = false;
 
     @property({
         tooltip: '滚动的目标值'
@@ -53,7 +53,7 @@ export class BhvRollNumber extends Component {
         this.scroll();//数据变动了就开始滚动
     }
     @property
-    private _targetValue: number = 100;
+    private _targetValue = 100;
 
     /** 滚动的线性差值 0 ~ 1 */
     @property({
@@ -62,12 +62,12 @@ export class BhvRollNumber extends Component {
         max: 1,
         min: 0
     })
-    lerp = 0.1;
+        lerp = 0.1;
 
     @property({
         tooltip: '是否在开始时就播放'
     })
-    private playAtStart: boolean = true;
+    private playAtStart = true;
 
     @property({
         tooltip: '在滚动之前会等待几秒',
@@ -75,7 +75,7 @@ export class BhvRollNumber extends Component {
         max: 1,
         min: 0
     })
-    private runWaitTimer: number = 0;
+    private runWaitTimer = 0;
 
     @property({
         type: Enum(VALUE_TYPE),
@@ -86,7 +86,7 @@ export class BhvRollNumber extends Component {
     /** 自定义string 处理函数 */
     onCustom: CustomCallback | null = null;
 
-    private isScrolling: boolean = false;
+    private isScrolling = false;
 
     onLoad() {
         if (this.label == undefined) {
@@ -101,7 +101,7 @@ export class BhvRollNumber extends Component {
 
     /** 开始滚动数字 */
     scroll() {
-        if (this.isScrolling) return;       //  已经在滚动了就返回
+        if (this.isScrolling) return; //  已经在滚动了就返回
         if (this.runWaitTimer > 0) {
             this.scheduleOnce(() => {
                 this.isScrolling = true;
@@ -134,49 +134,49 @@ export class BhvRollNumber extends Component {
 
     /** 更新文本 */
     updateLabel() {
-        let value = this.value;
+        const value = this.value;
         let string = '';
 
         switch (this.valueType) {
-            case VALUE_TYPE.INTEGER:                        // 最终显示整数类型
-                string = Math.round(value) + '';
-                break;
-            case VALUE_TYPE.FIXED_2:                        // 最终显示两位小数类型
-                string = value.toFixed(2);
-                break;
-            case VALUE_TYPE.TIMER:                          // 最终显示 计时器类型
-                string = parseTimer(value);
-                break;
-            case VALUE_TYPE.PERCENTAGE:                     // 最终显示 百分比
-                string = Math.round(value * 100) + '%';
-                break;
-            case VALUE_TYPE.KMBT_FIXED2:                    // 长单位缩放,只计算到 KMBT
-                if (value >= Number.MAX_VALUE) {
-                    string = 'MAX';
-                }
-                else if (value > 1000000000000) {
-                    string = (value / 1000000000000).toFixed(2) + 'T';
-                }
-                else if (value > 1000000000) {
-                    string = (value / 1000000000).toFixed(2) + 'B';
-                }
-                else if (value > 1000000) {
-                    string = (value / 1000000).toFixed(2) + 'M';
-                }
-                else if (value > 1000) {
-                    string = (value / 1000).toFixed(2) + "K";
-                }
-                else {
-                    string = Math.round(value).toString();
-                }
-                break;
-            case VALUE_TYPE.CUSTOMER: // 自定义设置模式 (通过给定的自定义函数..处理)
-                if (this.onCustom) {
-                    string = this.onCustom(this.value, this.targetValue);
-                }
-                break;
-            default:
-                break;
+        case VALUE_TYPE.INTEGER: // 最终显示整数类型
+            string = Math.round(value) + '';
+            break;
+        case VALUE_TYPE.FIXED_2: // 最终显示两位小数类型
+            string = value.toFixed(2);
+            break;
+        case VALUE_TYPE.TIMER: // 最终显示 计时器类型
+            string = parseTimer(value);
+            break;
+        case VALUE_TYPE.PERCENTAGE: // 最终显示 百分比
+            string = Math.round(value * 100) + '%';
+            break;
+        case VALUE_TYPE.KMBT_FIXED2: // 长单位缩放,只计算到 KMBT
+            if (value >= Number.MAX_VALUE) {
+                string = 'MAX';
+            }
+            else if (value > 1000000000000) {
+                string = (value / 1000000000000).toFixed(2) + 'T';
+            }
+            else if (value > 1000000000) {
+                string = (value / 1000000000).toFixed(2) + 'B';
+            }
+            else if (value > 1000000) {
+                string = (value / 1000000).toFixed(2) + 'M';
+            }
+            else if (value > 1000) {
+                string = (value / 1000).toFixed(2) + 'K';
+            }
+            else {
+                string = Math.round(value).toString();
+            }
+            break;
+        case VALUE_TYPE.CUSTOMER: // 自定义设置模式 (通过给定的自定义函数..处理)
+            if (this.onCustom) {
+                string = this.onCustom(this.value, this.targetValue);
+            }
+            break;
+        default:
+            break;
         }
 
         // 显示正负符号
@@ -191,7 +191,7 @@ export class BhvRollNumber extends Component {
         }
 
         if (this.label) {
-            if (string === this.label.string) return;   // 保证效率,如果上次赋值过,就不重复赋值
+            if (string === this.label.string) return; // 保证效率,如果上次赋值过,就不重复赋值
             this.label.string = string;
         }
     }
@@ -210,11 +210,11 @@ export class BhvRollNumber extends Component {
 }
 
 /** 时间格式转换 */
-function parseTimer(timer: number = 0, isFullTimer: boolean = true) {
-    let t: number = Math.floor(timer);
-    let hours: number = Math.floor(t / 3600);
-    let mins: number = Math.floor((t % 3600) / 60);
-    let secs: number = t % 60;
+function parseTimer(timer = 0, isFullTimer = true) {
+    const t: number = Math.floor(timer);
+    const hours: number = Math.floor(t / 3600);
+    const mins: number = Math.floor((t % 3600) / 60);
+    const secs: number = t % 60;
     let m = '' + mins;
     let s = '' + secs;
     if (secs < 10) s = '0' + secs;

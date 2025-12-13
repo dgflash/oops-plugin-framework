@@ -4,8 +4,8 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-09 18:10:50
  */
-import { CallbackObject, IRequestProtocol, NetData } from "./NetInterface";
-import { NetConnectOptions, NetNode } from "./NetNode";
+import type { CallbackObject, IRequestProtocol, NetData } from './NetInterface';
+import type { NetConnectOptions, NetNode } from './NetNode';
 
 /**
  * 使用流程文档可参考、简化与服务器对接、使用新版API体验，可进入下面地址获取新版本，替换network目录中的内容
@@ -33,13 +33,13 @@ export class NetManager {
      * @param channelId  通道编号
      * @example
     // 游戏服务器心跳协议
-    class GameProtocol extends NetProtocolPako { 
+    class GameProtocol extends NetProtocolPako {
         // 自定义心跳协议
-        getHearbeat(): NetData { 
+        getHearbeat(): NetData {
             return '{"action":"LoginAction","method":"heart","data":"null","callback":"LoginAction_heart"}';
         }
     }
-        
+
     var net = new NetNodeGame();
     var ws = new WebSock();        // WebSocket 网络连接对象
     var gp = new GameProtocol();   // 网络通讯协议对象
@@ -47,7 +47,7 @@ export class NetManager {
     net.init(ws, gp, gt);
     NetManager.getInstance().setNetNode(net, NetChannelType.Game);
      */
-    setNetNode(node: NetNode, channelId: number = 0) {
+    setNetNode(node: NetNode, channelId = 0) {
         this._channels[channelId] = node;
     }
 
@@ -67,7 +67,7 @@ export class NetManager {
     }
     NetManager.getInstance().connect(options, NetChannelType.Game);
      */
-    connect(options: NetConnectOptions, channelId: number = 0): boolean {
+    connect(options: NetConnectOptions, channelId = 0): boolean {
         if (this._channels[channelId]) {
             return this._channels[channelId].connect(options);
         }
@@ -75,8 +75,8 @@ export class NetManager {
     }
 
     /** 节点连接发送数据*/
-    send(buf: NetData, force: boolean = false, channelId: number = 0): number {
-        let node = this._channels[channelId];
+    send(buf: NetData, force = false, channelId = 0): number {
+        const node = this._channels[channelId];
         if (node) {
             return node!.send(buf, force);
         }
@@ -100,8 +100,8 @@ export class NetManager {
     }
     return this.request(protocol, rspObject, showTips, force);
      */
-    request(reqProtocol: IRequestProtocol, rspObject: CallbackObject, showTips: boolean = true, force: boolean = false, channelId: number = 0) {
-        let node = this._channels[channelId];
+    request(reqProtocol: IRequestProtocol, rspObject: CallbackObject, showTips = true, force = false, channelId = 0) {
+        const node = this._channels[channelId];
         if (node) {
             node.request(reqProtocol, rspObject, showTips, force);
         }
@@ -124,8 +124,8 @@ export class NetManager {
     }
     return this.request(protocol, rspObject, showTips, force);
      */
-    requestUnique(reqProtocol: IRequestProtocol, rspObject: CallbackObject, showTips: boolean = true, force: boolean = false, channelId: number = 0): boolean {
-        let node = this._channels[channelId];
+    requestUnique(reqProtocol: IRequestProtocol, rspObject: CallbackObject, showTips = true, force = false, channelId = 0): boolean {
+        const node = this._channels[channelId];
         if (node) {
             return node.requestUnique(reqProtocol, rspObject, showTips, force);
         }
@@ -137,10 +137,10 @@ export class NetManager {
      * @param code        关闭码
      * @param reason      关闭原因
      * @param channelId   通道编号
-     * @example 
+     * @example
      * NetManager.getInstance().close(undefined, undefined, NetChannelType.Game);
      */
-    close(code?: number, reason?: string, channelId: number = 0) {
+    close(code?: number, reason?: string, channelId = 0) {
         if (this._channels[channelId]) {
             return this._channels[channelId].closeSocket(code, reason);
         }

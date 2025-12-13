@@ -1,9 +1,10 @@
-import { ecs } from "./ECS";
-import { ECSEntity } from "./ECSEntity";
-import { ECSMask } from "./ECSMask";
-import { CompCtor, CompType, ECSModel } from "./ECSModel";
+import type { ecs } from './ECS';
+import type { ECSEntity } from './ECSEntity';
+import { ECSMask } from './ECSMask';
+import type { CompCtor, CompType } from './ECSModel';
+import { ECSModel } from './ECSModel';
 
-let macherId: number = 1;
+let macherId = 1;
 
 /**
  * 筛选规则间是“与”的关系
@@ -12,17 +13,17 @@ let macherId: number = 1;
 export class ECSMatcher implements ecs.IMatcher {
     protected rules: BaseOf[] = [];
     protected _indices: number[] | null = null;
-    public isMatch!: (entity: ECSEntity) => boolean;
-    public mid: number = -1;
+    isMatch!: (entity: ECSEntity) => boolean;
+    mid = -1;
 
     private _key: string | null = null;
-    public get key(): string {
+    get key(): string {
         if (!this._key) {
             let s = '';
             for (let i = 0; i < this.rules.length; i++) {
-                s += this.rules[i].getKey()
+                s += this.rules[i].getKey();
                 if (i < this.rules.length - 1) {
-                    s += ' && '
+                    s += ' && ';
                 }
             }
             this._key = s;
@@ -69,15 +70,15 @@ export class ECSMatcher implements ecs.IMatcher {
 
     /**
      * 表示关注只拥有这些组件的实体
-     * 
+     *
      * 注意：
      *  不是特殊情况不建议使用onlyOf。因为onlyOf会监听所有组件的添加和删除事件。
      * @param args 组件索引
      */
     onlyOf(...args: CompType<ecs.IComp>[]): ECSMatcher {
         this.rules.push(new AllOf(...args));
-        let otherTids: CompType<ecs.IComp>[] = [];
-        for (let ctor of ECSModel.compCtors) {
+        const otherTids: CompType<ecs.IComp>[] = [];
+        for (const ctor of ECSModel.compCtors) {
             if (args.indexOf(ctor) < 0) {
                 otherTids.push(ctor);
             }
@@ -89,7 +90,7 @@ export class ECSMatcher implements ecs.IMatcher {
 
     /**
      * 不包含指定的任意一个组件
-     * @param args 
+     * @param args
      */
     excludeOf(...args: CompType<ecs.IComp>[]) {
         this.rules.push(new ExcludeOf(...args));
@@ -118,7 +119,7 @@ export class ECSMatcher implements ecs.IMatcher {
     }
 
     private isMatchMore(entity: ECSEntity): boolean {
-        for (let rule of this.rules) {
+        for (const rule of this.rules) {
             if (!rule.isMatch(entity)) {
                 return false;
             }
@@ -127,9 +128,9 @@ export class ECSMatcher implements ecs.IMatcher {
     }
 
     clone(): ECSMatcher {
-        let newMatcher = new ECSMatcher();
+        const newMatcher = new ECSMatcher();
         newMatcher.mid = macherId++;
-        this.rules.forEach(rule => newMatcher.rules.push(rule));
+        this.rules.forEach((rule) => newMatcher.rules.push(rule));
         return newMatcher;
     }
 }
@@ -141,9 +142,9 @@ abstract class BaseOf {
 
     constructor(...args: CompType<ecs.IComp>[]) {
         let componentTypeId = -1;
-        let len = args.length;
+        const len = args.length;
         for (let i = 0; i < len; i++) {
-            if (typeof (args[i]) === "number") {
+            if (typeof (args[i]) === 'number') {
                 componentTypeId = args[i] as number;
             }
             else {
@@ -159,7 +160,9 @@ abstract class BaseOf {
             }
         }
         if (len > 1) {
-            this.indices.sort((a, b) => { return a - b; }); // 对组件类型id进行排序，这样关注相同组件的系统就能共用同一个group
+            this.indices.sort((a, b) => {
+                return a - b;
+            }); // 对组件类型id进行排序，这样关注相同组件的系统就能共用同一个group
         }
     }
 
@@ -176,7 +179,7 @@ abstract class BaseOf {
  * 用于描述包含任意一个这些组件的实体
  */
 class AnyOf extends BaseOf {
-    public isMatch(entity: ECSEntity): boolean {
+    isMatch(entity: ECSEntity): boolean {
         // @ts-ignore
         return this.mask.or(entity.mask);
     }
@@ -190,7 +193,7 @@ class AnyOf extends BaseOf {
  * 用于描述包含了“这些”组件的实体，这个实体除了包含这些组件还可以包含其他组件
  */
 class AllOf extends BaseOf {
-    public isMatch(entity: ECSEntity): boolean {
+    isMatch(entity: ECSEntity): boolean {
         // @ts-ignore
         return this.mask.and(entity.mask);
     }
@@ -204,11 +207,11 @@ class AllOf extends BaseOf {
  * 不包含指定的任意一个组件
  */
 class ExcludeOf extends BaseOf {
-    public getKey(): string {
+    getKey(): string {
         return 'excludeOf:' + this.toString();
     }
 
-    public isMatch(entity: ECSEntity): boolean {
+    isMatch(entity: ECSEntity): boolean {
         // @ts-ignore
         return !this.mask.or(entity.mask);
     }

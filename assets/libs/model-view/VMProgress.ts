@@ -4,10 +4,10 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-08-11 15:43:34
  */
-import { CCString, _decorator } from "cc";
-import { StringFormatFunction } from "./StringFormat";
-import { VMCustom } from "./VMCustom";
-import { VMEnv } from "./VMEnv";
+import { CCString, _decorator } from 'cc';
+import { StringFormatFunction } from './StringFormat';
+import { VMCustom } from './VMCustom';
+import { VMEnv } from './VMEnv';
 
 const { ccclass, property, menu, help } = _decorator;
 
@@ -19,7 +19,7 @@ export default class VMProgress extends VMCustom {
         visible: false,
         override: true
     })
-    watchPath: string = '';
+        watchPath = '';
 
     @property({
         type: [CCString],
@@ -27,7 +27,7 @@ export default class VMProgress extends VMCustom {
     })
     protected watchPathArr: string[] = ['[min]', '[max]'];
 
-    templateMode: boolean = true;
+    templateMode = true;
 
     @property({
         visible: function () {
@@ -36,7 +36,7 @@ export default class VMProgress extends VMCustom {
         },
         tooltip: '字符串格式化，和 VMLabel 的字段一样，需要填入对应的格式化字符串'
     })
-    stringFormat: string = '';
+        stringFormat = '';
 
     onLoad() {
         if (this.watchPathArr.length < 2 || this.watchPathArr[0] == '[min]' || this.watchPathArr[1] == '[max]') {
@@ -52,18 +52,18 @@ export default class VMProgress extends VMCustom {
     }
 
     onValueInit() {
-        let max = this.watchPathArr.length;
+        const max = this.watchPathArr.length;
         for (let i = 0; i < max; i++) {
             this.templateValueArr[i] = this.VM.getValue(this.watchPathArr[i]);
         }
 
-        let value = this.templateValueArr[0] / this.templateValueArr[1];
+        const value = this.templateValueArr[0] / this.templateValueArr[1];
         this.setComponentValue(value);
     }
 
     setComponentValue(value: any) {
         if (this.stringFormat !== '') {
-            let res = StringFormatFunction.deal(value, this.stringFormat);
+            const res = StringFormatFunction.deal(value, this.stringFormat);
             super.setComponentValue(res);
         }
         else {
@@ -81,9 +81,9 @@ export default class VMProgress extends VMCustom {
     onValueChanged(n: any, o: any, pathArr: string[]) {
         if (this.templateMode === false) return;
 
-        let path = pathArr.join('.');
+        const path = pathArr.join('.');
         // 寻找缓存位置
-        let index = this.watchPathArr.findIndex(v => v === path);
+        const index = this.watchPathArr.findIndex((v) => v === path);
         if (index >= 0) {
             // 如果是所属的路径，就可以替换文本了
             this.templateValueArr[index] = n; //缓存值

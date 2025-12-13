@@ -4,8 +4,8 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-09 17:42:19
  */
-import { Logger } from "../../core/common/log/Logger";
-import { ISocket, MessageFunc, NetData } from "./NetInterface";
+import { Logger } from '../../core/common/log/Logger';
+import type { ISocket, MessageFunc, NetData } from './NetInterface';
 
 type Connected = (event: any) => void;
 
@@ -16,7 +16,7 @@ type Connected = (event: any) => void;
  * 3. 数据发送与接收
  */
 export class WebSock implements ISocket {
-    private _ws: WebSocket | null = null;              // websocket对象
+    private _ws: WebSocket | null = null; // websocket对象
 
     /** 网络连接成功事件 */
     onConnected: ((this: WebSocket, ev: Event) => any) | null = null;
@@ -31,7 +31,7 @@ export class WebSock implements ISocket {
     connect(options: any) {
         if (this._ws) {
             if (this._ws.readyState === WebSocket.CONNECTING) {
-                Logger.logNet("websocket connecting, wait for a moment...")
+                Logger.logNet('websocket connecting, wait for a moment...');
                 return false;
             }
         }
@@ -41,16 +41,16 @@ export class WebSock implements ISocket {
             url = options.url;
         }
         else {
-            let ip = options.ip;
-            let port = options.port;
-            let protocol = options.protocol;
+            const ip = options.ip;
+            const port = options.port;
+            const protocol = options.protocol;
             url = `${protocol}://${ip}:${port}`;
         }
 
         this._ws = new WebSocket(url);
-        this._ws.binaryType = options.binaryType ? options.binaryType : "arraybuffer";
+        this._ws.binaryType = options.binaryType ? options.binaryType : 'arraybuffer';
         this._ws.onmessage = (event) => {
-            let onMessage: MessageFunc = this.onMessage!;
+            const onMessage: MessageFunc = this.onMessage!;
             onMessage(event.data);
         };
         this._ws.onopen = this.onConnected;
@@ -60,7 +60,7 @@ export class WebSock implements ISocket {
     }
 
     /**
-     * 发送数据 
+     * 发送数据
      * @param buffer 网络数据
      */
     send(buffer: NetData): number {

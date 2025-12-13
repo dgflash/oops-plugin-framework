@@ -4,8 +4,9 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-01-19 14:52:12
  */
-import { Animation, AnimationClip, EventTouch, instantiate, Node, Prefab, Size, UITransform, v3, Vec3 } from "cc";
-import { resLoader } from "../common/loader/ResLoader";
+import type { EventTouch, Node, Vec3 } from 'cc';
+import { Animation, AnimationClip, instantiate, Prefab, Size, UITransform, v3 } from 'cc';
+import { resLoader } from '../common/loader/ResLoader';
 
 /** 显示对象工具 */
 export class ViewUtil {
@@ -16,10 +17,10 @@ export class ViewUtil {
      * @param obj    绑定的js对象 (可选)
      */
     static nodeTreeInfoLite(parent: Node, obj?: Map<string, Node>): Map<string, Node> | null {
-        let map: Map<string, Node> = obj || new Map();
-        let items = parent.children;
+        const map: Map<string, Node> = obj || new Map();
+        const items = parent.children;
         for (let i = 0; i < items.length; i++) {
-            let _node = items[i];
+            const _node = items[i];
             if (_node.name.length > 0) {
                 if (map.has(_node.name))
                     console.error(`使用ViewUtil.nodeTreeInfoLite方法时发现重复的节点名称【${_node.name}】`);
@@ -38,10 +39,10 @@ export class ViewUtil {
      * @param nodes   返回的数组（可选）
      */
     static findNodes(reg: RegExp, parent: Node, nodes?: Array<Node>): Array<Node> {
-        let ns: Array<Node> = nodes || [];
-        let items = parent.children;
+        const ns: Array<Node> = nodes || [];
+        const items = parent.children;
         for (let i = 0; i < items.length; i++) {
-            let _name: string = items[i].name;
+            const _name: string = items[i].name;
             if (reg.test(_name)) {
                 ns.push(items[i]);
             }
@@ -125,7 +126,7 @@ export class ViewUtil {
      * @param onlyOne           是否唯一
      * @param isDefaultClip     是否播放默认动画剪辑
      */
-    static addNodeAnimation(path: string, node: Node, onlyOne: boolean = true, isDefaultClip: boolean = false) {
+    static addNodeAnimation(path: string, node: Node, onlyOne = true, isDefaultClip = false) {
         if (!node || !node.isValid) {
             return;
         }
@@ -159,7 +160,7 @@ export class ViewUtil {
 
         if (anim.getState(clip.name)) {
             anim.play(clip.name);
-            return
+            return;
         }
         anim.createState(clip, clip!.name);
         anim.play(clip!.name);

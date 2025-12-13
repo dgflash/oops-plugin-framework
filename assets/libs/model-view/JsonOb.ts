@@ -13,7 +13,7 @@ const OP = Object.prototype;
 const types = {
     obj: '[object Object]',
     array: '[object Array]'
-}
+};
 const OAM = ['push', 'pop', 'shift', 'unshift', 'sort', 'reverse', 'splice'];
 
 /**
@@ -38,7 +38,7 @@ export class JsonOb<T> {
 
         // @ts-ignore  注：避免API生成工具报错
         Object.keys(obj).forEach((key) => {
-            let self = this;
+            const self = this;
             // @ts-ignore
             let oldVal = obj[key];
             let pathArray = path && path.slice();
@@ -64,7 +64,7 @@ export class JsonOb<T> {
                         self._callback(newVal, ov, pathArray);
                     }
                 }
-            })
+            });
 
             // @ts-ignore
             const o = obj[key];
@@ -76,33 +76,33 @@ export class JsonOb<T> {
 
     /**
      * 对数组类型进行动态绑定
-     * @param array 
-     * @param path 
+     * @param array
+     * @param path
      */
     private overrideArrayProto(array: any, path: any) {
-        // 保存原始 Array 原型  
-        var originalProto = Array.prototype;
-        // 通过 Object.create 方法创建一个对象，该对象的原型是Array.prototype  
-        var overrideProto = Object.create(Array.prototype);
-        var self = this;
-        var result;
+        // 保存原始 Array 原型
+        const originalProto = Array.prototype;
+        // 通过 Object.create 方法创建一个对象，该对象的原型是Array.prototype
+        const overrideProto = Object.create(Array.prototype);
+        const self = this;
+        let result;
 
-        // 遍历要重写的数组方法  
+        // 遍历要重写的数组方法
         OAM.forEach((method: any) => {
             Object.defineProperty(overrideProto, method, {
                 value: function () {
-                    var oldVal = this.slice();
-                    // 调用原始原型上的方法  
+                    const oldVal = this.slice();
+                    // 调用原始原型上的方法
                     result = originalProto[method].apply(this, arguments);
-                    // 继续监听新数组  
+                    // 继续监听新数组
                     self.observe(this, path);
                     self._callback(this, oldVal, path);
                     return result;
                 }
-            })
+            });
         });
 
-        // 最后 让该数组实例的 __proto__ 属性指向 假的原型 overrideProto  
+        // 最后 让该数组实例的 __proto__ 属性指向 假的原型 overrideProto
         array['__proto__'] = overrideProto;
     }
 }

@@ -4,7 +4,8 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-03-06 14:40:34
  */
-import { Animation, Node, NodePool, ParticleSystem, Prefab, sp, Vec3 } from 'cc';
+import type { Node, Vec3 } from 'cc';
+import { Animation, NodePool, ParticleSystem, Prefab, sp } from 'cc';
 import { message } from '../../core/common/event/MessageManager';
 import { resLoader } from '../../core/common/loader/ResLoader';
 import { ViewUtil } from '../../core/utils/ViewUtil';
@@ -38,7 +39,7 @@ export class EffectSingleCase {
         return this._instance;
     }
 
-    private _speed: number = 1;
+    private _speed = 1;
     /** 全局动画播放速度 */
     get speed(): number {
         return this._speed;
@@ -70,7 +71,7 @@ export class EffectSingleCase {
      * @param path  预制资源路径
      */
     getCount(path: string): number {
-        var np = this.effects.get(path);
+        const np = this.effects.get(path);
         if (np) {
             return np.size();
         }
@@ -90,7 +91,7 @@ export class EffectSingleCase {
             await resLoader.load(bundleName, path, Prefab);
 
             for (let i = 0; i < count; i++) {
-                let node = ViewUtil.createPrefabNode(path, bundleName);
+                const node = ViewUtil.createPrefabNode(path, bundleName);
                 //@ts-ignore
                 node.res_path = path;
                 np.put(node);
@@ -107,7 +108,7 @@ export class EffectSingleCase {
      */
     loadAndShow(path: string, parent?: Node, params?: IEffectParams): Promise<Node> {
         return new Promise(async (resolve, reject) => {
-            var np = this.effects.get(path);
+            const np = this.effects.get(path);
             if (np == undefined) {
                 if (params && params.bundleName) {
                     this.res.set(path, params.bundleName);
@@ -135,16 +136,16 @@ export class EffectSingleCase {
      * @param params  显示参数
      */
     show(path: string, parent?: Node, params?: IEffectParams): Node {
-        var np = this.effects.get(path);
+        let np = this.effects.get(path);
         if (np == null) {
             np = new NodePool();
             this.effects.set(path, np);
         }
 
-        var node: Node;
+        let node: Node;
         // 创建池中新显示对象
         if (np.size() == 0) {
-            var bundleName = resLoader.defaultBundleName;
+            let bundleName = resLoader.defaultBundleName;
             if (params && params.bundleName) bundleName = params.bundleName;
             node = ViewUtil.createPrefabNode(path, bundleName);
             //@ts-ignore
@@ -206,7 +207,7 @@ export class EffectSingleCase {
             if (np) np.clear();
         }
         else {
-            this.effects.forEach(np => {
+            this.effects.forEach((np) => {
                 np.clear();
             });
             this.effects.clear();
@@ -232,14 +233,14 @@ export class EffectSingleCase {
             this.res.forEach((bundleName: string, path: string) => {
                 resLoader.release(path, bundleName);
             });
-            this.res.clear()
+            this.res.clear();
         }
     }
 
     /** 设置动画速度 */
     private setSpeed(node: Node) {
         // SPINE动画
-        let spine = node.getComponent(sp.Skeleton);
+        const spine = node.getComponent(sp.Skeleton);
         if (spine) {
             spine.timeScale = this.speed;
         }
@@ -247,10 +248,10 @@ export class EffectSingleCase {
             // COCOS动画
             const anims: Animation[] = node.getComponentsInChildren(Animation);
             if (anims.length > 0) {
-                anims.forEach(animator => {
-                    let aniName = animator.defaultClip?.name;
+                anims.forEach((animator) => {
+                    const aniName = animator.defaultClip?.name;
                     if (aniName) {
-                        let aniState = animator.getState(aniName);
+                        const aniState = animator.getState(aniName);
                         if (aniState) {
                             aniState.speed = this.speed;
                         }
@@ -260,7 +261,7 @@ export class EffectSingleCase {
             // 粒子动画
             else if (ParticleSystem) {
                 const particles: ParticleSystem[] = node.getComponentsInChildren(ParticleSystem);
-                particles.forEach(particle => {
+                particles.forEach((particle) => {
                     particle.simulationSpeed = this.speed;
                 });
             }

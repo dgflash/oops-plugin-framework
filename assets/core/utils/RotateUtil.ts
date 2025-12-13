@@ -4,8 +4,9 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 12:08:28
  */
-import { Node, Quat, toRadian, Vec3 } from "cc";
-import { Vec3Util } from "./Vec3Util";
+import type { Node } from 'cc';
+import { Quat, toRadian, Vec3 } from 'cc';
+import { Vec3Util } from './Vec3Util';
 
 /** 旋转工具 */
 export class RotateUtil {
@@ -34,8 +35,8 @@ export class RotateUtil {
      */
     static rotateAroundTarget(lookAt: Node, target: Node, axis: Vec3, rad: number) {
         // 计算坐标
-        const point_lookAt = lookAt.worldPosition;               // 锚点坐标
-        const point_target = target.worldPosition;               // 目标坐标
+        const point_lookAt = lookAt.worldPosition; // 锚点坐标
+        const point_target = target.worldPosition; // 目标坐标
         const quat = new Quat();
         const vec3 = new Vec3();
 
@@ -62,8 +63,8 @@ export class RotateUtil {
      * @param angle     角度
      */
     static circularEdgePosition(center: Vec3, radius: number, angle: number): Vec3 {
-        const edge = Vec3Util.z.multiplyScalar(radius);                  // 距离圆心Z抽的距离
-        const dir = Vec3Util.sub(edge, center);                          // 初始圆心与目标位置的方向
+        const edge = Vec3Util.z.multiplyScalar(radius); // 距离圆心Z抽的距离
+        const dir = Vec3Util.sub(edge, center); // 初始圆心与目标位置的方向
         const vec3 = new Vec3();
         const quat = new Quat();
 

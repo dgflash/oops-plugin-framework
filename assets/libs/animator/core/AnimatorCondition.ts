@@ -1,5 +1,5 @@
-import { error } from "cc";
-import AnimatorController from "./AnimatorController";
+import { error } from 'cc';
+import type AnimatorController from './AnimatorController';
 
 /** 参数类型 */
 export enum ParamType {
@@ -26,9 +26,9 @@ export enum LogicType {
 export default class AnimatorCondition {
     private _ac: AnimatorController;
     /** 此条件对应的参数名 */
-    private _param: string = "";
+    private _param = '';
     /** 此条件对应的值 */
-    private _value: number = 0;
+    private _value = 0;
     /** 此条件与值比较的逻辑 */
     private _logic: LogicType = LogicType.EQUAL;
 
@@ -39,42 +39,46 @@ export default class AnimatorCondition {
         this._logic = data.logic;
     }
 
-    public getParamName() {
+    getParamName() {
         return this._param;
     }
 
-    public getParamType(): ParamType {
+    getParamType(): ParamType {
         return this._ac.params.getParamType(this._param);
     }
 
     /** 判断此条件是否满足 */
-    public check(): boolean {
-        let type: ParamType = this.getParamType();
+    check(): boolean {
+        const type: ParamType = this.getParamType();
         if (type === ParamType.BOOLEAN) {
             return this._ac.params.getBool(this._param) === this._value;
-        } else if (type === ParamType.NUMBER) {
-            let value: number = this._ac.params.getNumber(this._param);
+        }
+        else if (type === ParamType.NUMBER) {
+            const value: number = this._ac.params.getNumber(this._param);
             switch (this._logic) {
-                case LogicType.EQUAL:
-                    return value === this._value;
-                case LogicType.NOTEQUAL:
-                    return value !== this._value;
-                case LogicType.GREATER:
-                    return value > this._value;
-                case LogicType.LESS:
-                    return value < this._value;
-                case LogicType.GREATER_EQUAL:
-                    return value >= this._value;
-                case LogicType.LESS_EQUAL:
-                    return value <= this._value;
-                default:
-                    return false;
+            case LogicType.EQUAL:
+                return value === this._value;
+            case LogicType.NOTEQUAL:
+                return value !== this._value;
+            case LogicType.GREATER:
+                return value > this._value;
+            case LogicType.LESS:
+                return value < this._value;
+            case LogicType.GREATER_EQUAL:
+                return value >= this._value;
+            case LogicType.LESS_EQUAL:
+                return value <= this._value;
+            default:
+                return false;
             }
-        } else if (type === ParamType.AUTO_TRIGGER) {
+        }
+        else if (type === ParamType.AUTO_TRIGGER) {
             return this._ac.params.getAutoTrigger(this._param) !== 0;
-        } else if (type === ParamType.TRIGGER) {
+        }
+        else if (type === ParamType.TRIGGER) {
             return this._ac.params.getTrigger(this._param) !== 0;
-        } else {
+        }
+        else {
             error(`[AnimatorCondition.check] 错误的type: ${type}`);
             return false;
         }

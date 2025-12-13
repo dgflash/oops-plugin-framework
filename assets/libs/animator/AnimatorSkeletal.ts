@@ -18,12 +18,12 @@ const { ccclass, property, requireComponent, disallowMultiple, menu, help } = _d
 export class AnimatorSkeletal extends AnimatorAnimation {
     @property({
         type: CCFloat,
-        tooltip: "动画切换过度时间"
+        tooltip: '动画切换过度时间'
     })
-    private duration: number = 0.3;
+    private duration = 0.3;
 
-    private cross_duration: number = 0;         // 防止切换动画时间少于间隔时间导致动画状态错乱的问题
-    private current_time: number = 0;           // 上一次切换状态时间
+    private cross_duration = 0; // 防止切换动画时间少于间隔时间导致动画状态错乱的问题
+    private current_time = 0; // 上一次切换状态时间
 
     onLoad() {
         this.cross_duration = this.duration * 1000;
@@ -56,6 +56,6 @@ export class AnimatorSkeletal extends AnimatorAnimation {
             this._wrapModeMap.set(this._animState, this._animState.wrapMode);
         }
         // this._animState.wrapMode = loop ? 2 : this._wrapModeMap.get(this._animState)!;
-        this._animState.wrapMode = loop ? 2 : 1;   // 2为循环播放，1为单次播放
+        this._animState.wrapMode = loop ? 2 : 1; // 2为循环播放，1为单次播放
     }
 }

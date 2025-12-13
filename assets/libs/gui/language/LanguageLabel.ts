@@ -1,30 +1,31 @@
-import { CCString, Component, Label, RichText, TTFFont, _decorator, warn } from "cc";
-import { EDITOR } from "cc/env";
-import { LanguageData } from "./LanguageData";
+import type { TTFFont } from 'cc';
+import { CCString, Component, Label, RichText, _decorator, warn } from 'cc';
+import { EDITOR } from 'cc/env';
+import { LanguageData } from './LanguageData';
 
 const { ccclass, property, menu } = _decorator;
 
-@ccclass("LangLabelParamsItem")
+@ccclass('LangLabelParamsItem')
 export class LangLabelParamsItem {
     @property
-    key: string = "";
+        key = '';
     @property
-    value: string = "";
+        value = '';
 }
 
 /** 文本多语言 */
-@ccclass("LanguageLabel")
+@ccclass('LanguageLabel')
 @menu('OopsFramework/Language/LanguageLabel （文本多语言）')
 export class LanguageLabel extends Component {
     @property({
         type: LangLabelParamsItem,
-        displayName: "params"
+        displayName: 'params'
     })
     private _params: Array<LangLabelParamsItem> = [];
 
     @property({
         type: LangLabelParamsItem,
-        displayName: "params"
+        displayName: 'params'
     })
     set params(value: Array<LangLabelParamsItem>) {
         this._params = value;
@@ -37,10 +38,10 @@ export class LanguageLabel extends Component {
     }
 
     @property({ serializable: true })
-    private _dataID: string = "";
+    private _dataID = '';
     @property({ type: CCString, serializable: true })
     get dataID(): string {
-        return this._dataID || "";
+        return this._dataID || '';
     }
     set dataID(value: string) {
         this._dataID = value;
@@ -53,11 +54,11 @@ export class LanguageLabel extends Component {
         let _string = LanguageData.getLangByID(this._dataID);
         if (_string && this._params.length > 0) {
             this._params.forEach((item: LangLabelParamsItem) => {
-                _string = _string.replace(`%{${item.key}}`, item.value)
-            })
+                _string = _string.replace(`%{${item.key}}`, item.value);
+            });
         }
         if (!_string) {
-            warn("[LanguageLabel] 未找到语言标识，使用dataID替换");
+            warn('[LanguageLabel] 未找到语言标识，使用dataID替换');
             _string = this._dataID;
         }
         return _string;
@@ -69,7 +70,7 @@ export class LanguageLabel extends Component {
     }
 
     /** 初始字体尺寸 */
-    initFontSize: number = 0;
+    initFontSize = 0;
 
     onLoad() {
         this._needUpdate = true;
@@ -83,21 +84,21 @@ export class LanguageLabel extends Component {
     setVars(key: string, value: string) {
         let haskey = false;
         for (let i = 0; i < this._params.length; i++) {
-            let element: LangLabelParamsItem = this._params[i];
+            const element: LangLabelParamsItem = this._params[i];
             if (element.key === key) {
                 element.value = value;
                 haskey = true;
             }
         }
         if (!haskey) {
-            let ii = new LangLabelParamsItem();
+            const ii = new LangLabelParamsItem();
             ii.key = key;
             ii.value = value;
             this._params.push(ii);
         }
         this._needUpdate = true;
     }
-    private _needUpdate: boolean = false;
+    private _needUpdate = false;
 
     update() {
         if (this._needUpdate) {
@@ -126,7 +127,7 @@ export class LanguageLabel extends Component {
             this.initFontSize = richtext.fontSize;
         }
         else {
-            warn("[LanguageLabel], 该节点没有cc.Label || cc.RichText组件");
+            warn('[LanguageLabel], 该节点没有cc.Label || cc.RichText组件');
         }
     }
 }

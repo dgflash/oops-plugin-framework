@@ -39,15 +39,15 @@ export interface IResponseProtocol {
 
 /** 回调对象 */
 export interface CallbackObject {
-    target: any,                // 回调对象，不为null时调用target.callback(xxx)
-    callback: NetCallFunc,      // 回调函数
+    target: any, // 回调对象，不为null时调用target.callback(xxx)
+    callback: NetCallFunc, // 回调函数
 }
 
 /** 请求对象 */
 export interface RequestObject {
-    buffer: NetData,                   // 请求的Buffer
-    rspCmd: string,                    // 等待响应指令
-    rspObject: CallbackObject | null,  // 等待响应的回调对象
+    buffer: NetData, // 请求的Buffer
+    rspCmd: string, // 等待响应指令
+    rspObject: CallbackObject | null, // 等待响应的回调对象
 }
 
 /** 协议辅助接口 */
@@ -73,14 +73,14 @@ export type MessageFunc = (msg: NetData) => void;
 
 /** Socket接口 */
 export interface ISocket {
-    onConnected: SocketFunc | null;         // 连接回调
-    onMessage: MessageFunc | null;          // 消息回调
-    onError: SocketFunc | null;             // 错误回调
-    onClosed: SocketFunc | null;            // 关闭回调
+    onConnected: SocketFunc | null; // 连接回调
+    onMessage: MessageFunc | null; // 消息回调
+    onError: SocketFunc | null; // 错误回调
+    onClosed: SocketFunc | null; // 关闭回调
 
-    connect(options: any): any;                     // 连接接口
-    send(buffer: NetData): number;                  // 数据发送接口
-    close(code?: number, reason?: string): void;    // 关闭接口
+    connect(options: any): any; // 连接接口
+    send(buffer: NetData): number; // 数据发送接口
+    close(code?: number, reason?: string): void; // 关闭接口
 }
 
 /** 网络提示接口 */

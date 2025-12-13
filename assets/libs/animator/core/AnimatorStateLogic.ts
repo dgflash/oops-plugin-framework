@@ -6,20 +6,20 @@ export class AnimatorStateLogic {
      * 进入状态时调用
      * @virtual
      */
-    public onEntry() {
+    onEntry() {
     }
 
     /**
      * 每次状态机逻辑更新时调用
      * @virtual
      */
-    public onUpdate() {
+    onUpdate() {
     }
 
     /**
      * 离开状态时调用
      * @virtual
      */
-    public onExit() {
+    onExit() {
     }
 }

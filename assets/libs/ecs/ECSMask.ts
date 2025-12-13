@@ -4,14 +4,14 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-05-24 11:09:49
  */
-import { ECSModel } from "./ECSModel";
+import { ECSModel } from './ECSModel';
 
 export class ECSMask {
     private mask: Uint32Array;
-    private size: number = 0;
+    private size = 0;
 
     constructor() {
-        let length = Math.ceil(ECSModel.compTid / 31);
+        const length = Math.ceil(ECSModel.compTid / 31);
         this.mask = new Uint32Array(length);
         this.size = length;
     }

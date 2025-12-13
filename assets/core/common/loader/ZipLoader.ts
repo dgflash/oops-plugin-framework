@@ -1,7 +1,7 @@
-import { BufferAsset, SpriteFrame, Texture2D } from "cc";
-import { resLoader } from "./ResLoader";
+import { BufferAsset, SpriteFrame, Texture2D } from 'cc';
+import { resLoader } from './ResLoader';
 
-/** 
+/**
  * 加载Zip资源
  * 注：
  * 1. 使用此功能需要教程项目中项目资源目录libs/jszip目录拷贝到自己的项目中
@@ -13,13 +13,13 @@ export class ZipLoader {
 
     /**
      * 加载ZIP资源包
-     * @param url 
-     * @returns 
+     * @param url
+     * @returns
      */
     static load(url: string): Promise<JSZip> {
         return new Promise(async (resolve, reject) => {
-            let asset = await resLoader.load(url, BufferAsset);
-            var zip = await JSZip.loadAsync(asset.buffer());
+            const asset = await resLoader.load(url, BufferAsset);
+            const zip = await JSZip.loadAsync(asset.buffer());
             this.zips.set(url, zip);
             resolve(zip);
         });
@@ -27,34 +27,34 @@ export class ZipLoader {
 
     static getJson(zipName: string, path: string): Promise<any> {
         return new Promise(async (resolve, reject) => {
-            var zip = this.zips.get(zipName);
+            const zip = this.zips.get(zipName);
             if (zip == null) {
                 console.error(`名为【${zipName}】的资源包不存在`);
                 resolve(null);
                 return;
             }
 
-            var file = zip.file(path);
-            var json = JSON.parse(await file.async("text"));
+            const file = zip.file(path);
+            const json = JSON.parse(await file.async('text'));
             resolve(json);
         });
     }
 
     static getSpriteFrame(zipName: string, path: string): Promise<SpriteFrame> {
         return new Promise(async (resolve, reject) => {
-            var zip = this.zips.get(zipName);
+            const zip = this.zips.get(zipName);
             if (zip == null) {
                 console.error(`名为【${zipName}】的资源包不存在`);
                 resolve(null!);
                 return;
             }
 
-            var file = zip.file(path);
-            var buf = await file.async("base64");
-            var img = new Image();
+            const file = zip.file(path);
+            const buf = await file.async('base64');
+            const img = new Image();
             img.src = 'data:image/png;base64,' + buf;
             img.onload = () => {
-                var texture = new Texture2D();
+                const texture = new Texture2D();
                 texture.reset({
                     width: img.width,
                     height: img.height
@@ -62,11 +62,11 @@ export class ZipLoader {
                 texture.uploadData(img, 0, 0);
                 texture.loaded = true;
 
-                var sf = new SpriteFrame();
+                const sf = new SpriteFrame();
                 sf.texture = texture;
 
                 resolve(sf);
-            }
+            };
         });
     }
 

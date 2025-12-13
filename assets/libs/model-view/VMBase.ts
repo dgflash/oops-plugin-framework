@@ -8,7 +8,7 @@ import { VMEnv } from './VMEnv';
 // 目前只是起到一个识别组件的作用，之后会抽象很多功能在这里面
 // player.equips.* 可以自动根据所在父对象的位置设置顺序
 
-const DEBUG_WATCH_PATH: boolean = false;
+const DEBUG_WATCH_PATH = false;
 
 const { ccclass, help } = _decorator;
 
@@ -22,10 +22,10 @@ export class VMBase extends Component {
     VM = VM;
 
     /** watch 单路径  */
-    watchPath: string = '';
+    watchPath = '';
 
     /** 是否启用模板多路径模式 */
-    templateMode: boolean = false;
+    templateMode = false;
 
     /** watch 多路径 */
     protected watchPathArr: string[] = [];
@@ -40,12 +40,12 @@ export class VMBase extends Component {
         if (VMEnv.editor) return;
 
         // 提前拆分、并且解析路径
-        let paths = this.watchPath.split('.');
+        const paths = this.watchPath.split('.');
         for (let i = 1; i < paths.length; i++) {
             const p = paths[i];
             // 如果发现了路径使用了 * ，则自动去自己的父节点查找自己所在 index 值
             if (p == '*') {
-                let index = this.node.parent!.children.findIndex(n => n === this.node);
+                let index = this.node.parent!.children.findIndex((n) => n === this.node);
                 if (index <= 0) index = 0;
                 paths[i] = index.toString();
                 break;
@@ -56,16 +56,16 @@ export class VMBase extends Component {
         this.watchPath = paths.join('.');
 
         // 提前进行路径数组 的 解析
-        let pathArr = this.watchPathArr;
+        const pathArr = this.watchPathArr;
         if (pathArr.length >= 1) {
             for (let i = 0; i < pathArr.length; i++) {
                 const path = pathArr[i];
-                let paths = path.split('.');
+                const paths = path.split('.');
 
                 for (let i = 1; i < paths.length; i++) {
                     const p = paths[i];
                     if (p == '*') {
-                        let index = this.node.parent!.children.findIndex(n => n === this.node);
+                        let index = this.node.parent!.children.findIndex((n) => n === this.node);
                         if (index <= 0) index = 0;
                         paths[i] = index.toString();
                         break;
@@ -79,7 +79,7 @@ export class VMBase extends Component {
 
         // 打印出所有绑定的路径，方便调试信息
         if (DEBUG_WATCH_PATH && DEBUG) {
-            log('所有路径', this.watchPath ? [this.watchPath] : this.watchPathArr, '<<', this.node.parent!.name + '.' + this.node.name)
+            log('所有路径', this.watchPath ? [this.watchPath] : this.watchPathArr, '<<', this.node.parent!.name + '.' + this.node.name);
         }
 
         if (this.watchPath == '' && this.watchPathArr.join('') == '') {
@@ -97,7 +97,7 @@ export class VMBase extends Component {
             this.VM.bindPath(this.watchPath, this.onValueChanged, this);
         }
 
-        this.onValueInit();                     // 激活时,调用值初始化
+        this.onValueInit(); // 激活时,调用值初始化
     }
 
     onDisable() {
@@ -112,10 +112,10 @@ export class VMBase extends Component {
     }
 
     // 多路径监听方式
-    private setMultPathEvent(enabled: boolean = true) {
+    private setMultPathEvent(enabled = true) {
         if (VMEnv.editor) return;
 
-        let arr = this.watchPathArr;
+        const arr = this.watchPathArr;
         for (let i = 0; i < arr.length; i++) {
             const path = arr[i];
             if (enabled) {

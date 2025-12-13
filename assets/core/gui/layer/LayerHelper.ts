@@ -1,5 +1,6 @@
-import { Layers } from "cc";
-import { Node, Widget } from "cc";
+import { Layers } from 'cc';
+import type { Node } from 'cc';
+import { Widget } from 'cc';
 
 /** 界面层辅助工具 */
 export class LayerHelper {

@@ -1,4 +1,4 @@
-import { LanguageData } from "../gui/language/LanguageData";
+import { LanguageData } from '../gui/language/LanguageData';
 
 /**
  * 数值格式化函数, 通过语义解析自动设置值的范围
@@ -8,37 +8,37 @@ class StringFormat {
     deal(value: number | string, format: string): string {
         if (format === '') return value as string;
 
-        format = format.toLowerCase().trim();               // 不区分大小
-        let match_func = format.match(/^[a-z|A-Z]+/gi);     // 匹配到 format 中的函数名
-        let match_num = format.match(/\d+$/gi);             // 匹配到 format 中的参数
-        let func: string = '';
-        let num: number = 0;
+        format = format.toLowerCase().trim(); // 不区分大小
+        const match_func = format.match(/^[a-z|A-Z]+/gi); // 匹配到 format 中的函数名
+        const match_num = format.match(/\d+$/gi); // 匹配到 format 中的参数
+        let func = '';
+        let num = 0;
         let res: number | string = '';
 
         if (match_func) func = match_func[0];
         if (match_num) num = parseInt(match_num[0]);
 
-        if (typeof value == 'number') {
+        if (typeof value === 'number') {
             switch (func) {
-                case 'int': res = this.int(value); break;
-                case 'fix': res = this.fix(value, num); break;
-                case 'kmbt': res = this.kmbt(value); break;
-                case 'per': res = this.per(value, num); break;
-                case 'sep': res = this.sep(value); break;
+            case 'int': res = this.int(value); break;
+            case 'fix': res = this.fix(value, num); break;
+            case 'kmbt': res = this.kmbt(value); break;
+            case 'per': res = this.per(value, num); break;
+            case 'sep': res = this.sep(value); break;
 
-                case 'stamp': res = this.time_stamp(value); break;
-                case 'ms': res = this.time_ms(value); break;
-                case 'hms': res = this.time_hms(value); break;
-                case 'hmss': res = this.time_hmss(value); break;
+            case 'stamp': res = this.time_stamp(value); break;
+            case 'ms': res = this.time_ms(value); break;
+            case 'hms': res = this.time_hms(value); break;
+            case 'hmss': res = this.time_hmss(value); break;
 
-                default: break;
+            default: break;
             }
         }
         else {
             switch (func) {
-                case 'limit': res = this.limit(value, num); break;
-                default:
-                    break;
+            case 'limit': res = this.limit(value, num); break;
+            default:
+                break;
             }
             res = value;
         }
@@ -48,8 +48,8 @@ class StringFormat {
 
     /** 将数字按分号显示 */
     private sep(value: number) {
-        let num = Math.round(value).toString();
-        return num.replace(new RegExp('(\\d)(?=(\\d{3})+$)', 'ig'), "$1,");
+        const num = Math.round(value).toString();
+        return num.replace(new RegExp('(\\d)(?=(\\d{3})+$)', 'ig'), '$1,');
     }
 
     /** 将数字按分显示 00:00 显示 （分:秒） */
@@ -74,7 +74,7 @@ class StringFormat {
 
     /** [value:int] 将取值0~1 变成 1~100,可以指定修饰的小数位数 */
     private per(value: number, fd: number) {
-        let r = value * 100;
+        const r = value * 100;
         return r.toFixed(fd);
     }
 
@@ -85,7 +85,7 @@ class StringFormat {
 
     /** [value:fix2]数值转换为小数 */
     private fix(value: number, fd: number) {
-        return value.toFixed(fd)
+        return value.toFixed(fd);
     }
 
     /** [value:limit3]字符串长度限制 */
@@ -100,25 +100,25 @@ class StringFormat {
         let units: string[] = null!;
 
         switch (LanguageData.current) {
-            case 'zh':
-                //10^4=万, 10^8=亿,10^12=兆,10^16=京，
-                counts = [10000, 100000000, 1000000000000, 10000000000000000];
-                units = ['', '万', '亿', '兆', '京'];
-                break;
-            default:
-                counts = [1000, 1000000, 1000000000, 1000000000000];
-                units = ['', 'K', 'M', 'B', 'T'];
-                break;
+        case 'zh':
+            //10^4=万, 10^8=亿,10^12=兆,10^16=京，
+            counts = [10000, 100000000, 1000000000000, 10000000000000000];
+            units = ['', '万', '亿', '兆', '京'];
+            break;
+        default:
+            counts = [1000, 1000000, 1000000000, 1000000000000];
+            units = ['', 'K', 'M', 'B', 'T'];
+            break;
         }
 
         return this.compressUnit(value, counts, units, 2);
     }
 
     /** 压缩任意单位的数字，后缀加上单位文字 */
-    private compressUnit(value: any, valueArr: number[], unitArr: string[], fixNum: number = 2): string {
-        let counts = valueArr;
-        let units = unitArr;
-        let res: string = "";
+    private compressUnit(value: any, valueArr: number[], unitArr: string[], fixNum = 2): string {
+        const counts = valueArr;
+        const units = unitArr;
+        let res = '';
         let index: number;
         for (index = 0; index < counts.length; index++) {
             const e = counts[index];
@@ -137,4 +137,4 @@ class StringFormat {
 }
 
 /** 格式化处理函数 */
-export let StringFormatFunction = new StringFormat();
+export const StringFormatFunction = new StringFormat();

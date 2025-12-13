@@ -5,26 +5,27 @@
  * @LastEditTime: 2022-09-22 14:53:47
  */
 
-import {_decorator, Camera, Component, Node, Vec3} from "cc";
-import {oops} from "../../core/Oops";
-import {MathUtil} from "../../core/utils/MathUtil";
+import type { Camera } from 'cc';
+import { _decorator, Component, Node, Vec3 } from 'cc';
+import { oops } from '../../core/Oops';
+import { MathUtil } from '../../core/utils/MathUtil';
 
 const { ccclass, property } = _decorator;
 
 /** 2D节点跟随3D节点 */
-@ccclass("Effect2DFollow3D")
+@ccclass('Effect2DFollow3D')
 export class Effect2DFollow3D extends Component {
     /** 3D世界节点 */
     @property({ type: Node })
-    node3d: Node = null!;
+        node3d: Node = null!;
 
     /** 2D界面界面 */
     @property({ type: Node })
-    nodeUi: Node = null!;
+        nodeUi: Node = null!;
 
     /** 距离 */
     @property
-    distance: number = 10;
+        distance = 10;
 
     /** 3D摄像机 */
     camera: Camera = null!;

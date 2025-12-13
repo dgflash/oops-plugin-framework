@@ -4,9 +4,9 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-01-19 14:37:19
  */
-import { Component, game } from "cc";
-import { StringUtil } from "../../utils/StringUtil";
-import { Timer } from "./Timer";
+import { Component, game } from 'cc';
+import { StringUtil } from '../../utils/StringUtil';
+import { Timer } from './Timer';
 
 interface ITimer {
     /** 倒计时编号 */
@@ -36,15 +36,15 @@ export class TimerManager extends Component {
     /** 服务器初始时间 */
     private date_s_start: Date = new Date();
     /** 服务器时间后修正时间 */
-    private polymeric_s: number = 0;
+    private polymeric_s = 0;
     /** 客户端时间 */
     private date_c: Date = new Date();
 
     /** 后台管理倒计时完成事件 */
     protected update(dt: number) {
-        for (let key in this.times) {
-            let data = this.times[key];
-            let timer = data.timer;
+        for (const key in this.times) {
+            const data = this.times[key];
+            const timer = data.timer;
             if (timer.update(dt)) {
                 if (data.object[data.field] > 0) {
                     data.object[data.field]--;
@@ -53,9 +53,9 @@ export class TimerManager extends Component {
                     if (data.object[data.field] == 0) {
                         this.onTimerComplete(data);
                     }
-                    // 触发每秒回调事件  
+                    // 触发每秒回调事件
                     else if (data.onSeconds) {
-                        data.onSeconds.forEach(fn => fn.call(data.object));
+                        data.onSeconds.forEach((fn) => fn.call(data.object));
                     }
                 }
             }
@@ -64,7 +64,7 @@ export class TimerManager extends Component {
 
     /** 触发倒计时完成事件 */
     private onTimerComplete(data: ITimer) {
-        if (data.onCompletes) data.onCompletes.forEach(fn => fn.call(data.target, data.object));
+        if (data.onCompletes) data.onCompletes.forEach((fn) => fn.call(data.target, data.object));
         delete this.times[data.id];
     }
 
@@ -79,12 +79,12 @@ export class TimerManager extends Component {
      * @example
     export class Test extends Component {
         private timeId!: string;
-        
+
         start() {
             // 在指定对象上注册一个倒计时的回调管理器
             this.timeId = oops.timer.register(this, "countDown", this, this.onSecond, this.onComplete);
         }
-        
+
         private onSecond() {
             console.log("每秒触发一次");
         }
@@ -98,7 +98,7 @@ export class TimerManager extends Component {
         const timer = new Timer();
         timer.step = 1;
 
-        let data: ITimer = {
+        const data: ITimer = {
             id: StringUtil.guid(),
             timer: timer,
             object: object,
@@ -122,15 +122,15 @@ export class TimerManager extends Component {
      * @param onComplete    倒计时完成事件
      */
     addCallback(id: string, onSecond?: Function, onComplete?: Function) {
-        let data = this.times[id];
+        const data = this.times[id];
         if (data) {
             if (onSecond) data.onSeconds.push(onSecond);
             if (onComplete) data.onCompletes.push(onComplete);
         }
     }
 
-    /** 
-     * 在指定对象上注销一个倒计时的回调管理器 
+    /**
+     * 在指定对象上注销一个倒计时的回调管理器
      * @param id         时间对象唯一表示
      * @example
     export class Test extends Component {
@@ -188,17 +188,17 @@ export class TimerManager extends Component {
 
     /** 游戏最小化时记录时间数据 */
     save(): void {
-        for (let key in this.times) {
-            let data: ITimer = this.times[key];
+        for (const key in this.times) {
+            const data: ITimer = this.times[key];
             data.startTime = this.getTime();
         }
     }
 
     /** 游戏最大化时恢复时间数据 */
     load(): void {
-        for (let key in this.times) {
-            let data = this.times[key];
-            let interval = Math.floor((this.getTime() - (data.startTime || this.getTime())) / 1000);
+        for (const key in this.times) {
+            const data = this.times[key];
+            const interval = Math.floor((this.getTime() - (data.startTime || this.getTime())) / 1000);
             data.object[data.field] = data.object[data.field] - interval;
             if (data.object[data.field] <= 0) {
                 data.object[data.field] = 0;

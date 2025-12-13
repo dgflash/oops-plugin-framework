@@ -1,33 +1,33 @@
-import { ecs } from "./ECS";
-import { ECSEntity } from "./ECSEntity";
-import { ECSGroup } from "./ECSGroup";
-import { ECSModel } from "./ECSModel";
+import type { ecs } from './ECS';
+import type { ECSEntity } from './ECSEntity';
+import type { ECSGroup } from './ECSGroup';
+import { ECSModel } from './ECSModel';
 
 /** 继承此类实现具体业务逻辑的系统 */
 export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
-    static s: boolean = true;
+    static s = true;
 
     protected group: ECSGroup<E>;
-    protected dt: number = 0;
+    protected dt = 0;
 
     private enteredEntities: Map<number, E> = null!;
     private removedEntities: Map<number, E> = null!;
 
-    private hasEntityEnter: boolean = false;
-    private hasEntityRemove: boolean = false;
-    private hasUpdate: boolean = false;
+    private hasEntityEnter = false;
+    private hasEntityRemove = false;
+    private hasUpdate = false;
 
     private tmpExecute: ((dt: number) => void) | null = null;
     private execute!: (dt: number) => void;
 
     /** 构造函数 */
     constructor() {
-        let hasOwnProperty = Object.hasOwnProperty;
-        let prototype = Object.getPrototypeOf(this);
-        let hasEntityEnter = hasOwnProperty.call(prototype, 'entityEnter');
-        let hasEntityRemove = hasOwnProperty.call(prototype, 'entityRemove');
-        let hasFirstUpdate = hasOwnProperty.call(prototype, 'firstUpdate');
-        let hasUpdate = hasOwnProperty.call(prototype, 'update');
+        const hasOwnProperty = Object.hasOwnProperty;
+        const prototype = Object.getPrototypeOf(this);
+        const hasEntityEnter = hasOwnProperty.call(prototype, 'entityEnter');
+        const hasEntityRemove = hasOwnProperty.call(prototype, 'entityRemove');
+        const hasFirstUpdate = hasOwnProperty.call(prototype, 'firstUpdate');
+        const hasUpdate = hasOwnProperty.call(prototype, 'update');
 
         this.hasEntityEnter = hasEntityEnter;
         this.hasEntityRemove = hasEntityRemove;
@@ -69,8 +69,8 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
 
     /**
      * 先执行entityEnter，最后执行firstUpdate
-     * @param dt 
-     * @returns 
+     * @param dt
+     * @returns
      */
     private updateOnce(dt: number) {
         if (this.group.count === 0) {
@@ -81,15 +81,15 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
 
         // 处理刚进来的实体
         if (this.enteredEntities.size > 0) {
-            var entities = this.enteredEntities.values();
-            for (let entity of entities) {
+            const entities = this.enteredEntities.values();
+            for (const entity of entities) {
                 (this as unknown as ecs.IEntityEnterSystem).entityEnter(entity);
             }
             this.enteredEntities.clear();
         }
 
         // 只执行firstUpdate
-        for (let entity of this.group.matchEntities) {
+        for (const entity of this.group.matchEntities) {
             (this as unknown as ecs.ISystemFirstUpdate).firstUpdate(entity);
         }
 
@@ -100,8 +100,8 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
 
     /**
      * 只执行update
-     * @param dt 
-     * @returns 
+     * @param dt
+     * @returns
      */
     private execute0(dt: number): void {
         if (this.group.count === 0) return;
@@ -110,7 +110,7 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
 
         // 执行update
         if (this.hasUpdate) {
-            for (let entity of this.group.matchEntities) {
+            for (const entity of this.group.matchEntities) {
                 (this as unknown as ecs.ISystemUpdate).update(entity);
             }
         }
@@ -118,15 +118,15 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
 
     /**
      * 先执行entityRemove，再执行entityEnter，最后执行update
-     * @param dt 
-     * @returns 
+     * @param dt
+     * @returns
      */
     private execute1(dt: number): void {
         let entities;
         if (this.removedEntities.size > 0) {
             if (this.hasEntityRemove) {
                 entities = this.removedEntities.values();
-                for (let entity of entities) {
+                for (const entity of entities) {
                     (this as unknown as ecs.IEntityRemoveSystem).entityRemove(entity);
                 }
             }
@@ -141,7 +141,7 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
         if (this.enteredEntities!.size > 0) {
             if (this.hasEntityEnter) {
                 entities = this.enteredEntities!.values();
-                for (let entity of entities) {
+                for (const entity of entities) {
                     (this as unknown as ecs.IEntityEnterSystem).entityEnter(entity);
                 }
             }
@@ -150,7 +150,7 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
 
         // 执行update
         if (this.hasUpdate) {
-            for (let entity of this.group.matchEntities) {
+            for (const entity of this.group.matchEntities) {
                 (this as unknown as ecs.ISystemUpdate).update(entity);
             }
         }
@@ -158,7 +158,7 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
 
     /**
      * 实体过滤规则
-     * 
+     *
      * 根据提供的组件过滤实体。
      */
     abstract filter(): ecs.IMatcher;
@@ -167,7 +167,7 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
 /** 根System，对游戏中的System遍历从这里开始，一个System组合中只能有一个RootSystem，可以有多个并行的RootSystem */
 export class ECSRootSystem {
     private executeSystemFlows: ECSComblockSystem[] = [];
-    private systemCnt: number = 0;
+    private systemCnt = 0;
 
     add(system: ECSSystem | ECSComblockSystem) {
         if (system instanceof ECSSystem) {
@@ -183,10 +183,10 @@ export class ECSRootSystem {
 
     init() {
         // 自动注册系统组件
-        ECSModel.systems.forEach(sys => this.add(sys));
+        ECSModel.systems.forEach((sys) => this.add(sys));
 
         // 初始化组件
-        this.executeSystemFlows.forEach(sys => sys.init());
+        this.executeSystemFlows.forEach((sys) => sys.init());
     }
 
     execute(dt: number) {
@@ -197,7 +197,7 @@ export class ECSRootSystem {
     }
 
     clear() {
-        this.executeSystemFlows.forEach(sys => sys.onDestroy());
+        this.executeSystemFlows.forEach((sys) => sys.onDestroy());
     }
 }
 

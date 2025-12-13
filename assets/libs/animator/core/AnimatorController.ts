@@ -1,7 +1,7 @@
-import { error } from "cc";
-import AnimatorBase from "./AnimatorBase";
-import AnimatorParams from "./AnimatorParams";
-import AnimatorState from "./AnimatorState";
+import { error } from 'cc';
+import type AnimatorBase from './AnimatorBase';
+import AnimatorParams from './AnimatorParams';
+import AnimatorState from './AnimatorState';
 
 /**
  * 状态机控制类
@@ -16,15 +16,21 @@ export default class AnimatorController {
     private _curState: AnimatorState = null!;
 
     /** 状态切换次数 */
-    private _changeCount: number = 0;
+    private _changeCount = 0;
     /** 对应animComplete的状态 */
-    public animCompleteState: AnimatorState = null!;
+    animCompleteState: AnimatorState = null!;
     /** 动画播放完毕的标记 */
-    public animComplete: boolean = false;
+    animComplete = false;
     /** 当前运行的状态 */
-    public get curState(): AnimatorState { return this._curState; }
-    public get params(): AnimatorParams { return this._params; }
-    public get states(): Map<string, AnimatorState> { return this._states }
+    get curState(): AnimatorState {
+        return this._curState;
+    }
+    get params(): AnimatorParams {
+        return this._params;
+    }
+    get states(): Map<string, AnimatorState> {
+        return this._states;
+    }
 
     constructor(player: AnimatorBase, json: any) {
         this._animator = player;
@@ -39,14 +45,14 @@ export default class AnimatorController {
      */
     private init(json: any) {
         if (json.states.length <= 0) {
-            error(`[AnimatorController.init] 状态机json错误`);
+            error('[AnimatorController.init] 状态机json错误');
             return;
         }
 
-        let defaultState: string = json.defaultState;
+        const defaultState: string = json.defaultState;
         this._anyState = new AnimatorState(json.anyState, this);
         for (let i = 0; i < json.states.length; i++) {
-            let state: AnimatorState = new AnimatorState(json.states[i], this);
+            const state: AnimatorState = new AnimatorState(json.states[i], this);
             this._states.set(state.name, state);
         }
         this.changeState(defaultState);
@@ -62,7 +68,7 @@ export default class AnimatorController {
     /**
      * 更新状态机逻辑
      */
-    public updateAnimator() {
+    updateAnimator() {
         // 重置计数
         this._changeCount = 0;
 
@@ -76,7 +82,7 @@ export default class AnimatorController {
         this.params.resetAllAutoTrigger();
     }
 
-    public onAnimationComplete() {
+    onAnimationComplete() {
         this.animComplete = true;
         this.animCompleteState = this._curState;
         // cc.log(`animation complete: ${this._curState.name}`);
@@ -86,7 +92,7 @@ export default class AnimatorController {
      * 无视条件直接跳转状态
      * @param 状态名
      */
-    public play(stateName: string) {
+    play(stateName: string) {
         if (!this._states.has(stateName) || this._curState.name === stateName) {
             return;
         }
@@ -99,7 +105,7 @@ export default class AnimatorController {
     /**
      * 切换动画状态
      */
-    public changeState(stateName: string) {
+    changeState(stateName: string) {
         this._changeCount++;
         if (this._changeCount > 1000) {
             error('[AnimatorController.changeState] error: 状态切换递归调用超过1000次，transition设置可能出错!');
@@ -107,7 +113,7 @@ export default class AnimatorController {
         }
 
         if (this._states.has(stateName) && (this._curState === null || this._curState.name !== stateName)) {
-            let oldState = this._curState;
+            const oldState = this._curState;
             this._curState = this._states.get(stateName)!;
 
             this._animator.onStateChange(oldState, this._curState);

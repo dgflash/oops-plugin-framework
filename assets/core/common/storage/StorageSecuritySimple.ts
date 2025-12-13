@@ -1,4 +1,4 @@
-import { IStorageSecurity } from './StorageManager';
+import type { IStorageSecurity } from './StorageManager';
 
 /**
  * 本地存储加密
@@ -27,7 +27,7 @@ export class StorageSecuritySimple implements IStorageSecurity {
     encrypt(data: string): string {
         let encryptedText = '';
         for (let i = 0; i < data.length; i++) {
-            let charCode = data.charCodeAt(i);
+            const charCode = data.charCodeAt(i);
             encryptedText += String.fromCharCode(charCode + this.secretkey.length);
         }
         return encryptedText;
@@ -37,7 +37,7 @@ export class StorageSecuritySimple implements IStorageSecurity {
     decrypt(encryptedData: string): string {
         let decryptedText = '';
         for (let i = 0; i < encryptedData.length; i++) {
-            let charCode = encryptedData.charCodeAt(i);
+            const charCode = encryptedData.charCodeAt(i);
             decryptedText += String.fromCharCode(charCode - this.secretkey.length);
         }
         return decryptedText;

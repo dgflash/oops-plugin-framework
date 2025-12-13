@@ -1,24 +1,25 @@
-import { AudioClip, Component, EventTouch, Node, _decorator, game } from "cc";
-import { oops } from "../../../core/Oops";
+import type { EventTouch } from 'cc';
+import { AudioClip, Component, Node, _decorator, game } from 'cc';
+import { oops } from '../../../core/Oops';
 
 const { ccclass, property, menu } = _decorator;
 
 /** 节点按钮 */
-@ccclass("ButtonSimple")
+@ccclass('ButtonSimple')
 @menu('OopsFramework/Button/ButtonSimple （节点按钮）')
 export default class ButtonSimple extends Component {
     @property({
-        tooltip: "是否只触发一次"
+        tooltip: '是否只触发一次'
     })
-    private once: boolean = false;
+    private once = false;
 
     @property({
-        tooltip: "每次触发间隔"
+        tooltip: '每次触发间隔'
     })
-    private interval: number = 500;
+    private interval = 500;
 
     @property({
-        tooltip: "触摸音效",
+        tooltip: '触摸音效',
         type: AudioClip
     })
     private effect: AudioClip = null!;

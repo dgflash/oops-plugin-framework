@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 14:40:28
  */
-import { Node } from "cc";
+import type { Node } from 'cc';
 
 /** 物理分组数据 */
 export class GroupItem {
@@ -49,7 +49,7 @@ export class PhysicsUtil {
 
     static setNodeLayer(item: GroupItem, node: Node) {
         node.layer = item.mask;
-        node.children.forEach(n => {
+        node.children.forEach((n) => {
             n.layer = item.mask;
             PhysicsUtil.setNodeLayer(item, n);
         });

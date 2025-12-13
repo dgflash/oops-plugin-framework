@@ -4,25 +4,25 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-08-21 15:19:56
  */
-import { DEBUG } from "cc/env";
-import { EffectSingleCase } from "../libs/animator-effect/EffectSingleCase";
-import { ecs } from "../libs/ecs/ECS";
-import { ECSRootSystem } from "../libs/ecs/ECSSystem";
-import { LanguageManager } from "../libs/gui/language/Language";
-import { VM } from "../libs/model-view/ViewModel";
-import { Config } from "../module/config/Config";
-import { AudioManager } from "./common/audio/AudioManager";
-import { MessageManager } from "./common/event/MessageManager";
-import { ResLoader } from "./common/loader/ResLoader";
-import { Logger } from "./common/log/Logger";
-import { RandomManager } from "./common/random/RandomManager";
-import { StorageManager } from "./common/storage/StorageManager";
-import { TimerManager } from "./common/timer/TimerManager";
-import { GameManager } from "./game/GameManager";
-import { LayerManager } from "./gui/layer/LayerManager";
+import { DEBUG } from 'cc/env';
+import { EffectSingleCase } from '../libs/animator-effect/EffectSingleCase';
+import { ecs } from '../libs/ecs/ECS';
+import type { ECSRootSystem } from '../libs/ecs/ECSSystem';
+import { LanguageManager } from '../libs/gui/language/Language';
+import { VM } from '../libs/model-view/ViewModel';
+import { Config } from '../module/config/Config';
+import type { AudioManager } from './common/audio/AudioManager';
+import type { MessageManager } from './common/event/MessageManager';
+import type { ResLoader } from './common/loader/ResLoader';
+import { Logger } from './common/log/Logger';
+import { RandomManager } from './common/random/RandomManager';
+import type { StorageManager } from './common/storage/StorageManager';
+import type { TimerManager } from './common/timer/TimerManager';
+import type { GameManager } from './game/GameManager';
+import type { LayerManager } from './gui/layer/LayerManager';
 
 /** 框架版本号 */
-export var version: string = "2.1.0.20251026";
+export var version = '2.1.0.20251026';
 
 /** 框架核心模块访问入口 */
 export class oops {

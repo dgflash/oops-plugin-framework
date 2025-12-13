@@ -1,4 +1,4 @@
-import { log, warn } from "cc";
+import { log, warn } from 'cc';
 
 export type NextFunction = (nextArgs?: any) => void;
 
@@ -38,7 +38,7 @@ queue.play();
  */
 export class AsyncQueue {
     // 任务task的唯一标识
-    private static _$uuid_count: number = 1;
+    private static _$uuid_count = 1;
 
     // 正在运行的任务
     private _runningAsyncTask: AsyncTask | null = null;
@@ -51,8 +51,8 @@ export class AsyncQueue {
     }
 
     // 正在执行的异步任务标识
-    private _isProcessingTaskUUID: number = 0;
-    private _enable: boolean = true;
+    private _isProcessingTaskUUID = 0;
+    private _enable = true;
 
     /** 是否开启可用 */
     get enable() {
@@ -80,12 +80,12 @@ export class AsyncQueue {
      * @param params    参数
      */
     push(callback: AsyncCallback, params: any = null): number {
-        let uuid = AsyncQueue._$uuid_count++;
+        const uuid = AsyncQueue._$uuid_count++;
         this._queues.push({
             uuid: uuid,
             callbacks: [callback],
             params: params
-        })
+        });
         return uuid;
     }
 
@@ -93,15 +93,15 @@ export class AsyncQueue {
      * 添加多个任务，多个任务函数会同时执行
      * @param params     参数据
      * @param callbacks  回调
-     * @returns 
+     * @returns
      */
     pushMulti(params: any, ...callbacks: AsyncCallback[]): number {
-        let uuid = AsyncQueue._$uuid_count++;
+        const uuid = AsyncQueue._$uuid_count++;
         this._queues.push({
             uuid: uuid,
             callbacks: callbacks,
             params: params
-        })
+        });
         return uuid;
     }
 
@@ -111,7 +111,7 @@ export class AsyncQueue {
      */
     remove(uuid: number) {
         if (this._runningAsyncTask?.uuid === uuid) {
-            warn("正在执行的任务不可以移除");
+            warn('正在执行的任务不可以移除');
             return;
         }
         for (let i = 0; i < this._queues.length; i++) {
@@ -178,31 +178,31 @@ export class AsyncQueue {
             return;
         }
 
-        let actionData: AsyncTask = this._queues.shift()!;
+        const actionData: AsyncTask = this._queues.shift()!;
         if (actionData) {
             this._runningAsyncTask = actionData;
-            let taskUUID: number = actionData.uuid;
+            const taskUUID: number = actionData.uuid;
             this._isProcessingTaskUUID = taskUUID;
-            let callbacks: Array<AsyncCallback> = actionData.callbacks;
+            const callbacks: Array<AsyncCallback> = actionData.callbacks;
 
             if (callbacks.length == 1) {
-                let nextFunc: NextFunction = (nextArgs: any = null) => {
+                const nextFunc: NextFunction = (nextArgs: any = null) => {
                     this.next(taskUUID, nextArgs);
-                }
+                };
                 callbacks[0](nextFunc, actionData.params, args);
             }
             else {
                 // 多个任务函数同时执行
                 let fnum: number = callbacks.length;
-                let nextArgsArr: any[] = [];
-                let nextFunc: NextFunction = (nextArgs: any = null) => {
+                const nextArgsArr: any[] = [];
+                const nextFunc: NextFunction = (nextArgs: any = null) => {
                     --fnum;
                     nextArgsArr.push(nextArgs || null);
                     if (fnum === 0) {
                         this.next(taskUUID, nextArgsArr);
                     }
-                }
-                let knum = fnum;
+                };
+                const knum = fnum;
                 for (let i = 0; i < knum; i++) {
                     callbacks[i](nextFunc, actionData.params, args);
                 }
@@ -223,16 +223,16 @@ export class AsyncQueue {
      * @param callback （可选参数）时间到了之后回调
      */
     yieldTime(time: number, callback: Function | null = null) {
-        let task = function (next: Function, params: any, args: any) {
-            let _t = setTimeout(() => {
+        const task = function (next: Function, params: any, args: any) {
+            const _t = setTimeout(() => {
                 clearTimeout(_t);
                 if (callback) {
                     callback();
                 }
                 next(args);
             }, time);
-        }
-        this.push(task, { des: "AsyncQueue.yieldTime" });
+        };
+        this.push(task, { des: 'AsyncQueue.yieldTime' });
     }
 
     protected next(taskUUID: number, args: any = null) {
@@ -250,18 +250,18 @@ export class AsyncQueue {
 
     /**
      * 返回一个执行函数，执行函数调用count次后，next将触发
-     * @param count 
-     * @param next 
+     * @param count
+     * @param next
      * @return 返回一个匿名函数
      */
     static excuteTimes(count: number, next: Function | null = null): Function {
         let fnum: number = count;
-        let call = () => {
+        const call = () => {
             --fnum;
             if (fnum === 0) {
                 next && next();
             }
-        }
+        };
         return call;
     }
 }

@@ -1,4 +1,5 @@
-import { Camera, Component, EventTouch, Node, RenderTexture, Sprite, SpriteFrame, UITransform, Vec3, _decorator, gfx } from 'cc';
+import type { EventTouch, Vec3 } from 'cc';
+import { Camera, Component, Node, RenderTexture, Sprite, SpriteFrame, UITransform, _decorator, gfx } from 'cc';
 const { ccclass, property } = _decorator;
 
 /** 三维模型显示到二维精灵上 */
@@ -6,36 +7,36 @@ const { ccclass, property } = _decorator;
 export class RtToSprite extends Component {
     @property({
         type: Camera,
-        tooltip: "渲染模型的三维摄像机"
+        tooltip: '渲染模型的三维摄像机'
     })
-    camera: Camera | null = null;
+        camera: Camera | null = null;
 
     @property({
         type: Sprite,
-        tooltip: "显示模型的二维精灵组件"
+        tooltip: '显示模型的二维精灵组件'
     })
-    sprite: Sprite | null = null;
+        sprite: Sprite | null = null;
 
     @property({
-        tooltip: "是否触摸控制旋转"
+        tooltip: '是否触摸控制旋转'
     })
-    rotation: boolean = false;
+        rotation = false;
 
     @property({
         type: Node,
-        tooltip: "三维模型",
+        tooltip: '三维模型',
         visible: function () {
             //@ts-ignore
             return this.rotation === true;
         },
     })
-    model: Node | null = null;
+        model: Node | null = null;
 
     private rt: RenderTexture = new RenderTexture();
-    private touched = false;                             // 是否触摸节点
+    private touched = false; // 是否触摸节点
 
     start() {
-        let size = this.sprite!.getComponent(UITransform)!;
+        const size = this.sprite!.getComponent(UITransform)!;
         this.refreshRenderTexture(size.width, size.height);
 
         if (this.rotation) {
@@ -52,8 +53,8 @@ export class RtToSprite extends Component {
 
     protected onTouchMove(event: EventTouch) {
         if (this.touched) {
-            let eulerAngles: Vec3 = this.model!.eulerAngles;
-            let deltaX = event.touch!.getDelta().x!;
+            const eulerAngles: Vec3 = this.model!.eulerAngles;
+            const deltaX = event.touch!.getDelta().x!;
             eulerAngles.y += -deltaX;
             this.model!.eulerAngles = eulerAngles;
         }
@@ -75,8 +76,8 @@ export class RtToSprite extends Component {
             passInfo: pi
         });
 
-        let spriteframe: SpriteFrame = this.sprite!.spriteFrame!;
-        let sp: SpriteFrame = new SpriteFrame();
+        const spriteframe: SpriteFrame = this.sprite!.spriteFrame!;
+        const sp: SpriteFrame = new SpriteFrame();
         sp.reset({
             originalSize: spriteframe.originalSize,
             rect: spriteframe.rect,

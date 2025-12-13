@@ -3,23 +3,23 @@ import { VMBase } from './VMBase';
 
 // +普通 label 更新数据的情况,label.string = xxx;
 // +frameIndex 插件，通过number 数值设置 BhvFrameIndex 来切换当前贴图
-// +spriteFrame 直接替换贴图的情况 , 
+// +spriteFrame 直接替换贴图的情况 ,
 //  读取本地路径 data.spriteFrame = $res:/pic/com1
 //  读取网页路径 data.spriteFrame = $url:http:xxxxxxxxxx.png
-// +特殊条件控制 
+// +特殊条件控制
 
 // 比较条件:,如果传入值 > /< />= /<= /== 某值时，执行的action类型
 
 const { ccclass, property, executeInEditMode, menu, help } = _decorator;
 
 enum FILTER_MODE {
-    "none",
-    "==", // 正常计算，比较 等于
-    "!=", // 正常计算，比较 不等于
-    ">",  // 正常计算，比较>
-    ">=", // 正常计算，比较>=
-    "<",  // 正常计算，比较<
-    "<=", // 正常计算，比较>=
+    'none',
+    '==', // 正常计算，比较 等于
+    '!=', // 正常计算，比较 不等于
+    '>', // 正常计算，比较>
+    '>=', // 正常计算，比较>=
+    '<', // 正常计算，比较<
+    '<=', // 正常计算，比较>=
 }
 
 /**
@@ -35,7 +35,7 @@ export default class VMEvent extends VMBase {
     @property({
         tooltip: '使用模板模式，可以使用多路径监听'
     })
-    templateMode: boolean = false;
+        templateMode = false;
 
     @property({
         tooltip: '监听获取值的路径',
@@ -44,12 +44,12 @@ export default class VMEvent extends VMBase {
             return this.templateMode === false;
         }
     })
-    watchPath: string = "";
+        watchPath = '';
 
     @property({
         tooltip: '触发一次后会自动关闭该事件'
     })
-    triggerOnce: boolean = false;
+        triggerOnce = false;
 
     @property({
         tooltip: '监听获取值的多条路径,这些值的改变都会通过这个函数回调,请使用 pathArr 区分获取的值 ',
@@ -65,31 +65,31 @@ export default class VMEvent extends VMBase {
         tooltip: '过滤模式，会根据条件过滤掉时间的触发',
         type: Enum(FILTER_MODE)
     })
-    filterMode: FILTER_MODE = FILTER_MODE.none;
+        filterMode: FILTER_MODE = FILTER_MODE.none;
 
     @property({
         visible: function () {
             // @ts-ignore
-            return this.filterMode !== FILTER_MODE.none
+            return this.filterMode !== FILTER_MODE.none;
         }
     })
-    compareValue: string = '';
+        compareValue = '';
 
     @property([EventHandler])
-    changeEvents: EventHandler[] = [];
+        changeEvents: EventHandler[] = [];
 
     onValueInit() {
 
     }
 
     onValueChanged(newVar: any, oldVar: any, pathArr: any[]) {
-        let res = this.conditionCheck(newVar, this.compareValue);
+        const res = this.conditionCheck(newVar, this.compareValue);
         if (!res) return;
 
         if (Array.isArray(this.changeEvents)) {
-            this.changeEvents.forEach(v => {
+            this.changeEvents.forEach((v) => {
                 v.emit([newVar, oldVar, pathArr]);
-            })
+            });
         }
 
         // 激活一次后，自动关闭组件
@@ -100,35 +100,35 @@ export default class VMEvent extends VMBase {
 
     /** 条件检查 */
     private conditionCheck(a: any, b: any): boolean {
-        let cod = FILTER_MODE;
+        const cod = FILTER_MODE;
 
         switch (this.filterMode) {
-            case cod.none:
-                return true;
-            case cod["=="]:
-                if (a == b) return true;
-                break;
-            case cod["!="]:
-                if (a != b) return true;
-                break;
-            case cod["<"]:
-                if (a < b) return true;
-                break;
-            case cod[">"]:
-                if (a > b) return true;
-                break;
-            case cod[">="]:
-                if (a >= b) return true;
-                break;
-            case cod["<"]:
-                if (a < b) return true;
-                break;
-            case cod["<="]:
-                if (a <= b) return true;
-                break;
+        case cod.none:
+            return true;
+        case cod['==']:
+            if (a == b) return true;
+            break;
+        case cod['!=']:
+            if (a != b) return true;
+            break;
+        case cod['<']:
+            if (a < b) return true;
+            break;
+        case cod['>']:
+            if (a > b) return true;
+            break;
+        case cod['>=']:
+            if (a >= b) return true;
+            break;
+        case cod['<']:
+            if (a < b) return true;
+            break;
+        case cod['<=']:
+            if (a <= b) return true;
+            break;
 
-            default:
-                break;
+        default:
+            break;
         }
 
         return false;

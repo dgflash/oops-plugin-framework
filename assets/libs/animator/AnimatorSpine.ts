@@ -1,11 +1,12 @@
-import { _decorator, sp } from "cc";
-import AnimatorSpineSecondary from "./AnimatorSpineSecondary";
-import AnimatorBase, { AnimationPlayer } from "./core/AnimatorBase";
-import { AnimatorStateLogic } from "./core/AnimatorStateLogic";
+import { _decorator, sp } from 'cc';
+import type AnimatorSpineSecondary from './AnimatorSpineSecondary';
+import type { AnimationPlayer } from './core/AnimatorBase';
+import AnimatorBase from './core/AnimatorBase';
+import type { AnimatorStateLogic } from './core/AnimatorStateLogic';
 
 const { ccclass, property, requireComponent, disallowMultiple, menu, help } = _decorator;
 
-/** 
+/**
  * Spine状态机组件（主状态机），trackIndex为0
  */
 @ccclass
@@ -43,7 +44,7 @@ export default class AnimatorSpine extends AnimatorBase {
      * - animationPlayer 自定义动画控制
      * @override
      */
-    public onInit(...args: Array<Map<string, AnimatorStateLogic> | ((fromState: string, toState: string) => void) | AnimationPlayer>) {
+    onInit(...args: Array<Map<string, AnimatorStateLogic> | ((fromState: string, toState: string) => void) | AnimationPlayer>) {
         if (this.PlayOnStart || this._hasInit) {
             return;
         }
@@ -62,13 +63,13 @@ export default class AnimatorSpine extends AnimatorBase {
 
     /** ---------- 后续扩展代码 开始 ---------- */
 
-    public getBone(name: string): any {
+    getBone(name: string): any {
         const bone = this._spine.findBone(name);
-        return bone
+        return bone;
     }
 
     private onSpineEvent(trackEntry: any, event: any) {
-        const animationName = trackEntry.animation ? event.data.name : "";
+        const animationName = trackEntry.animation ? event.data.name : '';
         this._animationPlayer?.onFrameEventCallback(animationName, this);
     }
 
@@ -76,8 +77,12 @@ export default class AnimatorSpine extends AnimatorBase {
 
     private onSpineComplete(entry: any) {
         entry.trackIndex === 0 && this.onAnimFinished();
-        this._completeListenerMap.forEach((target, cb) => { target ? cb.call(target, entry) : cb(entry); });
-        this._secondaryListenerMap.forEach((target, cb) => { entry.trackIndex === target.TrackIndex && cb.call(target, entry); });
+        this._completeListenerMap.forEach((target, cb) => {
+            target ? cb.call(target, entry) : cb(entry);
+        });
+        this._secondaryListenerMap.forEach((target, cb) => {
+            entry.trackIndex === target.TrackIndex && cb.call(target, entry);
+        });
     }
 
     /**
@@ -108,7 +113,7 @@ export default class AnimatorSpine extends AnimatorBase {
     /**
      * 注册次状态机动画结束的回调（状态机内部方法，不能由外部直接调用）
      */
-    public addSecondaryListener(cb: (entry?: any) => void, target: AnimatorSpineSecondary) {
+    addSecondaryListener(cb: (entry?: any) => void, target: AnimatorSpineSecondary) {
         this._secondaryListenerMap.set(cb, target);
     }
 
@@ -117,7 +122,7 @@ export default class AnimatorSpine extends AnimatorBase {
      * @param cb 回调
      * @param target 调用回调的this对象
      */
-    public addCompleteListener(cb: (entry?: any) => void, target: any = null) {
+    addCompleteListener(cb: (entry?: any) => void, target: any = null) {
         if (this._completeListenerMap.has(cb)) {
             return;
         }
@@ -128,14 +133,14 @@ export default class AnimatorSpine extends AnimatorBase {
      * 注销动画完成的监听
      * @param cb 回调
      */
-    public removeCompleteListener(cb: (entry?: any) => void) {
+    removeCompleteListener(cb: (entry?: any) => void) {
         this._completeListenerMap.delete(cb);
     }
 
     /**
      * 清空动画完成的监听
      */
-    public clearCompleteListener() {
+    clearCompleteListener() {
         this._completeListenerMap.clear;
     }
 }

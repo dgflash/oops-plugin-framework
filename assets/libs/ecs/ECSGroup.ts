@@ -4,8 +4,8 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-05 14:21:54
  */
-import { ecs } from "./ECS";
-import { ECSEntity } from "./ECSEntity";
+import type { ecs } from './ECS';
+import type { ECSEntity } from './ECSEntity';
 
 export class ECSGroup<E extends ECSEntity = ECSEntity> {
     /** 实体筛选规则 */
@@ -27,7 +27,7 @@ export class ECSGroup<E extends ECSEntity = ECSEntity> {
 
     /**
      * 当前group中实体的数量
-     * 
+     *
      * 注：不要手动修改这个属性值。
      * 注：其实可以通过this._matchEntities.size获得实体数量，但是需要封装get方法。为了减少一次方法的调用所以才直接创建一个count属性
      */
@@ -46,7 +46,7 @@ export class ECSGroup<E extends ECSEntity = ECSEntity> {
     }
 
     onComponentAddOrRemove(entity: E) {
-        if (this.matcher.isMatch(entity)) {                         // Group只关心指定组件在实体身上的添加和删除动作。
+        if (this.matcher.isMatch(entity)) { // Group只关心指定组件在实体身上的添加和删除动作。
             this._matchEntities.set(entity.eid, entity);
             this._entitiesCache = null;
             this.count++;
@@ -56,7 +56,7 @@ export class ECSGroup<E extends ECSEntity = ECSEntity> {
                 this._removedEntities!.delete(entity.eid);
             }
         }
-        else if (this._matchEntities.has(entity.eid)) {             // 如果Group中有这个实体，但是这个实体已经不满足匹配规则，则从Group中移除该实体
+        else if (this._matchEntities.has(entity.eid)) { // 如果Group中有这个实体，但是这个实体已经不满足匹配规则，则从Group中移除该实体
             this._matchEntities.delete(entity.eid);
             this._entitiesCache = null;
             this.count--;

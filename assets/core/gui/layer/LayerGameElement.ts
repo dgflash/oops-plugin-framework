@@ -1,5 +1,6 @@
-import { _decorator, Component, Node, NodePool } from "cc";
-import { GameElementConfig } from "./UIConfig";
+import type { Node, NodePool } from 'cc';
+import { _decorator, Component } from 'cc';
+import type { GameElementConfig } from './UIConfig';
 
 const { ccclass } = _decorator;
 
@@ -19,7 +20,7 @@ export class GameElementParams {
     /** 游戏元素唯一编号 */
     uiid: string = null!;
     /** 游戏元素配置 */
-    config: GameElementConfig = null!
+    config: GameElementConfig = null!;
     /** 同类游戏元素集合 */
     nodes: Node[] = null!;
     /** 同类游戏元素对象池 */

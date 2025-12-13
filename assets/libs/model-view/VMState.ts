@@ -1,4 +1,5 @@
-import { Button, CCInteger, Color, Enum, Node, Sprite, UIOpacity, UIRenderer, _decorator, color } from 'cc';
+import type { Color } from 'cc';
+import { Button, CCInteger, Enum, Node, Sprite, UIOpacity, UIRenderer, _decorator, color } from 'cc';
 import { VMBase } from './VMBase';
 import { VM } from './ViewModel';
 
@@ -6,23 +7,23 @@ const { ccclass, property, menu, help } = _decorator;
 
 /** 比较条件 */
 enum CONDITION {
-    "==",        // 正常计算，比较 等于
-    "!=",        // 正常计算，比较 不等于
-    ">",         // 正常计算，比较>
-    ">=",        // 正常计算，比较>=
-    "<",         // 正常计算，比较<
-    "<=",        // 正常计算，比较>=
-    "range"      // 计算在范围内
+    '==', // 正常计算，比较 等于
+    '!=', // 正常计算，比较 不等于
+    '>', // 正常计算，比较>
+    '>=', // 正常计算，比较>=
+    '<', // 正常计算，比较<
+    '<=', // 正常计算，比较>=
+    'range' // 计算在范围内
 }
 
 enum ACTION {
-    NODE_ACTIVE,            // 满足条件的节点激活，不满足的不激活（只对子节点的激活有效果，当前节点active = false时，组件就失去效果了，如果设置当前节点可用NODE_VISIBLE代替）
-    NODE_VISIBLE,           // 满足条件的节点显示，不满足的不显示
-    NODE_OPACITY,           // 满足条件的节点改变不透明度，不满足的还原255
-    NODE_COLOR,             // 满足条件的节点改变颜色，不满足的恢复白色
-    COMPONENT_CUSTOM,       // 自定义控制组件模式
-    SPRITE_GRAYSCALE,       // 满足条件的节点cc.Sprite组件，纹理变黑白
-    BUTTON_INTERACTABLE,    // 满足条件的节点cc.BUTTON组件,
+    NODE_ACTIVE, // 满足条件的节点激活，不满足的不激活（只对子节点的激活有效果，当前节点active = false时，组件就失去效果了，如果设置当前节点可用NODE_VISIBLE代替）
+    NODE_VISIBLE, // 满足条件的节点显示，不满足的不显示
+    NODE_OPACITY, // 满足条件的节点改变不透明度，不满足的还原255
+    NODE_COLOR, // 满足条件的节点改变颜色，不满足的恢复白色
+    COMPONENT_CUSTOM, // 自定义控制组件模式
+    SPRITE_GRAYSCALE, // 满足条件的节点cc.Sprite组件，纹理变黑白
+    BUTTON_INTERACTABLE, // 满足条件的节点cc.BUTTON组件,
 }
 
 enum CHILD_MODE_TYPE {
@@ -39,17 +40,17 @@ enum CHILD_MODE_TYPE {
 @help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037846&doc_id=2873565')
 export default class VMState extends VMBase {
     @property
-    watchPath: string = "";
+        watchPath = '';
 
     @property({
         tooltip: '遍历子节点,根据子节点的名字或名字转换为值，判断值满足条件 来激活'
     })
-    foreachChildMode: boolean = false;
+        foreachChildMode = false;
 
     @property({
         type: Enum(CONDITION),
     })
-    condition: CONDITION = CONDITION["=="];
+        condition: CONDITION = CONDITION['=='];
 
     @property({
         type: Enum(CHILD_MODE_TYPE),
@@ -59,7 +60,7 @@ export default class VMState extends VMBase {
             return this.foreachChildMode === true;
         }
     })
-    foreachChildType: CHILD_MODE_TYPE = CHILD_MODE_TYPE.NODE_INDEX;
+        foreachChildType: CHILD_MODE_TYPE = CHILD_MODE_TYPE.NODE_INDEX;
 
     @property({
         displayName: 'Value: a',
@@ -68,7 +69,7 @@ export default class VMState extends VMBase {
             return this.foreachChildMode === false;
         }
     })
-    valueA: number = 0;
+        valueA = 0;
 
     @property({
         displayName: 'Value: b',
@@ -77,13 +78,13 @@ export default class VMState extends VMBase {
             return this.foreachChildMode === false && this.condition === CONDITION.range;
         }
     })
-    valueB: number = 0;
+        valueB = 0;
 
     @property({
         type: Enum(ACTION),
         tooltip: '一旦满足条件就对节点执行操作'
     })
-    valueAction: ACTION = ACTION.NODE_ACTIVE;
+        valueAction: ACTION = ACTION.NODE_ACTIVE;
 
     @property({
         visible: function () {
@@ -94,43 +95,43 @@ export default class VMState extends VMBase {
         type: CCInteger,
         displayName: 'Action Opacity'
     })
-    valueActionOpacity: number = 0;
+        valueActionOpacity = 0;
 
     @property({
         visible: function () {
             // @ts-ignore
-            return this.valueAction === ACTION.NODE_COLOR
+            return this.valueAction === ACTION.NODE_COLOR;
         },
         displayName: 'Action Color'
     })
-    valueActionColor: Color = color(155, 155, 155);
+        valueActionColor: Color = color(155, 155, 155);
 
     @property({
         visible: function () {
             // @ts-ignore
-            return this.valueAction === ACTION.COMPONENT_CUSTOM
+            return this.valueAction === ACTION.COMPONENT_CUSTOM;
         },
         displayName: 'Component Name'
     })
-    valueComponentName: string = '';
+        valueComponentName = '';
 
     @property({
         visible: function () {
             // @ts-ignore
-            return this.valueAction === ACTION.COMPONENT_CUSTOM
+            return this.valueAction === ACTION.COMPONENT_CUSTOM;
         },
         displayName: 'Component Property'
     })
-    valueComponentProperty: string = '';
+        valueComponentProperty = '';
 
     @property({
         visible: function () {
             // @ts-ignore
-            return this.valueAction === ACTION.COMPONENT_CUSTOM
+            return this.valueAction === ACTION.COMPONENT_CUSTOM;
         },
         displayName: 'Default Value'
     })
-    valueComponentDefaultValue: string = '';
+        valueComponentDefaultValue = '';
 
     @property({
         visible: function () {
@@ -139,13 +140,13 @@ export default class VMState extends VMBase {
         },
         displayName: 'Action Value'
     })
-    valueComponentActionValue: string = '';
+        valueComponentActionValue = '';
 
     @property({
         type: [Node],
         tooltip: '需要执行条件的节点，如果不填写则默认会执行本节点以及本节点的所有子节点 的状态'
     })
-    watchNodes: Node[] = [];
+        watchNodes: Node[] = [];
 
     onLoad() {
         super.onLoad();
@@ -166,7 +167,7 @@ export default class VMState extends VMBase {
 
     // 当值初始化时
     protected onValueInit() {
-        let value = VM.getValue(this.watchPath);
+        const value = VM.getValue(this.watchPath);
         this.checkNodeFromValue(value);
     }
 
@@ -179,118 +180,118 @@ export default class VMState extends VMBase {
     private checkNodeFromValue(value: any) {
         if (this.foreachChildMode) {
             this.watchNodes.forEach((node, index) => {
-                let v = (this.foreachChildType === CHILD_MODE_TYPE.NODE_INDEX) ? index : node.name;
-                let check = this.conditionCheck(value, v);
+                const v = (this.foreachChildType === CHILD_MODE_TYPE.NODE_INDEX) ? index : node.name;
+                const check = this.conditionCheck(value, v);
                 // log('遍历模式', value, node.name, check);
                 this.setNodeState(node, check);
-            })
+            });
         }
         else {
-            let check = this.conditionCheck(value, this.valueA, this.valueB);
+            const check = this.conditionCheck(value, this.valueA, this.valueB);
             this.setNodesStates(check);
         }
     }
 
     // 更新 多个节点 的 状态
     private setNodesStates(checkState?: boolean) {
-        let nodes = this.watchNodes;
-        let check = checkState;
+        const nodes = this.watchNodes;
+        const check = checkState;
         nodes.forEach((node) => {
             this.setNodeState(node, check);
-        })
+        });
     }
 
     /** 更新单个节点的状态 */
     private setNodeState(node: Node, checkState?: boolean) {
-        let n = this.valueAction;
-        let check = checkState;
+        const n = this.valueAction;
+        const check = checkState;
         switch (n) {
-            case ACTION.NODE_ACTIVE:
-                node.active = check ? true : false;
-                break;
-            case ACTION.NODE_VISIBLE: {
-                let opacity = node.getComponent(UIOpacity);
-                if (opacity == null)
-                    opacity = node.addComponent(UIOpacity);
+        case ACTION.NODE_ACTIVE:
+            node.active = check ? true : false;
+            break;
+        case ACTION.NODE_VISIBLE: {
+            let opacity = node.getComponent(UIOpacity);
+            if (opacity == null)
+                opacity = node.addComponent(UIOpacity);
 
-                if (opacity) {
-                    opacity.opacity = check ? 255 : 0;
-                }
-                break;
+            if (opacity) {
+                opacity.opacity = check ? 255 : 0;
             }
-            case ACTION.NODE_OPACITY: {
-                let opacity = node.getComponent(UIOpacity);
-                if (opacity == null)
-                    opacity = node.addComponent(UIOpacity);
+            break;
+        }
+        case ACTION.NODE_OPACITY: {
+            let opacity = node.getComponent(UIOpacity);
+            if (opacity == null)
+                opacity = node.addComponent(UIOpacity);
 
-                if (opacity) {
-                    opacity.opacity = check ? this.valueActionOpacity : 255;
-                }
-                break;
+            if (opacity) {
+                opacity.opacity = check ? this.valueActionOpacity : 255;
             }
-            case ACTION.NODE_COLOR: {
-                let uir = node.getComponent(UIRenderer);
-                if (uir) {
-                    uir.color = check ? this.valueActionColor : color(255, 255, 255);
-                }
-                break;
+            break;
+        }
+        case ACTION.NODE_COLOR: {
+            const uir = node.getComponent(UIRenderer);
+            if (uir) {
+                uir.color = check ? this.valueActionColor : color(255, 255, 255);
             }
-            case ACTION.COMPONENT_CUSTOM:
-                let comp: any = node.getComponent(this.valueComponentName);
-                if (comp == null) return;
-                if (this.valueComponentProperty in comp) {
-                    comp[this.valueComponentProperty] = check ? this.valueComponentActionValue : this.valueComponentDefaultValue;
-                }
-                break;
-            case ACTION.SPRITE_GRAYSCALE: {
-                let sprite = node.getComponent(Sprite);
-                if (sprite) {
-                    sprite.grayscale = check!;
-                }
-                break;
+            break;
+        }
+        case ACTION.COMPONENT_CUSTOM:
+            const comp: any = node.getComponent(this.valueComponentName);
+            if (comp == null) return;
+            if (this.valueComponentProperty in comp) {
+                comp[this.valueComponentProperty] = check ? this.valueComponentActionValue : this.valueComponentDefaultValue;
             }
-            case ACTION.BUTTON_INTERACTABLE: {
-                let sprite = node.getComponent(Button);
-                if (sprite) {
-                    sprite.interactable = check!;
-                }
-                break;
+            break;
+        case ACTION.SPRITE_GRAYSCALE: {
+            const sprite = node.getComponent(Sprite);
+            if (sprite) {
+                sprite.grayscale = check!;
             }
-            default:
-                break;
+            break;
+        }
+        case ACTION.BUTTON_INTERACTABLE: {
+            const sprite = node.getComponent(Button);
+            if (sprite) {
+                sprite.interactable = check!;
+            }
+            break;
+        }
+        default:
+            break;
         }
     }
 
     /** 条件检查 */
     private conditionCheck(v: any, a: any, b?: any): boolean {
-        let cod = CONDITION;
+        const cod = CONDITION;
         switch (this.condition) {
-            case cod["=="]:
-                if (v == a) return true;
-                break;
-            case cod["!="]:
-                if (v != a) return true;
-                break;
-            case cod["<"]:
-                if (v < a) return true;
-                break;
-            case cod[">"]:
-                if (v > a) return true;
-                break;
-            case cod[">="]:
-                if (v >= a) return true;
-                break;
-            case cod["<"]:
-                if (v < a) return true;
-                break;
-            case cod["<="]:
-                if (v <= a) return true;
-                break;
-            case cod["range"]:
-                if (v >= a && v <= b) return true;
-                break;
-            default:
-                break;
+        case cod['==']:
+            if (v == a) return true;
+            break;
+        case cod['!=']:
+            if (v != a) return true;
+            break;
+        case cod['<']:
+            if (v < a) return true;
+            break;
+        case cod['>']:
+            if (v > a) return true;
+            break;
+        case cod['>=']:
+            if (v >= a) return true;
+            break;
+        case cod['<']:
+            if (v < a) return true;
+            break;
+        case cod['<=']:
+            if (v <= a) return true;
+            break;
+        case cod['range']:
+            if (v >= a && v <= b) return true;
+            break;
+        default:
+            break;
         }
 
         return false;

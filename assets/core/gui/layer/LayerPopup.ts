@@ -3,12 +3,13 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 13:44:28
  */
-import { BlockInputEvents, EventTouch, Node } from "cc";
-import { ViewUtil } from "../../utils/ViewUtil";
-import { PromptResType } from "../GuiEnum";
-import { LayerUI } from "./LayerUI";
-import { UIState } from "./LayerUIElement";
-import { UIConfig } from "./UIConfig";
+import type { EventTouch } from 'cc';
+import { BlockInputEvents, Node } from 'cc';
+import { ViewUtil } from '../../utils/ViewUtil';
+import { PromptResType } from '../GuiEnum';
+import { LayerUI } from './LayerUI';
+import type { UIState } from './LayerUIElement';
+import type { UIConfig } from './UIConfig';
 
 /* 弹窗层，允许同时弹出多个窗口 */
 export class LayerPopUp extends LayerUI {
@@ -62,7 +63,7 @@ export class LayerPopUp extends LayerUI {
         if (this.mask == null) return;
 
         let flag = true;
-        for (let value of this.ui_nodes.values()) {
+        for (const value of this.ui_nodes.values()) {
             if (value.config.mask) {
                 flag = false;
                 break;
@@ -97,7 +98,7 @@ export class LayerPopUp extends LayerUI {
     /** 关闭触摸非窗口区域关闭 */
     protected closeVacancyRemove() {
         let flag = true;
-        for (let value of this.ui_nodes.values()) {
+        for (const value of this.ui_nodes.values()) {
             if (value.config.vacancy) {
                 flag = false;
                 break;
@@ -112,7 +113,7 @@ export class LayerPopUp extends LayerUI {
     /** 触摸非窗口区域关闭 */
     private onTouchEnd(event: EventTouch) {
         if (this.ui_nodes.size > 0) {
-            let vp = this.ui_nodes.array[this.ui_nodes.size - 1];
+            const vp = this.ui_nodes.array[this.ui_nodes.size - 1];
             if (vp.valid && vp.config.vacancy) {
                 this.remove(vp.config.prefab);
             }
@@ -120,7 +121,7 @@ export class LayerPopUp extends LayerUI {
     }
 
     clear(isDestroy: boolean) {
-        super.clear(isDestroy)
+        super.clear(isDestroy);
         this.closeBlack();
     }
 }

@@ -5,9 +5,9 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-01-19 14:59:50
  */
-import { Component, Node, Vec3, _decorator } from "cc";
-import { Timer } from "../../core/common/timer/Timer";
-import { Vec3Util } from "../../core/utils/Vec3Util";
+import { Component, Node, Vec3, _decorator } from 'cc';
+import { Timer } from '../../core/common/timer/Timer';
+import { Vec3Util } from '../../core/utils/Vec3Util';
 
 const { ccclass, property } = _decorator;
 
@@ -19,14 +19,14 @@ export class MoveTo extends Component {
     /** 移动方向 */
     velocity: Vec3 = Vec3Util.zero;
     /** 移动速度（每秒移动的像素距离） */
-    speed: number = 0;
+    speed = 0;
     /** 是否计算将 Y 轴带入计算 */
-    hasYAxis: boolean = true;
+    hasYAxis = true;
 
     /** 坐标标（默认本地坐标） */
     ns: number = Node.NodeSpace.LOCAL;
     /** 偏移距离 */
-    offset: number = 0;
+    offset = 0;
     /** 偏移向量 */
     offsetVector: Vec3 | null = null;
     /** 移动开始 */
@@ -53,7 +53,7 @@ export class MoveTo extends Component {
         let end: Vec3;
 
         if (this.speed <= 0) {
-            console.error("移动速度必须要大于零");
+            console.error('移动速度必须要大于零');
             return;
         }
 
@@ -80,11 +80,11 @@ export class MoveTo extends Component {
             if (this.hasYAxis == false) target.y = 0;
 
             // 移动方向与移动数度
-            let start = this.ns == Node.NodeSpace.WORLD ? this.node.worldPosition : this.node.position;
+            const start = this.ns == Node.NodeSpace.WORLD ? this.node.worldPosition : this.node.position;
             this.velocity = Vec3Util.sub(target, start).normalize();
 
             // 移动时间与目标偏位置计算
-            let distance = Vec3.distance(start, target) - this.offset;
+            const distance = Vec3.distance(start, target) - this.offset;
 
             // 目标位置修改事件
             this.onChange?.call(this);
@@ -101,7 +101,7 @@ export class MoveTo extends Component {
         }
 
         if (this.speed > 0) {
-            let trans = Vec3Util.mul(this.velocity, this.speed * dt);
+            const trans = Vec3Util.mul(this.velocity, this.speed * dt);
             if (this.ns == Node.NodeSpace.WORLD)
                 this.node.worldPosition = Vec3Util.add(this.node.worldPosition, trans);
             else

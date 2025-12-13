@@ -6,18 +6,18 @@
  */
 import { BranchNode } from './BranchNode';
 
-/** 
+/**
  * 逻辑或关系
  * 只要子节点有一个返回true，则停止执行其它子节点，并且Selector返回true。如果所有子节点都返回false，则Selector返回false。
  */
 export class Selector extends BranchNode {
     success() {
-        super.success()
+        super.success();
         this._control.success();
     }
 
     fail() {
-        super.fail()
+        super.fail();
 
         this._actualTask += 1;
         if (this._actualTask < this.children.length) {

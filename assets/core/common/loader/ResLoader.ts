@@ -1,4 +1,5 @@
-import { __private, AnimationClip, Asset, AssetManager, assetManager, AudioClip, Font, ImageAsset, js, JsonAsset, Material, Mesh, Prefab, resources, sp, SpriteFrame, Texture2D } from "cc";
+import type { __private, AssetManager } from 'cc';
+import { AnimationClip, Asset, assetManager, AudioClip, Font, ImageAsset, js, JsonAsset, Material, Mesh, Prefab, resources, sp, SpriteFrame, Texture2D } from 'cc';
 
 export type AssetType<T = Asset> = __private.__types_globals__Constructor<T> | null;
 export type Paths = string | string[];
@@ -23,18 +24,18 @@ interface ILoadResArgs<T extends Asset> {
     preload?: boolean;
 }
 
-/** 
+/**
  * 游戏资源管理
  * 1、加载默认resources文件夹中资源
  * 2、加载默认bundle远程资源
  * 3、主动传递bundle名时，优先加载传递bundle名资源包中的资源
- * 
+ *
  * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037901&doc_id=2873565
  */
 export class ResLoader {
     //#region 资源配置数据
     /** 全局默认加载的资源包名 */
-    defaultBundleName: string = "resources";
+    defaultBundleName = 'resources';
 
     /** 下载时的最大并发数 - 项目设置 -> 项目数据 -> 资源下载并发数，设置默认值；初始值为15 */
     get maxConcurrency(): number {
@@ -79,10 +80,10 @@ export class ResLoader {
         var data = await oops.res.loadRemote<ImageAsset>(this.url, opt);
         const texture = new Texture2D();
         texture.image = data;
-    
+
         const spriteFrame = new SpriteFrame();
         spriteFrame.texture = texture;
-    
+
         var sprite = this.sprite.addComponent(Sprite);
         sprite.spriteFrame = spriteFrame;
      */
@@ -133,7 +134,7 @@ export class ResLoader {
      * @param bundleName 资源地址
      */
     removeBundle(bundleName: string) {
-        let bundle = assetManager.bundles.get(bundleName);
+        const bundle = assetManager.bundles.get(bundleName);
         if (bundle) {
             bundle.releaseAll();
             assetManager.removeBundle(bundle);
@@ -165,16 +166,16 @@ export class ResLoader {
         onProgress?: ProgressCallback
     ) {
         return new Promise((resolve, reject) => {
-            let onComplete = (err: Error | null, data: AssetManager.RequestItem) => {
+            const onComplete = (err: Error | null, data: AssetManager.RequestItem) => {
                 if (err) {
                     resolve(null!);
                     return;
                 }
                 resolve(data);
-            }
+            };
 
             let args: ILoadResArgs<Asset> | null = null;
-            if (typeof paths === "string" || paths instanceof Array) {
+            if (typeof paths === 'string' || paths instanceof Array) {
                 args = this.parseLoadResArgs(paths, type, onProgress, onComplete);
                 args.bundle = bundleName;
             }
@@ -211,7 +212,7 @@ export class ResLoader {
         onComplete?: CompleteCallback,
     ) {
         let args: ILoadResArgs<T> | null = null;
-        if (typeof dir === "string") {
+        if (typeof dir === 'string') {
             args = this.parseLoadResArgs(dir, type, onProgress, onComplete);
             args.bundle = bundleName;
         }
@@ -236,16 +237,16 @@ export class ResLoader {
      */
     load<T extends Asset>(bundleName: string, paths: Paths | AssetType<T>, type?: AssetType<T>) {
         return new Promise<T>((resolve, reject) => {
-            let onComplete = (err: Error | null, data: T) => {
+            const onComplete = (err: Error | null, data: T) => {
                 if (err) {
                     resolve(null!);
                     return;
                 }
                 resolve(data);
-            }
+            };
 
             let args: ILoadResArgs<T> | null = null;
-            if (typeof paths === "string" || paths instanceof Array) {
+            if (typeof paths === 'string' || paths instanceof Array) {
                 args = this.parseLoadResArgs(paths, type, onComplete);
                 args.bundle = bundleName;
             }
@@ -266,7 +267,7 @@ export class ResLoader {
      */
     loadAny<T extends Asset>(bundleName: string | string[], paths: string[] | ProgressCallback, onProgress?: ProgressCallback | CompleteCallback, onComplete?: CompleteCallback): void {
         let args: ILoadResArgs<T> | null = null;
-        if (typeof bundleName === "string" && paths instanceof Array) {
+        if (typeof bundleName === 'string' && paths instanceof Array) {
             args = this.parseLoadResArgs(paths, onProgress, onComplete);
             args.bundle = bundleName;
         }
@@ -289,7 +290,7 @@ export class ResLoader {
         var onProgressCallback = (finished: number, total: number, item: any) => {
             console.log("资源加载进度", finished, total);
         }
-    
+
         // 加载完成事件
         var onCompleteCallback = () => {
             console.log("资源加载完成");
@@ -312,7 +313,7 @@ export class ResLoader {
         onComplete?: CompleteCallback,
     ) {
         let args: ILoadResArgs<T> | null = null;
-        if (typeof dir === "string") {
+        if (typeof dir === 'string') {
             args = this.parseLoadResArgs(dir, type, onProgress, onComplete);
             args.bundle = bundleName;
         }
@@ -351,14 +352,14 @@ export class ResLoader {
 
         const bundle: AssetManager.Bundle | null = assetManager.getBundle(bundleName);
         if (bundle) {
-            var infos = bundle.getDirWithPath(path);
+            const infos = bundle.getDirWithPath(path);
             if (infos) {
                 infos.map((info) => {
                     this.releasePrefabtDepsRecursively(info.uuid);
                 });
             }
 
-            if (path == "" && bundleName != "resources") {
+            if (path == '' && bundleName != 'resources') {
                 assetManager.removeBundle(bundle);
             }
         }
@@ -368,11 +369,11 @@ export class ResLoader {
      * 获取资源路径
      * @param bundleName 资源包名
      * @param uuid       资源唯一编号
-     * @returns 
+     * @returns
      */
     getAssetPath(bundleName: string, uuid: string): string {
-        let b = this.getBundle(bundleName)!;
-        let info = b.getAssetInfo(uuid)!;
+        const b = this.getBundle(bundleName)!;
+        const info = b.getAssetInfo(uuid)!;
         //@ts-ignore
         return info.path;
     }
@@ -406,13 +407,13 @@ export class ResLoader {
      * @param bundleName    远程资源包名
      */
     get<T extends Asset>(path: string, type?: AssetType<T>, bundleName: string = this.defaultBundleName): T | null {
-        var bundle: AssetManager.Bundle = assetManager.getBundle(bundleName)!;
+        const bundle: AssetManager.Bundle = assetManager.getBundle(bundleName)!;
         return bundle.get(path, type);
     }
     //#endregion
 
     private parseLoadResArgs<T extends Asset>(paths: Paths, type?: AssetType<T> | ProgressCallback | CompleteCallback, onProgress?: AssetType<T> | ProgressCallback | CompleteCallback, onComplete?: ProgressCallback | CompleteCallback) {
-        let pathsOut: any = paths;
+        const pathsOut: any = paths;
         let typeOut: any = type;
         let onProgressOut: any = onProgress;
         let onCompleteOut: any = onComplete;
@@ -476,49 +477,49 @@ export class ResLoader {
     dump() {
         assetManager.assets.forEach((value: Asset, key: string) => {
             console.log(`引用数量:${value.refCount}`, assetManager.assets.get(key));
-        })
+        });
         console.log(`当前资源总数:${assetManager.assets.count}`);
     }
 
     private debugLogReleasedAsset(bundleName: string, asset: Asset) {
         if (asset.refCount == 0) {
-            let path = this.getAssetPath(bundleName, asset.uuid);
-            let content: string = "";
+            const path = this.getAssetPath(bundleName, asset.uuid);
+            let content = '';
             if (asset instanceof JsonAsset) {
-                content = "【释放资源】Json【路径】" + path;
+                content = '【释放资源】Json【路径】' + path;
             }
             else if (asset instanceof Prefab) {
-                content = "【释放资源】Prefab【路径】" + path;
+                content = '【释放资源】Prefab【路径】' + path;
             }
             else if (asset instanceof SpriteFrame) {
-                content = "【释放资源】SpriteFrame【路径】" + path;
+                content = '【释放资源】SpriteFrame【路径】' + path;
             }
             else if (asset instanceof Texture2D) {
-                content = "【释放资源】Texture2D【路径】" + path;
+                content = '【释放资源】Texture2D【路径】' + path;
             }
             else if (asset instanceof ImageAsset) {
-                content = "【释放资源】ImageAsset【路径】" + path;
+                content = '【释放资源】ImageAsset【路径】' + path;
             }
             else if (asset instanceof AudioClip) {
-                content = "【释放资源】AudioClip【路径】" + path;
+                content = '【释放资源】AudioClip【路径】' + path;
             }
             else if (asset instanceof AnimationClip) {
-                content = "【释放资源】AnimationClip【路径】" + path;
+                content = '【释放资源】AnimationClip【路径】' + path;
             }
             else if (asset instanceof Font) {
-                content = "【释放资源】Font【路径】" + path;
+                content = '【释放资源】Font【路径】' + path;
             }
             else if (asset instanceof Material) {
-                content = "【释放资源】Material【路径】" + path;
+                content = '【释放资源】Material【路径】' + path;
             }
             else if (asset instanceof Mesh) {
-                content = "【释放资源】Mesh【路径】" + path;
+                content = '【释放资源】Mesh【路径】' + path;
             }
             else if (asset instanceof sp.SkeletonData) {
-                content = "【释放资源】Spine【路径】" + path;
+                content = '【释放资源】Spine【路径】' + path;
             }
             else {
-                content = "【释放资源】未知【路径】" + path;
+                content = '【释放资源】未知【路径】' + path;
             }
             console.log(content);
         }

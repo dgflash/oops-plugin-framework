@@ -1,16 +1,17 @@
-import { __private, Node } from "cc";
-import { resLoader } from "../../core/common/loader/ResLoader";
-import { gui } from "../../core/gui/Gui";
-import { LayerUIElement, UIParam } from "../../core/gui/layer/LayerUIElement";
-import { oops } from "../../core/Oops";
-import { ViewUtil } from "../../core/utils/ViewUtil";
-import { ecs } from "../../libs/ecs/ECS";
-import { ECSEntity } from "../../libs/ecs/ECSEntity";
-import { CompType } from "../../libs/ecs/ECSModel";
-import { CCBusiness } from "./CCBusiness";
-import { CCView } from "./CCView";
-import { CCViewVM } from "./CCViewVM";
-import { GameComponent } from "./GameComponent";
+import type { __private, Node } from 'cc';
+import { resLoader } from '../../core/common/loader/ResLoader';
+import { gui } from '../../core/gui/Gui';
+import type { UIParam } from '../../core/gui/layer/LayerUIElement';
+import { LayerUIElement } from '../../core/gui/layer/LayerUIElement';
+import { oops } from '../../core/Oops';
+import { ViewUtil } from '../../core/utils/ViewUtil';
+import { ecs } from '../../libs/ecs/ECS';
+import type { ECSEntity } from '../../libs/ecs/ECSEntity';
+import type { CompType } from '../../libs/ecs/ECSModel';
+import type { CCBusiness } from './CCBusiness';
+import type { CCView } from './CCView';
+import type { CCViewVM } from './CCViewVM';
+import { GameComponent } from './GameComponent';
 
 export type ECSCtor<T extends ecs.Comp> = __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>;
 export type ECSView = CCViewVM<CCEntity> | CCView<CCEntity>;
@@ -26,7 +27,7 @@ export abstract class CCEntity extends ecs.Entity {
      * @param clss 单例子实体类数组
      */
     addChildSingletons<T extends CCEntity>(...clss: any[]) {
-        for (let ctor of clss) {
+        for (const ctor of clss) {
             this.addChildSingleton<T>(ctor);
         }
     }
@@ -42,7 +43,7 @@ export abstract class CCEntity extends ecs.Entity {
             console.error(`${cls.name} 单例子实体已存在`);
             return null!;
         }
-        let entity = ecs.getEntity<T>(cls);
+        const entity = ecs.getEntity<T>(cls);
         this.singletons.set(cls, entity);
         this.addChild(entity);
         return entity as T;
@@ -59,7 +60,7 @@ export abstract class CCEntity extends ecs.Entity {
 
     /** 移除单例子实体 */
     removeChildSingleton(cls: any) {
-        let entity = this.singletons.get(cls);
+        const entity = this.singletons.get(cls);
         if (entity) {
             this.singletons.delete(cls);
             this.removeChild(entity);
@@ -158,10 +159,10 @@ export abstract class CCEntity extends ecs.Entity {
     /**
     * 批量添加组件
     * @param ctors 组件类
-    * @returns 
+    * @returns
     */
     addBusinesss<T extends CCBusiness<CCEntity>>(...clss: any[]) {
-        for (let ctor of clss) {
+        for (const ctor of clss) {
             this.addBusiness<T>(ctor);
         }
     }
@@ -177,7 +178,7 @@ export abstract class CCEntity extends ecs.Entity {
             console.error(`${cls.name} 业务逻辑组件已存在`);
             return null!;
         }
-        let business = new cls();
+        const business = new cls();
         business.ent = this;
         business.init();
         this.businesss.set(cls, business);
@@ -200,7 +201,7 @@ export abstract class CCEntity extends ecs.Entity {
      */
     removeBusiness(cls: any) {
         if (this.businesss) {
-            let business = this.businesss.get(cls);
+            const business = this.businesss.get(cls);
             if (business) this.businesss.delete(cls);
         }
     }
@@ -213,7 +214,7 @@ export abstract class CCEntity extends ecs.Entity {
         }
 
         if (this.businesss) {
-            this.businesss.forEach(business => business.destroy());
+            this.businesss.forEach((business) => business.destroy());
             this.businesss.clear();
             this.businesss = null!;
         }

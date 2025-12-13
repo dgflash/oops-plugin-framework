@@ -1,15 +1,17 @@
-import { Camera, Node, ResolutionPolicy, SafeArea, screen, view, warn } from "cc";
-import { oops } from "../../Oops";
-import { gui } from "../Gui";
-import { LayerDialog } from "./LayerDialog";
-import { LayerCustomType, LayerTypeCls, UIConfigMap, Uiid } from "./LayerEnum";
-import { LayerGame } from "./LayerGame";
-import { LayerHelper } from "./LayerHelper";
-import { LayerNotify } from "./LayerNotify";
-import { LayerPopUp } from "./LayerPopup";
-import { LayerUI } from "./LayerUI";
-import { LayerUIElement, UIParam } from "./LayerUIElement";
-import { UIConfig } from "./UIConfig";
+import { Camera, Node, ResolutionPolicy, SafeArea, screen, view, warn } from 'cc';
+import { oops } from '../../Oops';
+import { gui } from '../Gui';
+import { LayerDialog } from './LayerDialog';
+import type { UIConfigMap, Uiid } from './LayerEnum';
+import { LayerCustomType, LayerTypeCls } from './LayerEnum';
+import { LayerGame } from './LayerGame';
+import { LayerHelper } from './LayerHelper';
+import { LayerNotify } from './LayerNotify';
+import { LayerPopUp } from './LayerPopup';
+import { LayerUI } from './LayerUI';
+import type { UIParam } from './LayerUIElement';
+import { LayerUIElement } from './LayerUIElement';
+import type { UIConfig } from './UIConfig';
 
 /** 界面层级管理器 */
 export class LayerManager {
@@ -23,11 +25,11 @@ export class LayerManager {
     guide!: Node;
 
     /** 窗口宽高比例 */
-    windowAspectRatio: number = 0;
+    windowAspectRatio = 0;
     /** 设计宽高比例 */
-    designAspectRatio: number = 0;
+    designAspectRatio = 0;
     /** 是否开启移动设备安全区域适配 */
-    mobileSafeArea: boolean = false;
+    mobileSafeArea = false;
 
     /** 消息提示控制器，请使用show方法来显示 */
     private notify!: LayerNotify;
@@ -52,7 +54,7 @@ export class LayerManager {
      */
     registerLayerCls(type: string, cls: any) {
         if (this.clsLayers.has(type)) {
-            console.error("已存在自定义界面层类型", type);
+            console.error('已存在自定义界面层类型', type);
             return;
         }
         this.clsLayers.set(type, cls);
@@ -64,7 +66,7 @@ export class LayerManager {
      */
     private initLayer(root: Node, config: any) {
         if (config == null) {
-            console.error("请升级到最新版本框架,界面层级管理修改为数据驱动。参考模板项目中的config.json配置文件");
+            console.error('请升级到最新版本框架,界面层级管理修改为数据驱动。参考模板项目中的config.json配置文件');
             return;
         }
         this.root = root;
@@ -73,23 +75,23 @@ export class LayerManager {
 
         // 创建界面层
         for (let i = 0; i < config.length; i++) {
-            let data = config[i];
+            const data = config[i];
             let layer: Node = null!;
             if (data.type == LayerTypeCls.Node) {
                 switch (data.name) {
-                    case LayerCustomType.Guide:
-                        this.guide = this.create_node(data.name);
-                        layer = this.guide;
-                        break
+                case LayerCustomType.Guide:
+                    this.guide = this.create_node(data.name);
+                    layer = this.guide;
+                    break;
                 }
             }
             else {
-                let cls = this.clsLayers.get(data.type);
+                const cls = this.clsLayers.get(data.type);
                 if (cls) {
                     layer = new cls(data.name);
                 }
                 else {
-                    console.error("未识别的界面层类型", data.type);
+                    console.error('未识别的界面层类型', data.type);
                 }
             }
             root.addChild(layer);
@@ -110,24 +112,24 @@ export class LayerManager {
         this.windowAspectRatio = ws.width / ws.height;
         this.designAspectRatio = drs.width / drs.height;
 
-        let finalW: number = 0;
-        let finalH: number = 0;
+        let finalW = 0;
+        let finalH = 0;
 
         if (this.windowAspectRatio > this.designAspectRatio) {
             finalH = drs.height;
             finalW = finalH * ws.width / ws.height;
-            oops.log.logView("适配屏幕高度", "【横屏】");
+            oops.log.logView('适配屏幕高度', '【横屏】');
         }
         else {
             finalW = drs.width;
             finalH = finalW * ws.height / ws.width;
-            oops.log.logView("适配屏幕宽度", "【竖屏】");
+            oops.log.logView('适配屏幕宽度', '【竖屏】');
         }
         view.setDesignResolutionSize(finalW, finalH, ResolutionPolicy.UNKNOWN);
 
         if (this.mobileSafeArea) {
             this.root.addComponent(SafeArea);
-            oops.log.logView("开启移动设备安全区域适配");
+            oops.log.logView('开启移动设备安全区域适配');
         }
     }
 
@@ -146,18 +148,18 @@ export class LayerManager {
     setOpenFailure(callback: Function) {
         this.uiLayers.forEach((layer: LayerUI) => {
             layer.onOpenFailure = callback;
-        })
+        });
     }
 
     /**
      * 渐隐飘过提示
      * @param content 文本表示
      * @param useI18n 是否使用多语言
-     * @example 
+     * @example
      * oops.gui.toast("提示内容");
      */
-    toast(content: string, useI18n: boolean = false) {
-        this.notify.toast(content, useI18n)
+    toast(content: string, useI18n = false) {
+        this.notify.toast(content, useI18n);
     }
 
     /** 打开等待提示 */
@@ -172,12 +174,12 @@ export class LayerManager {
 
     /** 获取界面信息 */
     private getInfo(uiid: Uiid): { key: string; config: UIConfig } {
-        let key = "";
+        let key = '';
         let config: UIConfig = null!;
 
         // 界面配置
         if (typeof uiid === 'object') {
-            key = uiid.bundle + "_" + uiid.prefab;
+            key = uiid.bundle + '_' + uiid.prefab;
             config = gui.internal.getConfig(key);
             if (config == null) {
                 config = uiid;
@@ -211,17 +213,17 @@ export class LayerManager {
             var comp = node.getComponent(LoadingViewComp) as ecs.Comp;
         }
         onRemoved:(node: Node | null, params: any) => {
-                    
+
         }
     };
     oops.gui.open(UIID.Loading);
      */
     open(uiid: Uiid, param?: UIParam): Promise<Node> {
         return new Promise<Node>(async (resolve, reject) => {
-            let info = this.getInfo(uiid);
-            let layer = this.uiLayers.get(info.config.layer);
+            const info = this.getInfo(uiid);
+            const layer = this.uiLayers.get(info.config.layer);
             if (layer) {
-                let node = await layer.add(info.key, info.config, param);
+                const node = await layer.add(info.key, info.config, param);
                 resolve(node);
             }
             else {
@@ -232,8 +234,8 @@ export class LayerManager {
 
     /** 显示指定界面 */
     show(uiid: Uiid) {
-        let info = this.getInfo(uiid);
-        let layer = this.uiLayers.get(info.config.layer);
+        const info = this.getInfo(uiid);
+        const layer = this.uiLayers.get(info.config.layer);
         if (layer) {
             layer.show(info.config.prefab);
         }
@@ -249,8 +251,8 @@ export class LayerManager {
      * oops.gui.remove(UIID.Loading);
      */
     remove(uiid: Uiid) {
-        let info = this.getInfo(uiid);
-        let layer = this.uiLayers.get(info.config.layer);
+        const info = this.getInfo(uiid);
+        const layer = this.uiLayers.get(info.config.layer);
         if (layer) {
             layer.remove(info.config.prefab);
         }
@@ -266,8 +268,8 @@ export class LayerManager {
      * oops.gui.removeCache(UIID.Loading);
      */
     removeCache(uiid: Uiid) {
-        let info = this.getInfo(uiid);
-        let layer = this.uiLayers.get(info.config.layer);
+        const info = this.getInfo(uiid);
+        const layer = this.uiLayers.get(info.config.layer);
         if (layer) {
             layer.removeCache(info.config.prefab);
         }
@@ -284,16 +286,16 @@ export class LayerManager {
      */
     removeByNode(node: Node) {
         if (node instanceof Node) {
-            let comp = node.getComponent(LayerUIElement);
+            const comp = node.getComponent(LayerUIElement);
             if (comp && comp.state) {
                 // 释放显示的界面
                 if (node.parent) {
-                    let uiid = gui.internal.getConfig(comp.state.uiid);
+                    const uiid = gui.internal.getConfig(comp.state.uiid);
                     this.remove(uiid);
                 }
                 // 释放缓存中的界面
                 else {
-                    let layer = this.uiLayers.get(comp.state.config.layer);
+                    const layer = this.uiLayers.get(comp.state.config.layer);
                     if (layer) {
                         // @ts-ignore 注：不对外使用
                         layer.removeCache(comp.state.config.prefab);
@@ -301,7 +303,7 @@ export class LayerManager {
                 }
             }
             else {
-                warn(`当前删除的 Node 不是通过界面管理器添加的`);
+                warn('当前删除的 Node 不是通过界面管理器添加的');
                 node.destroy();
             }
         }
@@ -315,7 +317,7 @@ export class LayerManager {
      */
     replace(removeUiId: Uiid, openUiid: Uiid, param?: UIParam): Promise<Node> {
         return new Promise<Node>(async (resolve, reject) => {
-            let node = await this.open(openUiid, param);
+            const node = await this.open(openUiid, param);
             this.remove(removeUiId);
             resolve(node);
         });
@@ -328,9 +330,9 @@ export class LayerManager {
      * oops.gui.has(UIID.Loading);
      */
     has(uiid: Uiid): boolean {
-        let info = this.getInfo(uiid);
+        const info = this.getInfo(uiid);
         let result = false;
-        let layer = this.uiLayers.get(info.config.layer);
+        const layer = this.uiLayers.get(info.config.layer);
         if (layer) {
             result = layer.has(info.config.prefab);
         }
@@ -348,9 +350,9 @@ export class LayerManager {
      * oops.gui.has(UIID.Loading);
      */
     get(uiid: Uiid): Node {
-        let info = this.getInfo(uiid);
+        const info = this.getInfo(uiid);
         let result: Node = null!;
-        let layer = this.uiLayers.get(info.config.layer);
+        const layer = this.uiLayers.get(info.config.layer);
         if (layer) {
             result = layer.get(info.config.prefab);
         }
@@ -366,10 +368,10 @@ export class LayerManager {
      * @example
      * oops.gui.clear();
      */
-    clear(isDestroy: boolean = true) {
+    clear(isDestroy = true) {
         this.uiLayers.forEach((layer: LayerUI) => {
             layer.clear(isDestroy);
-        })
+        });
     }
 
     private create_node(name: string) {

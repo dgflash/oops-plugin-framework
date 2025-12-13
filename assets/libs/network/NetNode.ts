@@ -1,6 +1,6 @@
-import { error, warn } from "cc";
-import { Logger } from "../../core/common/log/Logger";
-import { CallbackObject, INetworkTips, IProtocolHelper, IRequestProtocol, ISocket, NetCallFunc, NetData, RequestObject } from "./NetInterface";
+import { error, warn } from 'cc';
+import { Logger } from '../../core/common/log/Logger';
+import type { CallbackObject, INetworkTips, IProtocolHelper, IRequestProtocol, ISocket, NetCallFunc, NetData, RequestObject } from './NetInterface';
 
 /*
 *   CocosCreator网络节点基类，以及网络相关接口定义
@@ -15,7 +15,7 @@ type CheckFunc = (checkedFunc: VoidFunc) => void;
 type VoidFunc = () => void;
 type BoolFunc = () => boolean;
 
-var NetNodeStateStrs = ["已关闭", "连接中", "验证中", "可传输数据"];
+const NetNodeStateStrs = ['已关闭', '连接中', '验证中', '可传输数据'];
 
 /** 网络提示类型枚举 */
 export enum NetTipsType {
@@ -26,53 +26,53 @@ export enum NetTipsType {
 
 /** 网络状态枚举 */
 export enum NetNodeState {
-    Closed,                     // 已关闭
-    Connecting,                 // 连接中
-    Checking,                   // 验证中
-    Working,                    // 可传输数据
+    Closed, // 已关闭
+    Connecting, // 连接中
+    Checking, // 验证中
+    Working, // 可传输数据
 }
 
 /** 网络连接参数 */
 export interface NetConnectOptions {
-    host?: string,              // 地址
-    port?: number,              // 端口
-    url?: string,               // url，与地址+端口二选一
-    autoReconnect?: number,     // -1 永久重连，0不自动重连，其他正整数为自动重试次数
+    host?: string, // 地址
+    port?: number, // 端口
+    url?: string, // url，与地址+端口二选一
+    autoReconnect?: number, // -1 永久重连，0不自动重连，其他正整数为自动重试次数
 }
 
 /** 网络节点 */
 export class NetNode {
     protected _connectOptions: NetConnectOptions | null = null;
-    protected _autoReconnect: number = 0;
-    protected _isSocketInit: boolean = false;                               // Socket是否初始化过
-    protected _isSocketOpen: boolean = false;                               // Socket是否连接成功过
-    protected _state: NetNodeState = NetNodeState.Closed;                   // 节点当前状态
-    protected _socket: ISocket | null = null;                               // Socket对象（可能是原生socket、websocket、wx.socket...)
+    protected _autoReconnect = 0;
+    protected _isSocketInit = false; // Socket是否初始化过
+    protected _isSocketOpen = false; // Socket是否连接成功过
+    protected _state: NetNodeState = NetNodeState.Closed; // 节点当前状态
+    protected _socket: ISocket | null = null; // Socket对象（可能是原生socket、websocket、wx.socket...)
 
-    protected _networkTips: INetworkTips | null = null;                     // 网络提示ui对象（请求提示、断线重连提示等）
-    protected _protocolHelper: IProtocolHelper | null = null;               // 包解析对象
-    protected _connectedCallback: CheckFunc | null = null;                  // 连接完成回调
-    protected _disconnectCallback: BoolFunc | null = null;                  // 断线回调
-    protected _callbackExecuter: ExecuterFunc | null = null;                // 回调执行
+    protected _networkTips: INetworkTips | null = null; // 网络提示ui对象（请求提示、断线重连提示等）
+    protected _protocolHelper: IProtocolHelper | null = null; // 包解析对象
+    protected _connectedCallback: CheckFunc | null = null; // 连接完成回调
+    protected _disconnectCallback: BoolFunc | null = null; // 断线回调
+    protected _callbackExecuter: ExecuterFunc | null = null; // 回调执行
 
-    protected _keepAliveTimer: any = null;                                  // 心跳定时器
-    protected _receiveMsgTimer: any = null;                                 // 接收数据定时器
-    protected _reconnectTimer: any = null;                                  // 重连定时器
-    protected _heartTime: number = 10000;                                   // 心跳间隔
-    protected _receiveTime: number = 6000000;                               // 多久没收到数据断开
-    protected _reconnetTimeOut: number = 8000000;                           // 重连间隔
-    protected _requests: RequestObject[] = Array<RequestObject>();          // 请求列表
-    protected _listener: { [key: string]: CallbackObject[] | null } = {}    // 监听者列表
+    protected _keepAliveTimer: any = null; // 心跳定时器
+    protected _receiveMsgTimer: any = null; // 接收数据定时器
+    protected _reconnectTimer: any = null; // 重连定时器
+    protected _heartTime = 10000; // 心跳间隔
+    protected _receiveTime = 6000000; // 多久没收到数据断开
+    protected _reconnetTimeOut = 8000000; // 重连间隔
+    protected _requests: RequestObject[] = Array<RequestObject>(); // 请求列表
+    protected _listener: { [key: string]: CallbackObject[] | null } = {}; // 监听者列表
 
     /********************** 网络相关处理 *********************/
     init(socket: ISocket, protocol: IProtocolHelper, networkTips: INetworkTips | null = null, execFunc: ExecuterFunc | null = null) {
-        Logger.instance.logNet(`网络初始化`);
+        Logger.instance.logNet('网络初始化');
         this._socket = socket;
         this._protocolHelper = protocol;
         this._networkTips = networkTips;
         this._callbackExecuter = execFunc ? execFunc : (callback: CallbackObject, buffer: NetData) => {
             callback.callback.call(callback.target, buffer);
-        }
+        };
     }
 
     /**
@@ -89,7 +89,7 @@ export class NetNode {
                 this.updateNetTips(NetTipsType.Connecting, false);
                 return false;
             }
-            if (this._connectOptions == null && typeof options.autoReconnect == "number") {
+            if (this._connectOptions == null && typeof options.autoReconnect === 'number') {
                 this._autoReconnect = options.autoReconnect;
             }
             this._connectOptions = options;
@@ -101,10 +101,18 @@ export class NetNode {
 
     protected initSocket() {
         if (this._socket) {
-            this._socket.onConnected = (event) => { this.onConnected(event) };
-            this._socket.onMessage = (msg) => { this.onMessage(msg) };
-            this._socket.onError = (event) => { this.onError(event) };
-            this._socket.onClosed = (event) => { this.onClosed(event) };
+            this._socket.onConnected = (event) => {
+                this.onConnected(event);
+            };
+            this._socket.onMessage = (msg) => {
+                this.onMessage(msg);
+            };
+            this._socket.onError = (event) => {
+                this.onError(event);
+            };
+            this._socket.onClosed = (event) => {
+                this.onClosed(event);
+            };
             this._isSocketInit = true;
         }
     }
@@ -125,12 +133,14 @@ export class NetNode {
 
     /** 网络连接成功 */
     protected onConnected(event: any) {
-        Logger.instance.logNet("网络已连接")
+        Logger.instance.logNet('网络已连接');
         this._isSocketOpen = true;
         // 如果设置了鉴权回调，在连接完成后进入鉴权阶段，等待鉴权结束
         if (this._connectedCallback !== null) {
             this._state = NetNodeState.Checking;
-            this._connectedCallback(() => { this.onChecked() });
+            this._connectedCallback(() => {
+                this.onChecked();
+            });
         }
         else {
             this.onChecked();
@@ -140,21 +150,21 @@ export class NetNode {
 
     /** 连接验证成功，进入工作状态 */
     protected onChecked() {
-        Logger.instance.logNet("连接验证成功，进入工作状态");
+        Logger.instance.logNet('连接验证成功，进入工作状态');
         this._state = NetNodeState.Working;
         // 关闭连接或重连中的状态显示
         this.updateNetTips(NetTipsType.Connecting, false);
         this.updateNetTips(NetTipsType.ReConnecting, false);
 
         // 重发待发送信息
-        var requests = this._requests.concat();
+        const requests = this._requests.concat();
         if (requests.length > 0) {
             Logger.instance.logNet(`请求【${this._requests.length}】个待发送的信息`);
 
-            for (var i = 0; i < requests.length;) {
-                let req = requests[i];
+            for (let i = 0; i < requests.length;) {
+                const req = requests[i];
                 this._socket!.send(req.buffer);
-                if (req.rspObject == null || req.rspCmd != "") {
+                if (req.rspObject == null || req.rspCmd != '') {
                     requests.splice(i, 1);
                 }
                 else {
@@ -170,11 +180,11 @@ export class NetNode {
     protected onMessage(msg: any): void {
         // Logger.logNet(`接受消息状态为【${NetNodeStateStrs[this._state]}】`);
 
-        var json = JSON.parse(msg);
+        const json = JSON.parse(msg);
 
         // 进行头部的校验（实际包长与头部长度是否匹配）
         if (!this._protocolHelper!.checkResponsePackage(json)) {
-            error(`校验接受消息数据异常`);
+            error('校验接受消息数据异常');
             return;
         }
 
@@ -189,13 +199,13 @@ export class NetNode {
         // 重置心跳包发送器
         this.resetHearbeatTimer();
         // 触发消息执行
-        let rspCmd = this._protocolHelper!.getPackageId(json);
+        const rspCmd = this._protocolHelper!.getPackageId(json);
 
         Logger.instance.logNet(`接受到命令【${rspCmd}】的消息`);
         // 优先触发request队列
         if (this._requests.length > 0) {
-            for (let reqIdx in this._requests) {
-                let req = this._requests[reqIdx];
+            for (const reqIdx in this._requests) {
+                const req = this._requests[reqIdx];
                 if (req.rspCmd == rspCmd && req.rspObject) {
                     Logger.instance.logNet(`触发请求命令【${rspCmd}】的回调`);
                     this._callbackExecuter!(req.rspObject, json.data);
@@ -212,7 +222,7 @@ export class NetNode {
             }
         }
 
-        let listeners = this._listener[rspCmd];
+        const listeners = this._listener[rspCmd];
         if (null != listeners) {
             for (const rsp of listeners) {
                 Logger.instance.logNet(`触发监听命令【${rspCmd}】的回调`);
@@ -230,7 +240,7 @@ export class NetNode {
 
         // 执行断线回调，返回false表示不进行重连
         if (this._disconnectCallback && !this._disconnectCallback()) {
-            Logger.instance.logNet(`断开连接`);
+            Logger.instance.logNet('断开连接');
             return;
         }
 
@@ -289,7 +299,7 @@ export class NetNode {
      * @param buf       网络数据
      * @param force     是否强制发送
      */
-    send(buf: NetData, force: boolean = false): number {
+    send(buf: NetData, force = false): number {
         if (this._state == NetNodeState.Working || force) {
             return this._socket!.send(buf);
         }
@@ -297,7 +307,7 @@ export class NetNode {
             this._state == NetNodeState.Connecting) {
             this._requests.push({
                 buffer: buf,
-                rspCmd: "",
+                rspCmd: '',
                 rspObject: null
             });
             Logger.instance.logNet(`当前状态为【${NetNodeStateStrs[this._state]}】,繁忙并缓冲发送数据`);
@@ -316,8 +326,8 @@ export class NetNode {
      * @param showTips    是否触发请求提示
      * @param force       是否强制发送
      */
-    request<T>(reqProtocol: IRequestProtocol, rspObject: CallbackObject, showTips: boolean = true, force: boolean = false) {
-        var rspCmd = this._protocolHelper!.handlerRequestPackage(reqProtocol);
+    request<T>(reqProtocol: IRequestProtocol, rspObject: CallbackObject, showTips = true, force = false) {
+        const rspCmd = this._protocolHelper!.handlerRequestPackage(reqProtocol);
         this.base_request(reqProtocol, rspCmd, rspObject, showTips, force);
     }
 
@@ -328,8 +338,8 @@ export class NetNode {
      * @param showTips    是否触发请求提示
      * @param force       是否强制发送
      */
-    requestUnique(reqProtocol: IRequestProtocol, rspObject: CallbackObject, showTips: boolean = true, force: boolean = false): boolean {
-        var rspCmd = this._protocolHelper!.handlerRequestPackage(reqProtocol);
+    requestUnique(reqProtocol: IRequestProtocol, rspObject: CallbackObject, showTips = true, force = false): boolean {
+        const rspCmd = this._protocolHelper!.handlerRequestPackage(reqProtocol);
 
         for (let i = 0; i < this._requests.length; ++i) {
             if (this._requests[i].rspCmd == rspCmd) {
@@ -342,8 +352,8 @@ export class NetNode {
         return true;
     }
 
-    private base_request(reqProtocol: IRequestProtocol, rspCmd: string, rspObject: CallbackObject, showTips: boolean = true, force: boolean = false) {
-        var buf: NetData = JSON.stringify(reqProtocol);         // 转为二进制流发送
+    private base_request(reqProtocol: IRequestProtocol, rspCmd: string, rspObject: CallbackObject, showTips = true, force = false) {
+        const buf: NetData = JSON.stringify(reqProtocol); // 转为二进制流发送
 
         if (this._state == NetNodeState.Working || force) {
             this._socket!.send(buf);
@@ -382,19 +392,19 @@ export class NetNode {
      * @param cmd       命令字串
      * @param callback  回调方法
      * @param target    目标对象
-     * @returns 
+     * @returns
      */
     addResponeHandler(cmd: string, callback: NetCallFunc, target?: any): boolean {
         if (callback == null) {
             error(`命令为【${cmd}】添加响应处理程序错误`);
             return false;
         }
-        let rspObject = { target, callback };
+        const rspObject = { target, callback };
         if (null == this._listener[cmd]) {
             this._listener[cmd] = [rspObject];
         }
         else {
-            let index = this.getNetListenersIndex(cmd, rspObject);
+            const index = this.getNetListenersIndex(cmd, rspObject);
             if (-1 == index) {
                 this._listener[cmd]!.push(rspObject);
             }
@@ -410,7 +420,7 @@ export class NetNode {
      */
     removeResponeHandler(cmd: string, callback: NetCallFunc, target?: any) {
         if (null != this._listener[cmd] && callback != null) {
-            let index = this.getNetListenersIndex(cmd, { target, callback });
+            const index = this.getNetListenersIndex(cmd, { target, callback });
             if (-1 != index) {
                 this._listener[cmd]!.splice(index, 1);
             }
@@ -421,9 +431,9 @@ export class NetNode {
      * 清除所有监听或指定命令的监听
      * @param cmd  命令字串（默认不填为清除所有）
      */
-    cleanListeners(cmd: string = "") {
-        if (cmd == "") {
-            this._listener = {}
+    cleanListeners(cmd = '') {
+        if (cmd == '') {
+            this._listener = {};
         }
         else {
             delete this._listener[cmd];
@@ -433,7 +443,7 @@ export class NetNode {
     protected getNetListenersIndex(cmd: string, rspObject: CallbackObject): number {
         let index = -1;
         for (let i = 0; i < this._listener[cmd]!.length; i++) {
-            let iterator = this._listener[cmd]![i];
+            const iterator = this._listener[cmd]![i];
             if (iterator.callback == rspObject.callback
                 && iterator.target == rspObject.target) {
                 index = i;
@@ -450,7 +460,7 @@ export class NetNode {
         }
 
         this._receiveMsgTimer = setTimeout(() => {
-            warn("接收消息定时器关闭网络连接");
+            warn('接收消息定时器关闭网络连接');
             this._socket!.close();
         }, this._receiveTime);
     }
@@ -461,7 +471,7 @@ export class NetNode {
         }
 
         this._keepAliveTimer = setTimeout(() => {
-            Logger.instance.logNet("网络节点保持活跃发送心跳信息");
+            Logger.instance.logNet('网络节点保持活跃发送心跳信息');
             this.send(this._protocolHelper!.getHearbeat());
         }, this._heartTime);
     }

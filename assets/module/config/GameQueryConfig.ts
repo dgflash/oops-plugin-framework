@@ -4,9 +4,9 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-06 17:29:45
  */
-import { sys } from "cc";
-import { oops } from "../../core/Oops";
-import { StringUtil } from "../../core/utils/StringUtil";
+import { sys } from 'cc';
+import { oops } from '../../core/Oops';
+import { StringUtil } from '../../core/utils/StringUtil';
 
 /**
  * 获取和处理浏览器地址栏参数
@@ -16,17 +16,17 @@ import { StringUtil } from "../../core/utils/StringUtil";
 export class GameQueryConfig {
     /** 调试模式开关 */
     get debug(): string {
-        return this._data["debug"];
+        return this._data['debug'];
     }
 
     /** 玩家帐号名 */
     get username(): string {
-        return this._data["username"];
+        return this._data['username'];
     }
 
     /** 语言 */
     get lang(): string {
-        return this._data["lang"] || "zh";
+        return this._data['lang'] || 'zh';
     }
 
     private _data: any = null;
@@ -43,30 +43,30 @@ export class GameQueryConfig {
         }
         this._data = this.parseUrl();
 
-        if (!this._data["username"]) {
-            this._data["username"] = StringUtil.guid();
+        if (!this._data['username']) {
+            this._data['username'] = StringUtil.guid();
         }
 
-        oops.log.logConfig(this._data, "查询参数");
+        oops.log.logConfig(this._data, '查询参数');
     }
 
     private parseUrl() {
-        if (typeof window !== "object") return {};
+        if (typeof window !== 'object') return {};
         if (!window.document) return {};
 
-        let url = window.document.location.href.toString();
-        let u = url.split("?");
-        if (typeof (u[1]) == "string") {
-            u = u[1].split("&");
-            let get: any = {};
+        const url = window.document.location.href.toString();
+        let u = url.split('?');
+        if (typeof (u[1]) === 'string') {
+            u = u[1].split('&');
+            const get: any = {};
             for (let i = 0, l = u.length; i < l; ++i) {
-                let j = u[i];
-                let x = j.indexOf("=");
+                const j = u[i];
+                const x = j.indexOf('=');
                 if (x < 0) {
                     continue;
                 }
-                let key = j.substring(0, x);
-                let value = j.substring(x + 1);
+                const key = j.substring(0, x);
+                const value = j.substring(x + 1);
                 get[decodeURIComponent(key)] = value && decodeURIComponent(value);
             }
             return get;

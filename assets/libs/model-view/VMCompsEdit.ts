@@ -1,5 +1,5 @@
-import { _decorator, CCString, Component, Enum, log, Node } from "cc";
-import { VMEnv } from "./VMEnv";
+import { _decorator, CCString, Component, Enum, log, Node } from 'cc';
+import { VMEnv } from './VMEnv';
 
 const { ccclass, property, executeInEditMode, menu, help } = _decorator;
 
@@ -22,12 +22,12 @@ export default class MVCompsEdit extends Component {
     @property({
         type: [CCString]
     })
-    findList: string[] = ["VMBase", "VMParent"];
+        findList: string[] = ['VMBase', 'VMParent'];
 
     @property({
         type: Enum(ACTION_MODE)
     })
-    actionType: ACTION_MODE = ACTION_MODE.SEARCH_COMPONENT;
+        actionType: ACTION_MODE = ACTION_MODE.SEARCH_COMPONENT;
 
     @property({
         tooltip: '勾选后,会自动查找 find list 中填写的组件',
@@ -78,7 +78,7 @@ export default class MVCompsEdit extends Component {
             return this.actionType === ACTION_MODE.DELETE_COMPONENT;
         }
     })
-    allowDelete: boolean = false;
+        allowDelete = false;
 
     @property({
         tooltip: '勾选后,会批量删除 find list 中填写的组件',
@@ -116,7 +116,7 @@ export default class MVCompsEdit extends Component {
             return this.actionType === ACTION_MODE.REPLACE_WATCH_PATH;
         }
     })
-    targetPath: string = 'game';
+        targetPath = 'game';
 
     @property({
         tooltip: '替换的路径,将匹配到的路径替换',
@@ -125,7 +125,7 @@ export default class MVCompsEdit extends Component {
             return this.actionType === ACTION_MODE.REPLACE_WATCH_PATH;
         }
     })
-    replacePath: string = '*';
+        replacePath = '*';
 
 
     @property({
@@ -135,7 +135,7 @@ export default class MVCompsEdit extends Component {
             return this.actionType === ACTION_MODE.SEARCH_COMPONENT;
         }
     })
-    canCollectNodes: boolean = false;
+        canCollectNodes = false;
 
     @property({
         type: [Node],
@@ -143,51 +143,51 @@ export default class MVCompsEdit extends Component {
         tooltip: '收集到绑定了VM组件相关的节点，可以自己跳转过去',
         visible: function () {
             // @ts-ignore
-            return this.canCollectNodes && this.actionType === ACTION_MODE.SEARCH_COMPONENT
+            return this.canCollectNodes && this.actionType === ACTION_MODE.SEARCH_COMPONENT;
         }
     })
-    collectNodes: Node[] = [];
+        collectNodes: Node[] = [];
 
     onLoad() {
         if (VMEnv.editor) return;
 
-        let path = this.getNodePath(this.node);
+        const path = this.getNodePath(this.node);
         console.error('you forget delete MVEditFinder,[path]', path);
     }
 
     setComponents(state: number) {
-        let array = this.findList;
+        const array = this.findList;
         let title = '搜索到当前节点下面的组件';
         switch (state) {
-            case 0: title = '搜索到当前节点下面的组件'; break;
-            case 1: title = '激活以下节点的组件'; break;
-            case 2: title = '关闭以下节点的组件'; break;
-            case 3: title = '删除以下节点的组件'; break;
-            case 4: title = '替换以下节点的路径'; break;
+        case 0: title = '搜索到当前节点下面的组件'; break;
+        case 1: title = '激活以下节点的组件'; break;
+        case 2: title = '关闭以下节点的组件'; break;
+        case 3: title = '删除以下节点的组件'; break;
+        case 4: title = '替换以下节点的路径'; break;
 
-            default:
-                break;
+        default:
+            break;
         }
-        log(title)
-        log('______________________')
+        log(title);
+        log('______________________');
 
-        array.forEach(name => {
-            this.searchComponent(name, state)
-        })
+        array.forEach((name) => {
+            this.searchComponent(name, state);
+        });
 
-        log('______________________')
+        log('______________________');
     }
 
     /**
-     * 
-     * @param className 
+     *
+     * @param className
      * @param state 0-查找节点组件 1-激活节点组件 2-关闭节点组件 3-移除节点组件
      */
-    searchComponent(className: string, state: number = 0) {
+    searchComponent(className: string, state = 0) {
         /**收集节点清空 */
         this.collectNodes = [];
 
-        let comps = this.node.getComponentsInChildren(className);
+        const comps = this.node.getComponentsInChildren(className);
         if (comps == null || comps.length < 1) return;
         log('[' + className + ']:');
         comps.forEach((v: any) => {
@@ -196,55 +196,55 @@ export default class MVCompsEdit extends Component {
             if (state <= 3) {
                 //区分模板模式路径
                 if (v.templateMode === true) {
-                    ext = v.watchPathArr ? ':[Path:' + v.watchPathArr.join('|') + ']' : ''
+                    ext = v.watchPathArr ? ':[Path:' + v.watchPathArr.join('|') + ']' : '';
                 }
                 else {
-                    ext = v.watchPath ? ':[Path:' + v.watchPath + ']' : ''
+                    ext = v.watchPath ? ':[Path:' + v.watchPath + ']' : '';
                 }
             }
 
             log(this.getNodePath(v.node) + ext);
             switch (state) {
-                case 0://寻找组件
-                    if (this.canCollectNodes) {
-                        if (this.collectNodes.indexOf(v.node) === -1) {
-                            this.collectNodes.push(v.node);
-                        }
+            case 0://寻找组件
+                if (this.canCollectNodes) {
+                    if (this.collectNodes.indexOf(v.node) === -1) {
+                        this.collectNodes.push(v.node);
                     }
-                    break;
-                case 1:         // 激活组件
-                    v.enabled = true;
-                    break;
-                case 2:         // 关闭组件
-                    v.enabled = false;
-                    break;
-                case 3:         // 删除组件
-                    v.node.removeComponent(v);
-                    break;
-                case 4:         // 替换指定路径
-                    let targetPath = this.targetPath;
-                    let replacePath = this.replacePath;
-                    if (v.templateMode === true) {
-                        for (let i = 0; i < v.watchPathArr.length; i++) {
-                            const path = v.watchPathArr[i];
-                            v.watchPathArr[i] = this.replaceNodePath(path, targetPath, replacePath);
-                        }
+                }
+                break;
+            case 1: // 激活组件
+                v.enabled = true;
+                break;
+            case 2: // 关闭组件
+                v.enabled = false;
+                break;
+            case 3: // 删除组件
+                v.node.removeComponent(v);
+                break;
+            case 4: // 替换指定路径
+                const targetPath = this.targetPath;
+                const replacePath = this.replacePath;
+                if (v.templateMode === true) {
+                    for (let i = 0; i < v.watchPathArr.length; i++) {
+                        const path = v.watchPathArr[i];
+                        v.watchPathArr[i] = this.replaceNodePath(path, targetPath, replacePath);
                     }
-                    else {
-                        v.watchPath = this.replaceNodePath(v.watchPath, targetPath, replacePath);
-                    }
+                }
+                else {
+                    v.watchPath = this.replaceNodePath(v.watchPath, targetPath, replacePath);
+                }
 
 
-                default:
-                    break;
+            default:
+                break;
             }
         });
     }
 
     replaceNodePath(path: string, search: string, replace: string) {
-        let pathArr = path.split('.');
-        let searchArr = search.split('.');
-        let replaceArr = replace.split('.')
+        const pathArr = path.split('.');
+        const searchArr = search.split('.');
+        const replaceArr = replace.split('.');
 
         let match = true;
         for (let i = 0; i < searchArr.length; i++) {
@@ -261,7 +261,7 @@ export default class MVCompsEdit extends Component {
             for (let i = 0; i < replaceArr.length; i++) {
                 pathArr[i] = replaceArr[i];
             }
-            log(' 路径更新:', path, '>>>', pathArr.join('.'))
+            log(' 路径更新:', path, '>>>', pathArr.join('.'));
         }
 
         return pathArr.join('.');
@@ -269,9 +269,9 @@ export default class MVCompsEdit extends Component {
 
     getNodePath(node: Node) {
         let parent = node;
-        let array: string[] = [];
+        const array: string[] = [];
         while (parent) {
-            let p = parent.getParent();
+            const p = parent.getParent();
             if (p) {
                 array.push(parent.name);
                 parent = p;

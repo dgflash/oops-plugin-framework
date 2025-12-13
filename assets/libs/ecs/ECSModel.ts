@@ -4,9 +4,9 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-05 16:37:10
  */
-import { ecs } from "./ECS";
-import { ECSEntity } from "./ECSEntity";
-import { ECSGroup } from "./ECSGroup";
+import type { ecs } from './ECS';
+import type { ECSEntity } from './ECSEntity';
+import { ECSGroup } from './ECSGroup';
 
 type CompAddOrRemove = (entity: ecs.Entity) => void;
 
@@ -55,7 +55,7 @@ export class ECSModel {
 
     /**
      * 缓存的group
-     * 
+     *
      * key是组件的筛选规则，一个筛选规则对应一个group
      */
     static groups: Map<number, ECSGroup> = new Map();
@@ -69,7 +69,7 @@ export class ECSModel {
         if (!group) {
             group = new ECSGroup(matcher);
             ECSModel.groups.set(matcher.mid, group);
-            let careComponentTypeIds = matcher.indices;
+            const careComponentTypeIds = matcher.indices;
             for (let i = 0; i < careComponentTypeIds.length; i++) {
                 ECSModel.compAddOrRemove.get(careComponentTypeIds[i])!.push(group.onComponentAddOrRemove.bind(group));
             }

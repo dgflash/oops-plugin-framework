@@ -20,14 +20,14 @@ enum CLAMP_MODE {
 @help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037642&doc_id=2873565')
 export default class VMModify extends VMBase {
     @property({
-        tooltip: "监视对象路径"
+        tooltip: '监视对象路径'
     })
-    watchPath: string = "";
+        watchPath = '';
 
     @property({
-        tooltip: "是不启用取值范围限制"
+        tooltip: '是不启用取值范围限制'
     })
-    valueClamp: boolean = false;
+        valueClamp = false;
 
     @property({
         type: Enum(CLAMP_MODE),
@@ -36,7 +36,7 @@ export default class VMModify extends VMBase {
             return this.valueClamp === true;
         }
     })
-    valueClampMode: CLAMP_MODE = CLAMP_MODE.MIN_MAX;
+        valueClampMode: CLAMP_MODE = CLAMP_MODE.MIN_MAX;
 
     @property({
         visible: function () {
@@ -44,7 +44,7 @@ export default class VMModify extends VMBase {
             return this.valueClamp === true && this.valueClampMode !== CLAMP_MODE.MAX;
         }
     })
-    valueMin: number = 0;
+        valueMin = 0;
 
     @property({
         visible: function () {
@@ -52,26 +52,26 @@ export default class VMModify extends VMBase {
             return this.valueClamp === true && this.valueClampMode !== CLAMP_MODE.MIN;
         }
     })
-    valueMax: number = 1;
+        valueMax = 1;
 
     // 限制最终结果的取值范围
     private clampValue(res: number): number {
-        let min = this.valueMin;
-        let max = this.valueMax;
+        const min = this.valueMin;
+        const max = this.valueMax;
         if (this.valueClamp == false) return res;
         switch (this.valueClampMode) {
-            case CLAMP_MODE.MIN_MAX:
-                if (res > max) res = max;
-                if (res < min) res = min;
-                break;
-            case CLAMP_MODE.MIN:
-                if (res < min) res = min;
-                break;
-            case CLAMP_MODE.MAX:
-                if (res > max) res = max;
-                break;
-            default:
-                break;
+        case CLAMP_MODE.MIN_MAX:
+            if (res > max) res = max;
+            if (res < min) res = min;
+            break;
+        case CLAMP_MODE.MIN:
+            if (res < min) res = min;
+            break;
+        case CLAMP_MODE.MAX:
+            if (res > max) res = max;
+            break;
+        default:
+            break;
         }
 
         return res;
@@ -98,40 +98,48 @@ export default class VMModify extends VMBase {
     }
 
     /** 加 */
-    vAdd(e: Event, data: string, int: boolean = false) {
-        let a = parseFloat(data);
+    vAdd(e: Event, data: string, int = false) {
+        const a = parseFloat(data);
         let res = this.VM.getValue(this.watchPath, 0) + a;
-        if (int) { res = Math.round(res) }
+        if (int) {
+            res = Math.round(res);
+        }
         this.VM.setValue(this.watchPath, this.clampValue(res));
     }
 
     /** 减 */
-    vSub(e: Event, data: string, int: boolean = false) {
-        let a = parseFloat(data);
+    vSub(e: Event, data: string, int = false) {
+        const a = parseFloat(data);
         let res = this.VM.getValue(this.watchPath, 0) - a;
-        if (int) { res = Math.round(res) }
+        if (int) {
+            res = Math.round(res);
+        }
         this.VM.setValue(this.watchPath, this.clampValue(res));
     }
 
     /** 乘 */
-    vMul(e: Event, data: string, int: boolean = false) {
-        let a = parseFloat(data);
+    vMul(e: Event, data: string, int = false) {
+        const a = parseFloat(data);
         let res = this.VM.getValue(this.watchPath, 0) * a;
-        if (int) { res = Math.round(res) }
+        if (int) {
+            res = Math.round(res);
+        }
         this.VM.setValue(this.watchPath, this.clampValue(res));
     }
 
     /** 除 */
-    vDiv(e: Event, data: string, int: boolean = false) {
-        let a = parseFloat(data);
+    vDiv(e: Event, data: string, int = false) {
+        const a = parseFloat(data);
         let res = this.VM.getValue(this.watchPath, 0) / a;
-        if (int) { res = Math.round(res) }
+        if (int) {
+            res = Math.round(res);
+        }
         this.VM.setValue(this.watchPath, this.clampValue(res));
     }
 
     /** 字符串赋值 */
     vString(e: Event, data: string) {
-        let a = data;
+        const a = data;
         this.VM.setValue(this.watchPath, a);
     }
 
@@ -141,9 +149,11 @@ export default class VMModify extends VMBase {
     }
 
     /** 数字赋值 */
-    vNumber(e: Event, data: string, int: boolean = false) {
+    vNumber(e: Event, data: string, int = false) {
         let a = parseFloat(data);
-        if (int) { a = Math.round(a) }
+        if (int) {
+            a = Math.round(a);
+        }
         this.VM.setValue(this.watchPath, this.clampValue(a));
     }
 }

@@ -1,10 +1,11 @@
-import { _decorator, dragonBones } from "cc";
-import AnimatorBase, { AnimationPlayer } from "./core/AnimatorBase";
-import { AnimatorStateLogic } from "./core/AnimatorStateLogic";
+import { _decorator, dragonBones } from 'cc';
+import type { AnimationPlayer } from './core/AnimatorBase';
+import AnimatorBase from './core/AnimatorBase';
+import type { AnimatorStateLogic } from './core/AnimatorStateLogic';
 
 const { ccclass, property, requireComponent, disallowMultiple, menu, help } = _decorator;
 
-/** 
+/**
  * DragonBones状态机组件
  */
 @ccclass
@@ -37,7 +38,7 @@ export default class AnimatorDragonBones extends AnimatorBase {
      * - animationPlayer 自定义动画控制
      * @override
      */
-    public onInit(...args: Array<Map<string, AnimatorStateLogic> | ((fromState: string, toState: string) => void) | AnimationPlayer>) {
+    onInit(...args: Array<Map<string, AnimatorStateLogic> | ((fromState: string, toState: string) => void) | AnimationPlayer>) {
         if (this.PlayOnStart || this._hasInit) {
             return;
         }

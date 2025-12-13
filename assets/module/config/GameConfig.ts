@@ -4,16 +4,16 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-02-14 14:27:22
  */
-import { oops } from "../../core/Oops";
+import { oops } from '../../core/Oops';
 
 /** 游戏自定义参数分组类型 */
 export enum GameConfigCustomType {
     /** 开发环境 */
-    Dev = "dev",
+    Dev = 'dev',
     /** 测试环境 */
-    Test = "test",
+    Test = 'test',
     /** 生产环境 */
-    Prod = "prod",
+    Prod = 'prod',
 }
 
 /* 游戏配置解析，对应 resources/config/config.json 配置 */
@@ -73,19 +73,19 @@ export class GameConfig {
 
     /** 获取当前客户端支持的语言类型 */
     get language(): Array<string> {
-        return this._data.language.type || ["zh"];
+        return this._data.language.type || ['zh'];
     }
     /** 获取当前客户端支持的语言 Json 配置路径 */
     get languagePathJson(): string {
-        return this._data.language.path.json || "language/json";
+        return this._data.language.path.json || 'language/json';
     }
     /** 获取当前客户端支持的语言纹理配置路径 */
     get languagePathTexture(): string {
-        return this._data.language.path.texture || "language/texture";
+        return this._data.language.path.texture || 'language/texture';
     }
     /** 默认语言 */
     get languageDefault(): string {
-        return this._data.language.default || "zh";
+        return this._data.language.default || 'zh';
     }
 
     /** 远程资源名 */
@@ -105,12 +105,12 @@ export class GameConfig {
     constructor(config: any) {
         this._data = Object.freeze(config.json);
         this.setConfigType(this._data.type);
-        oops.log.logConfig(this._data, "游戏配置");
+        oops.log.logConfig(this._data, '游戏配置');
     }
 
     /**
      * 设置游戏参数类型
-     * @param type 
+     * @param type
      */
     setConfigType(type: GameConfigCustomType) {
         this._configType = type;

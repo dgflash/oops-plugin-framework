@@ -5,9 +5,9 @@
  * @LastEditTime: 2025-09-18 17:20:51
  */
 
-import { EventDispatcher } from "../../core/common/event/EventDispatcher";
-import { ListenerFunc } from "../../core/common/event/EventMessage";
-import { CCEntity } from "./CCEntity";
+import { EventDispatcher } from '../../core/common/event/EventDispatcher';
+import type { ListenerFunc } from '../../core/common/event/EventMessage';
+import type { CCEntity } from './CCEntity';
 
 /** 业务逻辑 */
 export class CCBusiness<T extends CCEntity> {

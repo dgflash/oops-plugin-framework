@@ -4,10 +4,10 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-07-24 17:14:57
  */
-import { Node } from "cc";
-import { LayerPopUp } from "./LayerPopup";
-import { UIParam, UIState } from "./LayerUIElement";
-import { UIConfig } from "./UIConfig";
+import type { Node } from 'cc';
+import { LayerPopUp } from './LayerPopup';
+import type { UIParam, UIState } from './LayerUIElement';
+import type { UIConfig } from './UIConfig';
 
 /** 模式弹窗数据 */
 type DialogParam = {
@@ -28,8 +28,8 @@ export class LayerDialog extends LayerPopUp {
     /** 当前打开的界面 */
     private current: Node = null!;
 
-    /** 
-     * 添加模式窗口 
+    /**
+     * 添加模式窗口
      * 1. 同时添加多个模式窗口时，第一个之后的窗口会先队列起来，在第一个关闭后在加载与显示第二个；同时方法返回节点保持只返回当前显示的界面节点
      */
     add(uiid: string, config: UIConfig, params?: UIParam): Promise<Node> {
@@ -49,8 +49,8 @@ export class LayerDialog extends LayerPopUp {
     /** 显示模式弹窗 */
     private showDialog(uiid: string, config: UIConfig, param?: UIParam): Promise<Node> {
         return new Promise<Node>(async (resolve, reject) => {
-            let state = this.initUIConfig(uiid, config, param);
-            let node = await this.load(state);
+            const state = this.initUIConfig(uiid, config, param);
+            const node = await this.load(state);
             resolve(node);
         });
     }
@@ -68,7 +68,7 @@ export class LayerDialog extends LayerPopUp {
 
     private next() {
         if (this.params.length > 0) {
-            let param = this.params.shift()!;
+            const param = this.params.shift()!;
             this.showDialog(param.uiid, param.config, param.params);
         }
     }

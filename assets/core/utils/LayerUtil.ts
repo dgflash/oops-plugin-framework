@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 12:05:38
  */
-import { Node } from "cc";
+import type { Node } from 'cc';
 
 /** 游戏摄像机层数据 */
 export class LayerItem {
@@ -58,7 +58,7 @@ export class LayerUtil {
      */
     static setNodeLayer(item: LayerItem, node: Node): void {
         node.layer = item.mask;
-        node.children.forEach(n => {
+        node.children.forEach((n) => {
             n.layer = item.mask;
             LayerUtil.setNodeLayer(item, n);
         });

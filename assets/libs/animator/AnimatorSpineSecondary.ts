@@ -1,11 +1,12 @@
-import { _decorator, sp } from "cc";
-import AnimatorSpine from "./AnimatorSpine";
-import AnimatorBase, { AnimationPlayer } from "./core/AnimatorBase";
-import { AnimatorStateLogic } from "./core/AnimatorStateLogic";
+import { _decorator, sp } from 'cc';
+import AnimatorSpine from './AnimatorSpine';
+import type { AnimationPlayer } from './core/AnimatorBase';
+import AnimatorBase from './core/AnimatorBase';
+import type { AnimatorStateLogic } from './core/AnimatorStateLogic';
 
 const { ccclass, property, requireComponent, menu, help } = _decorator;
 
-/** 
+/**
  * Spine状态机组件（次状态机），同一节点可添加多个，用于在不同track中播放动画，trackIndex必须大于0
  */
 @ccclass
@@ -13,7 +14,7 @@ const { ccclass, property, requireComponent, menu, help } = _decorator;
 @menu('OopsFramework/Animator/AnimatorSpine （Spine 次状态机）')
 @help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12036279&doc_id=2873565')
 export default class AnimatorSpineSecondary extends AnimatorBase {
-    @property({ tooltip: '动画播放的trackIndex，必须大于0' }) TrackIndex: number = 1;
+    @property({ tooltip: '动画播放的trackIndex，必须大于0' }) TrackIndex = 1;
 
     /** 主状态机 */
     private _main: AnimatorSpine = null!;
@@ -42,7 +43,7 @@ export default class AnimatorSpineSecondary extends AnimatorBase {
      * - animationPlayer 自定义动画控制
      * @override
      */
-    public onInit(...args: Array<Map<string, AnimatorStateLogic> | ((fromState: string, toState: string) => void) | AnimationPlayer>) {
+    onInit(...args: Array<Map<string, AnimatorStateLogic> | ((fromState: string, toState: string) => void) | AnimationPlayer>) {
         if (this.PlayOnStart || this._hasInit) {
             return;
         }

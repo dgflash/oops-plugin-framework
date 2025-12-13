@@ -6,7 +6,7 @@
  */
 
 /** 支持Map与Array功能的集合对象 */
-export class Collection<K, V> extends Map<K, V>{
+export class Collection<K, V> extends Map<K, V> {
     private _array: V[] = [];
 
     /** 获取数组对象 */
@@ -21,8 +21,8 @@ export class Collection<K, V> extends Map<K, V>{
      */
     set(key: K, value: V) {
         if (this.has(key)) {
-            var old = this.get(key)!;
-            var index = this._array.indexOf(old);
+            const old = this.get(key)!;
+            const index = this._array.indexOf(old);
             this._array[index] = value;
         }
         else {

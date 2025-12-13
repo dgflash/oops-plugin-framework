@@ -13,7 +13,7 @@ const { ccclass, property } = _decorator;
 @ccclass('SpineFinishedRelease')
 export class SpineFinishedRelease extends Component {
     @property
-    isDestroy: boolean = true;
+        isDestroy = true;
 
     private spine!: sp.Skeleton;
     private resPath: string = null!;
@@ -31,15 +31,15 @@ export class SpineFinishedRelease extends Component {
             this.loadSkeletonData();
         }
         else {
-            this.spine.setAnimation(0, "animation", false);
+            this.spine.setAnimation(0, 'animation', false);
         }
     }
 
     private async loadSkeletonData() {
-        let sd = await oops.res.load(this.resPath, sp.SkeletonData);
+        const sd = await oops.res.load(this.resPath, sp.SkeletonData);
         if (sd) {
             this.spine.skeletonData = sd;
-            this.spine.setAnimation(0, "animation", false);
+            this.spine.setAnimation(0, 'animation', false);
         }
     }
 

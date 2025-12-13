@@ -4,14 +4,17 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-12-13 11:36:00
  */
-import { Asset, Button, Component, EventHandler, EventKeyboard, EventTouch, Input, Node, Prefab, Sprite, SpriteFrame, __private, _decorator, input, instantiate, isValid } from "cc";
-import { oops } from "../../core/Oops";
-import { AudioEffect } from "../../core/common/audio/AudioEffect";
-import { IAudioParams } from "../../core/common/audio/IAudio";
-import { EventDispatcher } from "../../core/common/event/EventDispatcher";
-import { EventMessage, ListenerFunc } from "../../core/common/event/EventMessage";
-import { AssetType, CompleteCallback, Paths, ProgressCallback, resLoader } from "../../core/common/loader/ResLoader";
-import { ViewUtil } from "../../core/utils/ViewUtil";
+import type { Asset, EventKeyboard, EventTouch, Sprite, __private } from 'cc';
+import { Button, Component, EventHandler, Input, Node, Prefab, SpriteFrame, _decorator, input, instantiate, isValid } from 'cc';
+import { oops } from '../../core/Oops';
+import type { AudioEffect } from '../../core/common/audio/AudioEffect';
+import type { IAudioParams } from '../../core/common/audio/IAudio';
+import { EventDispatcher } from '../../core/common/event/EventDispatcher';
+import type { ListenerFunc } from '../../core/common/event/EventMessage';
+import { EventMessage } from '../../core/common/event/EventMessage';
+import type { AssetType, CompleteCallback, Paths, ProgressCallback } from '../../core/common/loader/ResLoader';
+import { resLoader } from '../../core/common/loader/ResLoader';
+import { ViewUtil } from '../../core/utils/ViewUtil';
 
 const { ccclass } = _decorator;
 
@@ -38,7 +41,7 @@ interface ResRecord {
  * 1、当前对象加载的资源，会在对象释放时，自动释放引用的资源
  * 2、当前对象支持启动游戏引擎提供的各种常用逻辑事件
  */
-@ccclass("GameComponent")
+@ccclass('GameComponent')
 export class GameComponent extends Component {
     //#region 全局事件管理
     private _event: EventDispatcher | null = null;
@@ -110,7 +113,7 @@ export class GameComponent extends Component {
 
     //#region 资源加载管理
     /** 资源路径 */
-    private resPaths: Map<ResType, Map<string, ResRecord>> = null!;             // 资源使用记录
+    private resPaths: Map<ResType, Map<string, ResRecord>> = null!; // 资源使用记录
 
     /**
      * 获取资源
@@ -131,18 +134,18 @@ export class GameComponent extends Component {
     private addPathToRecord<T>(type: ResType, bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null) {
         if (this.resPaths == null) this.resPaths = new Map();
 
-        var rps = this.resPaths.get(type);
+        let rps = this.resPaths.get(type);
         if (rps == null) {
             rps = new Map();
             this.resPaths.set(type, rps);
         }
 
         if (paths instanceof Array) {
-            let realBundle = bundleName;
+            const realBundle = bundleName;
             for (let index = 0; index < paths.length; index++) {
-                let realPath = paths[index];
-                let key = this.getResKey(realBundle, realPath);
-                let rp = rps.get(key);
+                const realPath = paths[index];
+                const key = this.getResKey(realBundle, realPath);
+                const rp = rps.get(key);
                 if (rp) {
                     rp.refCount++;
                 }
@@ -151,11 +154,11 @@ export class GameComponent extends Component {
                 }
             }
         }
-        else if (typeof paths === "string") {
-            let realBundle = bundleName;
-            let realPath = paths;
-            let key = this.getResKey(realBundle, realPath);
-            let rp = rps.get(key);
+        else if (typeof paths === 'string') {
+            const realBundle = bundleName;
+            const realPath = paths;
+            const key = this.getResKey(realBundle, realPath);
+            const rp = rps.get(key);
             if (rp) {
                 rp.refCount++;
             }
@@ -164,10 +167,10 @@ export class GameComponent extends Component {
             }
         }
         else {
-            let realBundle = oops.res.defaultBundleName;
-            let realPath = bundleName;
-            let key = this.getResKey(realBundle, realPath);
-            let rp = rps.get(key);
+            const realBundle = oops.res.defaultBundleName;
+            const realPath = bundleName;
+            const key = this.getResKey(realBundle, realPath);
+            const rp = rps.get(key);
             if (rp) {
                 rp.refCount++;
             }
@@ -178,7 +181,7 @@ export class GameComponent extends Component {
     }
 
     private getResKey(realBundle: string, realPath: string): string {
-        let key = `${realBundle}:${realPath}`;
+        const key = `${realBundle}:${realPath}`;
         return key;
     }
 
@@ -202,7 +205,7 @@ export class GameComponent extends Component {
      * @param onComplete    加载完成回调
      */
     loadAny(bundleName: string | string[], paths: string[] | ProgressCallback, onProgress?: ProgressCallback | CompleteCallback, onComplete?: CompleteCallback): void {
-        if (typeof bundleName === "string" && paths instanceof Array) {
+        if (typeof bundleName === 'string' && paths instanceof Array) {
             this.addPathToRecord(ResType.Load, bundleName, paths);
         }
         else {
@@ -236,7 +239,7 @@ export class GameComponent extends Component {
     ) {
         let realDir: string;
         let realBundle: string;
-        if (typeof dir === "string") {
+        if (typeof dir === 'string') {
             realDir = dir;
             realBundle = bundleName;
         }
@@ -322,7 +325,7 @@ export class GameComponent extends Component {
             else if (params.bundle == null) {
                 params.bundle = resLoader.defaultBundleName;
             }
-            let ae = await oops.audio.playEffect(url, params);
+            const ae = await oops.audio.playEffect(url, params);
             if (ae) {
                 this.addPathToRecord(ResType.Load, ae.params.bundle!, url);
                 resolve(ae);
@@ -345,7 +348,7 @@ export class GameComponent extends Component {
      * Label1(event: EventTouch) { console.log(event.target.name); }
      * Label2(event: EventTouch) { console.log(event.target.name); }
      */
-    protected setButton(bindRootEvent: boolean = true) {
+    protected setButton(bindRootEvent = true) {
         // 自定义按钮批量绑定触摸事件
         if (bindRootEvent) {
             this.node.on(Node.EventType.TOUCH_END, (event: EventTouch) => {

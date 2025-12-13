@@ -31,10 +31,10 @@ export class ArrayUtil {
 
     /**
      * 复制二维数组
-     * @param array 目标数组 
+     * @param array 目标数组
      */
     static copy2DArray(array: any[][]): any[][] {
-        let newArray: any[][] = [];
+        const newArray: any[][] = [];
         for (let i = 0; i < array.length; i++) {
             newArray.push(array[i].concat());
         }
@@ -48,8 +48,8 @@ export class ArrayUtil {
     static fisherYatesShuffle(array: any[]): any[] {
         let count = array.length;
         while (count) {
-            let index = Math.floor(Math.random() * count--);
-            let temp = array[count];
+            const index = Math.floor(Math.random() * count--);
+            const temp = array[count];
             array[count] = array[index];
             array[index] = temp;
         }
@@ -69,7 +69,7 @@ export class ArrayUtil {
      * @param array 目标数组
      */
     static flattening(array: any[]) {
-        for (; array.some(v => Array.isArray(v));) {    // 判断 array 中是否有数组
+        for (; array.some((v) => Array.isArray(v));) { // 判断 array 中是否有数组
             array = [].concat.apply([], array); // 压扁数组
         }
         return array;
@@ -107,7 +107,7 @@ export class ArrayUtil {
     /**
      * 随机打乱数组
      * @param array 目标数组
-     * @example [1,2,3,4,5] --> [5, 1, 2, 3, 4] 
+     * @example [1,2,3,4,5] --> [5, 1, 2, 3, 4]
      */
     static shuffleArray<T>(array: T[]): T[] {
         // 创建一个原数组的副本
@@ -127,7 +127,7 @@ export class ArrayUtil {
      * 获取连续数字数组, 范围在[start, end]之间
      * @param start 开始数字
      * @param end 结束数字
-     * @example getNumsBetween(1, 10) => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] 
+     * @example getNumsBetween(1, 10) => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
      */
     static getNumsBetween(start: number, end: number): number[] {
         return Array.from({ length: end - start + 1 }, (_, i) => start + i);

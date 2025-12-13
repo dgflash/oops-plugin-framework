@@ -2,12 +2,12 @@
 export class StringUtil {
     /** 获取一个唯一标识的字符串 */
     static guid() {
-        let guid: string = "";
+        let guid = '';
         for (let i = 1; i <= 32; i++) {
-            let n = Math.floor(Math.random() * 16.0).toString(16);
+            const n = Math.floor(Math.random() * 16.0).toString(16);
             guid += n;
             if ((i == 8) || (i == 12) || (i == 16) || (i == 20))
-                guid += "-";
+                guid += '-';
         }
         return guid;
     }
@@ -29,7 +29,7 @@ export class StringUtil {
      * @example
      * 12345 = 12.35K
      */
-    static numberToThousand(value: number, fixed: number = 2): string {
+    static numberToThousand(value: number, fixed = 2): string {
         const k = 1000;
         const sizes = ['', 'K', 'M', 'G'];
         if (value < k) {
@@ -49,7 +49,7 @@ export class StringUtil {
      * @example
      * 12345 = 1.23万
      */
-    static numberToTenThousand(value: number, fixed: number = 2): string {
+    static numberToTenThousand(value: number, fixed = 2): string {
         const k = 10000;
         const sizes = ['', '万', '亿', '万亿'];
         if (value < k) {
@@ -66,10 +66,10 @@ export class StringUtil {
      * @param str 字符串
      */
     static stringToArray1(str: string) {
-        if (str == "") {
+        if (str == '') {
             return [];
         }
-        return str.split(",");
+        return str.split(',');
     }
 
     /**
@@ -77,10 +77,10 @@ export class StringUtil {
      * @param str 字符串
      */
     static stringToArray2(str: string) {
-        if (str == "") {
+        if (str == '') {
             return [];
         }
-        return str.split("|");
+        return str.split('|');
     }
 
     /**
@@ -88,10 +88,10 @@ export class StringUtil {
      * @param str 字符串
      */
     static stringToArray3(str: string) {
-        if (str == "") {
+        if (str == '') {
             return [];
         }
-        return str.split(":");
+        return str.split(':');
     }
 
     /**
@@ -99,10 +99,10 @@ export class StringUtil {
      * @param str 字符串
      */
     static stringToArray4(str: string) {
-        if (str == "") {
+        if (str == '') {
             return [];
         }
-        return str.split(";");
+        return str.split(';');
     }
 
     /**
@@ -111,14 +111,16 @@ export class StringUtil {
      * @param n       截取长度
      * @param showdot 是否把截取的部分用省略号代替
      */
-    static sub(str: string, n: number, showdot: boolean = false) {
+    static sub(str: string, n: number, showdot = false) {
         const r = /[^\x00-\xff]/g;
-        if (str.replace(r, "mm").length <= n) { return str; }
+        if (str.replace(r, 'mm').length <= n) {
+            return str;
+        }
         const m = Math.floor(n / 2);
         for (let i = m; i < str.length; i++) {
-            if (str.substr(0, i).replace(r, "mm").length >= n) {
+            if (str.substr(0, i).replace(r, 'mm').length >= n) {
                 if (showdot) {
-                    return str.substr(0, i) + "...";
+                    return str.substr(0, i) + '...';
                 }
                 else {
                     return str.substr(0, i);
@@ -177,8 +179,8 @@ export class StringUtil {
             args = rest;
         }
 
-        for (let i: number = 0; i < len; i++) {
-            str = str.replace(new RegExp("\\{" + i + "\\}", "g"), args[i]);
+        for (let i = 0; i < len; i++) {
+            str = str.replace(new RegExp('\\{' + i + '\\}', 'g'), args[i]);
         }
 
         return str;

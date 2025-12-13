@@ -5,8 +5,8 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-07-25 11:52:23
  */
-import { Component, Node, Vec3, _decorator } from "cc";
-import { Vec3Util } from "../../core/utils/Vec3Util";
+import { Component, Node, Vec3, _decorator } from 'cc';
+import { Vec3Util } from '../../core/utils/Vec3Util';
 
 const { ccclass, property } = _decorator;
 
@@ -16,7 +16,7 @@ export class MoveTranslate extends Component {
     /** 移动方向 */
     velocity: Vec3 = Vec3Util.zero;
     /** 移动速度 */
-    speed: number = 0;
+    speed = 0;
 
     private vector: Vec3 = new Vec3();
 

@@ -8,10 +8,10 @@ import { AudioClip, Node } from 'cc';
 import { resLoader } from '../loader/ResLoader';
 import { AudioEffect } from './AudioEffect';
 import { AudioEffectType } from './AudioEnum';
-import { IAudioData, IAudioParams } from './IAudio';
+import type { IAudioData, IAudioParams } from './IAudio';
 
-/** 
- * 背景音乐 
+/**
+ * 背景音乐
  * 1、播放一个新背景音乐时，先加载音乐资源，然后停止正在播放的背景资源同时释放当前背景音乐资源，最后播放新的背景音乐
  * 2、背景音乐循环播放时，不会触发播放完成事件
  */
@@ -19,8 +19,8 @@ export class AudioMusic extends Node {
     /** 音效配置数据 */
     private data: { [node: string]: IAudioData } = null!;
 
-    private _progress: number = 0;
-    private _isLoading: boolean = false;
+    private _progress = 0;
+    private _isLoading = false;
     private _nextPath: string = null!;
     private _nextParams: IAudioParams = null!;
     private _ae: AudioEffect = null!;
@@ -75,7 +75,7 @@ export class AudioMusic extends Node {
 
     constructor() {
         super();
-        this.name = "AudioMusic";
+        this.name = 'AudioMusic';
         this._ae = this.addComponent(AudioEffect);
         this._ae.onComplete = this.onAudioEffectPlayComplete.bind(this);
     }
@@ -91,7 +91,7 @@ export class AudioMusic extends Node {
      * @param params        背景音乐资源播放参数
      */
     async loadAndPlay(path: string, params?: IAudioParams) {
-        if (!this.getSwitch()) return;           // 禁止播放音乐
+        if (!this.getSwitch()) return; // 禁止播放音乐
 
         // 下一个加载的背景音乐资源
         if (this._isLoading) {
@@ -106,19 +106,19 @@ export class AudioMusic extends Node {
                 bundle: resLoader.defaultBundleName,
                 loop: true,
                 volume: this.getVolume()
-            }
+            };
         }
         else {
             if (params.type == null) params.type = AudioEffectType.Music;
             if (params.bundle == null) params.bundle = resLoader.defaultBundleName;
             if (params.loop == null) params.loop = true;
-            if (params.volume == null) params.volume = this.getVolume()
+            if (params.volume == null) params.volume = this.getVolume();
         }
 
         this._isLoading = true;
 
         let clip: AudioClip = null!;
-        if (path.indexOf("http") == 0) {
+        if (path.indexOf('http') == 0) {
             const extension = path.split('.').pop();
             clip = await resLoader.loadRemote<AudioClip>(path, { ext: `.${extension}` });
         }

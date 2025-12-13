@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 14:49:42
  */
-import { Color, Texture2D } from "cc";
+import { Color, Texture2D } from 'cc';
 
 /**
  * 图像工具
@@ -42,7 +42,7 @@ cc.color(50, 100, 123, 255);
      * @param callback 完成回调
      */
     static imageToBase64(url: string, callback?: (dataURL: string) => void): Promise<string> {
-        return new Promise(res => {
+        return new Promise((res) => {
             let extname = /\.png|\.jpg|\.jpeg/.exec(url)?.[0];
             //@ts-ignore
             if (['.png', '.jpg', '.jpeg'].includes(extname)) {
@@ -60,12 +60,12 @@ cc.color(50, 100, 123, 255);
                     res(dataURL);
                     image.remove();
                     canvas.remove();
-                }
+                };
             }
             else {
                 console.warn('Not a jpg/jpeg or png resource!');
-                callback && callback("");
-                res("");
+                callback && callback('');
+                res('');
             }
         });
     }

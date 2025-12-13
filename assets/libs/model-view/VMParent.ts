@@ -1,4 +1,5 @@
-import { Component, _decorator } from 'cc';
+import type { Component } from 'cc';
+import { _decorator } from 'cc';
 import { GameComponent } from '../../module/common/GameComponent';
 import { VM } from './ViewModel';
 import { VMBase } from './VMBase';
@@ -17,19 +18,19 @@ const { ccclass, help, executionOrder } = _decorator;
 @help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037729&doc_id=2873565')
 export default class VMParent extends GameComponent {
     /** 绑定的标签，可以通过这个tag 获取 当前的 vm 实例 */
-    protected tag: string = '_temp';
+    protected tag = '_temp';
 
     /** 需要绑定的私有数据 */
     protected data: any = {};
 
     /**
      * [注意]不能直接覆盖此方法，如果需要覆盖。
-     * 只能在该方法内部调用父类的实现 
+     * 只能在该方法内部调用父类的实现
      *   ```ts
      *       onLoad(){
      *           super.onLoad();
      *       }
-     *   ``` 
+     *   ```
      */
     onLoad() {
         if (this.data == null) return;
@@ -39,7 +40,7 @@ export default class VMParent extends GameComponent {
         VM.add(this.data, this.tag);
         // log(VM['_mvs'],this.tag)
         //搜寻所有节点：找到 watch path
-        let comps = this.getVMComponents();
+        const comps = this.getVMComponents();
         // console.group();
         for (let i = 0; i < comps.length; i++) {
             const comp = comps[i];
@@ -56,11 +57,11 @@ export default class VMParent extends GameComponent {
 
     private replaceVMPath(comp: Component, tag: string) {
         // @ts-ignore
-        let path: string = comp['watchPath'];
+        const path: string = comp['watchPath'];
         // @ts-ignore
         if (comp['templateMode'] == true) {
             // @ts-ignore
-            let pathArr: string[] = comp['watchPathArr'];
+            const pathArr: string[] = comp['watchPathArr'];
             if (pathArr) {
                 for (let i = 0; i < pathArr.length; i++) {
                     const path = pathArr[i];
@@ -82,13 +83,13 @@ export default class VMParent extends GameComponent {
     /** 未优化的遍历节点，获取VM 组件 */
     private getVMComponents() {
         let comps = this.node.getComponentsInChildren(VMBase);
-        let parents = this.node.getComponentsInChildren(VMParent).filter(v => v.uuid !== this.uuid);  // 过滤掉自己
+        const parents = this.node.getComponentsInChildren(VMParent).filter((v) => v.uuid !== this.uuid); // 过滤掉自己
 
         //过滤掉不能赋值的parent
         let filters: any[] = [];
         parents.forEach((node: Component) => {
             filters = filters.concat(node.getComponentsInChildren(VMBase));
-        })
+        });
 
         comps = comps.filter((v) => filters.indexOf(v) < 0);
         return comps;

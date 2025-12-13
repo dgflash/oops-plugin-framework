@@ -4,13 +4,13 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2025-08-15 10:06:47
  */
-import { Node, NodePool, Vec3, warn } from "cc";
-import { resLoader } from "../../common/loader/ResLoader";
-import { ViewUtil } from "../../utils/ViewUtil";
-import { LayerCustomType } from "./LayerEnum";
-import { GameElementParams, LayerGameElement } from "./LayerGameElement";
-import { LayerHelper } from "./LayerHelper";
-import { GameElementConfig } from "./UIConfig";
+import { Node, NodePool, Vec3, warn } from 'cc';
+import { resLoader } from '../../common/loader/ResLoader';
+import { ViewUtil } from '../../utils/ViewUtil';
+import { LayerCustomType } from './LayerEnum';
+import { GameElementParams, LayerGameElement } from './LayerGameElement';
+import { LayerHelper } from './LayerHelper';
+import type { GameElementConfig } from './UIConfig';
 
 /* 二维游戏层 */
 export class LayerGame extends Node {
@@ -29,13 +29,13 @@ export class LayerGame extends Node {
      */
     add(prefab: string, config: GameElementConfig = {}): Promise<Node> {
         return new Promise(async (resolve, reject) => {
-            let params = this.setParams(prefab, config, false);
-            let node = await ViewUtil.createPrefabNodeAsync(prefab, params.config.bundle);
+            const params = this.setParams(prefab, config, false);
+            const node = await ViewUtil.createPrefabNodeAsync(prefab, params.config.bundle);
             if (node) {
                 // 设置自定义属性
                 this.setNode(node, config);
 
-                let lge = node.addComponent(LayerGameElement);
+                const lge = node.addComponent(LayerGameElement);
                 lge.params = params;
                 params.nodes.push(node);
             }
@@ -50,7 +50,7 @@ export class LayerGame extends Node {
      */
     addPool(prefab: string, config: GameElementConfig = {}): Promise<Node> {
         return new Promise(async (resolve, reject) => {
-            let params = this.setParams(prefab, config, true);
+            const params = this.setParams(prefab, config, true);
             let node: Node = null!;
             if (params.pool.size() > 0) {
                 node = params.pool.get()!;
@@ -63,7 +63,7 @@ export class LayerGame extends Node {
             // 设置自定义属性
             this.setNode(node, config);
 
-            let lge = node.getComponent(LayerGameElement)!;
+            const lge = node.getComponent(LayerGameElement)!;
             lge.params = params;
 
             resolve(node);
@@ -72,9 +72,9 @@ export class LayerGame extends Node {
 
     /** 清理池数据 */
     clearPool(node: Node) {
-        let lge = node.getComponent(LayerGameElement)!;
+        const lge = node.getComponent(LayerGameElement)!;
         if (lge) {
-            let params = this.elements.get(lge.params.uiid);
+            const params = this.elements.get(lge.params.uiid);
             if (params) params.pool.clear();
         }
     }
@@ -84,14 +84,14 @@ export class LayerGame extends Node {
      * @param node 游戏元素节点
      */
     remove(node: Node) {
-        let lge = node.getComponent(LayerGameElement)!;
+        const lge = node.getComponent(LayerGameElement)!;
         if (lge) {
             if (lge.params.pool) {
                 lge.params.pool.put(node);
             }
             else {
-                let nodes = lge.params.nodes;
-                let index = nodes.indexOf(node);
+                const nodes = lge.params.nodes;
+                const index = nodes.indexOf(node);
                 if (index != -1) {
                     nodes.splice(index, 1);
                     if (nodes.length == 0) {
@@ -103,14 +103,14 @@ export class LayerGame extends Node {
             }
         }
         else {
-            warn(`当前删除游戏元素的 Node 不是通过框架添加的`);
+            warn('当前删除游戏元素的 Node 不是通过框架添加的');
         }
     }
 
     /** 设置元素参数 */
     private setParams(prefab: string, config: GameElementConfig, pool: boolean) {
-        let bundleName = config.bundle ? config.bundle : resLoader.defaultBundleName;
-        let uuid = bundleName + "_" + prefab;
+        const bundleName = config.bundle ? config.bundle : resLoader.defaultBundleName;
+        const uuid = bundleName + '_' + prefab;
         let params = this.elements.get(uuid);
         if (params == null) {
             config.prefab = prefab;

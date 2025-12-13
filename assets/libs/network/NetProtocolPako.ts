@@ -4,23 +4,23 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-04-21 13:51:33
  */
-import { IProtocolHelper, IRequestProtocol, IResponseProtocol, NetData } from "./NetInterface";
+import type { IProtocolHelper, IRequestProtocol, IResponseProtocol, NetData } from './NetInterface';
 
-var unzip = function (str: string) {
-    let charData = str.split('').map(function (x) {
+const unzip = function (str: string) {
+    const charData = str.split('').map((x) => {
         return x.charCodeAt(0);
     });
-    let binData = new Uint8Array(charData);
+    const binData = new Uint8Array(charData);
     //@ts-ignore
-    let data = pako.inflate(binData, { to: 'string' });
+    const data = pako.inflate(binData, { to: 'string' });
     return data;
-}
+};
 
-var zip = function (str: string) {
+const zip = function (str: string) {
     //@ts-ignore
-    let binaryString = pako.gzip(str, { to: 'string' });
+    const binaryString = pako.gzip(str, { to: 'string' });
     return binaryString;
-}
+};
 
 /** Pako.js 数据压缩协议 */
 export class NetProtocolPako implements IProtocolHelper {
@@ -29,7 +29,7 @@ export class NetProtocolPako implements IProtocolHelper {
     }
 
     getHearbeat(): NetData {
-        return "";
+        return '';
     }
 
     getPackageLen(msg: NetData): number {
@@ -55,7 +55,7 @@ export class NetProtocolPako implements IProtocolHelper {
     }
 
     handlerRequestPackage(reqProtocol: IRequestProtocol): string {
-        var rspCmd = reqProtocol.cmd;
+        const rspCmd = reqProtocol.cmd;
         reqProtocol.callback = rspCmd;
         if (reqProtocol.isCompress) {
             reqProtocol.data = zip(reqProtocol.data);

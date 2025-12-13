@@ -4,28 +4,29 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-04-14 18:15:42
  */
-import { EventHandler, EventTouch, _decorator } from "cc";
-import ButtonEffect from "./ButtonEffect";
+import type { EventTouch } from 'cc';
+import { EventHandler, _decorator } from 'cc';
+import ButtonEffect from './ButtonEffect';
 
 const { ccclass, property, menu } = _decorator;
 
 /** 长按按钮 */
-@ccclass("ButtonTouchLong")
+@ccclass('ButtonTouchLong')
 @menu('OopsFramework/Button/ButtonTouchLong （长按按钮）')
 export class ButtonTouchLong extends ButtonEffect {
     @property({
-        tooltip: "长按时间（秒）"
+        tooltip: '长按时间（秒）'
     })
-    time: number = 1;
+        time = 1;
 
     @property({
         type: [EventHandler],
-        tooltip: "长按时间（秒）"
+        tooltip: '长按时间（秒）'
     })
-    clickEvents: EventHandler[] = [];
+        clickEvents: EventHandler[] = [];
 
     protected _passTime = 0;
-    protected _isTouchLong: boolean = true;
+    protected _isTouchLong = true;
     protected _event: EventTouch | null = null;
 
     onLoad() {
@@ -64,7 +65,7 @@ export class ButtonTouchLong extends ButtonEffect {
 
             if (this._passTime >= this.time) {
                 this._isTouchLong = true;
-                this.clickEvents.forEach(event => {
+                this.clickEvents.forEach((event) => {
                     event.emit([event.customEventData]);
                     // 长按触摸音效
                     this.playEffect();

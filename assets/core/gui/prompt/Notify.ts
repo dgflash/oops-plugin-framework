@@ -4,8 +4,8 @@
  * @LastEditors: bansomin
  * @LastEditTime: 2025-01-02 10:47:47
  */
-import { Animation, Component, Label, _decorator } from "cc";
-import { LanguageLabel } from "../../../libs/gui/language/LanguageLabel";
+import { Animation, Component, Label, _decorator } from 'cc';
+import { LanguageLabel } from '../../../libs/gui/language/LanguageLabel';
 
 const { ccclass, property } = _decorator;
 
@@ -38,7 +38,7 @@ export class Notify extends Component {
      * @param useI18n   设置为 true 时，使用多语言功能 msg 参数为多语言 key
      */
     toast(msg: string, useI18n: boolean) {
-        let label = this.lab_content.getComponent(LanguageLabel)!;
+        const label = this.lab_content.getComponent(LanguageLabel)!;
         if (useI18n) {
             label.enabled = true;
             label.dataID = msg;

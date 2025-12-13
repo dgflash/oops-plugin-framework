@@ -1,22 +1,23 @@
-import { _decorator, Toggle } from "cc";
-import { oops } from "db://oops-framework/core/Oops";
-import { GameStorage } from "db://oops-framework/module/common/GameStorage";
-import { PromptBase } from "./PromptBase";
+import type { Toggle } from 'cc';
+import { _decorator } from 'cc';
+import { oops } from 'db://oops-framework/core/Oops';
+import { GameStorage } from 'db://oops-framework/module/common/GameStorage';
+import { PromptBase } from './PromptBase';
 
-const { ccclass, property } = _decorator;
+const { ccclass } = _decorator;
 
 /** 不同类型的提示窗口状态数据 */
-var content: any = null;
+let content: any = null;
 
 /** 可设置指定时间内跳过提示 */
-@ccclass("PromptSkip")
+@ccclass('PromptSkip')
 export class PromptSkip extends PromptBase {
     /** 是否可提示 */
     static isPrompt(id: string): boolean {
-        if (content == null) content = oops.storage.getJson(GameStorage.PromptSkip, {});       // 第一次打开窗口从本地数据中获取窗口状态信息
+        if (content == null) content = oops.storage.getJson(GameStorage.PromptSkip, {}); // 第一次打开窗口从本地数据中获取窗口状态信息
 
-        let r = content[id];
-        let c = oops.timer.getClientTime();
+        const r = content[id];
+        const c = oops.timer.getClientTime();
         if (r == null || c > r) {
             return true;
         }

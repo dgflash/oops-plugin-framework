@@ -1,13 +1,13 @@
-import { sys } from "cc";
-import { Logger } from "../../../core/common/log/Logger";
-import { LanguageData } from "./LanguageData";
-import { LanguagePack } from "./LanguagePack";
+import { sys } from 'cc';
+import { Logger } from '../../../core/common/log/Logger';
+import { LanguageData } from './LanguageData';
+import { LanguagePack } from './LanguagePack';
 
 /** 多语言管理器 */
 export class LanguageManager {
-    private _languages: Array<string> = [sys.Language.CHINESE, sys.Language.ENGLISH];      // 支持的语言
-    private _languagePack: LanguagePack = new LanguagePack();                              // 语言包
-    private _defaultLanguage: string = sys.Language.CHINESE;                               // 默认语言
+    private _languages: Array<string> = [sys.Language.CHINESE, sys.Language.ENGLISH]; // 支持的语言
+    private _languagePack: LanguagePack = new LanguagePack(); // 语言包
+    private _defaultLanguage: string = sys.Language.CHINESE; // 默认语言
 
     /** 支持的多种语言列表 */
     get languages(): string[] {
@@ -43,8 +43,8 @@ export class LanguageManager {
 
     /** 获取下一个语种 */
     getNextLang(): string {
-        let supportLangs = this.languages;
-        let index = supportLangs.indexOf(LanguageData.current);
+        const supportLangs = this.languages;
+        const index = supportLangs.indexOf(LanguageData.current);
         return supportLangs[(index + 1) % supportLangs.length];
     }
 
@@ -54,14 +54,14 @@ export class LanguageManager {
      * @param callback 多语言资源数据加载完成回调
      */
     setLanguage(language: string, callback?: Function) {
-        if (language == null || language == "") {
+        if (language == null || language == '') {
             language = this._defaultLanguage;
         }
         else {
             language = language.toLowerCase();
         }
 
-        let index = this.languages.indexOf(language);
+        const index = this.languages.indexOf(language);
         if (index < 0) {
             console.log(`当前不支持【${language}】语言，将自动切换到【${this._defaultLanguage}】语言`);
             language = this._defaultLanguage;
@@ -84,8 +84,8 @@ export class LanguageManager {
 
     /**
      * 根据data获取对应语种的字符
-     * @param labId 
-     * @param arr 
+     * @param labId
+     * @param arr
      */
     getLangByID(labId: string): string {
         return LanguageData.getLangByID(labId);
@@ -94,8 +94,8 @@ export class LanguageManager {
     /**
      * 下载语言包素材资源
      * 包括语言json配置和语言纹理包
-     * @param lang 
-     * @param callback 
+     * @param lang
+     * @param callback
      */
     loadLanguageAssets(lang: string, callback: Function) {
         lang = lang.toLowerCase();
@@ -104,7 +104,7 @@ export class LanguageManager {
 
     /**
      * 释放不需要的语言包资源
-     * @param lang 
+     * @param lang
      */
     releaseLanguageAssets(lang: string) {
         lang = lang.toLowerCase();

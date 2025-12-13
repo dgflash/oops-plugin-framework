@@ -1,12 +1,12 @@
-import { Director, director, js } from "cc";
+import { Director, director, js } from 'cc';
 
 /** 全局游戏时间缩放 */
 //@ts-ignore
-if (!Director.prototype["__$cc-director-speed-extension$__"]) {
+if (!Director.prototype['__$cc-director-speed-extension$__']) {
     //@ts-ignore
-    Director.prototype["__$cc-director-speed-extension$__"] = true;
+    Director.prototype['__$cc-director-speed-extension$__'] = true;
 
-    let oldTick = director.tick.bind(director);
+    const oldTick = director.tick.bind(director);
     director.tick = function (dt) {
         dt *= director.globalGameTimeScale;
         oldTick(dt);
@@ -17,7 +17,7 @@ if (!Director.prototype["__$cc-director-speed-extension$__"]) {
     });
 }
 
-declare module "cc" {
+declare module 'cc' {
     interface Director {
         globalGameTimeScale: number;
     }

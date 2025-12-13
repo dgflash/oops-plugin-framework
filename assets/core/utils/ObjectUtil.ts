@@ -72,13 +72,13 @@ export class ObjectUtil {
         // 检查是否是特殊值
         if (obj === Infinity || obj === -Infinity) return true;
         // 检测是否包含空格的字符串
-        if (typeof obj === "string" && obj.trim() === "") return true;
+        if (typeof obj === 'string' && obj.trim() === '') return true;
         // 检查是否是无效的数字
         if (Number.isNaN(obj)) return true;
         // 检查是否是空数组
         if (Array.isArray(obj) && obj.length <= 0) return true;
         // 检查是否是空对象
-        if (typeof (obj) == "object" && Object.keys(obj).length <= 0) return true;
+        if (typeof (obj) === 'object' && Object.keys(obj).length <= 0) return true;
         return false;
     }
 }

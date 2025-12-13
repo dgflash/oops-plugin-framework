@@ -1,11 +1,12 @@
-import { instantiate, Node, Prefab, SafeArea } from "cc";
-import { Collection } from "db://oops-framework/libs/collection/Collection";
-import { resLoader } from "../../common/loader/ResLoader";
-import { oops } from "../../Oops";
-import { Uiid } from "./LayerEnum";
-import { LayerHelper } from "./LayerHelper";
-import { LayerUIElement, UIParam, UIState } from "./LayerUIElement";
-import { UIConfig } from "./UIConfig";
+import { instantiate, Node, Prefab, SafeArea } from 'cc';
+import { Collection } from 'db://oops-framework/libs/collection/Collection';
+import { resLoader } from '../../common/loader/ResLoader';
+import { oops } from '../../Oops';
+import type { Uiid } from './LayerEnum';
+import { LayerHelper } from './LayerHelper';
+import type { UIParam } from './LayerUIElement';
+import { LayerUIElement, UIState } from './LayerUIElement';
+import type { UIConfig } from './UIConfig';
 
 /** 界面层对象 */
 export class LayerUI extends Node {
@@ -54,7 +55,7 @@ export class LayerUI extends Node {
             }
 
             // 检查缓存中是否存界面
-            let state = this.initUIConfig(uiid, config, params);
+            const state = this.initUIConfig(uiid, config, params);
             await this.load(state);
             resolve(state.node);
         });
@@ -89,7 +90,7 @@ export class LayerUI extends Node {
         return new Promise<Node>(async (resolve, reject) => {
             // 加载界面资源超时提示
             if (state.node == null) {
-                let timerId = setTimeout(this.onLoadingTimeoutGui, oops.config.game.loadingTimeoutGui);
+                const timerId = setTimeout(this.onLoadingTimeoutGui, oops.config.game.loadingTimeoutGui);
 
                 // 优先加载配置的指定资源包中资源，如果没配置则加载默认资源包资源
                 const res = await resLoader.load(state.config.bundle!, state.config.prefab, Prefab);
@@ -127,7 +128,7 @@ export class LayerUI extends Node {
             const comp = state.node.getComponent(LayerUIElement)!;
             const r: boolean = await comp.add();
             if (r) {
-                state.valid = true;                         // 标记界面为使用状态
+                state.valid = true; // 标记界面为使用状态
                 if (!state.params.preload) {
                     state.params.preload = false;
                     state.node.parent = this;
@@ -164,7 +165,7 @@ export class LayerUI extends Node {
     remove(prefabPath: string): void {
         const state = this.ui_nodes.get(prefabPath);
         if (state) {
-            let release: boolean = state.config.destroy!;
+            const release: boolean = state.config.destroy!;
 
             // 不释放界面，缓存起来待下次使用
             if (release === false) this.ui_cache.set(state.config.prefab, state);

@@ -1,4 +1,4 @@
-import { log } from "cc";
+import { log } from 'cc';
 
 /** 日志类型 */
 export enum LogType {
@@ -16,21 +16,21 @@ export enum LogType {
     Trace = 32,
 }
 
-var names = {
-    "1": "网络日志",
-    "2": "数据日志",
-    "4": "业务日志",
-    "8": "视图日志",
-    "16": "配置日志",
-    "32": "标准日志",
-}
+const names = {
+    '1': '网络日志',
+    '2': '数据日志',
+    '4': '业务日志',
+    '8': '视图日志',
+    '16': '配置日志',
+    '32': '标准日志',
+};
 
 export interface ILoggerConsole {
     trace(content: string, color: string): void;
 }
 
-/** 
- * 日志管理 
+/**
+ * 日志管理
  * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037904&doc_id=2873565
  * @example
 oops.log.trace("默认标准日志");
@@ -50,7 +50,7 @@ export class Logger {
         return this._instance;
     }
 
-    private tags: number = 0;
+    private tags = 0;
     private lc: ILoggerConsole = null!;
 
     /** 设置界面日志控制台 */
@@ -68,7 +68,7 @@ export class Logger {
             LogType.Trace;
     }
 
-    /** 
+    /**
      * 设置显示的日志类型，默认值为不显示任何类型日志
      * @example
 oops.log.setTags(LogType.View|LogType.Business)
@@ -89,7 +89,7 @@ oops.log.start();
 ...
 oops.log.end();
      */
-    start(describe: string = "Time"): void {
+    start(describe = 'Time'): void {
         console.time(describe);
     }
 
@@ -103,7 +103,7 @@ oops.log.start();
 ...
 oops.log.end();
      */
-    end(describe: string = "Time"): void {
+    end(describe = 'Time'): void {
         console.timeEnd(describe);
     }
 
@@ -126,7 +126,7 @@ oops.log.table(object);
      * 打印标准日志
      * @param msg       日志消息
      */
-    trace(msg: any, color: string = "#000000ff") {
+    trace(msg: any, color = '#000000ff') {
         this.print(LogType.Trace, msg, color);
     }
 
@@ -173,27 +173,27 @@ oops.log.table(object);
 
     // 橙色
     private orange(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, "#ee7700", describe)
+        this.print(tag, msg, '#ee7700', describe);
     }
 
     // 紫色
     private violet(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, "#800080", describe)
+        this.print(tag, msg, '#800080', describe);
     }
 
     // 蓝色
     private blue(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, "#3a5fcd", describe)
+        this.print(tag, msg, '#3a5fcd', describe);
     }
 
     // 绿色
     private green(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, "#008000", describe)
+        this.print(tag, msg, '#008000', describe);
     }
 
     // 灰色
     private gray(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, "#808080", describe)
+        this.print(tag, msg, '#808080', describe);
     }
 
     private isOpen(tag: LogType): boolean {
@@ -216,12 +216,12 @@ oops.log.table(object);
         const type = names[tag];
         if (this.lc == null) {
             const backLog = console.log || log;
-            color = "color:" + color + ";";
+            color = 'color:' + color + ';';
             if (describe) {
-                backLog.call(null, "%c%s%s%s:%s%o", color, this.getDateString(), '[' + type + ']', this.stack(5), describe, msg);
+                backLog.call(null, '%c%s%s%s:%s%o', color, this.getDateString(), '[' + type + ']', this.stack(5), describe, msg);
             }
             else {
-                backLog.call(null, "%c%s%s%s:%o", color, this.getDateString(), '[' + type + ']', this.stack(5), msg);
+                backLog.call(null, '%c%s%s%s:%o', color, this.getDateString(), '[' + type + ']', this.stack(5), msg);
             }
         }
         else {
@@ -231,11 +231,11 @@ oops.log.table(object);
 
     private stack(index: number): string {
         const e = new Error();
-        const lines = e.stack!.split("\n");
+        const lines = e.stack!.split('\n');
         const result: Array<any> = [];
         lines.forEach((line) => {
             line = line.substring(7);
-            var lineBreak = line.split(" ");
+            const lineBreak = line.split(' ');
             if (lineBreak.length < 2) {
                 result.push(lineBreak[0]);
             }
@@ -248,16 +248,16 @@ oops.log.table(object);
         let splitList: Array<string> = [];
         if (index < result.length - 1) {
             let value: string;
-            for (let a in result[index]) {
-                splitList = a.split(".");
+            for (const a in result[index]) {
+                splitList = a.split('.');
 
                 if (splitList.length == 2) {
                     list = splitList.concat();
                 }
                 else {
                     value = result[index][a];
-                    const start = value!.lastIndexOf("/");
-                    const end = value!.lastIndexOf(".");
+                    const start = value!.lastIndexOf('/');
+                    const end = value!.lastIndexOf('.');
                     if (start > -1 && end > -1) {
                         const r = value!.substring(start + 1, end);
                         list.push(r);
@@ -270,29 +270,29 @@ oops.log.table(object);
         }
 
         if (list.length == 1) {
-            return "[" + list[0] + ".ts]";
+            return '[' + list[0] + '.ts]';
         }
         else if (list.length == 2) {
-            return "[" + list[0] + ".ts->" + list[1] + "]";
+            return '[' + list[0] + '.ts->' + list[1] + ']';
         }
-        return "";
+        return '';
     }
 
     private getDateString(): string {
-        let d = new Date();
+        const d = new Date();
         let str = d.getHours().toString();
-        let timeStr = "";
-        timeStr += (str.length == 1 ? "0" + str : str) + ":";
+        let timeStr = '';
+        timeStr += (str.length == 1 ? '0' + str : str) + ':';
         str = d.getMinutes().toString();
-        timeStr += (str.length == 1 ? "0" + str : str) + ":";
+        timeStr += (str.length == 1 ? '0' + str : str) + ':';
         str = d.getSeconds().toString();
-        timeStr += (str.length == 1 ? "0" + str : str) + ":";
+        timeStr += (str.length == 1 ? '0' + str : str) + ':';
         str = d.getMilliseconds().toString();
-        if (str.length == 1) str = "00" + str;
-        if (str.length == 2) str = "0" + str;
+        if (str.length == 1) str = '00' + str;
+        if (str.length == 2) str = '0' + str;
         timeStr += str;
 
-        timeStr = "[" + timeStr + "]";
+        timeStr = '[' + timeStr + ']';
         return timeStr;
     }
 }

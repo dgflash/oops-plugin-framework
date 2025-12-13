@@ -5,8 +5,8 @@
  * @LastEditTime: 2023-01-19 14:28:05
  */
 
-/** 
- * 定时触发组件 
+/**
+ * 定时触发组件
  * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037964&doc_id=2873565
  * @example
     export class Test extends Component {
@@ -23,20 +23,20 @@
 export class Timer {
     callback: Function | null = null;
 
-    private _elapsedTime: number = 0;
+    private _elapsedTime = 0;
 
     get elapsedTime(): number {
         return this._elapsedTime;
     }
 
-    private _step: number = -1;
+    private _step = -1;
     /** 触发间隔时间（秒） */
     get step(): number {
         return this._step;
     }
     set step(step: number) {
-        this._step = step;                     // 每次修改时间
-        this._elapsedTime = 0;                 // 逝去时间
+        this._step = step; // 每次修改时间
+        this._elapsedTime = 0; // 逝去时间
     }
 
     get progress(): number {
@@ -47,7 +47,7 @@ export class Timer {
      * 定时触发组件
      * @param step  触发间隔时间（秒）
      */
-    constructor(step: number = 0) {
+    constructor(step = 0) {
         this.step = step;
     }
 

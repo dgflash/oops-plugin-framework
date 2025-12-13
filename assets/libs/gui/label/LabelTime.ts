@@ -1,43 +1,43 @@
-import { Label, _decorator } from "cc";
-import { EDITOR } from "cc/env";
-import { oops } from "../../../core/Oops";
-import { EventMessage } from "../../../core/common/event/EventMessage";
-import { TimeUtil } from "../../../core/utils/TimeUtils";
+import { Label, _decorator } from 'cc';
+import { EDITOR } from 'cc/env';
+import { oops } from '../../../core/Oops';
+import { EventMessage } from '../../../core/common/event/EventMessage';
+import { TimeUtil } from '../../../core/utils/TimeUtils';
 
 const { ccclass, property, menu } = _decorator;
 
 /** 倒计时标签 */
-@ccclass("LabelTime")
-@menu("OopsFramework/Label/LabelTime （倒计时标签）")
+@ccclass('LabelTime')
+@menu('OopsFramework/Label/LabelTime （倒计时标签）')
 export default class LabelTime extends Label {
     @property({
-        tooltip: "到计时间总时间（单位秒）",
+        tooltip: '到计时间总时间（单位秒）',
     })
-    countDown: number = 1000;
+        countDown = 1000;
 
     @property({
-        tooltip: "天数数据格式化",
+        tooltip: '天数数据格式化',
     })
-    dayFormat: string = "{0}天{1}小时";
+        dayFormat = '{0}天{1}小时';
 
     @property({
-        tooltip: "时间格式化",
+        tooltip: '时间格式化',
     })
-    timeFormat: string = "{0}:{1}:{2}";
+        timeFormat = '{0}:{1}:{2}';
 
     @property({
-        tooltip: "时间是否有固定二位数据",
+        tooltip: '时间是否有固定二位数据',
     })
-    zeroize: boolean = true;
+        zeroize = true;
 
     @property({
-        tooltip: "游戏进入后台时间暂时",
+        tooltip: '游戏进入后台时间暂时',
     })
-    paused: boolean = false;
+        paused = false;
 
-    private backStartTime: number = 0;  // 进入后台开始时间
-    private dateDisable!: boolean;      // 时间能否由天数显示
-    private result!: string;            // 时间结果字符串
+    private backStartTime = 0; // 进入后台开始时间
+    private dateDisable!: boolean; // 时间能否由天数显示
+    private result!: string; // 时间结果字符串
 
     /** 每秒触发事件 */
     onSecond: Function = null!;
@@ -45,7 +45,7 @@ export default class LabelTime extends Label {
     onComplete: Function = null!;
 
     private replace(value: string, ...args: any): string {
-        return value.replace(/\{(\d+)\}/g, function (m, i) {
+        return value.replace(/\{(\d+)\}/g, (m, i) => {
             return args[i];
         });
     }
@@ -53,35 +53,35 @@ export default class LabelTime extends Label {
     /** 格式化字符串 */
     private format() {
         let c: number = this.countDown;
-        let date: number = Math.floor(c / 86400);
+        const date: number = Math.floor(c / 86400);
         c = c - date * 86400;
         let hours: number = Math.floor(c / 3600);
         c = c - hours * 3600;
-        let minutes: number = Math.floor(c / 60);
+        const minutes: number = Math.floor(c / 60);
         c = c - minutes * 60;
-        let seconds: number = c;
+        const seconds: number = c;
 
         this.dateDisable = this.dateDisable || false;
         if (date == 0 && hours == 0 && minutes == 0 && seconds == 0) {
             if (this.zeroize) {
-                this.result = this.replace(this.timeFormat, "00", "00", "00");
+                this.result = this.replace(this.timeFormat, '00', '00', '00');
             }
             else {
-                this.result = this.replace(this.timeFormat, "0", "0", "0");
+                this.result = this.replace(this.timeFormat, '0', '0', '0');
             }
         }
         else if (date > 0 && !this.dateDisable) {
             let dataFormat = this.dayFormat;
-            let index = dataFormat.indexOf("{1}");
+            const index = dataFormat.indexOf('{1}');
             if (hours == 0 && index > -1) {
                 dataFormat = dataFormat.substring(0, index);
             }
             let df = dataFormat;
-            if (date > 1 && dataFormat.indexOf("days") < 0) {
-                df = df.replace("day", "days");
+            if (date > 1 && dataFormat.indexOf('days') < 0) {
+                df = df.replace('day', 'days');
             }
             if (date < 2) {
-                df = df.replace("days", "day");
+                df = df.replace('days', 'day');
             }
 
             if (this.zeroize) {
@@ -105,7 +105,7 @@ export default class LabelTime extends Label {
 
     /** 个位数的时间数据将字符串补位 */
     private coverString(value: number) {
-        if (value < 10) return "0" + value;
+        if (value < 10) return '0' + value;
         return value.toString();
     }
 

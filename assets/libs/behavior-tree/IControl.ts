@@ -14,7 +14,7 @@ export interface IControl {
 
     /** 处理行为逻辑 */
     run(blackboard?: any): void;
-    
+
     /** 正在处理中 */
     running(blackboard?: any): void;
 }

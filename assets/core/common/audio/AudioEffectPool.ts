@@ -1,9 +1,9 @@
-import { AudioClip, Node, NodePool } from "cc";
-import { oops } from "../../Oops";
-import { resLoader } from "../loader/ResLoader";
-import { AudioEffect } from "./AudioEffect";
-import { AudioEffectType } from "./AudioEnum";
-import { IAudioData, IAudioParams } from "./IAudio";
+import { AudioClip, Node, NodePool } from 'cc';
+import { oops } from '../../Oops';
+import { resLoader } from '../loader/ResLoader';
+import { AudioEffect } from './AudioEffect';
+import { AudioEffectType } from './AudioEnum';
+import type { IAudioData, IAudioParams } from './IAudio';
 
 /** 音乐效缓冲编号最大值 */
 const AE_ID_MAX = 30000;
@@ -21,7 +21,7 @@ export class AudioEffectPool {
     /** 外网远程资源记录(地址、音效对象) */
     private res_remote: Map<string, AudioClip> = new Map();
 
-    private _aeId: number = 0;
+    private _aeId = 0;
     /** 获取请求唯一编号 */
     private getAeId() {
         if (this._aeId == AE_ID_MAX) this._aeId = 1;
@@ -31,7 +31,7 @@ export class AudioEffectPool {
 
     /**
      * 注册音效类型
-     * @param type 
+     * @param type
      */
     register(type: string) {
         this.data[type] = { switch: true, volume: 1 };
@@ -43,7 +43,7 @@ export class AudioEffectPool {
      * @returns         音效开关
      */
     getSwitch(type: string = AudioEffectType.Effect) {
-        let iad = this.data[type];
+        const iad = this.data[type];
         if (iad == null) console.error(`类型为【${type}】的音效配置不存在`);
         return iad.switch;
     }
@@ -53,7 +53,7 @@ export class AudioEffectPool {
      * @param value     音效开关
      */
     setSwitch(value: boolean, type: string = AudioEffectType.Effect) {
-        let iad = this.data[type];
+        const iad = this.data[type];
         if (iad == null) console.error(`类型为【${type}】的音效配置不存在`);
         iad.switch = value;
 
@@ -66,7 +66,7 @@ export class AudioEffectPool {
      * @returns         音效音量
      */
     getVolume(type: string = AudioEffectType.Effect) {
-        let iad = this.data[type];
+        const iad = this.data[type];
         if (iad == null) console.error(`类型为【${type}】的音效配置不存在`);
         return iad.volume;
     }
@@ -77,18 +77,18 @@ export class AudioEffectPool {
      * @param type      音效类型
      */
     setVolume(value: number, type: string = AudioEffectType.Effect) {
-        let iad = this.data[type];
+        const iad = this.data[type];
         if (iad == null) console.error(`类型为【${type}】的音效配置不存在`);
         iad.volume = value;
 
-        this.effects.forEach(ac => ac.volume = value);
+        this.effects.forEach((ac) => ac.volume = value);
     }
 
     /**
      * 加载与播放音效
      * @param path               音效资源地址与音效资源
      * @param params             音效附加参数
-     * @returns 
+     * @returns
      */
     async loadAndPlay(path: string | AudioClip, params?: IAudioParams): Promise<AudioEffect> {
         return new Promise(async (resolve, reject) => {
@@ -98,7 +98,7 @@ export class AudioEffectPool {
                     bundle: resLoader.defaultBundleName,
                     loop: false,
                     destroy: false
-                }
+                };
             }
             else {
                 if (params.type == null) params.type = AudioEffectType.Effect;
@@ -107,7 +107,7 @@ export class AudioEffectPool {
                 if (params.type == null) params.destroy = false;
             }
 
-            let iad = this.data[params.type!];
+            const iad = this.data[params.type!];
             if (iad == null) console.error(`类型为【${params.type!}】的音效配置不存在`);
 
             if (!iad.switch) {
@@ -117,7 +117,7 @@ export class AudioEffectPool {
 
             if (params.volume == null) params.volume = iad.volume;
 
-            let bundle = params.bundle!;
+            const bundle = params.bundle!;
             let key: string = null!;
             let clip: AudioClip | undefined;
             // 通过预制自动加载的音效资源（音效内存跟随预制体的内存一并释放）
@@ -126,7 +126,7 @@ export class AudioEffectPool {
                 clip = path;
             }
             // 非引擎管理的远程资源加载
-            else if (path.indexOf("http") == 0) {
+            else if (path.indexOf('http') == 0) {
                 key = `${params.type}_${path}`;
                 clip = this.res_remote.get(path);
                 if (clip == null) {
@@ -160,14 +160,14 @@ export class AudioEffectPool {
             }
 
             // 获取音效果播放器播放音乐
-            let aeid: number = -1;
+            let aeid = -1;
             let ae: AudioEffect;
             let node: Node = null!;
             if (this.pool.size() == 0) {
                 aeid = this.getAeId();
-                key += "_" + aeid;
+                key += '_' + aeid;
 
-                node = new Node("AudioEffect");
+                node = new Node('AudioEffect');
                 ae = node.addComponent(AudioEffect);
                 ae.key = key;
                 ae.aeid = aeid;
@@ -217,7 +217,7 @@ export class AudioEffectPool {
      * @param ae      loadAndPlay 方法返回的音效播放器对象
      */
     put(ae: AudioEffect) {
-        let effect = this.effects.get(ae.key);
+        const effect = this.effects.get(ae.key);
         if (effect && effect.clip) {
             effect.reset();
 
@@ -228,7 +228,7 @@ export class AudioEffectPool {
 
     /** 停止播放所有音效 */
     stop() {
-        this.effects.forEach(ae => {
+        this.effects.forEach((ae) => {
             ae.stop();
             this.onAudioEffectPlayComplete(ae);
         });
@@ -237,12 +237,12 @@ export class AudioEffectPool {
 
     /** 恢复所有音效 */
     play() {
-        this.effects.forEach(ae => ae.play());
+        this.effects.forEach((ae) => ae.play());
     }
 
     /** 暂停所有音效 */
     pause() {
-        this.effects.forEach(ae => {
+        this.effects.forEach((ae) => {
             ae.pause();
             this.onAudioEffectPlayComplete(ae);
         });
@@ -266,14 +266,14 @@ export class AudioEffectPool {
         this.pool.clear();
 
         // 释放正在播放的音效对象
-        this.effects.forEach(ae => ae.node.destroy());
+        this.effects.forEach((ae) => ae.node.destroy());
         this.effects.clear();
     }
 
     /** 释放各个资源包中的音效资源 */
     releaseRes() {
         this.res_project.forEach((paths: string[], bundleName: string) => {
-            paths.forEach(path => resLoader.release(path, bundleName));
+            paths.forEach((path) => resLoader.release(path, bundleName));
         });
     }
 

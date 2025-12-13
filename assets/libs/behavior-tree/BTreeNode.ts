@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-07-20 14:04:44
  */
-import { IControl } from './IControl';
+import type { IControl } from './IControl';
 
 /** 行为树节点 */
 export abstract class BTreeNode implements IControl {

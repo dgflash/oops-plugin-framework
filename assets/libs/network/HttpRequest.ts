@@ -4,7 +4,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-09 18:10:50
  */
-import { error, warn } from "cc";
+import { error, warn } from 'cc';
 
 /**
  * 使用流程文档可参考、简化与服务器对接、使用新版API体验，可进入下面地址获取新版本，替换network目录中的内容
@@ -12,20 +12,20 @@ import { error, warn } from "cc";
  */
 
 /** 当前请求地址集合 */
-var urls: any = {};
+const urls: any = {};
 /** 请求参数 */
-var reqparams: any = {};
+const reqparams: any = {};
 
 type HttpCallback = (ret: HttpReturn) => void;
 
 /** 请求事件 */
 export enum HttpEvent {
     /** 断网 */
-    NO_NETWORK = "http_request_no_network",
+    NO_NETWORK = 'http_request_no_network',
     /** 未知错误 */
-    UNKNOWN_ERROR = "http_request_unknown_error",
+    UNKNOWN_ERROR = 'http_request_unknown_error',
     /** 请求超时 */
-    TIMEOUT = "http_request_timout"
+    TIMEOUT = 'http_request_timout'
 }
 
 /**
@@ -33,7 +33,7 @@ export enum HttpEvent {
  */
 export class HttpReturn {
     /** 是否请求成功 */
-    isSucc: boolean = false;
+    isSucc = false;
     /** 请求返回数据 */
     res?: any;
     /** 请求错误数据 */
@@ -43,9 +43,9 @@ export class HttpReturn {
 /** HTTP请求 */
 export class HttpRequest {
     /** 服务器地址 */
-    server: string = "http://127.0.0.1/";
+    server = 'http://127.0.0.1/';
     /** 请求超时时间 */
-    timeout: number = 10000;
+    timeout = 10000;
     /** 自定义请求头信息 */
     private header: Map<string, string> = new Map<string, string>();
 
@@ -71,14 +71,14 @@ export class HttpRequest {
     oops.http.getWithParams(name, complete, param);
      */
     get(name: string, onComplete: HttpCallback, params: any = null) {
-        this.sendRequest(name, params, false, onComplete)
+        this.sendRequest(name, params, false, onComplete);
     }
 
     /**
      * HTTP GET请求
      * @param name                  协议名
      * @param params                查询参数
-     * @example 
+     * @example
     var txt = await oops.http.getAsync(name);
     if (txt.isSucc) {
         console.log(txt.res);
@@ -88,7 +88,7 @@ export class HttpRequest {
         return new Promise((resolve, reject) => {
             this.sendRequest(name, params, false, (ret: HttpReturn) => {
                 resolve(ret);
-            })
+            });
         });
     }
 
@@ -150,7 +150,7 @@ export class HttpRequest {
      * @param name     协议名
      */
     abort(name: string) {
-        var xhr = urls[this.server + name];
+        const xhr = urls[this.server + name];
         if (xhr) {
             xhr.abort();
         }
@@ -162,11 +162,11 @@ export class HttpRequest {
      * @returns 参数字符串
      */
     private getParamString(params: any) {
-        var result = "";
-        for (var name in params) {
-            let data = params[name];
+        let result = '';
+        for (const name in params) {
+            const data = params[name];
             if (data instanceof Object) {
-                for (var key in data)
+                for (const key in data)
                     result += `${key}=${data[key]}&`;
             }
             else {
@@ -176,8 +176,8 @@ export class HttpRequest {
         return result.substring(0, result.length - 1);
     }
 
-    /** 
-     * Http请求 
+    /**
+     * Http请求
      * @param name(string)              请求地址
      * @param params(JSON)              请求参数
      * @param isPost(boolen)            是否为POST方式
@@ -190,14 +190,14 @@ export class HttpRequest {
         isPost: boolean,
         onComplete: HttpCallback,
         responseType?: string,
-        isOpenTimeout: boolean = true) {
+        isOpenTimeout = true) {
         if (name == null || name == '') {
-            error("请求地址不能为空");
+            error('请求地址不能为空');
             return;
         }
 
-        var url: string, newUrl: string, paramsStr: string = "";
-        if (name.toLocaleLowerCase().indexOf("http") == 0) {
+        let url: string, newUrl: string, paramsStr = '';
+        if (name.toLocaleLowerCase().indexOf('http') == 0) {
             url = name;
         }
         else {
@@ -206,10 +206,10 @@ export class HttpRequest {
 
         if (params) {
             paramsStr = this.getParamString(params);
-            if (url.indexOf("?") > -1)
-                newUrl = url + "&" + paramsStr;
+            if (url.indexOf('?') > -1)
+                newUrl = url + '&' + paramsStr;
             else
-                newUrl = url + "?" + paramsStr;
+                newUrl = url + '?' + paramsStr;
         }
         else {
             newUrl = url;
@@ -220,17 +220,17 @@ export class HttpRequest {
             return;
         }
 
-        var xhr = new XMLHttpRequest();
+        const xhr = new XMLHttpRequest();
 
         // 防重复请求功能
         urls[newUrl] = xhr;
         reqparams[newUrl] = paramsStr;
 
         if (isPost) {
-            xhr.open("POST", url);
+            xhr.open('POST', url);
         }
         else {
-            xhr.open("GET", newUrl);
+            xhr.open('GET', newUrl);
         }
 
         // 添加自定义请求头信息
@@ -240,7 +240,7 @@ export class HttpRequest {
         // xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
         // xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8");
 
-        var data: any = {};
+        const data: any = {};
         data.url = url;
         data.params = params;
 
@@ -251,9 +251,9 @@ export class HttpRequest {
                 this.deleteCache(newUrl);
 
                 ret.isSucc = false;
-                ret.err = HttpEvent.TIMEOUT;                // 超时
+                ret.err = HttpEvent.TIMEOUT; // 超时
                 onComplete(data);
-            }
+            };
         }
 
         // 响应结果
@@ -264,20 +264,20 @@ export class HttpRequest {
                 this.deleteCache(newUrl);
 
                 ret.isSucc = false;
-                ret.err = HttpEvent.NO_NETWORK;             // 断网
+                ret.err = HttpEvent.NO_NETWORK; // 断网
                 onComplete(ret);
             }
-        }
+        };
 
         xhr.onerror = () => {
             this.deleteCache(newUrl);
 
             ret.isSucc = false;
             if (xhr.readyState == 0 || xhr.readyState == 1 || xhr.status == 0) {
-                ret.err = HttpEvent.NO_NETWORK;             // 断网
+                ret.err = HttpEvent.NO_NETWORK; // 断网
             }
             else {
-                ret.err = HttpEvent.UNKNOWN_ERROR;          // 未知错误
+                ret.err = HttpEvent.UNKNOWN_ERROR; // 未知错误
             }
 
             onComplete(ret);
@@ -291,7 +291,7 @@ export class HttpRequest {
             if (xhr.status == 200 && onComplete) {
                 ret.isSucc = true;
                 if (responseType == 'arraybuffer') {
-                    xhr.responseType = responseType;        // 加载非文本格式
+                    xhr.responseType = responseType; // 加载非文本格式
                     ret.res = xhr.response;
                 }
                 else {
@@ -302,7 +302,7 @@ export class HttpRequest {
         };
 
         // 发送请求
-        if (params == null || params == "") {
+        if (params == null || params == '') {
             xhr.send();
         }
         else {

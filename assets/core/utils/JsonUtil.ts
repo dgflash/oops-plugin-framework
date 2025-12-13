@@ -5,14 +5,14 @@
  * @LastEditTime: 2023-08-22 15:48:02
  */
 
-import { JsonAsset } from "cc";
-import { ZipLoader } from "db://oops-framework/core/common/loader/ZipLoader";
-import { resLoader } from "../common/loader/ResLoader";
+import { JsonAsset } from 'cc';
+import { ZipLoader } from 'db://oops-framework/core/common/loader/ZipLoader';
+import { resLoader } from '../common/loader/ResLoader';
 
 /** 资源路径 */
-const pathJson: string = "config/game/";
+const pathJson = 'config/game/';
 /** 压缩包资源路径 */
-const pathZip: string = "config/game/game";
+const pathZip = 'config/game/game';
 
 /** 数据缓存 */
 const data: Map<string, any> = new Map();
@@ -20,7 +20,7 @@ const data: Map<string, any> = new Map();
 /** JSON数据表工具 */
 export class JsonUtil {
     /** 是否使用压缩包加载配置表 */
-    static zip: boolean = false;
+    static zip = false;
 
     /**
      * 通知资源名从缓存中获取一个Json数据表
@@ -69,9 +69,9 @@ export class JsonUtil {
     static loadDir(): Promise<void> {
         return new Promise(async (resolve, reject) => {
             if (this.zip) {
-                let zip = await ZipLoader.load(pathZip);
-                for (let key in zip.files) {
-                    let name = key.replace(".json", "");
+                const zip = await ZipLoader.load(pathZip);
+                for (const key in zip.files) {
+                    const name = key.replace('.json', '');
                     data.set(name, ZipLoader.getJson(pathZip, `${name}.json`));
                 }
                 ZipLoader.release(pathZip);
@@ -84,7 +84,7 @@ export class JsonUtil {
                         resolve();
                     }
                     else {
-                        assets.forEach(asset => {
+                        assets.forEach((asset) => {
                             data.set(asset.name, asset.json);
                         });
                         resLoader.releaseDir(pathJson);

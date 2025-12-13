@@ -4,8 +4,9 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 10:22:36
  */
-import { AudioClip, AudioSource, _decorator } from 'cc';
-import { IAudioParams } from './IAudio';
+import type { AudioClip } from 'cc';
+import { AudioSource, _decorator } from 'cc';
+import type { IAudioParams } from './IAudio';
 const { ccclass } = _decorator;
 
 /** 游戏音效 */
@@ -14,11 +15,11 @@ export class AudioEffect extends AudioSource {
     /** 唯一编号 */
     key: string = null!;
     /** 音效编号 */
-    aeid: number = -1;
+    aeid = -1;
     /** 音效果资源路径 */
-    path: string | AudioClip = null!
+    path: string | AudioClip = null!;
     /** 音效参数 */
-    params: IAudioParams = null!
+    params: IAudioParams = null!;
     /** 背景音乐播放完成回调 */
     onComplete: Function | null = null;
 

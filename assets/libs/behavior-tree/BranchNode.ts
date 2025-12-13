@@ -30,7 +30,7 @@ export abstract class BranchNode extends BTreeNode {
     }
 
     run(blackboard?: any) {
-        if (this.children.length == 0) {                        // 没有子任务直接视为执行失败
+        if (this.children.length == 0) { // 没有子任务直接视为执行失败
             this._control.fail();
         }
         else {
@@ -46,7 +46,7 @@ export abstract class BranchNode extends BTreeNode {
 
     /** 执行当前节点逻辑 */
     protected _run(blackboard?: any) {
-        var node = BehaviorTree.getNode(this.children[this._actualTask]);
+        const node = BehaviorTree.getNode(this.children[this._actualTask]);
         this._runningNode = node;
         node.setControl(this);
         node.start(this._blackboard);

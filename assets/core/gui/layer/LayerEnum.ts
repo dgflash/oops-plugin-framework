@@ -1,4 +1,4 @@
-import { UIConfig } from "./UIConfig";
+import type { UIConfig } from './UIConfig';
 
 /** 界面编号 */
 export type Uiid = number | string | UIConfig | Function;
@@ -18,37 +18,37 @@ export enum ScreenAdapterType {
 /** 自定义层类型 */
 export enum LayerCustomType {
     /** 二维游戏层 */
-    Game = "LayerGame",
+    Game = 'LayerGame',
     /** 消息提示层 */
-    Notify = "LayerNotify",
+    Notify = 'LayerNotify',
     /** 新手引导层 */
-    Guide = "LayerGuide"
+    Guide = 'LayerGuide'
 }
 
 /** 界面层类型 */
 export enum LayerType {
     /** 主界面层 */
-    UI = "LayerUI",
+    UI = 'LayerUI',
     /** 弹窗层 */
-    PopUp = "LayerPopUp",
+    PopUp = 'LayerPopUp',
     /** 模式窗口层 */
-    Dialog = "LayerDialog",
+    Dialog = 'LayerDialog',
     /** 系统触发模式窗口层 */
-    System = "LayerSystem",
+    System = 'LayerSystem',
 }
 
 /** 界面层组件类型 */
 export enum LayerTypeCls {
     /** 主界面层 */
-    UI = "UI",
+    UI = 'UI',
     /** 弹窗层 */
-    PopUp = "PopUp",
+    PopUp = 'PopUp',
     /** 模式窗口层 */
-    Dialog = "Dialog",
+    Dialog = 'Dialog',
     /** 消息提示层 */
-    Notify = "Notify",
+    Notify = 'Notify',
     /** 游戏层 */
-    Game = "Game",
+    Game = 'Game',
     /** 自定义节点层 */
-    Node = "Node"
+    Node = 'Node'
 }

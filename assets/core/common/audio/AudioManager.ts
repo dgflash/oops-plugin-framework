@@ -1,11 +1,12 @@
-import { AudioClip, Component } from "cc";
-import { oops } from "../../Oops";
-import { AudioEffect } from "./AudioEffect";
-import { AudioEffectPool } from "./AudioEffectPool";
-import { AudioEffectType } from "./AudioEnum";
-import { AudioMusic } from "./AudioMusic";
-import { IAudioData, IAudioParams } from "./IAudio";
-import { GameStorage } from "db://oops-framework/module/common/GameStorage";
+import type { AudioClip } from 'cc';
+import { Component } from 'cc';
+import { oops } from '../../Oops';
+import type { AudioEffect } from './AudioEffect';
+import { AudioEffectPool } from './AudioEffectPool';
+import { AudioEffectType } from './AudioEnum';
+import { AudioMusic } from './AudioMusic';
+import type { IAudioData, IAudioParams } from './IAudio';
+import { GameStorage } from 'db://oops-framework/module/common/GameStorage';
 
 /**
  * 音频管理
@@ -98,18 +99,18 @@ export class AudioManager extends Component {
             if (typeof value === 'string') {
                 this.data[value] = { switch: true, volume: 1 };
                 switch (value) {
-                    case AudioEffectType.Music:
-                        //@ts-ignore
-                        this.music.data = this.data;
-                        this.music.setSwitch(true);
-                        this.music.setVolume(1);
-                        break;
-                    default:
-                        //@ts-ignore
-                        this.effect.data = this.data;
-                        this.effect.setSwitch(true, value);
-                        this.effect.setVolume(1, value);
-                        break;
+                case AudioEffectType.Music:
+                    //@ts-ignore
+                    this.music.data = this.data;
+                    this.music.setSwitch(true);
+                    this.music.setVolume(1);
+                    break;
+                default:
+                    //@ts-ignore
+                    this.effect.data = this.data;
+                    this.effect.setSwitch(true, value);
+                    this.effect.setVolume(1, value);
+                    break;
                 }
             }
         }

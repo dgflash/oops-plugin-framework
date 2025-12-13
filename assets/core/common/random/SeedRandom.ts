@@ -1,4 +1,4 @@
-import { RandomManager } from "./RandomManager";
+import { RandomManager } from './RandomManager';
 
 /** 伪随机 */
 export class SeedRandom {

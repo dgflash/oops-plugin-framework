@@ -1,7 +1,7 @@
 import { Component, JsonAsset, _decorator } from 'cc';
-import AnimatorController from "./AnimatorController";
-import AnimatorState from "./AnimatorState";
-import { AnimatorStateLogic } from './AnimatorStateLogic';
+import AnimatorController from './AnimatorController';
+import type AnimatorState from './AnimatorState';
+import type { AnimatorStateLogic } from './AnimatorStateLogic';
 
 const { ccclass, property, executionOrder, menu } = _decorator;
 
@@ -36,16 +36,16 @@ export default class AnimatorBase extends Component {
     /** ---------- 后续扩展代码 结束 ---------- */
 
     @property({ type: JsonAsset, tooltip: '状态机json文件' })
-    AssetRawUrl: JsonAsset = null!;
+        AssetRawUrl: JsonAsset = null!;
 
     @property({ tooltip: '是否在start中自动启动状态机' })
-    PlayOnStart: boolean = true;
+        PlayOnStart = true;
 
     @property({ tooltip: '是否在update中自动触发状态机逻辑更新' })
-    AutoUpdate: boolean = true;
+        AutoUpdate = true;
 
     /** 是否初始化 */
-    protected _hasInit: boolean = false;
+    protected _hasInit = false;
     /** 状态机控制 */
     protected _ac: AnimatorController = null!;
 
@@ -57,16 +57,16 @@ export default class AnimatorBase extends Component {
     protected _animationPlayer: AnimationPlayer = null!;
 
     /** 当前状态名 */
-    public get curStateName(): string {
+    get curStateName(): string {
         return this._ac.curState.name;
     }
     /** 当前动画名 */
-    public get curStateMotion(): string {
+    get curStateMotion(): string {
         return this._ac.curState.motion;
     }
 
     /** 获取指定状态 */
-    public getState(name: string): AnimatorState | undefined {
+    getState(name: string): AnimatorState | undefined {
         return this._ac.states.get(name);
     }
 
@@ -77,7 +77,7 @@ export default class AnimatorBase extends Component {
      * - animationPlayer 自定义动画控制
      * @virtual
      */
-    public onInit(...args: Array<Map<string, AnimatorStateLogic> | ((fromState: string, toState: string) => void) | AnimationPlayer>) {
+    onInit(...args: Array<Map<string, AnimatorStateLogic> | ((fromState: string, toState: string) => void) | AnimationPlayer>) {
     }
 
     /**
@@ -112,7 +112,7 @@ export default class AnimatorBase extends Component {
 
         // 更新动画状态逻辑
         if (this._stateLogicMap) {
-            let curLogic = this._stateLogicMap.get(this._ac.curState.name);
+            const curLogic = this._stateLogicMap.get(this._ac.curState.name);
             curLogic && curLogic.onUpdate();
         }
 
@@ -129,7 +129,7 @@ export default class AnimatorBase extends Component {
     /**
      * 手动调用更新
      */
-    public manualUpdate() {
+    manualUpdate() {
         if (this._hasInit && !this.AutoUpdate) {
             this.updateAnimator();
         }
@@ -167,18 +167,18 @@ export default class AnimatorBase extends Component {
     protected scaleTime(scale: number) {
     }
 
-    /** 
+    /**
      * 状态切换时的逻辑（状态机内部方法，不能由外部直接调用）
      */
-    public onStateChange(fromState: AnimatorState, toState: AnimatorState) {
+    onStateChange(fromState: AnimatorState, toState: AnimatorState) {
         this.playAnimation(toState.motion, toState.loop);
 
-        let fromStateName = fromState ? fromState.name : '';
+        const fromStateName = fromState ? fromState.name : '';
 
         if (this._stateLogicMap) {
-            let fromLogic = this._stateLogicMap.get(fromStateName);
+            const fromLogic = this._stateLogicMap.get(fromStateName);
             fromLogic && fromLogic.onExit();
-            let toLogic = this._stateLogicMap.get(toState.name);
+            const toLogic = this._stateLogicMap.get(toState.name);
             toLogic && toLogic.onEntry();
         }
 
@@ -188,49 +188,49 @@ export default class AnimatorBase extends Component {
     /**
      * 设置boolean类型参数的值
      */
-    public setBool(key: string, value: boolean) {
+    setBool(key: string, value: boolean) {
         this._ac.params.setBool(key, value);
     }
 
     /**
      * 获取boolean类型参数的值
      */
-    public getBool(key: string): boolean {
+    getBool(key: string): boolean {
         return this._ac.params.getBool(key) !== 0;
     }
 
     /**
      * 设置number类型参数的值
      */
-    public setNumber(key: string, value: number) {
+    setNumber(key: string, value: number) {
         this._ac.params.setNumber(key, value);
     }
 
     /**
      * 获取number类型参数的值
      */
-    public getNumber(key: string): number {
+    getNumber(key: string): number {
         return this._ac.params.getNumber(key);
     }
 
     /**
      * 设置trigger类型参数的值
      */
-    public setTrigger(key: string) {
+    setTrigger(key: string) {
         this._ac.params.setTrigger(key);
     }
 
     /**
      * 重置trigger类型参数的值
      */
-    public resetTrigger(key: string) {
+    resetTrigger(key: string) {
         this._ac.params.resetTrigger(key);
     }
 
     /**
      * 设置autoTrigger类型参数的值（autoTrigger类型参数不需要主动reset，每次状态机更新结束后会自动reset）
      */
-    public autoTrigger(key: string) {
+    autoTrigger(key: string) {
         this._ac.params.autoTrigger(key);
     }
 
@@ -238,7 +238,7 @@ export default class AnimatorBase extends Component {
      * 无视条件直接跳转状态
      * @param 状态名
      */
-    public play(stateName: string) {
+    play(stateName: string) {
         if (!this._hasInit) {
             return;
         }

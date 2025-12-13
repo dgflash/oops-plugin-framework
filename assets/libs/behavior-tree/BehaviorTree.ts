@@ -1,5 +1,5 @@
 import { BTreeNode } from './BTreeNode';
-import { IControl } from './IControl';
+import type { IControl } from './IControl';
 
 let countUnnamed = 0;
 
@@ -12,7 +12,7 @@ export class BehaviorTree implements IControl {
     /** 当前执行节点 */
     private _current!: BTreeNode;
     /** 是否已开始执行 */
-    private _started: boolean = false;
+    private _started = false;
     /** 外部参数对象 */
     private _blackboard: any;
 

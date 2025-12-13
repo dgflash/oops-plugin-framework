@@ -30,22 +30,22 @@ export class VMCustom extends VMBase {
     @property({
         tooltip: '激活controller,以开启双向绑定，否则只能接收消息',
     })
-    controller: boolean = false;
+        controller = false;
 
     @property({
-        tooltip: "监视对象路径"
+        tooltip: '监视对象路径'
     })
-    watchPath: string = "";
+        watchPath = '';
 
     @property({
         tooltip: '绑定组件的名字'
     })
-    componentName: string = "";
+        componentName = '';
 
     @property({
         tooltip: '组件上需要监听的属性'
     })
-    componentProperty: string = "";
+        componentProperty = '';
 
     @property({
         tooltip: '刷新间隔频率(只影响脏检查的频率)',
@@ -56,7 +56,7 @@ export class VMCustom extends VMBase {
             return this.controller === true;
         }
     })
-    refreshRate: number = 0.1;
+        refreshRate = 0.1;
 
     /** 计时器 */
     private _timer = 0;
@@ -65,7 +65,7 @@ export class VMCustom extends VMBase {
     private _watchComponent: any = null;
 
     /** 是否能监听组件的数据 */
-    private _canWatchComponent: boolean = false;
+    private _canWatchComponent = false;
 
     /** 检查的值 */
     private _oldValue: any = null;
@@ -95,10 +95,10 @@ export class VMCustom extends VMBase {
     checkEditorComponent() {
         if (VMEnv.editor) return;
 
-        let checkArray = COMP_ARRAY_CHECK;
+        const checkArray = COMP_ARRAY_CHECK;
         for (let i = 0; i < checkArray.length; i++) {
             const params = checkArray[i];
-            let comp = this.node.getComponent(params[0] as string);
+            const comp = this.node.getComponent(params[0] as string);
             if (comp) {
                 if (this.componentName == '') this.componentName = params[0] as string;
                 if (this.componentProperty == '') this.componentProperty = params[1] as string;
@@ -111,9 +111,15 @@ export class VMCustom extends VMBase {
 
     checkComponentState() {
         this._canWatchComponent = false;
-        if (!this._watchComponent) { console.error('未设置需要监听的组件'); return; }
-        if (!this.componentProperty) { console.error('未设置需要监听的组件 的属性'); return; }
-        if (this.componentProperty in this._watchComponent === false) { console.error('需要监听的组件的属性不存在'); return; }
+        if (!this._watchComponent) {
+            console.error('未设置需要监听的组件'); return;
+        }
+        if (!this.componentProperty) {
+            console.error('未设置需要监听的组件 的属性'); return;
+        }
+        if (this.componentProperty in this._watchComponent === false) {
+            console.error('需要监听的组件的属性不存在'); return;
+        }
         this._canWatchComponent = true;
     }
 
@@ -123,8 +129,8 @@ export class VMCustom extends VMBase {
 
     setComponentValue(value: any) {
         // 如果遇到 Toggle 组件就调用上面的方法解决
-        if (this.componentName == "cc.Toggle") {
-            this.node.getComponent(Toggle)!.isChecked = value
+        if (this.componentName == 'cc.Toggle') {
+            this.node.getComponent(Toggle)!.isChecked = value;
         }
         else {
             this._watchComponent[this.componentProperty] = value;
@@ -153,7 +159,7 @@ export class VMCustom extends VMBase {
         // 脏检查（组件是否存在，是否被激活）
         if (VMEnv.editor) return;
 
-        //if (this.templateMode == true) return; //todo 模板模式下不能计算  
+        //if (this.templateMode == true) return; //todo 模板模式下不能计算
         if (!this.controller) return;
         if (!this._canWatchComponent || this._watchComponent['enabled'] === false) return;
 
@@ -162,8 +168,8 @@ export class VMCustom extends VMBase {
         if (this._timer < this.refreshRate) return;
         this._timer = 0;
 
-        let oldValue = this._oldValue;
-        let newValue = this.getComponentValue();
+        const oldValue = this._oldValue;
+        const newValue = this.getComponentValue();
 
         if (this._oldValue === newValue) return;
         this._oldValue = this.getComponentValue();

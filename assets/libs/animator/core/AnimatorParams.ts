@@ -1,4 +1,4 @@
-import { ParamType } from "./AnimatorCondition";
+import { ParamType } from './AnimatorCondition';
 
 /**
  * 参数结构
@@ -16,7 +16,7 @@ export default class AnimatorParams {
 
     constructor(dataArr: any[]) {
         dataArr.forEach((data: any) => {
-            let param: Param = {
+            const param: Param = {
                 type: data.type,
                 value: data.init
             };
@@ -24,58 +24,59 @@ export default class AnimatorParams {
         });
     }
 
-    public getParamType(key: string): ParamType {
-        let param: Param = this._paramMap.get(key)!;
+    getParamType(key: string): ParamType {
+        const param: Param = this._paramMap.get(key)!;
         if (param) {
             return param.type;
-        } else {
+        }
+        else {
             return null!;
         }
     }
 
-    public setNumber(key: string, value: number) {
-        let param: Param = this._paramMap.get(key)!;
+    setNumber(key: string, value: number) {
+        const param: Param = this._paramMap.get(key)!;
         if (param && param.type === ParamType.NUMBER) {
             param.value = value;
         }
     }
 
-    public setBool(key: string, value: boolean) {
-        let param: Param = this._paramMap.get(key)!;
+    setBool(key: string, value: boolean) {
+        const param: Param = this._paramMap.get(key)!;
         if (param && param.type === ParamType.BOOLEAN) {
             param.value = value ? 1 : 0;
         }
     }
 
-    public setTrigger(key: string) {
-        let param: Param = this._paramMap.get(key)!;
+    setTrigger(key: string) {
+        const param: Param = this._paramMap.get(key)!;
         if (param && param.type === ParamType.TRIGGER) {
             param.value = 1;
         }
     }
 
-    public resetTrigger(key: string) {
-        let param: Param = this._paramMap.get(key)!;
+    resetTrigger(key: string) {
+        const param: Param = this._paramMap.get(key)!;
         if (param && param.type === ParamType.TRIGGER) {
             param.value = 0;
         }
     }
 
-    public autoTrigger(key: string) {
-        let param: Param = this._paramMap.get(key)!;
+    autoTrigger(key: string) {
+        const param: Param = this._paramMap.get(key)!;
         if (param && param.type === ParamType.AUTO_TRIGGER) {
             param.value = 1;
         }
     }
 
-    public resetAutoTrigger(key: string) {
-        let param: Param = this._paramMap.get(key)!;
+    resetAutoTrigger(key: string) {
+        const param: Param = this._paramMap.get(key)!;
         if (param && param.type === ParamType.AUTO_TRIGGER) {
             param.value = 0;
         }
     }
 
-    public resetAllAutoTrigger() {
+    resetAllAutoTrigger() {
         this._paramMap.forEach((param: Param, key: string) => {
             if (param.type === ParamType.AUTO_TRIGGER) {
                 param.value = 0;
@@ -83,38 +84,42 @@ export default class AnimatorParams {
         });
     }
 
-    public getNumber(key: string): number {
-        let param: Param = this._paramMap.get(key)!;
+    getNumber(key: string): number {
+        const param: Param = this._paramMap.get(key)!;
         if (param && param.type === ParamType.NUMBER) {
             return param.value;
-        } else {
+        }
+        else {
             return 0;
         }
     }
 
-    public getBool(key: string): number {
-        let param: Param = this._paramMap.get(key)!;
+    getBool(key: string): number {
+        const param: Param = this._paramMap.get(key)!;
         if (param && param.type === ParamType.BOOLEAN) {
             return param.value;
-        } else {
+        }
+        else {
             return 0;
         }
     }
 
-    public getTrigger(key: string): number {
-        let param: Param = this._paramMap.get(key)!;
+    getTrigger(key: string): number {
+        const param: Param = this._paramMap.get(key)!;
         if (param && param.type === ParamType.TRIGGER) {
             return param.value;
-        } else {
+        }
+        else {
             return 0;
         }
     }
 
-    public getAutoTrigger(key: string): number {
-        let param: Param = this._paramMap.get(key)!;
+    getAutoTrigger(key: string): number {
+        const param: Param = this._paramMap.get(key)!;
         if (param && param.type === ParamType.AUTO_TRIGGER) {
             return param.value;
-        } else {
+        }
+        else {
             return 0;
         }
     }

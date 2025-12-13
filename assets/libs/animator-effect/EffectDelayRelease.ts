@@ -14,7 +14,7 @@ const { ccclass, property } = _decorator;
 export class EffectDelayRelease extends Component {
     /** 延时释放时间(单位秒) */
     @property
-    public delay: number = 1;
+        delay = 1;
 
     protected onEnable() {
         this.scheduleOnce(this.onDelay, this.delay);

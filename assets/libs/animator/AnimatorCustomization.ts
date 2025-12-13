@@ -1,10 +1,11 @@
-import { _decorator } from "cc";
-import AnimatorBase, { AnimationPlayer } from "./core/AnimatorBase";
-import { AnimatorStateLogic } from "./core/AnimatorStateLogic";
+import { _decorator } from 'cc';
+import type { AnimationPlayer } from './core/AnimatorBase';
+import AnimatorBase from './core/AnimatorBase';
+import type { AnimatorStateLogic } from './core/AnimatorStateLogic';
 
 const { ccclass, property, disallowMultiple, menu, help } = _decorator;
 
-/** 
+/**
  * 自定义动画控制的状态机组件
  */
 @ccclass
@@ -14,7 +15,7 @@ const { ccclass, property, disallowMultiple, menu, help } = _decorator;
 export default class AnimatorCustomization extends AnimatorBase {
     /** 此组件必须主动调用onInit初始化 */
     @property({ override: true, visible: false })
-    PlayOnStart: boolean = false;
+        PlayOnStart = false;
 
     /**
      * 手动初始化状态机，可传入0-3个参数，类型如下
@@ -23,7 +24,7 @@ export default class AnimatorCustomization extends AnimatorBase {
      * - animationPlayer 自定义动画控制
      * @override
      */
-    public onInit(...args: Array<Map<string, AnimatorStateLogic> | ((fromState: string, toState: string) => void) | AnimationPlayer>) {
+    onInit(...args: Array<Map<string, AnimatorStateLogic> | ((fromState: string, toState: string) => void) | AnimationPlayer>) {
         if (this._hasInit) {
             return;
         }

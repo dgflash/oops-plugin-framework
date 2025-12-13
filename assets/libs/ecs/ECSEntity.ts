@@ -1,6 +1,7 @@
-import { ecs } from "./ECS";
-import { ECSMask } from "./ECSMask";
-import { CompCtor, CompType, ECSModel } from "./ECSModel";
+import type { ecs } from './ECS';
+import { ECSMask } from './ECSMask';
+import type { CompCtor, CompType } from './ECSModel';
+import { ECSModel } from './ECSModel';
 
 //#region 辅助方法
 
@@ -10,7 +11,7 @@ import { CompCtor, CompType, ECSModel } from "./ECSModel";
  * @param componentTypeId 组件类型id
  */
 function broadcastCompAddOrRemove(entity: ECSEntity, componentTypeId: number) {
-    let events = ECSModel.compAddOrRemove.get(componentTypeId);
+    const events = ECSModel.compAddOrRemove.get(componentTypeId);
     for (let i = events!.length - 1; i >= 0; i--) {
         events![i](entity);
     }
@@ -29,16 +30,16 @@ function createComp<T extends ecs.IComp>(ctor: CompCtor<T>): T {
     if (!cct) {
         throw Error(`没有找到该组件的构造函数，检查${ctor.compName}是否为不可构造的组件`);
     }
-    let comps = ECSModel.compPools.get(ctor.tid)!;
-    let component = comps.pop() || new (cct as CompCtor<T>);
+    const comps = ECSModel.compPools.get(ctor.tid)!;
+    const component = comps.pop() || new (cct as CompCtor<T>);
     return component as T;
 }
 
 /**
  * 销毁实体
- * 
+ *
  * 缓存销毁的实体，下次新建实体时会优先从缓存中拿
- * @param entity 
+ * @param entity
  */
 function destroyEntity(entity: ECSEntity) {
     if (ECSModel.eid2Entity.has(entity.eid)) {
@@ -60,11 +61,11 @@ function destroyEntity(entity: ECSEntity) {
 /** ECS实体对象 */
 export class ECSEntity {
     /** 实体唯一标识，不要手动修改 */
-    eid: number = -1;
+    eid = -1;
     /** 实体对象名 */
-    name: string = "";
+    name = '';
     /** 实体是否有效 */
-    isValid: boolean = true;
+    isValid = true;
     /** 组件过滤数据 */
     private mask = new ECSMask();
     /** 当前实体身上附加的组件构造函数 */
@@ -111,7 +112,7 @@ export class ECSEntity {
      * 移除子实体
      * @param entity    被移除的实体对象
      * @param isDestroy 被移除的实体是否释放，默认为释放
-     * @returns 
+     * @returns
      */
     removeChild(entity: ECSEntity, isDestroy = true) {
         if (this.childs == null) return;
@@ -123,20 +124,20 @@ export class ECSEntity {
 
     /**
      * 根据组件类动态创建组件，并通知关心的系统。如果实体存在了这个组件，那么会先删除之前的组件然后添加新的
-     * 
+     *
      * 注意：不要直接new Component，new来的Component不会从Component的缓存池拿缓存的数据
      * @param componentTypeId   组件类
      * @param isReAdd           true-表示用户指定这个实体可能已经存在了该组件，那么再次add组件的时候会先移除该组件然后再添加一遍。false-表示不重复添加组件
      */
     add<T extends ecs.IComp>(obj: T): ECSEntity;
     add<T extends ecs.IComp>(ctor: CompType<T>, isReAdd?: boolean): T;
-    add<T extends ecs.IComp>(ctor: CompType<T> | T, isReAdd: boolean = false): T | ECSEntity {
+    add<T extends ecs.IComp>(ctor: CompType<T> | T, isReAdd = false): T | ECSEntity {
         if (typeof ctor === 'function') {
-            let compTid = ctor.tid;
+            const compTid = ctor.tid;
             if (ctor.tid === -1) {
                 throw Error(`【${this.name}】实体【${ctor.compName}】组件未注册`);
             }
-            if (this.compTid2Ctor.has(compTid)) {                               // 判断是否有该组件，如果有则先移除
+            if (this.compTid2Ctor.has(compTid)) { // 判断是否有该组件，如果有则先移除
                 if (isReAdd) {
                     this.remove(ctor);
                 }
@@ -170,8 +171,8 @@ export class ECSEntity {
             return comp;
         }
         else {
-            let tmpCtor = (ctor.constructor as CompCtor<T>);
-            let compTid = tmpCtor.tid;
+            const tmpCtor = (ctor.constructor as CompCtor<T>);
+            const compTid = tmpCtor.tid;
             // console.assert(compTid !== -1 || !compTid, '组件未注册！');
             // console.assert(this.compTid2Ctor.has(compTid), '已存在该组件！');
             if (compTid === -1 || compTid == null) throw Error(`【${this.name}】实体【${tmpCtor.name}】组件未注册`);
@@ -196,10 +197,10 @@ export class ECSEntity {
     /**
      * 批量添加组件
      * @param ctors 组件类
-     * @returns 
+     * @returns
      */
     addComponents<T extends ecs.IComp>(...ctors: CompType<T>[]) {
-        for (let ctor of ctors) {
+        for (const ctor of ctors) {
             this.add(ctor);
         }
         return this;
@@ -221,7 +222,7 @@ export class ECSEntity {
      * @param ctor 组件类
      */
     has(ctor: CompType<ecs.IComp>): boolean {
-        if (typeof ctor == "number") {
+        if (typeof ctor === 'number') {
             return this.mask.has(ctor);
         }
         else {
@@ -236,16 +237,16 @@ export class ECSEntity {
      * 设置该参数为false，这样该组件对象会缓存在实体身上，下次重新添加组件时会将该组件对象添加回来，不会重新从组件缓存
      * 池中拿一个组件来用。
      */
-    remove(ctor: CompType<ecs.IComp>, isRecycle: boolean = true) {
+    remove(ctor: CompType<ecs.IComp>, isRecycle = true) {
         let hasComp = false;
         //@ts-ignore
-        let componentTypeId = ctor.tid;
+        const componentTypeId = ctor.tid;
         //@ts-ignore
-        let compName = ctor.compName;
+        const compName = ctor.compName;
         if (this.mask.has(componentTypeId)) {
             hasComp = true;
             //@ts-ignore
-            let comp = this[ctor.compName];
+            const comp = this[ctor.compName];
             //@ts-ignore
             comp.ent = null;
             if (isRecycle) {
@@ -258,7 +259,7 @@ export class ECSEntity {
                 }
             }
             else {
-                this.compTid2Obj.set(componentTypeId, comp);        // 用于缓存显示对象组件
+                this.compTid2Obj.set(componentTypeId, comp); // 用于缓存显示对象组件
             }
         }
 
@@ -284,7 +285,7 @@ export class ECSEntity {
 
         // 移除模块上所有子模块
         if (this.childs) {
-            this.childs.forEach(e => {
+            this.childs.forEach((e) => {
                 this.removeChild(e);
             });
             this.childs = null!;

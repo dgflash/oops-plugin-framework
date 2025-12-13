@@ -7,15 +7,15 @@
 import { BehaviorTree } from './BehaviorTree';
 import { BTreeNode } from './BTreeNode';
 
-/** 
- * 装饰器是条件语句只能附加在其他节点上并且定义所附加的节点是否执行 
+/**
+ * 装饰器是条件语句只能附加在其他节点上并且定义所附加的节点是否执行
  * 如果装饰器是true 它所在的子树会被执行，如果是false 所在的子树不会被执行
  */
 export class Decorator extends BTreeNode {
     node!: BTreeNode;
 
     constructor(node?: string | BTreeNode) {
-        super()
+        super();
 
         if (node)
             this.node = BehaviorTree.getNode(node);

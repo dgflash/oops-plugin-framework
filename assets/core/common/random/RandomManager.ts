@@ -1,7 +1,7 @@
 /** 引擎 utils.ts 中有一些基础数学方法 */
 
-/** 
- * 随机管理 
+/**
+ * 随机管理
  * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037911&doc_id=2873565
  */
 export class RandomManager {
@@ -31,7 +31,7 @@ export class RandomManager {
      * @param min   最小值
      * @param max   最大值
      */
-    getRandomFloat(min: number = 0, max: number = 1): number {
+    getRandomFloat(min = 0, max = 1): number {
         return this.getRandom() * (max - min) + min;
     }
 
@@ -43,7 +43,7 @@ export class RandomManager {
      * @example
     var min = 1;
     var max = 10;
-    // [min,max) 得到一个两数之间的随机整数,这个值不小于min（如果min不是整数的话，得到一个向上取整的 min），并且小于（但不等于）max  
+    // [min,max) 得到一个两数之间的随机整数,这个值不小于min（如果min不是整数的话，得到一个向上取整的 min），并且小于（但不等于）max
     RandomManager.instance.getRandomInt(min, max, 1);
 
     // [min,max] 得到一个两数之间的随机整数，包括两个数在内,这个值比min大（如果min不是整数，那就不小于比min大的整数），但小于（但不等于）max
@@ -52,16 +52,16 @@ export class RandomManager {
     // (min,max) 得到一个两数之间的随机整数
     RandomManager.instance.getRandomInt(min, max, 3);
      */
-    getRandomInt(min: number, max: number, type: number = 2): number {
+    getRandomInt(min: number, max: number, type = 2): number {
         min = Math.ceil(min);
         max = Math.floor(max);
         switch (type) {
-            case 1: // [min,max) 得到一个两数之间的随机整数,这个值不小于min（如果min不是整数的话，得到一个向上取整的 min），并且小于（但不等于）max  
-                return Math.floor(this.getRandom() * (max - min)) + min;
-            case 2: // [min,max] 得到一个两数之间的随机整数，包括两个数在内,这个值比min大（如果min不是整数，那就不小于比min大的整数），但小于（但不等于）max
-                return Math.floor(this.getRandom() * (max - min + 1)) + min;
-            case 3: // (min,max) 得到一个两数之间的随机整数
-                return Math.floor(this.getRandom() * (max - min - 1)) + min + 1;
+        case 1: // [min,max) 得到一个两数之间的随机整数,这个值不小于min（如果min不是整数的话，得到一个向上取整的 min），并且小于（但不等于）max
+            return Math.floor(this.getRandom() * (max - min)) + min;
+        case 2: // [min,max] 得到一个两数之间的随机整数，包括两个数在内,这个值比min大（如果min不是整数，那就不小于比min大的整数），但小于（但不等于）max
+            return Math.floor(this.getRandom() * (max - min + 1)) + min;
+        case 3: // (min,max) 得到一个两数之间的随机整数
+            return Math.floor(this.getRandom() * (max - min - 1)) + min + 1;
         }
         return 0;
     }
@@ -76,9 +76,9 @@ export class RandomManager {
     console.log("随机的数字", a);
      */
     getRandomByMinMaxList(min: number, max: number, n: number): Array<number> {
-        var result: Array<number> = [];
+        const result: Array<number> = [];
         for (let i = 0; i < n; i++) {
-            result.push(this.getRandomInt(min, max))
+            result.push(this.getRandomInt(min, max));
         }
         return result;
     }
@@ -94,10 +94,10 @@ export class RandomManager {
     console.log("随机的对象", r);
      */
     getRandomByObjectList<T>(objects: Array<T>, n: number): Array<T> {
-        var temp: Array<T> = objects.slice();
-        var result: Array<T> = [];
+        const temp: Array<T> = objects.slice();
+        const result: Array<T> = [];
         for (let i = 0; i < n; i++) {
-            let index = this.getRandomInt(0, temp.length, 1);
+            const index = this.getRandomInt(0, temp.length, 1);
             result.push(temp.splice(index, 1)[0]);
         }
         return result;

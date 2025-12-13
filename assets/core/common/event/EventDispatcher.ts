@@ -4,8 +4,8 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 10:57:01
  */
-import { ListenerFunc } from "./EventMessage";
-import { MessageEventData } from "./MessageManager";
+import type { ListenerFunc } from './EventMessage';
+import { MessageEventData } from './MessageManager';
 
 /* 事件对象基类，继承该类将拥有发送和接送事件的能力 */
 export class EventDispatcher {
@@ -34,8 +34,8 @@ export class EventDispatcher {
         }
     }
 
-    /** 
-     * 触发全局事件 
+    /**
+     * 触发全局事件
      * @param event      事件名
      * @param args       事件参数
      */

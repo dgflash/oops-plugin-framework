@@ -13,7 +13,7 @@ export class MathUtil {
     /**
      * 获得随机方向
      * @param x -1为左，1为右
-     * @returns 
+     * @returns
      */
     static sign(x: number) {
         if (x > 0) {
@@ -46,7 +46,7 @@ export class MathUtil {
             t = 1;
         }
         else if (t < 0) {
-            t = 0
+            t = 0;
         }
 
         return numStart * (1 - t) + (numEnd * t);

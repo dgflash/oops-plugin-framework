@@ -4,17 +4,17 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-08-11 10:27:04
  */
-import {Label, _decorator, error} from "cc";
+import { Label, _decorator } from 'cc';
 
-const {ccclass, property, menu} = _decorator;
+const { ccclass, property, menu } = _decorator;
 
 /** 只能显示数字的标签组件 */
-@ccclass("LabelNumber")
+@ccclass('LabelNumber')
 @menu('OopsFramework/Label/LabelNumber （只显示数字的标签）')
 export default class LabelNumber extends Label {
-    @property({tooltip: "数字"})
-    _num: number = 0;
-    @property({tooltip: "数字"})
+    @property({ tooltip: '数字' })
+        _num = 0;
+    @property({ tooltip: '数字' })
     get num(): number {
         return this._num;
     }
@@ -24,8 +24,8 @@ export default class LabelNumber extends Label {
         this.updateLabel();
     }
 
-    @property({tooltip: "货币符号"})
-    symbol: string = "";
+    @property({ tooltip: '货币符号' })
+        symbol = '';
 
     start() {
         this.updateLabel();

@@ -1,6 +1,6 @@
-import { Node, Vec3 } from "cc";
+import type { Node, Vec3 } from 'cc';
 
-/** 
+/**
  * 界面配置结构体
  * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037986&doc_id=2873565
  * @example

@@ -1,18 +1,19 @@
-import { CCInteger, Component, Node, _decorator } from "cc";
-import { VMEnv } from "../VMEnv";
+import type { Node } from 'cc';
+import { CCInteger, Component, _decorator } from 'cc';
+import { VMEnv } from '../VMEnv';
 
 const { ccclass, property, executeInEditMode, menu } = _decorator;
 
 /** 页面切换 */
 @ccclass
 @executeInEditMode
-@menu("OopsFramework/UI/Switch Page （页面切换）")
+@menu('OopsFramework/UI/Switch Page （页面切换）')
 export class BhvSwitchPage extends Component {
     @property
-    isLoopPage: boolean = false;
+        isLoopPage = false;
 
     @property
-    private _index: number = 0;
+    private _index = 0;
     get index(): number {
         return this._index;
     }
@@ -22,7 +23,7 @@ export class BhvSwitchPage extends Component {
     set index(v: number) {
         if (this.isChanging) return;
         v = Math.round(v);
-        let count = this.node.children.length - 1;
+        const count = this.node.children.length - 1;
 
         if (this.isLoopPage) {
             if (v > count) v = 0;
@@ -43,11 +44,11 @@ export class BhvSwitchPage extends Component {
         }
     }
 
-    private preIndex: number = 0;
+    private preIndex = 0;
 
     //判断是否在 changing 页面状态
 
-    private _isChanging: boolean = false;
+    private _isChanging = false;
     /**只读，是否在changing 的状态 */
     get isChanging(): boolean {
         return this._isChanging;
@@ -60,7 +61,7 @@ export class BhvSwitchPage extends Component {
     private _updateEditorPage(page: number) {
         if (!VMEnv.editor) return;
 
-        let children = this.node.children;
+        const children = this.node.children;
         for (let i = 0; i < children.length; i++) {
             const node = children[i];
             if (i == page) {
@@ -73,13 +74,13 @@ export class BhvSwitchPage extends Component {
     }
 
     private _updatePage(page: number) {
-        let children = this.node.children;
-        let preIndex = this.preIndex;
-        let curIndex = this.index;
+        const children = this.node.children;
+        const preIndex = this.preIndex;
+        const curIndex = this.index;
         if (preIndex === curIndex) return;//没有改变就不进行操作
 
-        let preNode: Node = children[preIndex];//旧节点
-        let showNode: Node = children[curIndex];//新节点
+        const preNode: Node = children[preIndex];//旧节点
+        const showNode: Node = children[curIndex];//新节点
 
         preNode.active = false;
         showNode.active = true;

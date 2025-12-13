@@ -1,11 +1,12 @@
-import { Component, Material, Sprite, _decorator } from 'cc';
+import type { Material } from 'cc';
+import { Component, Sprite, _decorator } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('FlashSprite')
 export default class FlashSprite extends Component {
-    duration: number = 0.5;
-    _median: number = 0;
-    _time: number = 0;
+    duration = 0.5;
+    _median = 0;
+    _time = 0;
 
     _material: Material = null!;
 
@@ -14,7 +15,7 @@ export default class FlashSprite extends Component {
         // 获取材质
         this._material = this.node.getComponent(Sprite)!.getMaterial(0)!;
         // 设置材质对应的属性
-        this._material.setProperty("u_rate", 1);
+        this._material.setProperty('u_rate', 1);
     }
 
     update(dt: number) {
@@ -22,8 +23,8 @@ export default class FlashSprite extends Component {
             this._time -= dt;
 
             this._time = this._time < 0 ? 0 : this._time;
-            let rate = Math.abs(this._time - this._median) * 2 / this.duration;
-            this._material.setProperty("u_rate", rate);
+            const rate = Math.abs(this._time - this._median) * 2 / this.duration;
+            this._material.setProperty('u_rate', rate);
         }
     }
 

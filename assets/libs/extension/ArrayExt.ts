@@ -80,7 +80,7 @@ declare global {
 !Array.prototype.__cc_extended && Object.defineProperties(Array.prototype, {
     remove: {
         value: function (filter: any) {
-            if (typeof (filter) == 'function') {
+            if (typeof (filter) === 'function') {
                 for (let i = this.length - 1; i > -1; --i) {
                     filter(this[i], i, this) && this.splice(i, 1);
                 }
@@ -95,7 +95,7 @@ declare global {
     },
     removeOne: {
         value: function (filter: any) {
-            if (typeof (filter) == 'function') {
+            if (typeof (filter) === 'function') {
                 for (let i = 0; i < this.length; ++i) {
                     if (filter(this[i], i, this)) {
                         this.splice(i, 1);
@@ -116,7 +116,7 @@ declare global {
     },
     random: {
         value: function () {
-            let element = this[Math.floor(Math.random() * this.length)];
+            const element = this[Math.floor(Math.random() * this.length)];
             return element;
         }
     },
@@ -126,7 +126,7 @@ declare global {
             if (index < 0 || index >= length) {
                 return null;
             }
-            let res = this[index];
+            const res = this[index];
             this[index] = this[length - 1];
             this.length = length - 1;
             return res;
@@ -161,16 +161,18 @@ declare global {
             function _max(a: number, b: number) {
                 return a > b ? a : b;
             }
-            if (typeof (mapper) == 'function') {
+            if (typeof (mapper) === 'function') {
                 let max = mapper(this[0], 0, this);
                 for (let i = 1; i < this.length; ++i) {
-                    let temp = mapper(this[i], i, this);
+                    const temp = mapper(this[i], i, this);
                     max = temp > max ? temp : max;
                 }
                 return max;
             }
             else {
-                return this.reduce(function (prev: any, cur: any) { return _max(prev, cur); });
+                return this.reduce((prev: any, cur: any) => {
+                    return _max(prev, cur);
+                });
             }
         }
     },
@@ -182,27 +184,31 @@ declare global {
             function _min(a: number, b: number) {
                 return a < b ? a : b;
             }
-            if (typeof (mapper) == 'function') {
+            if (typeof (mapper) === 'function') {
                 let min = mapper(this[0], 0, this);
                 for (let i = 1; i < this.length; ++i) {
-                    let temp = mapper(this[i], i, this);
+                    const temp = mapper(this[i], i, this);
                     min = temp < min ? temp : min;
                 }
                 return min;
             }
             else {
-                return this.reduce(function (prev: any, cur: any) { return _min(prev, cur); });
+                return this.reduce((prev: any, cur: any) => {
+                    return _min(prev, cur);
+                });
             }
         }
     },
     distinct: {
         value: function () {
-            return this.filter(function (v: any, i: number, arr: any[]) { return arr.indexOf(v) === i; });
+            return this.filter((v: any, i: number, arr: any[]) => {
+                return arr.indexOf(v) === i;
+            });
         }
     },
     filterIndex: {
         value: function (filter: any) {
-            let output = [];
+            const output = [];
             for (let i = 0; i < this.length; ++i) {
                 if (filter(this[i], i, this)) {
                     output.push(i);
@@ -238,14 +244,14 @@ declare global {
     },
     orderBy: {
         value: function () {
-            let mappers = [];
+            const mappers = [];
             for (let _i = 0; _i < arguments.length; _i++) {
                 mappers[_i] = arguments[_i];
             }
-            return this.slice().sort(function (a: any, b: any) {
+            return this.slice().sort((a: any, b: any) => {
                 for (let i = 0; i < mappers.length; ++i) {
-                    let va = mappers[i](a);
-                    let vb = mappers[i](b);
+                    const va = mappers[i](a);
+                    const vb = mappers[i](b);
                     if (va > vb) {
                         return 1;
                     }
@@ -259,14 +265,14 @@ declare global {
     },
     orderByDesc: {
         value: function () {
-            let mappers = [];
+            const mappers = [];
             for (let _i = 0; _i < arguments.length; _i++) {
                 mappers[_i] = arguments[_i];
             }
-            return this.slice().sort(function (a: any, b: any) {
+            return this.slice().sort((a: any, b: any) => {
                 for (let i = 0; i < mappers.length; ++i) {
-                    let va = mappers[i](a);
-                    let vb = mappers[i](b);
+                    const va = mappers[i](a);
+                    const vb = mappers[i](b);
                     if (va > vb) {
                         return -1;
                     }
@@ -282,8 +288,8 @@ declare global {
         value: function (value: any, keyMapper: any) {
             let low = 0, high = this.length - 1;
             while (low <= high) {
-                let mid = ((high + low) / 2) | 0;
-                let midValue = keyMapper ? keyMapper(this[mid]) : this[mid];
+                const mid = ((high + low) / 2) | 0;
+                const midValue = keyMapper ? keyMapper(this[mid]) : this[mid];
                 if (value === midValue) {
                     return mid;
                 }
@@ -299,16 +305,16 @@ declare global {
     },
     binaryInsert: {
         value: function (item: any, keyMapper: any, unique: any) {
-            if (typeof (keyMapper) == 'boolean') {
+            if (typeof (keyMapper) === 'boolean') {
                 unique = keyMapper;
                 keyMapper = undefined;
             }
             let low = 0, high = this.length - 1;
             let mid = NaN;
-            let itemValue = keyMapper ? keyMapper(item) : item;
+            const itemValue = keyMapper ? keyMapper(item) : item;
             while (low <= high) {
                 mid = ((high + low) / 2) | 0;
-                let midValue = keyMapper ? keyMapper(this[mid]) : this[mid];
+                const midValue = keyMapper ? keyMapper(this[mid]) : this[mid];
                 if (itemValue === midValue) {
                     if (unique) {
                         return mid;
@@ -324,14 +330,16 @@ declare global {
                     high = mid - 1;
                 }
             }
-            let index = low > mid ? mid + 1 : mid;
+            const index = low > mid ? mid + 1 : mid;
             this.splice(index, 0, item);
             return index;
         }
     },
     binaryDistinct: {
         value: function (keyMapper: any) {
-            return this.filter(function (v: any, i: number, arr: any[]) { return arr.binarySearch(v, keyMapper) === i; });
+            return this.filter((v: any, i: number, arr: any[]) => {
+                return arr.binarySearch(v, keyMapper) === i;
+            });
         }
     },
     findLast: {
@@ -356,16 +364,16 @@ declare global {
     },
     groupBy: {
         value: function (grouper: any) {
-            let group = this.reduce(function (prev: any, next: any) {
-                let groupKey = grouper(next);
+            const group = this.reduce((prev: any, next: any) => {
+                const groupKey = grouper(next);
                 if (!prev[groupKey]) {
                     prev[groupKey] = [];
                 }
                 prev[groupKey].push(next);
                 return prev;
             }, {});
-            return Object.keys(group).map(function (key) {
-                let arr = group[key];
+            return Object.keys(group).map((key) => {
+                const arr = group[key];
                 arr.key = key;
                 return arr;
             });

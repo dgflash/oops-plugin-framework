@@ -1,5 +1,5 @@
-import {Mat4, Vec3} from "cc";
-import {MathUtil} from "./MathUtil";
+import { Mat4, Vec3 } from 'cc';
+import { MathUtil } from './MathUtil';
 
 /** 向量工具 */
 export class Vec3Util {
@@ -175,7 +175,7 @@ export class Vec3Util {
      */
     static direction(pos1: Vec3, pos2: Vec3): Vec3 {
         const outPos: Vec3 = new Vec3();
-        Vec3.subtract(outPos, pos2, pos1)
+        Vec3.subtract(outPos, pos2, pos1);
         return outPos.normalize();
     }
 
@@ -207,12 +207,13 @@ export class Vec3Util {
     static slerp(from: Vec3, to: Vec3, t: number): Vec3 {
         if (t <= 0) {
             return from;
-        } else if (t >= 1) {
+        }
+        else if (t >= 1) {
             return to;
         }
 
-        var dir: Vec3 = this.rotateTo(from, to, (Vec3.angle(from, to) / Math.PI * 180) * t);
-        var lenght: number = to.length() * t + from.length() * (1 - t);
+        const dir: Vec3 = this.rotateTo(from, to, (Vec3.angle(from, to) / Math.PI * 180) * t);
+        const lenght: number = to.length() * t + from.length() * (1 - t);
 
         return (dir.normalize()).multiplyScalar(lenght);
     }
@@ -229,7 +230,7 @@ export class Vec3Util {
             return to;
         }
 
-        const axis: Vec3 = new Vec3();                 // 获得旋转轴
+        const axis: Vec3 = new Vec3(); // 获得旋转轴
         Vec3.cross(axis, from, to);
         axis.normalize();
 
@@ -254,12 +255,13 @@ export class Vec3Util {
     static bezierOne(t: number, posStart: Vec3, posEnd: Vec3): Vec3 {
         if (t > 1) {
             t = 1;
-        } else if (t < 0) {
-            t = 0
+        }
+        else if (t < 0) {
+            t = 0;
         }
 
-        var pStart: Vec3 = posStart.clone();
-        var pEnd: Vec3 = posEnd.clone();
+        const pStart: Vec3 = posStart.clone();
+        const pEnd: Vec3 = posEnd.clone();
 
         return pStart.multiplyScalar(1 - t).add(pEnd.multiplyScalar(t));
     }
@@ -275,8 +277,9 @@ export class Vec3Util {
     static bezierTwo(t: number, posStart: Vec3, posCon: Vec3, posEnd: Vec3): Vec3 {
         if (t > 1) {
             t = 1;
-        } else if (t < 0) {
-            t = 0
+        }
+        else if (t < 0) {
+            t = 0;
         }
 
         const n = (1 - t);
@@ -307,8 +310,9 @@ export class Vec3Util {
     static bezierThree(t: number, posStart: Vec3, posCon1: Vec3, posCon2: Vec3, posEnd: Vec3): Vec3 {
         if (t > 1) {
             t = 1;
-        } else if (t < 0) {
-            t = 0
+        }
+        else if (t < 0) {
+            t = 0;
         }
 
         const n = (1 - t);

@@ -5,10 +5,10 @@ const { ccclass, property } = _decorator;
 @ccclass('RtToModel')
 export class RtToModel extends Component {
     @property(Camera)
-    camara: Camera = null!;
+        camara: Camera = null!;
 
     @property(MeshRenderer)
-    model: MeshRenderer = null!;
+        model: MeshRenderer = null!;
 
     private rt: RenderTexture = new RenderTexture();
 

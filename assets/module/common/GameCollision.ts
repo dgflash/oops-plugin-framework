@@ -4,7 +4,8 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 09:45:41
  */
-import { _decorator, ccenum, Collider, Component, ICollisionEvent, ITriggerEvent } from "cc";
+import type { ICollisionEvent, ITriggerEvent } from 'cc';
+import { _decorator, ccenum, Collider, Component } from 'cc';
 
 const { ccclass, property } = _decorator;
 
@@ -19,12 +20,12 @@ export enum CollisionType {
 }
 ccenum(CollisionType);
 
-const Event_TriggerEnter = "onTriggerEnter";
-const Event_TriggerStay = "onTriggerStay";
-const Event_TriggerExit = "onTriggerExit";
-const Event_CollisionEnter = "onCollisionEnter";
-const Event_CollisionStay = "onCollisionStay";
-const Event_CollisionExit = "onCollisionExit";
+const Event_TriggerEnter = 'onTriggerEnter';
+const Event_TriggerStay = 'onTriggerStay';
+const Event_TriggerExit = 'onTriggerExit';
+const Event_CollisionEnter = 'onCollisionEnter';
+const Event_CollisionStay = 'onCollisionStay';
+const Event_CollisionExit = 'onCollisionExit';
 
 /** 碰撞器与触发器 */
 @ccclass('GameCollision')
@@ -32,7 +33,7 @@ export class GameCollision extends Component {
     protected collider: Collider = null!;
 
     @property({ type: CollisionType, tooltip: '碰撞物体类型' })
-    type: CollisionType = CollisionType.Ballistic;
+        type: CollisionType = CollisionType.Ballistic;
 
     onLoad() {
         this.collider = this.getComponent(Collider)!;
@@ -50,15 +51,15 @@ export class GameCollision extends Component {
 
     private onTrigger(event: ITriggerEvent) {
         switch (event.type) {
-            case Event_TriggerEnter:
-                this.onTriggerEnter(event);
-                break;
-            case Event_TriggerStay:
-                this.onTriggerStay(event);
-                break;
-            case Event_TriggerExit:
-                this.onTriggerExit(event);
-                break;
+        case Event_TriggerEnter:
+            this.onTriggerEnter(event);
+            break;
+        case Event_TriggerStay:
+            this.onTriggerStay(event);
+            break;
+        case Event_TriggerExit:
+            this.onTriggerExit(event);
+            break;
         }
     }
 
@@ -68,15 +69,15 @@ export class GameCollision extends Component {
 
     private onCollision(event: ICollisionEvent) {
         switch (event.type) {
-            case Event_CollisionEnter:
-                this.onCollisionEnter(event);
-                break;
-            case Event_CollisionStay:
-                this.onCollisionStay(event);
-                break;
-            case Event_CollisionExit:
-                this.onCollisionExit(event);
-                break;
+        case Event_CollisionEnter:
+            this.onCollisionEnter(event);
+            break;
+        case Event_CollisionStay:
+            this.onCollisionStay(event);
+            break;
+        case Event_CollisionExit:
+            this.onCollisionExit(event);
+            break;
         }
     }
 

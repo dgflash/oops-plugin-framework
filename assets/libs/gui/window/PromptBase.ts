@@ -1,17 +1,17 @@
-import { _decorator } from "cc";
-import { GameComponent } from "db://oops-framework/module/common/GameComponent";
-import { LanguageLabel } from "../language/LanguageLabel";
+import { _decorator } from 'cc';
+import { GameComponent } from 'db://oops-framework/module/common/GameComponent';
+import { LanguageLabel } from '../language/LanguageLabel';
 
 const { ccclass, property } = _decorator;
 
-/** 
+/**
  * 基础提示窗口
  * 1. 自定义提示标题、按钮名
  * 2. 自定义确认、取消事件回调
  * 3. 自定义提示内容
  * 4. 支持文本多语言
  */
-@ccclass("PromptBase")
+@ccclass('PromptBase')
 export class PromptBase extends GameComponent {
     /** 窗口标题多语言组件 */
     @property(LanguageLabel)
@@ -34,7 +34,7 @@ export class PromptBase extends GameComponent {
 
     /**
      * 窗口打开事件
-     * @param params 参数 
+     * @param params 参数
      * {
      *     title:      标题
      *     content:    内容
@@ -49,11 +49,11 @@ export class PromptBase extends GameComponent {
         this.config = params;
         if (this.config == null) return false;
 
-        this.labTitle.dataID = this.config.title;                                           // 窗口标题
-        this.labContent.dataID = this.config.content;                                       // 提示内容
-        this.labOk.dataID = this.config.okWord;                                             // 确定按钮文字
+        this.labTitle.dataID = this.config.title; // 窗口标题
+        this.labContent.dataID = this.config.content; // 提示内容
+        this.labOk.dataID = this.config.okWord; // 确定按钮文字
         if (this.labCancel) {
-            this.labCancel.dataID = this.config.cancelWord || "";                           // 取消按钮文字
+            this.labCancel.dataID = this.config.cancelWord || ''; // 取消按钮文字
             this.labCancel.node.parent!.active = this.config.needCancel || false;
         }
         this.node.active = true;
@@ -65,14 +65,14 @@ export class PromptBase extends GameComponent {
     }
 
     private btnOk() {
-        if (typeof this.config.onOk == "function") {
+        if (typeof this.config.onOk === 'function') {
             this.config.onOk();
         }
         this.remove();
     }
 
     private btnCancel() {
-        if (typeof this.config.onCancel == "function") {
+        if (typeof this.config.onCancel === 'function') {
             this.config.onCancel();
         }
         this.remove();

@@ -3,7 +3,8 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 14:39:03
  */
-import { __private, native, sys } from "cc";
+import type { __private } from 'cc';
+import { native, sys } from 'cc';
 
 /** 平台数据 */
 export class PlatformUtil {
@@ -31,7 +32,7 @@ export class PlatformUtil {
             native.copyTextToClipboard(text);
         }
         else {
-            await navigator.clipboard.writeText(text)
+            await navigator.clipboard.writeText(text);
         }
     }
 }

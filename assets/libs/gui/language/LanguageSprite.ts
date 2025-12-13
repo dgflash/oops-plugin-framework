@@ -4,22 +4,23 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-09-02 10:04:57
  */
-import { CCString, Component, Size, Sprite, SpriteFrame, UITransform, _decorator } from "cc";
-import { EDITOR } from "cc/env";
-import { resLoader } from "../../../core/common/loader/ResLoader";
-import { LanguageData } from "./LanguageData";
+import type { Size } from 'cc';
+import { CCString, Component, Sprite, SpriteFrame, UITransform, _decorator } from 'cc';
+import { EDITOR } from 'cc/env';
+import { resLoader } from '../../../core/common/loader/ResLoader';
+import { LanguageData } from './LanguageData';
 
 const { ccclass, property, menu } = _decorator;
 
 /** 图片多语言 */
-@ccclass("LanguageSprite")
+@ccclass('LanguageSprite')
 @menu('OopsFramework/Language/LanguageSprite （图片多语言）')
 export class LanguageSprite extends Component {
     @property({ serializable: true })
-    private _dataID: string = "";
+    private _dataID = '';
     @property({ type: CCString, serializable: true })
     get dataID(): string {
-        return this._dataID || "";
+        return this._dataID || '';
     }
     set dataID(value: string) {
         this._dataID = value;
@@ -29,9 +30,9 @@ export class LanguageSprite extends Component {
     }
 
     @property({
-        tooltip: "是否设置为图片原始资源大小"
+        tooltip: '是否设置为图片原始资源大小'
     })
-    private isRawSize: boolean = true;
+    private isRawSize = true;
 
     start() {
         this.updateSprite();
@@ -44,21 +45,21 @@ export class LanguageSprite extends Component {
 
     private updateSprite() {
         // 获取语言标记
-        let path = `language/texture/${LanguageData.current}/${this.dataID}/spriteFrame`;
-        let res: SpriteFrame | null = resLoader.get(path, SpriteFrame);
+        const path = `language/texture/${LanguageData.current}/${this.dataID}/spriteFrame`;
+        const res: SpriteFrame | null = resLoader.get(path, SpriteFrame);
         if (res) {
-            let spcomp: Sprite = this.getComponent(Sprite)!;
+            const spcomp: Sprite = this.getComponent(Sprite)!;
             spcomp.spriteFrame = res;
 
             /** 修改节点为原始图片资源大小 */
             if (this.isRawSize) {
                 //@ts-ignore
-                let rawSize = res._originalSize as Size;
+                const rawSize = res._originalSize as Size;
                 spcomp.getComponent(UITransform)?.setContentSize(rawSize);
             }
         }
         else {
-            console.error("[LanguageSprite] 资源不存在 " + path);
+            console.error('[LanguageSprite] 资源不存在 ' + path);
         }
     }
 }

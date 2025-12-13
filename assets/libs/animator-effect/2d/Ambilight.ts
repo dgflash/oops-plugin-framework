@@ -1,12 +1,13 @@
 
-import { CCInteger, Component, Material, Sprite, _decorator } from 'cc';
+import type { Material } from 'cc';
+import { CCInteger, Component, Sprite, _decorator } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('Ambilight')
 /** 流光效果 */
 export class Ambilight extends Component {
     @property
-    _max: number = 1;
+        _max = 1;
     @property(CCInteger)
     get max(): number {
         return this._max;

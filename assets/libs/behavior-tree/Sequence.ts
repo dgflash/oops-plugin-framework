@@ -5,9 +5,9 @@
  * @LastEditTime: 2022-07-20 14:05:22
  */
 import { BranchNode } from './BranchNode';
-import { BTreeNode } from './BTreeNode';
+import type { BTreeNode } from './BTreeNode';
 
-/** 
+/**
  * 逻辑与关系
  * 只要有一个子节点返回false，则停止执行其它子节点，并且Sequence返回false。如果所有子节点都返回true，则Sequence返回true。
  */
