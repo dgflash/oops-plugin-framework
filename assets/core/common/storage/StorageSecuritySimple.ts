@@ -8,6 +8,7 @@ import type { IStorageSecurity } from './StorageManager';
  *    StorageSecurityCrypto.ts
  *    EncryptUtil.ts
  *    package.json 中的crypto依赖减小包体
+ * 3、使用异或加密算法，跨平台兼容性好
  *
  * 缺点：
  * 1、加密强度小
@@ -22,24 +23,35 @@ export class StorageSecuritySimple implements IStorageSecurity {
     }
 
     /**
-     * 加密字符串
+     * 异或加密字符串
+     * 使用异或算法可以避免不同平台上字符编码差异导致的解密问题
      */
     encrypt(data: string): string {
         let encryptedText = '';
+        const keyLength = this.secretkey.length;
+        
         for (let i = 0; i < data.length; i++) {
-            const charCode = data.charCodeAt(i);
-            encryptedText += String.fromCharCode(charCode + this.secretkey.length);
+            const keyChar = this.secretkey.charCodeAt(i % keyLength);
+            const dataChar = data.charCodeAt(i);
+            encryptedText += ('00' + (dataChar ^ keyChar).toString(16)).slice(-2);
         }
+        
         return encryptedText;
     }
 
-    /** 解密字符串 */
+    /**
+     * 异或解密字符串
+     */
     decrypt(encryptedData: string): string {
         let decryptedText = '';
-        for (let i = 0; i < encryptedData.length; i++) {
-            const charCode = encryptedData.charCodeAt(i);
-            decryptedText += String.fromCharCode(charCode - this.secretkey.length);
+        const keyLength = this.secretkey.length;
+        
+        for (let i = 0; i < encryptedData.length; i += 2) {
+            const keyChar = this.secretkey.charCodeAt((i / 2) % keyLength);
+            const encryptedChar = parseInt(encryptedData.slice(i, i + 2), 16);
+            decryptedText += String.fromCharCode(encryptedChar ^ keyChar);
         }
+        
         return decryptedText;
     }
 
