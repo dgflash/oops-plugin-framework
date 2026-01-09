@@ -20,10 +20,19 @@ export class MoveTranslate extends Component {
 
     private vector: Vec3 = new Vec3();
 
-    update(dt: number) {
+    protected update(dt: number) {
         if (this.speed > 0) {
             Vec3.multiplyScalar(this.vector, this.velocity, this.speed * dt);
             this.node.translate(this.vector, Node.NodeSpace.WORLD);
         }
+    }
+
+    /**
+     * 组件销毁时清理资源
+     */
+    protected onDestroy() {
+        // 重置速度，防止意外引用
+        this.velocity = Vec3Util.zero;
+        this.speed = 0;
     }
 }

@@ -1,5 +1,6 @@
 import { ECSComp } from './ECSComp';
 import { ECSEntity } from './ECSEntity';
+import { ECSMask } from './ECSMask';
 import { ECSMatcher } from './ECSMatcher';
 import type { CompCtor, CompType, EntityCtor } from './ECSModel';
 import { ECSModel } from './ECSModel';
@@ -221,6 +222,26 @@ export namespace ecs {
         });
         ECSModel.eid2Entity.clear();
         ECSModel.groups.clear();
+    }
+
+    /**
+     * 清理所有对象池 - 用于释放不再使用的缓存内存
+     * 注意：此操作会清空所有实体池、组件池和 Mask 池，请在确保不再需要这些缓存时调用
+     */
+    export function clearPools() {
+        // 清理实体池
+        ECSModel.entityPool.forEach((pool) => {
+            pool.length = 0;
+        });
+        ECSModel.entityPool.clear();
+
+        // 清理组件池
+        ECSModel.compPools.forEach((pool) => {
+            pool.length = 0;
+        });
+
+        // 清理 Mask 对象池
+        ECSMask.clearPool();
     }
 
     /**

@@ -10,23 +10,26 @@ import type { ECSEntity } from '../../libs/ecs/ECSEntity';
 import type { CompType } from '../../libs/ecs/ECSModel';
 import type { CCBusiness } from './CCBusiness';
 import type { CCView } from './CCView';
-import type { CCViewVM } from './CCViewVM';
 import { GameComponent } from './GameComponent';
 
-export type ECSCtor<T extends ecs.Comp> = __private.__types_globals__Constructor<T> | __private.__types_globals__AbstractedConstructor<T>;
-export type ECSView = CCViewVM<CCEntity> | CCView<CCEntity>;
+type ECSCtor<T extends ecs.Comp> =
+    | __private.__types_globals__Constructor<T>
+    | __private.__types_globals__AbstractedConstructor<T>;
+type ECSView = CCView<CCEntity>;
+type EntityCtor<T extends CCEntity = CCEntity> = new (...args: any[]) => T;
+type BusinessCtor<T extends CCBusiness<CCEntity> = CCBusiness<CCEntity>> = new () => T;
 
 /** ECS 游戏模块实体 */
 export abstract class CCEntity extends ecs.Entity {
     //#region 子模块管理
-    /** 单例子实体 */
-    private singletons: Map<any, ECSEntity> = null!;
+    /** 单例子实体集合（key: 实体类构造函数，value: 实体实例） */
+    private singletons: Map<EntityCtor, ECSEntity> = null!;
 
     /**
      * 批量添加单例子实体
      * @param clss 单例子实体类数组
      */
-    addChildSingletons<T extends CCEntity>(...clss: any[]) {
+    addChildSingletons<T extends CCEntity>(...clss: EntityCtor<T>[]) {
         for (const ctor of clss) {
             this.addChildSingleton<T>(ctor);
         }
@@ -37,7 +40,7 @@ export abstract class CCEntity extends ecs.Entity {
      * @param cls 单例子实体类
      * @returns   单例子实体
      */
-    addChildSingleton<T extends CCEntity>(cls: any): T {
+    addChildSingleton<T extends CCEntity>(cls: EntityCtor<T>): T {
         if (this.singletons == null) this.singletons = new Map();
         if (this.singletons.has(cls)) {
             console.error(`${cls.name} 单例子实体已存在`);
@@ -52,18 +55,28 @@ export abstract class CCEntity extends ecs.Entity {
     /**
      * 获取单例子实体
      * @param cls 单例子实体类
-     * @returns   单例子实体
+     * @returns   单例子实体，不存在则返回 null
      */
-    getChildSingleton<T extends CCEntity>(cls: any): T {
-        return this.singletons.get(cls) as T;
+    getChildSingleton<T extends CCEntity>(cls: EntityCtor<T>): T {
+        if (!this.singletons) return null!;
+        return (this.singletons.get(cls) as T) || null!;
     }
 
-    /** 移除单例子实体 */
-    removeChildSingleton(cls: any) {
+    /**
+     * 移除单例子实体
+     * @param cls 单例子实体类
+     */
+    removeChildSingleton<T extends CCEntity>(cls: EntityCtor<T>) {
+        if (!this.singletons) return;
+
         const entity = this.singletons.get(cls);
         if (entity) {
             this.singletons.delete(cls);
             this.removeChild(entity);
+            // 销毁实体及其资源，避免内存泄漏
+            if (entity && typeof entity.destroy === 'function') {
+                entity.destroy();
+            }
         }
     }
     //#endregion
@@ -76,25 +89,36 @@ export abstract class CCEntity extends ecs.Entity {
      * @param path       显示资源地址
      * @param bundleName 资源包名称
      */
-    addPrefab<T extends ECSView>(ctor: ECSCtor<T>, parent: Node | GameComponent, path: string, bundleName: string = resLoader.defaultBundleName): Promise<Node> {
-        return new Promise(async (resolve, reject) => {
-            let node: Node = null!;
-            // 跟随父节点施放自动释放当前资源
-            if (parent instanceof GameComponent) {
-                node = await parent.createPrefabNode(path, bundleName);
-                const comp = node.getComponent(ctor)!;
-                this.add(comp);
-                node.parent = parent.node;
+    async addPrefab<T extends ECSView>(
+        ctor: ECSCtor<T>,
+        parent: Node | GameComponent,
+        path: string,
+        bundleName: string = resLoader.defaultBundleName
+    ): Promise<Node> {
+        let node: Node;
+
+        // 跟随父节点释放自动释放当前资源
+        if (parent instanceof GameComponent) {
+            node = await parent.createPrefabNode(path, bundleName);
+            const comp = node.getComponent(ctor);
+            if (!comp) {
+                throw new Error(`组件 ${ctor.name} 不存在于预制 ${path} 中`);
             }
-            // 手动内存管理
-            else {
-                node = await ViewUtil.createPrefabNodeAsync(path, bundleName);
-                const comp = node.getComponent(ctor)!;
-                this.add(comp);
-                node.parent = parent;
+            this.add(comp);
+            node.parent = parent.node;
+        }
+        // 手动内存管理
+        else {
+            node = await ViewUtil.createPrefabNodeAsync(path, bundleName);
+            const comp = node.getComponent(ctor);
+            if (!comp) {
+                throw new Error(`组件 ${ctor.name} 不存在于预制 ${path} 中`);
             }
-            resolve(node);
-        });
+            this.add(comp);
+            node.parent = parent;
+        }
+
+        return node;
     }
 
     /**
@@ -103,27 +127,33 @@ export abstract class CCEntity extends ecs.Entity {
      * @param params   界面参数
      * @returns 界面节点
      */
-    addUi<T extends ECSView>(ctor: ECSCtor<T>, params?: UIParam): Promise<Node> {
-        return new Promise<Node>(async (resolve, reject) => {
-            const key = gui.internal.getKey(ctor);
-            if (key) {
-                if (params == null) {
-                    params = { preload: true };
-                }
-                else {
-                    params.preload = true;
-                }
+    async addUi<T extends ECSView>(ctor: ECSCtor<T>, params?: UIParam): Promise<Node> {
+        const key = gui.internal.getKey(ctor);
+        if (!key) {
+            throw new Error(`${ctor.name} 界面组件未使用 gui.register 注册`);
+        }
 
-                const node = await oops.gui.open(key, params);
-                const comp = node.getComponent(ctor) as ecs.Comp;
-                this.add(comp);
-                oops.gui.show(key);
-                resolve(node);
-            }
-            else {
-                console.error(`${ctor.name} 界面组件未使用 gui.register 注册`);
-            }
-        });
+        if (params == null) {
+            params = { preload: true };
+        } 
+        else {
+            params.preload = true;
+        }
+
+        if (oops.gui.has(key)) {
+            console.warn(`${key} 界面已存在`);
+            return oops.gui.get(key);
+        }
+
+        const node = await oops.gui.open(key, params);
+        const comp = node.getComponent(ctor) as ecs.Comp;
+        if (!comp) {
+            throw new Error(`界面节点上未找到组件 ${ctor.name}`);
+        }
+
+        this.add(comp);
+        oops.gui.show(key);
+        return node;
     }
 
     /**
@@ -132,36 +162,44 @@ export abstract class CCEntity extends ecs.Entity {
      */
     removeUi(ctor: CompType<ecs.IComp>) {
         const key = gui.internal.getKey(ctor);
+
         if (key) {
             const node = oops.gui.get(key);
             if (node == null) {
-                console.error(`${key} 界面重复关闭`);
+                console.warn(`${key} 界面不存在或已关闭`);
                 return;
             }
 
             const comp = node.getComponent(LayerUIElement);
             if (comp) {
                 // 处理界面关闭动画播放完成后，移除ECS组件，避免使用到组件实体数据还在动画播放时在使用导致的空对象问题
-                comp.onClose = this.remove.bind(this, ctor);
+                comp.onClose = () => {
+                    try {
+                        this.remove(ctor);
+                    } catch (error) {
+                        console.error(`移除界面组件失败: ${key}`, error);
+                    }
+                };
                 oops.gui.remove(key);
+            } else {
+                // 没有 LayerUIElement，直接移除
+                this.remove(ctor);
             }
-        }
-        else {
+        } else {
             this.remove(ctor);
         }
     }
     //#endregion
 
     //#region 游戏业务层管理
-    /** 模块业务逻辑组件 */
-    private businesss: Map<any, CCBusiness<CCEntity>> = null!;
+    /** 模块业务逻辑组件集合（key: 业务类构造函数，value: 业务实例） */
+    private businesss: Map<BusinessCtor, CCBusiness<CCEntity>> = null!;
 
     /**
-    * 批量添加组件
-    * @param ctors 组件类
-    * @returns
-    */
-    addBusinesss<T extends CCBusiness<CCEntity>>(...clss: any[]) {
+     * 批量添加业务逻辑组件
+     * @param clss 业务逻辑组件类数组
+     */
+    addBusinesss<T extends CCBusiness<CCEntity>>(...clss: BusinessCtor<T>[]) {
         for (const ctor of clss) {
             this.addBusiness<T>(ctor);
         }
@@ -172,7 +210,7 @@ export abstract class CCEntity extends ecs.Entity {
      * @param cls 业务逻辑组件类
      * @returns 业务逻辑组件实例
      */
-    addBusiness<T extends CCBusiness<CCEntity>>(cls: any): T {
+    addBusiness<T extends CCBusiness<CCEntity>>(cls: BusinessCtor<T>): T {
         if (this.businesss == null) this.businesss = new Map();
         if (this.businesss.has(cls)) {
             console.error(`${cls.name} 业务逻辑组件已存在`);
@@ -180,6 +218,7 @@ export abstract class CCEntity extends ecs.Entity {
         }
         const business = new cls();
         business.ent = this;
+        //@ts-ignore
         business.init();
         this.businesss.set(cls, business);
         return business as T;
@@ -188,36 +227,47 @@ export abstract class CCEntity extends ecs.Entity {
     /**
      * 获取业务逻辑组件
      * @param cls 业务逻辑组件类
-     * @returns 业务逻辑组件实例
+     * @returns 业务逻辑组件实例，不存在则返回 null
      */
-    getBusiness<T extends CCBusiness<CCEntity>>(cls: any): T {
-        if (this.businesss == null) return null!;
-        return this.businesss.get(cls) as T;
+    getBusiness<T extends CCBusiness<CCEntity>>(cls: BusinessCtor<T>): T {
+        if (!this.businesss) return null!;
+        return (this.businesss.get(cls) as T) || null!;
     }
 
     /**
      * 移除业务逻辑组件
      * @param cls 业务逻辑组件类
      */
-    removeBusiness(cls: any) {
+    removeBusiness<T extends CCBusiness<CCEntity>>(cls: BusinessCtor<T>) {
         if (this.businesss) {
             const business = this.businesss.get(cls);
-            if (business) this.businesss.delete(cls);
+            if (business) {
+                business.destroy();
+                this.businesss.delete(cls);
+            }
         }
     }
     //#endregion
 
     destroy(): void {
+        // 1. 先销毁所有子实体，避免内存泄漏
         if (this.singletons) {
+            this.singletons.forEach(entity => {
+                if (entity && typeof entity.destroy === 'function') {
+                    entity.destroy();
+                }
+            });
             this.singletons.clear();
             this.singletons = null!;
         }
 
+        // 2. 再销毁所有业务组件
         if (this.businesss) {
-            this.businesss.forEach((business) => business.destroy());
+            this.businesss.forEach(business => business.destroy());
             this.businesss.clear();
             this.businesss = null!;
         }
+
         super.destroy();
     }
 }

@@ -40,7 +40,8 @@ export class Timer {
     }
 
     get progress(): number {
-        return this._elapsedTime / this._step;
+        // 添加零除数检查，避免 NaN
+        return this._step > 0 ? this._elapsedTime / this._step : 0;
     }
 
     /**
@@ -51,25 +52,59 @@ export class Timer {
         this.step = step;
     }
 
-    update(dt: number) {
-        if (this.step <= 0) return false;
+    /**
+     * 更新定时器
+     * @param dt 增量时间（秒）
+     * @returns 如果定时器触发返回 true，否则返回 false
+     */
+    update(dt: number): boolean {
+        // 快速返回，避免不必要的计算
+        if (this._step <= 0) return false;
 
         this._elapsedTime += dt;
 
-        if (this._elapsedTime >= this._step) {
-            this._elapsedTime -= this._step;
-            this.callback?.call(this);
+        // 使用局部变量缓存，减少属性访问
+        const step = this._step;
+        if (this._elapsedTime >= step) {
+            // 修正时间累积误差：当累积时间远大于步长时，使用取模运算
+            // 避免长时间运行后的精度损失
+            if (this._elapsedTime >= step * 2) {
+                this._elapsedTime = this._elapsedTime % step;
+            } 
+            else {
+                this._elapsedTime -= step;
+            }
+            
+            // 优化回调调用，避免可选链和 call 的开销
+            if (this.callback) {
+                this.callback.call(this);
+            }
             return true;
         }
         return false;
     }
 
-    reset() {
+    /**
+     * 重置定时器，清除已累积的时间
+     */
+    reset(): void {
         this._elapsedTime = 0;
     }
 
-    stop() {
+    /**
+     * 停止定时器
+     */
+    stop(): void {
         this._elapsedTime = 0;
-        this.step = -1;
+        this._step = -1;
+    }
+
+    /**
+     * 销毁定时器，释放内存
+     */
+    destroy(): void {
+        this.callback = null;
+        this._elapsedTime = 0;
+        this._step = -1;
     }
 }

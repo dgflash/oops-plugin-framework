@@ -42,15 +42,16 @@ export class LanguagePack {
     }
 
     /** 多语言Excel配置表数据 */
-    private loadTable(lang: string): Promise<void> {
-        return new Promise(async (resolve, reject) => {
+    private async loadTable(lang: string): Promise<void> {
+        try {
             const json = await JsonUtil.load('Language');
             if (json) {
                 LanguageData.language.set(LanguageDataType.Excel, json);
                 Logger.instance.logConfig('config/game/Language', '下载语言包 table 资源');
             }
-            resolve();
-        });
+        } catch (err) {
+            error('[LanguagePack] 加载配置表失败:', err);
+        }
     }
 
     /** 纹理多语言资源 */
@@ -59,7 +60,7 @@ export class LanguagePack {
             const path = `${LanguageData.path_texture}/${lang}`;
             resLoader.loadDir(path, (err: any, assets: any) => {
                 if (err) {
-                    error(err);
+                    error('[LanguagePack] 加载纹理资源失败:', err);
                     resolve();
                     return;
                 }
@@ -70,35 +71,33 @@ export class LanguagePack {
     }
 
     /** Json格式多语言资源 */
-    private loadJson(lang: string): Promise<void> {
-        return new Promise(async (resolve, reject) => {
+    private async loadJson(lang: string): Promise<void> {
+        try {
             const path = `${LanguageData.path_json}/${lang}`;
             const jsonAsset = await resLoader.load(path, JsonAsset);
             if (jsonAsset) {
                 LanguageData.language.set(LanguageDataType.Json, jsonAsset.json);
                 Logger.instance.logConfig(path, '下载语言包 json 资源');
             }
-            else {
-                resolve();
-                return;
-            }
 
+            // 尝试加载字体资源
             const font = await resLoader.load(path, TTFFont);
             if (font) {
                 LanguageData.font = font;
                 Logger.instance.logConfig(path, '下载语言包 ttf 资源');
             }
-            resolve();
-        });
+        } catch (err) {
+            error('[LanguagePack] 加载JSON资源失败:', err);
+        }
     }
 
     /** SPINE动画多语言资源 */
     private loadSpine(lang: string): Promise<void> {
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             const path = `${LanguageData.path_spine}/${lang}`;
             resLoader.loadDir(path, (err: any, assets: any) => {
                 if (err) {
-                    error(err);
+                    error('[LanguagePack] 加载Spine资源失败:', err);
                     resolve();
                     return;
                 }
@@ -113,21 +112,31 @@ export class LanguagePack {
      * @param lang
      */
     releaseLanguageAssets(lang: string) {
-        const langTexture = `${LanguageData.path_texture}/${lang}`;
-        resLoader.releaseDir(langTexture);
+        try {
+            // 释放纹理资源目录
+            const langTexture = `${LanguageData.path_texture}/${lang}`;
+            resLoader.releaseDir(langTexture);
 
-        const langJson = `${LanguageData.path_json}/${lang}`;
-        const json = resLoader.get(langJson, JsonAsset);
-        if (json) {
-            json.decRef();
+            // 释放JSON资源
+            const langJson = `${LanguageData.path_json}/${lang}`;
+            const json = resLoader.get(langJson, JsonAsset);
+            if (json) {
+                json.decRef();
+            }
+
+            // 释放字体资源
+            const font = resLoader.get(langJson, TTFFont);
+            if (font) {
+                font.decRef();
+            }
+
+            // 释放Spine资源目录
+            const langSpine = `${LanguageData.path_spine}/${lang}`;
+            resLoader.releaseDir(langSpine);
+
+            Logger.instance.logConfig(`释放语言包资源: ${lang}`);
+        } catch (err) {
+            error('[LanguagePack] 释放资源失败:', err);
         }
-
-        const font = resLoader.get(langJson, TTFFont);
-        if (font) {
-            font.decRef();
-        }
-
-        const langSpine = `${LanguageData.path_spine}/${lang}`;
-        resLoader.release(langSpine);
     }
 }

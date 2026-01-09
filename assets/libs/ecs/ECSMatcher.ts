@@ -19,14 +19,13 @@ export class ECSMatcher implements ecs.IMatcher {
     private _key: string | null = null;
     get key(): string {
         if (!this._key) {
-            let s = '';
-            for (let i = 0; i < this.rules.length; i++) {
-                s += this.rules[i].getKey();
-                if (i < this.rules.length - 1) {
-                    s += ' && ';
-                }
+            // 使用数组 join 代替字符串拼接，性能更好
+            const keys: string[] = [];
+            const len = this.rules.length;
+            for (let i = 0; i < len; i++) {
+                keys.push(this.rules[i].getKey());
             }
-            this._key = s;
+            this._key = keys.join(' && ');
         }
         return this._key;
     }
@@ -139,10 +138,14 @@ abstract class BaseOf {
     indices: number[] = [];
 
     protected mask = new ECSMask();
+    private _keyCache: string | null = null; // 缓存 key，避免重复生成
 
     constructor(...args: CompType<ecs.IComp>[]) {
         let componentTypeId = -1;
         const len = args.length;
+        // 使用 Set 去重，性能更好
+        const uniqueIds = new Set<number>();
+        
         for (let i = 0; i < len; i++) {
             if (typeof (args[i]) === 'number') {
                 componentTypeId = args[i] as number;
@@ -150,24 +153,23 @@ abstract class BaseOf {
             else {
                 componentTypeId = (args[i] as CompCtor<ecs.IComp>).tid;
             }
-            if (componentTypeId == -1) {
+            if (componentTypeId === -1) {
                 throw Error('存在没有注册的组件！');
             }
             this.mask.set(componentTypeId);
-
-            if (this.indices.indexOf(componentTypeId) < 0) { // 去重
-                this.indices.push(componentTypeId);
-            }
+            uniqueIds.add(componentTypeId);
         }
-        if (len > 1) {
-            this.indices.sort((a, b) => {
-                return a - b;
-            }); // 对组件类型id进行排序，这样关注相同组件的系统就能共用同一个group
-        }
+        
+        // 从 Set 转为排序数组
+        this.indices = Array.from(uniqueIds).sort((a, b) => a - b);
     }
 
     toString(): string {
-        return this.indices.join('-'); // 生成group的key
+        // 使用缓存避免重复生成字符串
+        if (!this._keyCache) {
+            this._keyCache = this.indices.join('-');
+        }
+        return this._keyCache;
     }
 
     abstract getKey(): string;

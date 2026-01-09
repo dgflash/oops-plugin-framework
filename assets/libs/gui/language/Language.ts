@@ -54,7 +54,7 @@ export class LanguageManager {
      * @param callback 多语言资源数据加载完成回调
      */
     setLanguage(language: string, callback?: Function) {
-        if (language == null || language == '') {
+        if (language === null || language === undefined || language === '') {
             language = this._defaultLanguage;
         }
         else {
@@ -63,7 +63,7 @@ export class LanguageManager {
 
         const index = this.languages.indexOf(language);
         if (index < 0) {
-            console.log(`当前不支持【${language}】语言，将自动切换到【${this._defaultLanguage}】语言`);
+            Logger.instance.logConfig(`当前不支持【${language}】语言，将自动切换到【${this._defaultLanguage}】语言`);
             language = this._defaultLanguage;
         }
 
@@ -77,7 +77,10 @@ export class LanguageManager {
             const oldLanguage = LanguageData.current;
             LanguageData.current = language;
             this._languagePack.updateLanguage(language);
-            this._languagePack.releaseLanguageAssets(oldLanguage);
+            // 释放旧语言资源
+            if (oldLanguage && oldLanguage !== language) {
+                this._languagePack.releaseLanguageAssets(oldLanguage);
+            }
             callback && callback();
         });
     }
@@ -109,5 +112,18 @@ export class LanguageManager {
     releaseLanguageAssets(lang: string) {
         lang = lang.toLowerCase();
         this._languagePack.releaseLanguageAssets(lang);
+    }
+
+    /**
+     * 清理所有语言数据，释放内存
+     * 建议在游戏退出或需要释放大量内存时调用
+     */
+    clear() {
+        // 释放当前语言的资源
+        if (LanguageData.current) {
+            this._languagePack.releaseLanguageAssets(LanguageData.current);
+        }
+        // 清理语言数据
+        LanguageData.clear();
     }
 }

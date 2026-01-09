@@ -46,7 +46,7 @@ export class EffectSingleCase {
     }
     set speed(value: number) {
         this._speed = value;
-        this.effects_use.forEach((value: Boolean, key: Node) => {
+        this.effects_use.forEach((value: boolean, key: Node) => {
             this.setSpeed(key);
         });
     }

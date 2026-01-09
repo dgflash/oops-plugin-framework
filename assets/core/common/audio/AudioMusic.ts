@@ -21,8 +21,8 @@ export class AudioMusic extends Node {
 
     private _progress = 0;
     private _isLoading = false;
-    private _nextPath: string = null!;
-    private _nextParams: IAudioParams = null!;
+    private _nextPath: string | null = null;
+    private _nextParams: IAudioParams | null = null;
     private _ae: AudioEffect = null!;
 
     /**
@@ -57,6 +57,7 @@ export class AudioMusic extends Node {
      */
     setVolume(value: number) {
         this.data[AudioEffectType.Music].volume = value;
+        this._ae.volume = value;
     }
 
     /** 获取音乐播放进度 */
@@ -93,47 +94,60 @@ export class AudioMusic extends Node {
     async loadAndPlay(path: string, params?: IAudioParams) {
         if (!this.getSwitch()) return; // 禁止播放音乐
 
-        // 下一个加载的背景音乐资源
+        // 下一个加载的背景音乐资源（避免重复存储，直接覆盖）
         if (this._isLoading) {
             this._nextPath = path;
-            this._nextParams = params!;
+            this._nextParams = params || null;
             return;
         }
 
-        if (params == null) {
-            params = {
-                type: AudioEffectType.Music,
-                bundle: resLoader.defaultBundleName,
-                loop: true,
-                volume: this.getVolume()
-            };
-        }
-        else {
-            if (params.type == null) params.type = AudioEffectType.Music;
-            if (params.bundle == null) params.bundle = resLoader.defaultBundleName;
-            if (params.loop == null) params.loop = true;
-            if (params.volume == null) params.volume = this.getVolume();
-        }
+        // 合并默认参数（减少对象创建）
+        const finalParams: IAudioParams = params ? {
+            type: params.type ?? AudioEffectType.Music,
+            bundle: params.bundle ?? resLoader.defaultBundleName,
+            loop: params.loop ?? true,
+            volume: params.volume ?? this.getVolume(),
+            destroy: params.destroy,
+            onPlayComplete: params.onPlayComplete
+        } : {
+            type: AudioEffectType.Music,
+            bundle: resLoader.defaultBundleName,
+            loop: true,
+            volume: this.getVolume()
+        };
 
         this._isLoading = true;
 
-        let clip: AudioClip = null!;
-        if (path.indexOf('http') == 0) {
+        let clip: AudioClip | null = null;
+        if (path.indexOf('http') === 0) {
             const extension = path.split('.').pop();
             clip = await resLoader.loadRemote<AudioClip>(path, { ext: `.${extension}` });
         }
         else {
-            clip = await resLoader.load(params.bundle!, path, AudioClip);
+            clip = await resLoader.load(finalParams.bundle!, path, AudioClip);
         }
 
         this._isLoading = false;
 
+        // 加载失败处理
+        if (!clip) {
+            console.warn(`音乐资源加载失败: ${path}`);
+            return;
+        }
+
         // 处理等待加载的背景音乐
-        if (this._nextPath != null) {
+        if (this._nextPath !== null) {
+            const nextPath = this._nextPath;
+            const nextParams = this._nextParams;
+            // 立即清空引用，减少内存占用
+            this._nextPath = null;
+            this._nextParams = null;
+            
+            // 释放刚加载的音乐资源（因为有新的音乐要播放）
+            clip.decRef();
+            
             // 加载等待播放的背景音乐
-            this.loadAndPlay(this._nextPath, this._nextParams);
-            this._nextPath = null!;
-            this._nextParams = null!;
+            this.loadAndPlay(nextPath, nextParams || undefined);
         }
         else {
             // 正在播放的时候先关闭
@@ -143,11 +157,11 @@ export class AudioMusic extends Node {
             this.release();
 
             // 播放背景音乐
-            this._ae.params = params;
+            this._ae.params = finalParams;
             this._ae.path = path;
             this._ae.clip = clip;
-            this._ae.loop = params.loop!;
-            this._ae.volume = params.volume!;
+            this._ae.loop = finalParams.loop!;
+            this._ae.volume = finalParams.volume!;
             this._ae.currentTime = 0;
             this._ae.play();
         }
@@ -170,10 +184,19 @@ export class AudioMusic extends Node {
 
     /** 释放当前背景音乐资源 */
     release() {
-        if (this._ae.clip) {
+        if (this._ae && this._ae.clip) {
             this.stop();
             this._ae.clip.decRef();
             this._ae.clip = null;
         }
+    }
+
+    /** 节点销毁时清理所有引用 */
+    onDestroy() {
+        this.release();
+        this._nextPath = null;
+        this._nextParams = null;
+        this._ae = null!;
+        this.data = null!;
     }
 }

@@ -10,7 +10,7 @@ export class BehaviorTree implements IControl {
     /** 根节点 */
     private readonly _root: BTreeNode;
     /** 当前执行节点 */
-    private _current!: BTreeNode;
+    private _current: BTreeNode | null = null;
     /** 是否已开始执行 */
     private _started = false;
     /** 外部参数对象 */
@@ -57,12 +57,23 @@ export class BehaviorTree implements IControl {
     }
 
     success() {
-        this._current.end(this._blackboard);
+        if (this._current) {
+            this._current.end(this._blackboard);
+        }
         this._started = false;
     }
 
     fail() {
-        this._current.end(this._blackboard);
+        if (this._current) {
+            this._current.end(this._blackboard);
+        }
+        this._started = false;
+    }
+
+    /** 清理行为树资源 */
+    destroy() {
+        this._current = null;
+        this._blackboard = null;
         this._started = false;
     }
 
@@ -70,10 +81,22 @@ export class BehaviorTree implements IControl {
 
     static _registeredNodes: Map<string, BTreeNode> = new Map<string, BTreeNode>();
 
+    /** 注册节点 */
     static register(name: string, node: BTreeNode) {
         this._registeredNodes.set(name, node);
     }
 
+    /** 注销节点 */
+    static unregister(name: string) {
+        this._registeredNodes.delete(name);
+    }
+
+    /** 清理所有注册的节点 */
+    static clearAll() {
+        this._registeredNodes.clear();
+    }
+
+    /** 获取节点 */
     static getNode(name: string | BTreeNode): BTreeNode {
         const node = name instanceof BTreeNode ? name : this._registeredNodes.get(name);
         if (!node) {

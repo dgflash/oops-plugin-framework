@@ -1,8 +1,9 @@
-import { Component, EPSILON, RigidBody, Vec3, _decorator } from 'cc';
+import { Component, EPSILON, error, RigidBody, Vec3, _decorator } from 'cc';
 
 const { ccclass, property } = _decorator;
-const v3_0 = new Vec3();
-const v3_1 = new Vec3();
+
+/** 旋转角度阈值，超过此值将降低速度比率 */
+const ROTATION_ANGLE_THRESHOLD = 10;
 
 /**
  * 物理方式移动
@@ -47,6 +48,10 @@ export class MoveRigidBody extends Component {
     private _prevAngleY = 0; // 之前的Y角度值
     private _stateX = 0;
     private _stateZ = 0;
+    
+    /** 临时向量，避免每次创建新对象 */
+    private _tempVec3_0: Vec3 = new Vec3();
+    private _tempVec3_1: Vec3 = new Vec3();
 
     /** 是否着地 */
     get grounded() {
@@ -74,9 +79,15 @@ export class MoveRigidBody extends Component {
         this._stateZ = z;
     }
 
-    start() {
+    protected start() {
         this._rigidBody = this.getComponent(RigidBody)!;
+        if (!this._rigidBody) {
+            error('[MoveRigidBody] 未找到 RigidBody 组件');
+            this.enabled = false;
+            return;
+        }
         this._prevAngleY = this.node.eulerAngles.y;
+        this._curMaxSpeed = this._speed * this._ratio;
     }
 
     /** 刚体停止移动 */
@@ -86,7 +97,11 @@ export class MoveRigidBody extends Component {
         this._rigidBody.clearVelocity(); // 清除移动速度
     }
 
-    update(dt: number) {
+    protected update(dt: number) {
+        if (!this._rigidBody) {
+            return;
+        }
+        
         // 施加重力
         this.applyGravity();
 
@@ -94,57 +109,69 @@ export class MoveRigidBody extends Component {
         this.applyDamping(dt);
 
         // 未落地无法移动
-        if (!this.grounded) return;
+        if (!this.grounded) {
+            return;
+        }
 
         // 施加移动
-        this.applyLinearVelocity(v3_0, 1);
+        this.applyLinearVelocity(this._tempVec3_0, 1);
     }
 
     /** 施加重力 */
     private applyGravity() {
         const g = this.gravity;
         const m = this._rigidBody.mass;
-        v3_1.set(0, m * g, 0);
-        this._rigidBody.applyForce(v3_1);
+        this._tempVec3_1.set(0, m * g, 0);
+        this._rigidBody.applyForce(this._tempVec3_1);
     }
 
     /** 施加阻尼 */
     private applyDamping(dt: number) {
         // 获取线性速度
-        this._rigidBody.getLinearVelocity(v3_1);
+        this._rigidBody.getLinearVelocity(this._tempVec3_1);
 
-        if (v3_1.lengthSqr() > EPSILON) {
-            v3_1.multiplyScalar(Math.pow(1.0 - this.damping, dt));
-            this._rigidBody.setLinearVelocity(v3_1);
+        if (this._tempVec3_1.lengthSqr() > EPSILON) {
+            this._tempVec3_1.multiplyScalar(Math.pow(1.0 - this.damping, dt));
+            this._rigidBody.setLinearVelocity(this._tempVec3_1);
         }
     }
 
     /**
      * 施加移动
      * @param {Vec3} dir        方向
-     * @param {number} speed    移动数度
+     * @param {number} speed    移动速度
      */
     private applyLinearVelocity(dir: Vec3, speed: number) {
         if (this._stateX || this._stateZ) {
-            v3_0.set(this._stateX, 0, this._stateZ);
-            v3_0.normalize();
+            this._tempVec3_0.set(this._stateX, 0, this._stateZ);
+            this._tempVec3_0.normalize();
             // 获取线性速度
-            this._rigidBody.getLinearVelocity(v3_1);
+            this._rigidBody.getLinearVelocity(this._tempVec3_1);
 
-            Vec3.scaleAndAdd(v3_1, v3_1, dir, speed);
+            Vec3.scaleAndAdd(this._tempVec3_1, this._tempVec3_1, dir, speed);
 
             const ms = this._curMaxSpeed;
-            const len = v3_1.lengthSqr();
+            const len = this._tempVec3_1.lengthSqr();
             let ratio = 1;
             if (len > ms) {
-                if (Math.abs(this.node.eulerAngles.y - this._prevAngleY) >= 10) {
+                if (Math.abs(this.node.eulerAngles.y - this._prevAngleY) >= ROTATION_ANGLE_THRESHOLD) {
                     ratio = 2;
                 }
                 this._prevAngleY = this.node.eulerAngles.y;
-                v3_1.normalize();
-                v3_1.multiplyScalar(ms / ratio);
+                this._tempVec3_1.normalize();
+                this._tempVec3_1.multiplyScalar(ms / ratio);
             }
-            this._rigidBody.setLinearVelocity(v3_1);
+            this._rigidBody.setLinearVelocity(this._tempVec3_1);
+        }
+    }
+
+    /**
+     * 组件销毁时清理资源
+     */
+    protected onDestroy() {
+        // 清理速度引用
+        if (this._rigidBody && this._rigidBody.isValid) {
+            this._rigidBody.clearVelocity();
         }
     }
 }

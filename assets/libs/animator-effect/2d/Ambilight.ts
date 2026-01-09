@@ -17,12 +17,19 @@ export class Ambilight extends Component {
     }
 
     private _start = 0;
-    _material !: Material;
+    private _material !: Material;
+    private _sprite !: Sprite;
+
+    onLoad() {
+        // 缓存组件和材质引用，避免每帧查询
+        this._sprite = this.node.getComponent(Sprite)!;
+        if (this._sprite) {
+            this._material = this._sprite.getMaterial(0)!;
+        }
+    }
 
     update(dt: number) {
-        this._material = this.node.getComponent(Sprite)!.getMaterial(0)!;
-
-        if (this.node.active && this._material) {
+        if (this._material) {
             this._setShaderTime(dt);
         }
     }

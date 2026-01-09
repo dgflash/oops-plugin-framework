@@ -5,7 +5,7 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2023-01-19 14:59:50
  */
-import { Component, Node, Vec3, _decorator } from 'cc';
+import { Component, error, Node, Vec3, _decorator } from 'cc';
 import { Timer } from '../../core/common/timer/Timer';
 import { Vec3Util } from '../../core/utils/Vec3Util';
 
@@ -49,38 +49,45 @@ export class MoveTo extends Component {
         this.enabled = true;
     }
 
-    update(dt: number) {
-        let end: Vec3;
+    protected update(dt: number) {
+        let end: Vec3 | null = null;
 
         if (this.speed <= 0) {
-            console.error('移动速度必须要大于零');
+            error('[MoveTo] 移动速度必须要大于零');
+            this.exit();
             return;
         }
 
         if (this.target instanceof Node) {
-            end = this.ns == Node.NodeSpace.WORLD ? this.target.worldPosition : this.target.position;
+            if (!this.target.isValid) {
+                this.exit();
+                return;
+            }
+            end = this.ns === Node.NodeSpace.WORLD ? this.target.worldPosition : this.target.position;
         }
         else {
             end = this.target as Vec3;
         }
 
         // 移动目标节点被释放时
-        if (end == null) {
+        if (end === null) {
             this.exit();
             return;
         }
 
         // 目标移动后，重计算移动方向与移动到目标点的速度
-        if (this.end == null || !this.end.strictEquals(end)) {
+        if (this.end === null || !this.end.strictEquals(end)) {
             let target = end.clone();
             if (this.offsetVector) {
                 target = target.add(this.offsetVector);
             }
 
-            if (this.hasYAxis == false) target.y = 0;
+            if (this.hasYAxis === false) {
+                target.y = 0;
+            }
 
-            // 移动方向与移动数度
-            const start = this.ns == Node.NodeSpace.WORLD ? this.node.worldPosition : this.node.position;
+            // 移动方向与移动速度
+            const start = this.ns === Node.NodeSpace.WORLD ? this.node.worldPosition : this.node.position;
             this.velocity = Vec3Util.sub(target, start).normalize();
 
             // 移动时间与目标偏位置计算
@@ -102,26 +109,32 @@ export class MoveTo extends Component {
 
         if (this.speed > 0) {
             const trans = Vec3Util.mul(this.velocity, this.speed * dt);
-            if (this.ns == Node.NodeSpace.WORLD)
+            if (this.ns === Node.NodeSpace.WORLD) {
                 this.node.worldPosition = Vec3Util.add(this.node.worldPosition, trans);
-            else
+            }
+            else {
                 this.node.position = Vec3Util.add(this.node.position, trans);
+            }
         }
 
         // 移动完成事件
         if (this.timer.update(dt)) {
-            if (this.offset == 0) {
-                if (this.ns == Node.NodeSpace.WORLD)
+            if (this.offset === 0 && this.end) {
+                if (this.ns === Node.NodeSpace.WORLD) {
                     this.node.worldPosition = this.end;
-                else
+                }
+                else {
                     this.node.position = this.end;
+                }
             }
             this.exit();
         }
     }
 
     private exit() {
-        this.onComplete?.call(this);
+        if (this.onComplete) {
+            this.onComplete.call(this);
+        }
         this.enabled = false;
 
         this.target = null;
@@ -136,5 +149,19 @@ export class MoveTo extends Component {
         this.onChange = null;
         this.timer.reset();
         this.end = null;
+    }
+
+    /**
+     * 组件销毁时清理资源
+     */
+    protected onDestroy() {
+        // 清理所有回调引用，防止内存泄漏
+        this.target = null;
+        this.onStart = null;
+        this.onComplete = null;
+        this.onChange = null;
+        this.offsetVector = null;
+        this.end = null;
+        this.timer.reset();
     }
 }

@@ -49,7 +49,9 @@ export default class AnimatorState {
 
         for (let i = 0; i < data.transitions.length; i++) {
             const transition: AnimatorTransition = new AnimatorTransition(data.transitions[i], ac);
-            transition.isValid() && this._transitions.push(transition);
+            if (transition.isValid()) {
+                this._transitions.push(transition);
+            }
         }
     }
 

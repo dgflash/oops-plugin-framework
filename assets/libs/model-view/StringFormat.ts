@@ -1,5 +1,8 @@
 import { LanguageData } from '../gui/language/LanguageData';
 
+// 缓存正则表达式，避免重复创建
+const REGEX_SEP = /(\d)(?=(\d{3})+$)/ig;
+
 /**
  * 数值格式化函数, 通过语义解析自动设置值的范围
  * 1:def(0) // 显示一个默认值
@@ -49,26 +52,41 @@ class StringFormat {
     /** 将数字按分号显示 */
     private sep(value: number) {
         const num = Math.round(value).toString();
-        return num.replace(new RegExp('(\\d)(?=(\\d{3})+$)', 'ig'), '$1,');
+        // 使用缓存的正则表达式
+        return num.replace(REGEX_SEP, '$1,');
     }
 
     /** 将数字按分显示 00:00 显示 （分:秒） */
     private time_ms(value: number) {
-        return new Date(value).format('mm:ss');
+        // 使用数学计算代替 Date 对象创建，性能更好
+        const totalSeconds = Math.floor(value / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 
     /** 将数字按秒显示 00:00:00 显示 （时:分:秒） */
     private time_hms(value: number) {
-        return new Date(value).format('hh:mm:ss');
+        const totalSeconds = Math.floor(value / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 
     /** 将数字按 0:00:00:000 显示 （时:分:秒:毫秒） */
     private time_hmss(value: number) {
-        return new Date(value).format('hh:mm:ss:ms');
+        const totalSeconds = Math.floor(value / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        const ms = value % 1000;
+        return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(ms).padStart(3, '0')}`;
     }
 
     /** 将时间戳显示为详细的内容 */
     private time_stamp(value: number) {
+        // Date 对象在此处是必需的，因为需要格式化完整日期
         return new Date(value).format('yy-mm-dd hh:mm:ss');
     }
 

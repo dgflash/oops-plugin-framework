@@ -20,6 +20,11 @@ export class EffectDelayRelease extends Component {
         this.scheduleOnce(this.onDelay, this.delay);
     }
 
+    protected onDisable() {
+        // 清理定时器，防止组件禁用后仍然执行
+        this.unschedule(this.onDelay);
+    }
+
     private onDelay() {
         EffectSingleCase.instance.put(this.node);
     }

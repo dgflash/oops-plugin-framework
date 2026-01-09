@@ -30,22 +30,23 @@ Date.prototype.format = function (format: string): string {
     const seconds: number = this.getSeconds();
     const milliseconds: number = this.getMilliseconds();
 
+    // 优化：预格式化数字，减少字符串拼接
+    const pad = (n: number): string => n < 10 ? '0' + n : '' + n;
+    
     let r = format
         .replace('yy', year.toString())
-        .replace('MM', (month < 10 ? '0' : '') + month)
-        .replace('dd', (day < 10 ? '0' : '') + day)
-        .replace('hh', (hours < 10 ? '0' : '') + hours)
-        .replace('mm', (minutes < 10 ? '0' : '') + minutes)
-        .replace('ss', (seconds < 10 ? '0' : '') + seconds);
+        .replace('MM', pad(month))
+        .replace('dd', pad(day))
+        .replace('hh', pad(hours))
+        .replace('mm', pad(minutes))
+        .replace('ss', pad(seconds));
 
-    if (milliseconds < 10) {
-        r = r.replace('ms', '00' + milliseconds);
-    }
-    else if (milliseconds < 100) {
-        r = r.replace('ms', '0' + milliseconds);
-    }
-    else {
-        r = r.replace('ms', milliseconds.toString());
+    // 优化：简化毫秒格式化逻辑
+    if (r.includes('ms')) {
+        const ms = milliseconds < 10 ? '00' + milliseconds :
+                    milliseconds < 100 ? '0' + milliseconds :
+                    milliseconds.toString();
+        r = r.replace('ms', ms);
     }
 
     return r;
@@ -56,22 +57,11 @@ Date.prototype.addTime = function (addMillis: number): Date {
 };
 
 Date.prototype.range = function (d1: number | Date, d2: number | Date): boolean {
-    let t1 = -1;
-    let t2 = -1;
-    if (d1 instanceof Date)
-        t1 = d1.getTime();
-    else
-        t1 = d1;
-    if (d2 instanceof Date)
-        t2 = d2.getTime();
-    else
-        t2 = d2;
-
+    // 优化：简化逻辑，减少变量声明
+    const t1 = d1 instanceof Date ? d1.getTime() : d1;
+    const t2 = d2 instanceof Date ? d2.getTime() : d2;
     const now = this.getTime();
-    if (now >= t1 && now < t2) {
-        return true;
-    }
-    return false;
+    return now >= t1 && now < t2;
 };
 
 export { };

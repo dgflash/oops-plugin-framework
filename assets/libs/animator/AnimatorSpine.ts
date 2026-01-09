@@ -19,8 +19,11 @@ export default class AnimatorSpine extends AnimatorBase {
     protected _spine: sp.Skeleton = null!;
     /** 动画完成的回调 */
     protected _completeListenerMap: Map<(entry?: any) => void, any> = new Map();
-    /** 次状态机注册的回调 */
-    protected _secondaryListenerMap: Map<(entry?: any) => void, AnimatorSpineSecondary> = new Map();
+    /** 次状态机注册的回调 - 按trackIndex分组存储，优化性能 */
+    protected _secondaryListenerMap: Map<number, Array<{ cb: (entry?: any) => void, target: AnimatorSpineSecondary }>> = new Map();
+    /** 保存绑定的事件回调，用于清理 */
+    private _boundEventCallback: ((trackEntry: any, event: any) => void) | null = null;
+    private _boundCompleteCallback: ((entry: any) => void) | null = null;
 
     protected start() {
         if (!this.PlayOnStart || this._hasInit) {
@@ -29,8 +32,10 @@ export default class AnimatorSpine extends AnimatorBase {
         this._hasInit = true;
 
         this._spine = this.getComponent(sp.Skeleton)!;
-        this._spine.setEventListener(this.onSpineEvent.bind(this));
-        this._spine.setCompleteListener(this.onSpineComplete.bind(this));
+        this._boundEventCallback = this.onSpineEvent.bind(this);
+        this._boundCompleteCallback = this.onSpineComplete.bind(this);
+        this._spine.setEventListener(this._boundEventCallback);
+        this._spine.setCompleteListener(this._boundCompleteCallback);
 
         if (this.AssetRawUrl !== null) {
             this.initJson(this.AssetRawUrl.json);
@@ -53,8 +58,10 @@ export default class AnimatorSpine extends AnimatorBase {
         this.initArgs(...args);
 
         this._spine = this.getComponent(sp.Skeleton)!;
-        this._spine.setEventListener(this.onSpineEvent.bind(this));
-        this._spine.setCompleteListener(this.onSpineComplete.bind(this));
+        this._boundEventCallback = this.onSpineEvent.bind(this);
+        this._boundCompleteCallback = this.onSpineComplete.bind(this);
+        this._spine.setEventListener(this._boundEventCallback);
+        this._spine.setCompleteListener(this._boundCompleteCallback);
 
         if (this.AssetRawUrl !== null) {
             this.initJson(this.AssetRawUrl.json);
@@ -76,13 +83,29 @@ export default class AnimatorSpine extends AnimatorBase {
     /** ---------- 后续扩展代码 结束 ---------- */
 
     private onSpineComplete(entry: any) {
-        entry.trackIndex === 0 && this.onAnimFinished();
+        const trackIndex = entry.trackIndex;
+
+        if (trackIndex === 0) {
+            this.onAnimFinished();
+        }
+
         this._completeListenerMap.forEach((target, cb) => {
-            target ? cb.call(target, entry) : cb(entry);
+            if (target) {
+                cb.call(target, entry);
+            }
+            else {
+                cb(entry);
+            }
         });
-        this._secondaryListenerMap.forEach((target, cb) => {
-            entry.trackIndex === target.TrackIndex && cb.call(target, entry);
-        });
+
+        // 使用按trackIndex分组的监听器，避免遍历所有监听器
+        const listeners = this._secondaryListenerMap.get(trackIndex);
+        if (listeners) {
+            for (let i = 0; i < listeners.length; i++) {
+                const listener = listeners[i];
+                listener.cb.call(listener.target, entry);
+            }
+        }
     }
 
     /**
@@ -114,7 +137,30 @@ export default class AnimatorSpine extends AnimatorBase {
      * 注册次状态机动画结束的回调（状态机内部方法，不能由外部直接调用）
      */
     addSecondaryListener(cb: (entry?: any) => void, target: AnimatorSpineSecondary) {
-        this._secondaryListenerMap.set(cb, target);
+        const trackIndex = target.TrackIndex;
+        if (!this._secondaryListenerMap.has(trackIndex)) {
+            this._secondaryListenerMap.set(trackIndex, []);
+        }
+        const listeners = this._secondaryListenerMap.get(trackIndex)!;
+        listeners.push({ cb, target });
+    }
+
+    /**
+     * 注销次状态机的监听
+     * @param cb 回调
+     */
+    removeSecondaryListener(cb: (entry?: any) => void) {
+        // 遍历所有trackIndex的监听器数组
+        this._secondaryListenerMap.forEach((listeners, trackIndex) => {
+            const index = listeners.findIndex(listener => listener.cb === cb);
+            if (index !== -1) {
+                listeners.splice(index, 1);
+                // 如果该trackIndex的监听器数组为空，删除该key
+                if (listeners.length === 0) {
+                    this._secondaryListenerMap.delete(trackIndex);
+                }
+            }
+        });
     }
 
     /**
@@ -141,6 +187,27 @@ export default class AnimatorSpine extends AnimatorBase {
      * 清空动画完成的监听
      */
     clearCompleteListener() {
-        this._completeListenerMap.clear;
+        this._completeListenerMap.clear();
+    }
+
+    /**
+     * 组件销毁时清理资源
+     */
+    protected onDestroy() {
+        // 清理spine事件监听器（需要检查spine和其内部状态是否有效）
+        if (this._spine && this._spine.isValid) {
+            // 只有在spine内部状态正常时才清理监听器
+            // 组件销毁时spine可能已经部分清理，直接设置null可能出错
+            this._spine.setEventListener(null!);
+            this._spine.setCompleteListener(null!);
+        }
+
+        // 清理回调引用
+        this._boundEventCallback = null;
+        this._boundCompleteCallback = null;
+
+        // 清空所有监听器
+        this._completeListenerMap.clear();
+        this._secondaryListenerMap.clear();
     }
 }

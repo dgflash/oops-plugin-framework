@@ -61,8 +61,9 @@ export default class AnimatorDragonBones extends AnimatorBase {
      * @param loop 是否循环播放
      */
     protected playAnimation(animName: string, loop: boolean) {
-        if (animName)
+        if (animName) {
             this._dragonBones.playAnimation(animName, loop ? 0 : -1);
+        }
     }
 
     /**
@@ -71,7 +72,18 @@ export default class AnimatorDragonBones extends AnimatorBase {
      * @param scale 缩放倍率
      */
     protected scaleTime(scale: number) {
-        if (scale > 0)
+        if (scale > 0) {
             this._dragonBones.timeScale = scale;
+        }
+    }
+
+    /**
+     * 组件销毁时清理资源
+     */
+    protected onDestroy() {
+        // 清理DragonBones事件监听器
+        if (this._dragonBones) {
+            this._dragonBones.removeEventListener('complete', this.onAnimFinished, this);
+        }
     }
 }

@@ -40,7 +40,7 @@ function getValueFromPath(obj: any, path: string, def?: any, tag: string | null 
  */
 class ViewModel<T> {
     constructor(data: T, tag: string) {
-        new JsonOb(data, this._callback.bind(this));
+        this._jsonOb = new JsonOb(data, this._callback.bind(this));
         this.$data = data;
         this._tag = tag;
     }
@@ -50,27 +50,24 @@ class ViewModel<T> {
     // 索引值用的标签
     private _tag: string | null = null;
 
+    // JsonOb 实例引用，用于销毁时清理
+    private _jsonOb: JsonOb<T> | null = null;
+
     /** 激活状态, 将会通过 director.emit 发送值变动的信号, 适合需要屏蔽的情况 */
     active = true;
 
     /** 是否激活根路径回调通知, 不激活的情况下 只能监听末端路径值来判断是否变化 */
     emitToRootPath = false;
 
-    // 回调函数 请注意 回调的 path 数组是 引用类型，禁止修改
+    // 回调函数
     private _callback(n: any, o: any, path: string[]): void {
         if (this.active == true) {
             const name = VM_EMIT_HEAD + this._tag + '.' + path.join('.');
             if (DEBUG_SHOW_PATH) log('>>', n, o, path);
-            director.emit(name, n, o, [this._tag].concat(path)); // 通知末端路径
+            // 传递路径数组的副本，防止外部修改
+            director.emit(name, n, o, [this._tag, ...path]); // 通知末端路径
 
-            if (this.emitToRootPath) director.emit(VM_EMIT_HEAD + this._tag, n, o, path); // 通知主路径
-
-            // if (path.length >= 2) {
-            //     for (let i = 0; i < path.length - 1; i++) {
-            //         const e = path[i];
-            //         log('中端路径', e);
-            //     }
-            // }
+            if (this.emitToRootPath) director.emit(VM_EMIT_HEAD + this._tag, n, o, path.slice()); // 通知主路径
         }
     }
 
@@ -82,6 +79,18 @@ class ViewModel<T> {
     // 获取路径的值
     getValue(path: string, def?: any): any {
         return getValueFromPath(this.$data, path, def, this._tag);
+    }
+
+    // 销毁 ViewModel，释放内存
+    destroy() {
+        if (this._jsonOb) {
+            this._jsonOb.destroy();
+            this._jsonOb = null;
+        }
+        // @ts-ignore
+        this.$data = null;
+        this._tag = null;
+        this.active = false;
     }
 }
 
@@ -119,7 +128,11 @@ class VMManager {
      * @param tag
      */
     remove(tag: string) {
-        this._mvs.delete(tag);
+        const vm = this._mvs.get(tag);
+        if (vm) {
+            vm.destroy();
+            this._mvs.delete(tag);
+        }
     }
 
     /**
@@ -229,7 +242,7 @@ class VMManager {
     /** 激活所有标签的 VM*/
     active(): void {
         this._mvs.forEach((mv) => {
-            mv.active = false;
+            mv.active = true; // 修复：应该设置为 true
         });
     }
 }

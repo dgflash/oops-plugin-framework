@@ -13,7 +13,7 @@ const { ccclass, property } = _decorator;
 @ccclass('SpineFinishedRelease')
 export class SpineFinishedRelease extends Component {
     @property
-        isDestroy = true;
+    isDestroy = true;
 
     private spine!: sp.Skeleton;
     private resPath: string = null!;
@@ -49,6 +49,18 @@ export class SpineFinishedRelease extends Component {
         }
         else {
             this.node.removeFromParent();
+        }
+    }
+
+    onDestroy() {
+        // 清理 Spine 监听器
+        if (this.spine) {
+            this.spine.setCompleteListener(null!);
+        }
+
+        // 如果是通过代码加载的资源，需要释放
+        if (this.resPath) {
+            oops.res.release(this.resPath);
         }
     }
 }

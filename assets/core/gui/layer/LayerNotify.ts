@@ -86,9 +86,33 @@ export class LayerNotify extends Node {
         };
         toastCom.toast(content, useI18n);
 
-        // 超过3个提示，就施放第一个提示
+        // 超过3个提示，就释放第一个提示
         if (this.notify.children.length > 3) {
             this.notify.children[0].destroy();
         }
+    }
+
+    /** 销毁时释放资源 */
+    onDestroy() {
+        // 清理等待提示节点
+        if (this.wait) {
+            this.wait.destroy();
+            this.wait = null!;
+        }
+        
+        // 清理通知提示节点
+        if (this.notify) {
+            this.notify.destroy();
+            this.notify = null!;
+        }
+        
+        // 清理通知项模板节点
+        if (this.notifyItem) {
+            this.notifyItem.destroy();
+            this.notifyItem = null!;
+        }
+        
+        // 清理事件阻挡组件
+        this.black = null!;
     }
 }

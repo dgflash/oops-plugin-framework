@@ -3,6 +3,9 @@ import type AnimatorBase from './AnimatorBase';
 import AnimatorParams from './AnimatorParams';
 import AnimatorState from './AnimatorState';
 
+/** 最大状态切换次数，防止递归死循环 */
+const MAX_STATE_CHANGE_COUNT = 1000;
+
 /**
  * 状态机控制类
  */
@@ -107,8 +110,8 @@ export default class AnimatorController {
      */
     changeState(stateName: string) {
         this._changeCount++;
-        if (this._changeCount > 1000) {
-            error('[AnimatorController.changeState] error: 状态切换递归调用超过1000次，transition设置可能出错!');
+        if (this._changeCount > MAX_STATE_CHANGE_COUNT) {
+            error(`[AnimatorController.changeState] error: 状态切换递归调用超过${MAX_STATE_CHANGE_COUNT}次，transition设置可能出错!`);
             return;
         }
 

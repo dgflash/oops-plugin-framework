@@ -120,10 +120,17 @@ export class BhvButtonGroup extends Component {
     })
         EventHandler_component = 'VMModify';
 
+    // 缓存创建的 Button 组件，用于销毁时清理
+    private _createdButtons: Button[] = [];
+
     onLoad() {
         this.node.children.forEach((node, nodeIndex) => {
             let comp: Button = node.getComponent(Button)!;
-            if (comp == null) comp = node.addComponent(Button);
+            if (comp == null) {
+                comp = node.addComponent(Button);
+                // 缓存动态创建的按钮组件
+                this._createdButtons.push(comp);
+            }
 
             // 同步属性
 
@@ -157,5 +164,20 @@ export class BhvButtonGroup extends Component {
                 comp.clickEvents.push(hd);
             });
         });
+    }
+
+    /**
+     * 组件销毁时清理内存引用
+     */
+    onDestroy() {
+        // 清理按钮事件
+        this._createdButtons.forEach(button => {
+            if (button && button.clickEvents) {
+                button.clickEvents.length = 0;
+            }
+        });
+        
+        // 清理缓存数组
+        this._createdButtons.length = 0;
     }
 }

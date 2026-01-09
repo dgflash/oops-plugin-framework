@@ -57,7 +57,8 @@ export class LayerDialog extends LayerPopUp {
 
     protected closeUi(state: UIState) {
         super.closeUi(state);
-        setTimeout(this.next.bind(this), 0);
+        // 使用 Promise 微任务代替 setTimeout，性能更好且更可靠
+        Promise.resolve().then(() => this.next());
     }
 
     protected closeBlack() {

@@ -12,6 +12,10 @@ const LABEL_TYPE = {
     CC_EDIT_BOX: 'cc.EditBox'
 };
 
+// 缓存正则表达式，避免重复创建
+const REGEX_ALL = /\{\{(.+?)\}\}/g; // 匹配： 所有的{{value}}
+const REGEX_SINGLE = /\{\{(.+?)\}\}/; // 匹配： {{value}} 中的 value
+
 /**
  *  [VM-Label]
  *  专门处理 Label 相关 的组件，如 ccLabel,ccRichText,ccEditBox
@@ -100,13 +104,11 @@ export default class VMLabel extends VMBase {
 
     /** 解析模板 获取初始格式化字符串格式的信息 */
     parseTemplate() {
-        const regexAll = /\{\{(.+?)\}\}/g; // 匹配： 所有的{{value}}
-        const regex = /\{\{(.+?)\}\}/; // 匹配： {{value}} 中的 value
-        const res = this.originText!.match(regexAll); // 匹配结果数组
+        const res = this.originText!.match(REGEX_ALL); // 匹配结果数组
         if (res == null) return;
         for (let i = 0; i < res.length; i++) {
             const e = res[i];
-            const arr = e.match(regex);
+            const arr = e.match(REGEX_SINGLE);
             const matchName = arr![1];
             // let paramIndex = parseInt(matchName) || 0;
             const matchInfo = matchName.split(':')[1] || '';
@@ -117,19 +119,16 @@ export default class VMLabel extends VMBase {
     /** 获取解析字符串模板后得到的值 */
     getReplaceText() {
         if (!this.originText) return '';
-        const regexAll = /\{\{(.+?)\}\}/g; // 匹配： 所有的{{value}}
-        const regex = /\{\{(.+?)\}\}/; // 匹配： {{value}} 中的 value
-        const res = this.originText.match(regexAll); // 匹配结果数组 [{{value}}，{{value}}，{{value}}]
+        const res = this.originText.match(REGEX_ALL); // 匹配结果数组 [{{value}}，{{value}}，{{value}}]
         if (res == null) return ''; // 未匹配到文本
         let str = this.originText; // 原始字符串模板 "name:{{0}} 或 name:{{0:fix2}}"
 
         for (let i = 0; i < res.length; i++) {
             const e = res[i];
-            let getValue;
-            const arr = e.match(regex); // 匹配到的数组 [{{value}}, value]
+            const arr = e.match(REGEX_SINGLE); // 匹配到的数组 [{{value}}, value]
             const indexNum = parseInt(arr![1] || '0') || 0; // 取出数组的 value 元素 转换成整数
             const format = this.templateFormatArr[i]; // 格式化字符 的 配置参数
-            getValue = this.templateValueArr[indexNum];
+            const getValue = this.templateValueArr[indexNum];
             str = str.replace(e, this.getValueFromFormat(getValue, format));//从路径缓存值获取数据
         }
         return str;
@@ -202,5 +201,16 @@ export default class VMLabel extends VMBase {
         error('没有挂载任何label组件');
 
         return false;
+    }
+
+    /**
+     * 组件销毁时清理内存
+     */
+    onDestroy() {
+        // 清理数组引用
+        this.watchPathArr.length = 0;
+        this.templateValueArr.length = 0;
+        this.templateFormatArr.length = 0;
+        this.originText = null;
     }
 }

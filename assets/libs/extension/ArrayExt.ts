@@ -155,61 +155,63 @@ declare global {
     },
     max: {
         value: function (mapper: any) {
-            if (!this.length) {
+            const len = this.length;
+            if (!len) {
                 return null;
-            }
-            function _max(a: number, b: number) {
-                return a > b ? a : b;
             }
             if (typeof (mapper) === 'function') {
                 let max = mapper(this[0], 0, this);
-                for (let i = 1; i < this.length; ++i) {
+                for (let i = 1; i < len; ++i) {
                     const temp = mapper(this[i], i, this);
-                    max = temp > max ? temp : max;
+                    if (temp > max) max = temp;
                 }
                 return max;
             }
             else {
-                return this.reduce((prev: any, cur: any) => {
-                    return _max(prev, cur);
-                });
+                // 优化：不使用 reduce，直接循环更快
+                let max = this[0];
+                for (let i = 1; i < len; ++i) {
+                    if (this[i] > max) max = this[i];
+                }
+                return max;
             }
         }
     },
     min: {
         value: function (mapper: any) {
-            if (!this.length) {
+            const len = this.length;
+            if (!len) {
                 return null;
-            }
-            function _min(a: number, b: number) {
-                return a < b ? a : b;
             }
             if (typeof (mapper) === 'function') {
                 let min = mapper(this[0], 0, this);
-                for (let i = 1; i < this.length; ++i) {
+                for (let i = 1; i < len; ++i) {
                     const temp = mapper(this[i], i, this);
-                    min = temp < min ? temp : min;
+                    if (temp < min) min = temp;
                 }
                 return min;
             }
             else {
-                return this.reduce((prev: any, cur: any) => {
-                    return _min(prev, cur);
-                });
+                // 优化：不使用 reduce，直接循环更快
+                let min = this[0];
+                for (let i = 1; i < len; ++i) {
+                    if (this[i] < min) min = this[i];
+                }
+                return min;
             }
         }
     },
     distinct: {
         value: function () {
-            return this.filter((v: any, i: number, arr: any[]) => {
-                return arr.indexOf(v) === i;
-            });
+            // 优化：使用 Set 去重，性能从 O(n²) 提升到 O(n)
+            return Array.from(new Set(this));
         }
     },
     filterIndex: {
         value: function (filter: any) {
             const output = [];
-            for (let i = 0; i < this.length; ++i) {
+            const len = this.length;
+            for (let i = 0; i < len; ++i) {
                 if (filter(this[i], i, this)) {
                     output.push(i);
                 }
@@ -220,7 +222,8 @@ declare global {
     count: {
         value: function (filter: any) {
             let result = 0;
-            for (let i = 0; i < this.length; ++i) {
+            const len = this.length;
+            for (let i = 0; i < len; ++i) {
                 if (filter(this[i], i, this)) {
                     ++result;
                 }
@@ -231,8 +234,15 @@ declare global {
     sum: {
         value: function (mapper: any) {
             let result = 0;
-            for (let i = 0; i < this.length; ++i) {
-                result += mapper ? mapper(this[i], i, this) : this[i];
+            const len = this.length;
+            if (mapper) {
+                for (let i = 0; i < len; ++i) {
+                    result += mapper(this[i], i, this);
+                }
+            } else {
+                for (let i = 0; i < len; ++i) {
+                    result += this[i];
+                }
             }
             return result;
         }

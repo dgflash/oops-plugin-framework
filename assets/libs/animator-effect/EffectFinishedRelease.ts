@@ -16,16 +16,20 @@ const { ccclass } = _decorator;
 export class EffectFinishedRelease extends Component {
     /** 动画最大播放时间 */
     private maxDuration = 0;
+    private spineComponent: sp.Skeleton | null = null;
 
     protected onEnable() {
+        // 重置动画时长
+        this.maxDuration = 0;
+        
         // SPINE动画
-        const spine = this.getComponent(sp.Skeleton);
-        if (spine) {
+        this.spineComponent = this.getComponent(sp.Skeleton);
+        if (this.spineComponent) {
             // 播放第一个动画
-            const json = (spine.skeletonData!.skeletonJson! as any).animations;
+            const json = (this.spineComponent.skeletonData!.skeletonJson! as any).animations;
             for (const name in json) {
-                spine.setCompleteListener(this.onRecovery.bind(this));
-                spine.setAnimation(0, name, false);
+                this.spineComponent.setCompleteListener(this.onRecovery.bind(this));
+                this.spineComponent.setAnimation(0, name, false);
                 break;
             }
         }
@@ -44,7 +48,10 @@ export class EffectFinishedRelease extends Component {
                     }
                     animator.play();
                 });
-                this.scheduleOnce(this.onRecovery.bind(this), this.maxDuration);
+                // 只有当有有效动画时才设置定时器
+                if (this.maxDuration > 0) {
+                    this.scheduleOnce(this.onRecovery.bind(this), this.maxDuration);
+                }
             }
             // 粒子动画
             else if (ParticleSystem) {
@@ -57,8 +64,22 @@ export class EffectFinishedRelease extends Component {
                     const duration: number = particle.duration;
                     this.maxDuration = duration > this.maxDuration ? duration : this.maxDuration;
                 });
-                this.scheduleOnce(this.onRecovery.bind(this), this.maxDuration);
+                // 只有当有有效粒子时才设置定时器
+                if (this.maxDuration > 0) {
+                    this.scheduleOnce(this.onRecovery.bind(this), this.maxDuration);
+                }
             }
+        }
+    }
+
+    protected onDisable() {
+        // 清理定时器
+        this.unschedule(this.onRecovery);
+        
+        // 清理 Spine 监听器，防止内存泄漏
+        if (this.spineComponent) {
+            this.spineComponent.setCompleteListener(null!);
+            this.spineComponent = null;
         }
     }
 

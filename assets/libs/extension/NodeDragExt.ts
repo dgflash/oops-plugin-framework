@@ -25,6 +25,7 @@ if (!Node.prototype['__$NodeDragExt$__']) {
         _dragging: false,
         _dragTesting: false,
         _dragStartPoint: null,
+        _tempVec3: null,  // 优化：添加临时向量缓存
         initDrag: function () {
             if (this._draggable) {
                 this.on(Node.EventType.TOUCH_START, this.onTouchBegin_0, this);
@@ -40,6 +41,7 @@ if (!Node.prototype['__$NodeDragExt$__']) {
             }
         },
         onTouchBegin_0: function (event: EventTouch) {
+            // 优化：延迟创建 Vec2 对象
             if (this._dragStartPoint == null) {
                 this._dragStartPoint = new Vec2();
             }
@@ -54,8 +56,10 @@ if (!Node.prototype['__$NodeDragExt$__']) {
             if (!this._dragging && this._draggable && this._dragTesting) {
                 const sensitivity = 10;
                 const pos = event.getUILocation();
-                if (Math.abs(this._dragStartPoint.x - pos.x) < sensitivity
-                    && Math.abs(this._dragStartPoint.y - pos.y) < sensitivity) {
+                const dx = this._dragStartPoint.x - pos.x;
+                const dy = this._dragStartPoint.y - pos.y;
+                // 优化：使用平方比较，避免 Math.abs
+                if (dx * dx + dy * dy < sensitivity * sensitivity) {
                     return;
                 }
 
@@ -67,10 +71,17 @@ if (!Node.prototype['__$NodeDragExt$__']) {
 
             if (this._dragging) {
                 const delta = event.getUIDelta();
+                // 优化：复用临时向量对象，减少对象创建
+                if (!this._tempVec3) {
+                    this._tempVec3 = v3();
+                }
+                const tempVec = this._tempVec3;
+                tempVec.set(delta.x, delta.y, 0);
+                
                 // /** 这里除以 世界缩放，在有缩放的时候拖拽不至于很怪 */
                 // this.position = this.position.add(v3(delta.x / this.worldScale.x, delta.y / this.worldScale.y, 0));
-                const newPos = v3(delta.x, delta.y, 0).add(this.position);
-                this.position = newPos;
+                const pos = this.position;
+                this.setPosition(pos.x + tempVec.x, pos.y + tempVec.y, pos.z);
                 this.emit(Node.DragEvent.DRAG_MOVE, event);
             }
         },

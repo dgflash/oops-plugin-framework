@@ -12,10 +12,10 @@ export abstract class BranchNode extends BTreeNode {
     /** 子节点数组 */
     children: Array<BTreeNode>;
     /** 当前任务索引 */
-    protected _actualTask!: number;
+    protected _actualTask: number = 0;
     /** 正在运行的节点 */
-    protected _runningNode!: BTreeNode;
-    protected _nodeRunning!: BTreeNode | null;
+    protected _runningNode: BTreeNode | null = null;
+    protected _nodeRunning: BTreeNode | null = null;
     /** 外部参数对象 */
     protected _blackboard: any;
 
@@ -30,8 +30,10 @@ export abstract class BranchNode extends BTreeNode {
     }
 
     run(blackboard?: any) {
-        if (this.children.length == 0) { // 没有子任务直接视为执行失败
-            this._control.fail();
+        if (this.children.length === 0) { // 没有子任务直接视为执行失败
+            if (this._control) {
+                this._control.fail();
+            }
         }
         else {
             this._blackboard = blackboard;
@@ -46,25 +48,50 @@ export abstract class BranchNode extends BTreeNode {
 
     /** 执行当前节点逻辑 */
     protected _run(blackboard?: any) {
-        const node = BehaviorTree.getNode(this.children[this._actualTask]);
-        this._runningNode = node;
-        node.setControl(this);
-        node.start(this._blackboard);
-        node.run(this._blackboard);
+        // 直接使用子节点，不需要通过 getNode 查询（性能优化）
+        const node = this.children[this._actualTask];
+        if (node) {
+            this._runningNode = node;
+            node.setControl(this);
+            node.start(this._blackboard);
+            node.run(this._blackboard);
+        }
     }
 
     running(node: BTreeNode) {
         this._nodeRunning = node;
-        this._control.running(node);
+        if (this._control) {
+            this._control.running(node);
+        }
     }
 
     success() {
         this._nodeRunning = null;
-        this._runningNode.end(this._blackboard);
+        if (this._runningNode) {
+            this._runningNode.end(this._blackboard);
+        }
     }
 
     fail() {
         this._nodeRunning = null;
-        this._runningNode.end(this._blackboard);
+        if (this._runningNode) {
+            this._runningNode.end(this._blackboard);
+        }
+    }
+
+    /** 清理节点资源 */
+    destroy() {
+        // 清理所有子节点
+        if (this.children) {
+            this.children.forEach(child => {
+                if (child && typeof child.destroy === 'function') {
+                    child.destroy();
+                }
+            });
+        }
+        this._runningNode = null;
+        this._nodeRunning = null;
+        this._blackboard = null;
+        super.destroy();
     }
 }

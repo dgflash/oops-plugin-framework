@@ -13,7 +13,7 @@ import type { CCEntity } from './CCEntity';
 export class CCBusiness<T extends CCEntity> {
     ent!: T;
 
-    /** 业务逻辑初始化 */
+    /** 业务逻辑初始化（由 CCEntity.addBusiness 自动调用） */
     protected init() {
 
     }
@@ -24,6 +24,9 @@ export class CCBusiness<T extends CCEntity> {
             this._event.destroy();
             this._event = null;
         }
+        
+        // 清空实体引用，避免循环引用导致的内存泄漏
+        this.ent = null!;
     }
 
     //#region 全局事件管理
@@ -41,7 +44,7 @@ export class CCBusiness<T extends CCEntity> {
      * @param listener    处理事件的侦听器函数
      * @param object      侦听函数绑定的this对象
      */
-    on(event: string, listener: ListenerFunc, object: any) {
+    on(event: string, listener: ListenerFunc, object: object) {
         this.event.on(event, listener, object);
     }
 
@@ -58,7 +61,7 @@ export class CCBusiness<T extends CCEntity> {
      * @param event      事件名
      * @param args       事件参数
      */
-    dispatchEvent(event: string, ...args: any) {
+    dispatchEvent(event: string, ...args: unknown[]) {
         this.event.dispatchEvent(event, ...args);
     }
 
@@ -68,16 +71,17 @@ export class CCBusiness<T extends CCEntity> {
      *  this.setEvent("onGlobal");
      *  this.dispatchEvent("onGlobal", "全局事件");
      *
-     *  onGlobal(event: string, args: any) { console.log(args) };
+     *  onGlobal(event: string, args: unknown) { console.log(args) };
      */
     protected setEvent(...args: string[]) {
-        const self: any = this;
         for (const name of args) {
-            const func = self[name];
-            if (func)
-                this.on(name, func, this);
-            else
+            const func = (this as Record<string, unknown>)[name];
+            if (typeof func === 'function') {
+                this.on(name, func as ListenerFunc, this);
+            }
+            else {
                 console.error(`名为【${name}】的全局事方法不存在`);
+            }
         }
     }
 

@@ -18,50 +18,65 @@ export default class ButtonEffect extends ButtonSimple {
     @property({
         tooltip: '是否开启'
     })
-        disabledEffect = false;
+    disabledEffect = false;
 
-    private anim!: Animation;
+    private anim: Animation | null = null;
 
     /** 按钮禁用效果 */
     get grayscale(): boolean {
-        return this.node.getComponent(Sprite)!.grayscale;
+        const sprite = this.node.getComponent(Sprite);
+        return sprite ? sprite.grayscale : false;
     }
     set grayscale(value: boolean) {
-        if (this.node.getComponent(Sprite)) {
-            this.node.getComponent(Sprite)!.grayscale = value;
+        const sprite = this.node.getComponent(Sprite);
+        if (sprite) {
+            sprite.grayscale = value;
         }
     }
 
     onLoad() {
         this.anim = this.node.addComponent(Animation);
 
-        const ac_start: AnimationClip = oops.res.get('common/anim/button_scale_start', AnimationClip)!;
-        const ac_end: AnimationClip = oops.res.get('common/anim/button_scale_end', AnimationClip)!;
-        this.anim.defaultClip = ac_start;
-        this.anim.createState(ac_start, ac_start?.name);
-        this.anim.createState(ac_end, ac_end?.name);
+        const ac_start = oops.res.get('common/anim/button_scale_start', AnimationClip);
+        const ac_end = oops.res.get('common/anim/button_scale_end', AnimationClip);
 
-        this.node.on(Node.EventType.TOUCH_START, this.onTouchtStart, this);
+        if (ac_start && ac_end && this.anim) {
+            this.anim.defaultClip = ac_start;
+            this.anim.createState(ac_start, ac_start.name);
+            this.anim.createState(ac_end, ac_end.name);
+        } else {
+            console.warn('[ButtonEffect] 动画资源加载失败或Animation组件创建失败');
+        }
+
+        this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
 
         super.onLoad();
     }
 
-    protected onTouchtStart(event: EventTouch) {
-        if (!this.disabledEffect) {
+    protected onTouchStart(event: EventTouch) {
+        if (!this.disabledEffect && this.anim) {
             this.anim.play('button_scale_start');
         }
     }
 
     protected onTouchEnd(event: EventTouch) {
-        if (!this.disabledEffect) {
+        if (!this.disabledEffect && this.anim) {
             this.anim.play('button_scale_end');
         }
 
         super.onTouchEnd(event);
     }
 
+    /** 组件销毁时的清理工作 */
     onDestroy() {
-        this.node.off(Node.EventType.TOUCH_START, this.onTouchtStart, this);
+        this.node.off(Node.EventType.TOUCH_START, this.onTouchStart, this);
+
+        // 清理动画组件引用
+        if (this.anim) {
+            this.anim.destroy();
+            this.anim = null;
+        }
+
         super.onDestroy();
     }
 }

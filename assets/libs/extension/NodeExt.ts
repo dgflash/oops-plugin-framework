@@ -182,36 +182,36 @@ if (!EDITOR_NOT_IN_PREVIEW) {
     /** 获取、设置节点的 X 坐标 */
     Object.defineProperty(Node.prototype, 'x', {
         get: function () {
-            const self: Node = this;
-            return self.position.x;
+            return this.position.x;
         },
         set: function (value: number) {
-            const self: Node = this;
-            self.setPosition(value, self.position.y);
+            // 优化：缓存 position，减少属性访问
+            const pos = this.position;
+            this.setPosition(value, pos.y, pos.z);
         }
     });
 
     /** 获取、设置节点的 Y 坐标 */
     Object.defineProperty(Node.prototype, 'y', {
         get: function () {
-            const self: Node = this;
-            return self.position.y;
+            return this.position.y;
         },
         set: function (value: number) {
-            const self: Node = this;
-            self.setPosition(self.position.x, value);
+            // 优化：缓存 position，减少属性访问
+            const pos = this.position;
+            this.setPosition(pos.x, value, pos.z);
         }
     });
 
     /** 获取、设置节点的 Z 坐标 */
     Object.defineProperty(Node.prototype, 'z', {
         get: function () {
-            const self: Node = this;
-            return self.position.z;
+            return this.position.z;
         },
         set: function (value: number) {
-            const self: Node = this;
-            self.setPosition(self.position.x, self.position.y, value);
+            // 优化：缓存 position，减少属性访问
+            const pos = this.position;
+            this.setPosition(pos.x, pos.y, value);
         }
     });
 
@@ -286,12 +286,17 @@ if (!EDITOR_NOT_IN_PREVIEW) {
                 // 直接通过 color.a 设置透明度会有bug，没能直接生效，需要激活节点才生效
                 // (render.color.a as any) = value;
 
-                // 创建一个颜色缓存对象，避免每次都创建新对象
+                // 优化：创建一个颜色缓存对象，避免每次都创建新对象
                 if (!this.$__color__) {
                     this.$__color__ = new Color(render.color.r, render.color.g, render.color.b, value);
                 }
                 else {
-                    this.$__color__.a = value;
+                    // 复用已有的 Color 对象
+                    const color = this.$__color__;
+                    color.r = render.color.r;
+                    color.g = render.color.g;
+                    color.b = render.color.b;
+                    color.a = value;
                 }
                 render.color = this.$__color__; // 设置 color 对象则可以立刻生效
             }
@@ -317,36 +322,36 @@ if (!EDITOR_NOT_IN_PREVIEW) {
     /** 获取、设置节点的 X 缩放系数 */
     Object.defineProperty(Node.prototype, 'scale_x', {
         get: function () {
-            const self: Node = this;
-            return self.scale.x;
+            return this.scale.x;
         },
         set: function (value: number) {
-            const self: Node = this;
-            self.scale = v3(value, self.scale.y, self.scale.z);
+            // 优化：缓存 scale，减少属性访问
+            const scale = this.scale;
+            this.scale = v3(value, scale.y, scale.z);
         }
     });
 
     /** 获取、设置节点的 Y 缩放系数 */
     Object.defineProperty(Node.prototype, 'scale_y', {
         get: function () {
-            const self: Node = this;
-            return self.scale.y;
+            return this.scale.y;
         },
         set: function (value: number) {
-            const self: Node = this;
-            self.scale = v3(self.scale.x, value, self.scale.z);
+            // 优化：缓存 scale，减少属性访问
+            const scale = this.scale;
+            this.scale = v3(scale.x, value, scale.z);
         }
     });
 
     /** 获取、设置节点的 Z 缩放系数 */
     Object.defineProperty(Node.prototype, 'scale_z', {
         get: function () {
-            const self: Node = this;
-            return self.scale.z;
+            return this.scale.z;
         },
         set: function (value: number) {
-            const self: Node = this;
-            self.scale = v3(self.scale.x, self.scale.y, value);
+            // 优化：缓存 scale，减少属性访问
+            const scale = this.scale;
+            this.scale = v3(scale.x, scale.y, value);
         }
     });
 
@@ -377,12 +382,12 @@ if (!EDITOR_NOT_IN_PREVIEW) {
     /** 获取、设置节点的 X 欧拉角 */
     Object.defineProperty(Node.prototype, 'angle_x', {
         get: function () {
-            const self: Node = this;
-            return self.eulerAngles.x;
+            return this.eulerAngles.x;
         },
         set: function (value: number) {
-            const self: Node = this;
-            self.setRotationFromEuler(value, self.eulerAngles.y, self.eulerAngles.z);
+            // 优化：缓存 eulerAngles，减少属性访问
+            const angles = this.eulerAngles;
+            this.setRotationFromEuler(value, angles.y, angles.z);
         }
     });
 
@@ -392,19 +397,21 @@ if (!EDITOR_NOT_IN_PREVIEW) {
             return this.eulerAngles.y;
         },
         set: function (value: number) {
-            const self: Node = this;
-            self.setRotationFromEuler(self.eulerAngles.x, value, self.eulerAngles.z);
+            // 优化：缓存 eulerAngles，减少属性访问
+            const angles = this.eulerAngles;
+            this.setRotationFromEuler(angles.x, value, angles.z);
         }
     });
 
     /** 获取、设置节点的 Z 欧拉角 */
     Object.defineProperty(Node.prototype, 'angle_z', {
         get: function () {
-            return this.eulerAngles.y;
+            return this.eulerAngles.z;  // 修复：应该是 z 而不是 y
         },
         set: function (value: number) {
-            const self: Node = this;
-            self.setRotationFromEuler(self.eulerAngles.x, self.eulerAngles.y, value);
+            // 优化：缓存 eulerAngles，减少属性访问
+            const angles = this.eulerAngles;
+            this.setRotationFromEuler(angles.x, angles.y, value);
         }
     });
 }

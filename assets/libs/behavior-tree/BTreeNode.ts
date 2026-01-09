@@ -8,7 +8,7 @@ import type { IControl } from './IControl';
 
 /** 行为树节点 */
 export abstract class BTreeNode implements IControl {
-    protected _control!: IControl;
+    protected _control: IControl | null = null;
 
     title: string;
 
@@ -31,14 +31,34 @@ export abstract class BTreeNode implements IControl {
     }
 
     running(blackboard?: any) {
-        this._control.running(this);
+        if (this._control) {
+            this._control.running(this);
+        }
+        else {
+            console.error(`节点【${this.title}】的控制器未设置`);
+        }
     }
 
     success() {
-        this._control.success();
+        if (this._control) {
+            this._control.success();
+        }
+        else {
+            console.error(`节点【${this.title}】的控制器未设置`);
+        }
     }
 
     fail() {
-        this._control.fail();
+        if (this._control) {
+            this._control.fail();
+        }
+        else {
+            console.error(`节点【${this.title}】的控制器未设置`);
+        }
+    }
+
+    /** 清理节点资源 */
+    destroy() {
+        this._control = null;
     }
 }

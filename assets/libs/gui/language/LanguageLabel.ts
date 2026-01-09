@@ -72,8 +72,31 @@ export class LanguageLabel extends Component {
     /** 初始字体尺寸 */
     initFontSize = 0;
 
+    /** 缓存的Label组件引用 */
+    private _labelCache: Label | null = null;
+    /** 缓存的RichText组件引用 */
+    private _richTextCache: RichText | null = null;
+    /** 是否已初始化组件缓存 */
+    private _componentInitialized = false;
+
+    private _needUpdate = false;
+
     onLoad() {
+        this._initComponents();
         this._needUpdate = true;
+    }
+
+    /** 初始化并缓存组件引用 */
+    private _initComponents() {
+        if (this._componentInitialized) return;
+        
+        this._labelCache = this.getComponent(Label);
+        this._richTextCache = this.getComponent(RichText);
+        this._componentInitialized = true;
+
+        if (!this._labelCache && !this._richTextCache) {
+            warn('[LanguageLabel] 该节点没有cc.Label || cc.RichText组件');
+        }
     }
 
     /**
@@ -83,11 +106,13 @@ export class LanguageLabel extends Component {
      */
     setVars(key: string, value: string) {
         let haskey = false;
+        // 优化：找到后立即退出循环
         for (let i = 0; i < this._params.length; i++) {
             const element: LangLabelParamsItem = this._params[i];
             if (element.key === key) {
                 element.value = value;
                 haskey = true;
+                break; // 找到后立即退出
             }
         }
         if (!haskey) {
@@ -98,7 +123,6 @@ export class LanguageLabel extends Component {
         }
         this._needUpdate = true;
     }
-    private _needUpdate = false;
 
     update() {
         if (this._needUpdate) {
@@ -108,26 +132,34 @@ export class LanguageLabel extends Component {
     }
 
     updateContent() {
-        const label = this.getComponent(Label);
-        const richtext = this.getComponent(RichText);
+        // 确保组件已初始化
+        if (!this._componentInitialized) {
+            this._initComponents();
+        }
+
         const font: TTFFont | null = LanguageData.font;
 
-        if (label) {
+        // 使用缓存的组件引用，避免重复调用getComponent
+        if (this._labelCache) {
             if (font) {
-                label.font = font;
+                this._labelCache.font = font;
             }
-            label.string = this.string;
-            this.initFontSize = label.fontSize;
+            this._labelCache.string = this.string;
+            this.initFontSize = this._labelCache.fontSize;
         }
-        else if (richtext) {
+        else if (this._richTextCache) {
             if (font) {
-                richtext.font = font;
+                this._richTextCache.font = font;
             }
-            richtext.string = this.string;
-            this.initFontSize = richtext.fontSize;
+            this._richTextCache.string = this.string;
+            this.initFontSize = this._richTextCache.fontSize;
         }
-        else {
-            warn('[LanguageLabel], 该节点没有cc.Label || cc.RichText组件');
-        }
+    }
+
+    onDestroy() {
+        // 清理缓存引用，帮助垃圾回收
+        this._labelCache = null;
+        this._richTextCache = null;
+        this._params = [];
     }
 }

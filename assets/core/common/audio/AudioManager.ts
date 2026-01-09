@@ -116,4 +116,13 @@ export class AudioManager extends Component {
         }
         this.save();
     }
+
+    /** 组件销毁时释放所有音频资源 */
+    onDestroy() {
+        this.stopAll();
+        this.music?.release();
+        this.effect?.release();
+        this.music = null!;
+        this.data = null!;
+    }
 }

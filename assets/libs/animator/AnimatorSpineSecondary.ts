@@ -74,4 +74,14 @@ export default class AnimatorSpineSecondary extends AnimatorBase {
             this._spine.clearTrack(this.TrackIndex);
         }
     }
+
+    /**
+     * 组件销毁时清理资源
+     */
+    protected onDestroy() {
+        // 从主状态机移除次状态机监听器
+        if (this._main) {
+            this._main.removeSecondaryListener(this.onAnimFinished);
+        }
+    }
 }

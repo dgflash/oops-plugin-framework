@@ -12,13 +12,14 @@ import { BTreeNode } from './BTreeNode';
  * 如果装饰器是true 它所在的子树会被执行，如果是false 所在的子树不会被执行
  */
 export class Decorator extends BTreeNode {
-    node!: BTreeNode;
+    node: BTreeNode | null = null;
 
     constructor(node?: string | BTreeNode) {
         super();
 
-        if (node)
+        if (node) {
             this.node = BehaviorTree.getNode(node);
+        }
     }
 
     protected setNode(node: string | BTreeNode) {
@@ -26,16 +27,38 @@ export class Decorator extends BTreeNode {
     }
 
     start() {
-        this.node.setControl(this);
-        this.node.start();
+        if (this.node) {
+            this.node.setControl(this);
+            this.node.start();
+        }
+        else {
+            console.error(`装饰器节点【${this.title}】没有设置子节点`);
+        }
         super.start();
     }
 
     end() {
-        this.node.end();
+        if (this.node) {
+            this.node.end();
+        }
     }
 
     run(blackboard: any) {
-        this.node.run(blackboard);
+        if (this.node) {
+            this.node.run(blackboard);
+        }
+        else {
+            console.error(`装饰器节点【${this.title}】没有设置子节点`);
+            this.fail();
+        }
+    }
+
+    /** 清理节点资源 */
+    destroy() {
+        if (this.node && typeof this.node.destroy === 'function') {
+            this.node.destroy();
+        }
+        this.node = null;
+        super.destroy();
     }
 }

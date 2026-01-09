@@ -55,6 +55,11 @@ export default class AnimatorBase extends Component {
     protected _onStateChangeCall: (fromState: string, toState: string) => void = null!;
     /** 自定义的动画播放控制器 */
     protected _animationPlayer: AnimationPlayer = null!;
+    
+    /** 缓存当前状态的逻辑控制，避免频繁查找Map */
+    private _cachedStateLogic: AnimatorStateLogic | null = null;
+    /** 缓存的状态名，用于判断状态是否改变 */
+    private _cachedStateName = '';
 
     /** 当前状态名 */
     get curStateName(): string {
@@ -110,10 +115,18 @@ export default class AnimatorBase extends Component {
         }
         this.scaleTime(playSpeed);
 
-        // 更新动画状态逻辑
+        // 更新动画状态逻辑（使用缓存优化）
         if (this._stateLogicMap) {
-            const curLogic = this._stateLogicMap.get(this._ac.curState.name);
-            curLogic && curLogic.onUpdate();
+            const curStateName = this._ac.curState.name;
+            // 状态改变时更新缓存
+            if (this._cachedStateName !== curStateName) {
+                this._cachedStateName = curStateName;
+                this._cachedStateLogic = this._stateLogicMap.get(curStateName) || null;
+            }
+            // 使用缓存的逻辑控制
+            if (this._cachedStateLogic) {
+                this._cachedStateLogic.onUpdate();
+            }
         }
 
         // 更新状态机逻辑
@@ -177,12 +190,21 @@ export default class AnimatorBase extends Component {
 
         if (this._stateLogicMap) {
             const fromLogic = this._stateLogicMap.get(fromStateName);
-            fromLogic && fromLogic.onExit();
+            if (fromLogic) {
+                fromLogic.onExit();
+            }
             const toLogic = this._stateLogicMap.get(toState.name);
-            toLogic && toLogic.onEntry();
+            if (toLogic) {
+                toLogic.onEntry();
+            }
+            // 更新缓存
+            this._cachedStateName = toState.name;
+            this._cachedStateLogic = toLogic || null;
         }
 
-        this._onStateChangeCall && this._onStateChangeCall(fromStateName, toState.name);
+        if (this._onStateChangeCall) {
+            this._onStateChangeCall(fromStateName, toState.name);
+        }
     }
 
     /**

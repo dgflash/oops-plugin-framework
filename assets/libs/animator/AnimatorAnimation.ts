@@ -1,10 +1,15 @@
 import type { AnimationState } from 'cc';
-import { Animation, _decorator } from 'cc';
+import { Animation, AnimationClip, _decorator } from 'cc';
 import type { AnimationPlayer } from './core/AnimatorBase';
 import AnimatorBase from './core/AnimatorBase';
 import type { AnimatorStateLogic } from './core/AnimatorStateLogic';
 
 const { ccclass, property, requireComponent, disallowMultiple, menu, help } = _decorator;
+
+/** 动画循环播放模式 */
+const WRAP_MODE_LOOP = AnimationClip.WrapMode.Loop;
+/** 动画单次播放模式 */
+const WRAP_MODE_NORMAL = AnimationClip.WrapMode.Normal;
 
 /**
  * Cocos Animation状态机组件
@@ -80,7 +85,7 @@ export default class AnimatorAnimation extends AnimatorBase {
         if (!this._wrapModeMap.has(this._animState)) {
             this._wrapModeMap.set(this._animState, this._animState.wrapMode);
         }
-        this._animState.wrapMode = loop ? 2 : this._wrapModeMap.get(this._animState)!;
+        this._animState.wrapMode = loop ? WRAP_MODE_LOOP : this._wrapModeMap.get(this._animState)!;
     }
 
     /**
@@ -92,5 +97,19 @@ export default class AnimatorAnimation extends AnimatorBase {
         if (this._animState) {
             this._animState.speed = scale;
         }
+    }
+
+    /**
+     * 组件销毁时清理资源
+     */
+    protected onDestroy() {
+        // 清理动画事件监听器
+        if (this._animation) {
+            this._animation.off(Animation.EventType.FINISHED, this.onAnimFinished, this);
+            this._animation.off(Animation.EventType.LASTFRAME, this.onAnimFinished, this);
+        }
+        
+        // 清空wrap mode缓存
+        this._wrapModeMap.clear();
     }
 }

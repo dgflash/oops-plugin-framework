@@ -48,7 +48,10 @@ function destroyEntity(entity: ECSEntity) {
             entitys = [];
             ECSModel.entityPool.set(entity.name, entitys);
         }
-        entitys.push(entity);
+        // 限制对象池大小，防止内存无限增长
+        if (entitys.length < ECSModel.MAX_ENTITY_POOL_SIZE) {
+            entitys.push(entity);
+        }
         ECSModel.eid2Entity.delete(entity.eid);
     }
     else {
@@ -72,6 +75,8 @@ export class ECSEntity {
     private compTid2Ctor: Map<number, CompType<ecs.IComp>> = new Map();
     /** 配合 entity.remove(Comp, false)， 记录组件实例上的缓存数据，在添加时恢复原数据 */
     private compTid2Obj: Map<number, ecs.IComp> = new Map();
+    /** 组件缓存容量限制，防止内存泄漏 */
+    private static readonly MAX_CACHE_COMP = 10;
 
     private _parent: ECSEntity | null = null;
     /** 父实体 */
@@ -252,14 +257,29 @@ export class ECSEntity {
             if (isRecycle) {
                 comp.reset();
 
-                // 回收组件到指定缓存池中
+                // 回收组件到指定缓存池中，限制池大小
                 if (comp.canRecycle) {
                     const compPoolsType = ECSModel.compPools.get(componentTypeId)!;
-                    compPoolsType.push(comp);
+                    if (compPoolsType.length < ECSModel.MAX_COMP_POOL_SIZE) {
+                        compPoolsType.push(comp);
+                    }
                 }
             }
             else {
-                this.compTid2Obj.set(componentTypeId, comp); // 用于缓存显示对象组件
+                // 限制缓存组件数量，防止内存泄漏
+                if (this.compTid2Obj.size < ECSEntity.MAX_CACHE_COMP) {
+                    this.compTid2Obj.set(componentTypeId, comp); // 用于缓存显示对象组件
+                } else {
+                    // 超过限制，强制回收
+                    console.warn(`实体 ${this.name} 缓存组件数量超过限制，强制回收组件 ${compName}`);
+                    comp.reset();
+                    if (comp.canRecycle) {
+                        const compPoolsType = ECSModel.compPools.get(componentTypeId);
+                        if (compPoolsType) {
+                            compPoolsType.push(comp);
+                        }
+                    }
+                }
             }
         }
 
@@ -294,7 +314,12 @@ export class ECSEntity {
         // 移除实体上所有组件
         this.compTid2Ctor.forEach(this._remove, this);
         destroyEntity(this);
+        
+        // 清理缓存的组件对象，防止内存泄漏
         this.compTid2Obj.clear();
+        
+        // 回收 mask 到对象池
+        this.mask.destroy();
     }
 
     private _remove(comp: CompType<ecs.IComp>) {

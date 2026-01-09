@@ -53,6 +53,9 @@ export class AsyncQueue {
     // 正在执行的异步任务标识
     private _isProcessingTaskUUID = 0;
     private _enable = true;
+    
+    /** 最大任务队列长度，防止内存泄漏 */
+    private static readonly MAX_QUEUE_SIZE = 1000;
 
     /** 是否开启可用 */
     get enable() {
@@ -80,6 +83,12 @@ export class AsyncQueue {
      * @param params    参数
      */
     push(callback: AsyncCallback, params: any = null): number {
+        // 防止队列无限增长
+        if (this._queues.length >= AsyncQueue.MAX_QUEUE_SIZE) {
+            warn(`AsyncQueue 队列已满 (${AsyncQueue.MAX_QUEUE_SIZE})，无法添加新任务`);
+            return -1;
+        }
+        
         const uuid = AsyncQueue._$uuid_count++;
         this._queues.push({
             uuid: uuid,
@@ -96,6 +105,12 @@ export class AsyncQueue {
      * @returns
      */
     pushMulti(params: any, ...callbacks: AsyncCallback[]): number {
+        // 防止队列无限增长
+        if (this._queues.length >= AsyncQueue.MAX_QUEUE_SIZE) {
+            warn(`AsyncQueue 队列已满 (${AsyncQueue.MAX_QUEUE_SIZE})，无法添加新任务`);
+            return -1;
+        }
+        
         const uuid = AsyncQueue._$uuid_count++;
         this._queues.push({
             uuid: uuid,
@@ -114,7 +129,9 @@ export class AsyncQueue {
             warn('正在执行的任务不可以移除');
             return;
         }
-        for (let i = 0; i < this._queues.length; i++) {
+        // 优化：使用标准 for 循环，缓存长度
+        const len = this._queues.length;
+        for (let i = 0; i < len; i++) {
             if (this._queues[i].uuid === uuid) {
                 this._queues.splice(i, 1);
                 break;
@@ -153,7 +170,8 @@ export class AsyncQueue {
 
     /** 清空队列 */
     clear() {
-        this._queues = [];
+        // 优化：使用 length = 0 而不是创建新数组，更高效
+        this._queues.length = 0;
         this._isProcessingTaskUUID = 0;
         this._runningAsyncTask = null;
     }
@@ -185,7 +203,8 @@ export class AsyncQueue {
             this._isProcessingTaskUUID = taskUUID;
             const callbacks: Array<AsyncCallback> = actionData.callbacks;
 
-            if (callbacks.length == 1) {
+            const callbackLen = callbacks.length;
+            if (callbackLen === 1) {
                 const nextFunc: NextFunction = (nextArgs: any = null) => {
                     this.next(taskUUID, nextArgs);
                 };
@@ -193,7 +212,7 @@ export class AsyncQueue {
             }
             else {
                 // 多个任务函数同时执行
-                let fnum: number = callbacks.length;
+                let fnum: number = callbackLen;
                 const nextArgsArr: any[] = [];
                 const nextFunc: NextFunction = (nextArgs: any = null) => {
                     --fnum;
@@ -202,8 +221,8 @@ export class AsyncQueue {
                         this.next(taskUUID, nextArgsArr);
                     }
                 };
-                const knum = fnum;
-                for (let i = 0; i < knum; i++) {
+                // 使用标准 for 循环，性能更好
+                for (let i = 0; i < callbackLen; i++) {
                     callbacks[i](nextFunc, actionData.params, args);
                 }
             }

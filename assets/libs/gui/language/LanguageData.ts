@@ -44,7 +44,7 @@ export class LanguageData {
     static getLangByID(labId: string): string {
         let content: string = null!;
         for (const [key, value] of this.language) {
-            if (key == LanguageDataType.Excel) {
+            if (key === LanguageDataType.Excel) {
                 const lang = value[labId];
                 if (lang) content = lang[this.current];
             }
@@ -54,6 +54,24 @@ export class LanguageData {
             if (content) return content;
         }
         return labId;
+    }
+
+    /**
+     * 清理语言数据，释放内存
+     * 建议在游戏退出或切换场景时调用
+     */
+    static clear() {
+        this.language.clear();
+        this.font = null!;
+        this.current = '';
+    }
+
+    /**
+     * 清理指定类型的语言数据
+     * @param type 语言数据类型
+     */
+    static clearType(type: LanguageDataType) {
+        this.language.delete(type);
     }
 }
 

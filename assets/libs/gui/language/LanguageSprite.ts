@@ -34,6 +34,38 @@ export class LanguageSprite extends Component {
     })
     private isRawSize = true;
 
+    /** 缓存的Sprite组件引用 */
+    private _spriteCache: Sprite | null = null;
+    /** 缓存的UITransform组件引用 */
+    private _uiTransformCache: UITransform | null = null;
+    /** 是否已初始化组件缓存 */
+    private _componentInitialized = false;
+
+    onLoad() {
+        this._initComponents();
+    }
+
+    /** 初始化并缓存组件引用 */
+    private _initComponents() {
+        if (this._componentInitialized) return;
+        
+        this._spriteCache = this.getComponent(Sprite);
+        if (!this._spriteCache) {
+            console.error('[LanguageSprite] 该节点没有cc.Sprite组件');
+            this._componentInitialized = true;
+            return;
+        }
+
+        if (this.isRawSize) {
+            this._uiTransformCache = this.getComponent(UITransform);
+            if (!this._uiTransformCache) {
+                console.warn('[LanguageSprite] 该节点没有cc.UITransform组件，无法设置原始大小');
+            }
+        }
+        
+        this._componentInitialized = true;
+    }
+
     start() {
         this.updateSprite();
     }
@@ -44,22 +76,38 @@ export class LanguageSprite extends Component {
     }
 
     private updateSprite() {
+        // 确保组件已初始化
+        if (!this._componentInitialized) {
+            this._initComponents();
+        }
+
+        if (!this._spriteCache) {
+            return;
+        }
+
         // 获取语言标记
         const path = `language/texture/${LanguageData.current}/${this.dataID}/spriteFrame`;
         const res: SpriteFrame | null = resLoader.get(path, SpriteFrame);
         if (res) {
-            const spcomp: Sprite = this.getComponent(Sprite)!;
-            spcomp.spriteFrame = res;
+            this._spriteCache.spriteFrame = res;
 
             /** 修改节点为原始图片资源大小 */
-            if (this.isRawSize) {
-                //@ts-ignore
-                const rawSize = res._originalSize as Size;
-                spcomp.getComponent(UITransform)?.setContentSize(rawSize);
+            if (this.isRawSize && this._uiTransformCache) {
+                // 使用公开的API获取原始尺寸
+                const rawSize = res.originalSize;
+                if (rawSize) {
+                    this._uiTransformCache.setContentSize(rawSize);
+                }
             }
         }
         else {
             console.error('[LanguageSprite] 资源不存在 ' + path);
         }
+    }
+
+    onDestroy() {
+        // 清理缓存引用，帮助垃圾回收
+        this._spriteCache = null;
+        this._uiTransformCache = null;
     }
 }

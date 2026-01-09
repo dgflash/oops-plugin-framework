@@ -148,6 +148,9 @@ export default class VMState extends VMBase {
     })
         watchNodes: Node[] = [];
 
+    // 缓存动态添加的组件，用于销毁时清理
+    private _addedComponents: Map<Node, UIOpacity> = new Map();
+
     onLoad() {
         super.onLoad();
         // 如果数组里没有监听值，那么默认把所有子节点给监听了
@@ -211,8 +214,11 @@ export default class VMState extends VMBase {
             break;
         case ACTION.NODE_VISIBLE: {
             let opacity = node.getComponent(UIOpacity);
-            if (opacity == null)
+            if (opacity == null) {
                 opacity = node.addComponent(UIOpacity);
+                // 缓存动态添加的组件
+                this._addedComponents.set(node, opacity);
+            }
 
             if (opacity) {
                 opacity.opacity = check ? 255 : 0;
@@ -221,8 +227,11 @@ export default class VMState extends VMBase {
         }
         case ACTION.NODE_OPACITY: {
             let opacity = node.getComponent(UIOpacity);
-            if (opacity == null)
+            if (opacity == null) {
                 opacity = node.addComponent(UIOpacity);
+                // 缓存动态添加的组件
+                this._addedComponents.set(node, opacity);
+            }
 
             if (opacity) {
                 opacity.opacity = check ? this.valueActionOpacity : 255;
@@ -295,5 +304,16 @@ export default class VMState extends VMBase {
         }
 
         return false;
+    }
+
+    /**
+     * 组件销毁时清理内存引用
+     */
+    onDestroy() {
+        // 清理节点引用数组
+        this.watchNodes.length = 0;
+        
+        // 清理动态添加的组件缓存
+        this._addedComponents.clear();
     }
 }

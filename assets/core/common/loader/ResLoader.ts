@@ -91,7 +91,7 @@ export class ResLoader {
         return new Promise<T>((resolve, reject) => {
             assetManager.loadRemote<T>(url, options, (err, data: T) => {
                 if (err) {
-                    reject(null);
+                    reject(err);
                     return;
                 }
                 resolve(data);
@@ -121,7 +121,7 @@ export class ResLoader {
         return new Promise<AssetManager.Bundle>((resolve, reject) => {
             assetManager.loadBundle(name, options, (err, bundle: AssetManager.Bundle) => {
                 if (err) {
-                    resolve(null!);
+                    reject(err);
                     return;
                 }
                 resolve(bundle);
@@ -168,7 +168,7 @@ export class ResLoader {
         return new Promise((resolve, reject) => {
             const onComplete = (err: Error | null, data: AssetManager.RequestItem) => {
                 if (err) {
-                    resolve(null!);
+                    reject(err);
                     return;
                 }
                 resolve(data);
@@ -239,9 +239,13 @@ export class ResLoader {
         return new Promise<T>((resolve, reject) => {
             const onComplete = (err: Error | null, data: T) => {
                 if (err) {
-                    resolve(null!);
+                    reject(err);
                     return;
                 }
+                // 增加引用计数，防止资源被意外释放
+                // if (data) {
+                //     data.addRef();
+                // }
                 resolve(data);
             };
 
@@ -337,7 +341,7 @@ export class ResLoader {
         if (bundle) {
             const asset = bundle.get(path);
             if (asset) {
-                this.releasePrefabtDepsRecursively(asset);
+                this.releasePrefabDepsRecursively(asset);
             }
         }
     }
@@ -354,8 +358,8 @@ export class ResLoader {
         if (bundle) {
             const infos = bundle.getDirWithPath(path);
             if (infos) {
-                infos.map((info) => {
-                    this.releasePrefabtDepsRecursively(info.uuid);
+                infos.forEach((info) => {
+                    this.releasePrefabDepsRecursively(info.uuid);
                 });
             }
 
@@ -372,14 +376,15 @@ export class ResLoader {
      * @returns
      */
     getAssetPath(bundleName: string, uuid: string): string {
-        const b = this.getBundle(bundleName)!;
-        const info = b.getAssetInfo(uuid)!;
-        //@ts-ignore
-        return info.path;
+        const b = this.getBundle(bundleName);
+        if (!b) return '';
+        const info = b.getAssetInfo(uuid);
+        if (!info) return '';
+        return (info as any).path || '';
     }
 
     /** 释放预制依赖资源 */
-    private releasePrefabtDepsRecursively(uuid: string | Asset) {
+    private releasePrefabDepsRecursively(uuid: string | Asset) {
         let asset: Asset | null | undefined;
         if (uuid instanceof Asset) {
             asset = uuid;
@@ -390,12 +395,12 @@ export class ResLoader {
             if (asset) asset.decRef();
         }
 
-        // 释放预制引用资源
+        // 释放预制引用资源（防止内存泄漏）
         // if (asset instanceof Prefab) {
         //     const uuids: string[] = assetManager.dependUtil.getDepsRecursively(asset.uuid)!;
-        //     uuids.forEach(uuid => {
-        //         const asset = assetManager.assets.get(uuid);
-        //         if (asset) asset.decRef();
+        //     uuids.forEach(depUuid => {
+        //         const depAsset = assetManager.assets.get(depUuid);
+        //         if (depAsset) depAsset.decRef();
         //     });
         // }
     }
@@ -458,27 +463,45 @@ export class ResLoader {
     }
 
     private async loadByArgs<T extends Asset>(args: ILoadResArgs<T>) {
-        if (args.bundle) {
-            let bundle = assetManager.bundles.get(args.bundle);
+        try {
+            if (args.bundle) {
+                let bundle = assetManager.bundles.get(args.bundle);
 
-            // 自动加载资源包
-            if (bundle == null) bundle = await this.loadBundle(args.bundle);
+                // 自动加载资源包
+                if (bundle == null) {
+                    bundle = await this.loadBundle(args.bundle);
+                    if (!bundle) {
+                        const error = new Error(`加载资源包失败: ${args.bundle}`);
+                        console.error(error.message);
+                        if (args.onComplete) {
+                            args.onComplete(error, null);
+                        }
+                        return;
+                    }
+                }
 
-            // 加载指定资源包中的资源
-            this.loadByBundleAndArgs(bundle, args);
+                // 加载指定资源包中的资源
+                this.loadByBundleAndArgs(bundle, args);
+            }
+            // 默认资源包
+            else {
+                this.loadByBundleAndArgs(resources, args);
+            }
         }
-        // 默认资源包
-        else {
-            this.loadByBundleAndArgs(resources, args);
+        catch (error) {
+            console.error('loadByArgs 错误:', error);
+            if (args.onComplete) {
+                args.onComplete(error as Error, null);
+            }
         }
     }
 
     /** 打印缓存中所有资源信息 */
     dump() {
         assetManager.assets.forEach((value: Asset, key: string) => {
-            console.log(`引用数量:${value.refCount}`, assetManager.assets.get(key));
+            console.log(`[${key}] 引用数量: ${value.refCount}`, value);
         });
-        console.log(`当前资源总数:${assetManager.assets.count}`);
+        console.log(`当前资源总数: ${assetManager.assets.count}`);
     }
 
     private debugLogReleasedAsset(bundleName: string, asset: Asset) {

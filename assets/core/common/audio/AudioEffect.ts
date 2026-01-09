@@ -31,10 +31,18 @@ export class AudioEffect extends AudioSource {
         this.onComplete && this.onComplete(this);
     }
 
+    /** 重置音效对象，释放所有引用 */
     reset() {
         this.stop();
         this.clip = null;
         this.path = null!;
         this.params = null!;
+        this.onComplete = null; // 清理回调引用，防止内存泄漏
+    }
+
+    /** 组件销毁时清理资源 */
+    onDestroy() {
+        this.node.off(AudioSource.EventType.ENDED, this.onAudioEnded, this);
+        this.reset();
     }
 }

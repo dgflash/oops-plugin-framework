@@ -5,10 +5,15 @@
  * @LastEditTime: 2021-11-04 10:46:00
  */
 
-import { CCFloat, game, SkeletalAnimation, _decorator } from 'cc';
+import { AnimationClip, CCFloat, game, SkeletalAnimation, _decorator } from 'cc';
 import AnimatorAnimation from './AnimatorAnimation';
 
 const { ccclass, property, requireComponent, disallowMultiple, menu, help } = _decorator;
+
+/** 动画循环播放模式 */
+const WRAP_MODE_LOOP = AnimationClip.WrapMode.Loop;
+/** 动画单次播放模式 */
+const WRAP_MODE_NORMAL = AnimationClip.WrapMode.Normal;
 
 @ccclass
 @disallowMultiple
@@ -22,11 +27,13 @@ export class AnimatorSkeletal extends AnimatorAnimation {
     })
     private duration = 0.3;
 
-    private cross_duration = 0; // 防止切换动画时间少于间隔时间导致动画状态错乱的问题
-    private current_time = 0; // 上一次切换状态时间
+    /** 防止切换动画时间少于间隔时间导致动画状态错乱的问题（毫秒） */
+    private _crossDurationMs = 0;
+    /** 上一次切换状态时间（毫秒） */
+    private _lastSwitchTime = 0;
 
     onLoad() {
-        this.cross_duration = this.duration * 1000;
+        this._crossDurationMs = this.duration * 1000;
     }
 
     /**
@@ -40,13 +47,14 @@ export class AnimatorSkeletal extends AnimatorAnimation {
             return;
         }
 
-        if (game.totalTime - this.current_time > this.cross_duration) {
+        const currentTime = game.totalTime;
+        if (currentTime - this._lastSwitchTime > this._crossDurationMs) {
             this._animation.crossFade(animName, this.duration);
         }
         else {
             this._animation.play(animName);
         }
-        this.current_time = game.totalTime;
+        this._lastSwitchTime = currentTime;
 
         this._animState = this._animation.getState(animName);
         if (!this._animState) {
@@ -55,7 +63,6 @@ export class AnimatorSkeletal extends AnimatorAnimation {
         if (!this._wrapModeMap.has(this._animState)) {
             this._wrapModeMap.set(this._animState, this._animState.wrapMode);
         }
-        // this._animState.wrapMode = loop ? 2 : this._wrapModeMap.get(this._animState)!;
-        this._animState.wrapMode = loop ? 2 : 1; // 2为循环播放，1为单次播放
+        this._animState.wrapMode = loop ? WRAP_MODE_LOOP : WRAP_MODE_NORMAL;
     }
 }

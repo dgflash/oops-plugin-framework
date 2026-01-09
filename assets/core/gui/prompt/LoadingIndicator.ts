@@ -17,10 +17,8 @@ export class LoadingIndicator extends Component {
     private loading_rotate = 0;
 
     update(dt: number) {
-        this.loading_rotate += dt * 220;
-        this.loading!.setRotationFromEuler(0, 0, -this.loading_rotate % 360);
-        if (this.loading_rotate > 360) {
-            this.loading_rotate -= 360;
-        }
+        // 优化旋转计算，直接使用模运算避免冗余判断
+        this.loading_rotate = (this.loading_rotate + dt * 220) % 360;
+        this.loading!.setRotationFromEuler(0, 0, -this.loading_rotate);
     }
 }

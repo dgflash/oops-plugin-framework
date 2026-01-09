@@ -80,19 +80,25 @@ export default class VMParent extends GameComponent {
         }
     }
 
-    /** 未优化的遍历节点，获取VM 组件 */
+    /** 优化的遍历节点，获取VM 组件 */
     private getVMComponents() {
-        let comps = this.node.getComponentsInChildren(VMBase);
+        const comps = this.node.getComponentsInChildren(VMBase);
         const parents = this.node.getComponentsInChildren(VMParent).filter((v) => v.uuid !== this.uuid); // 过滤掉自己
 
-        //过滤掉不能赋值的parent
-        let filters: any[] = [];
-        parents.forEach((node: Component) => {
-            filters = filters.concat(node.getComponentsInChildren(VMBase));
+        // 如果没有嵌套的 VMParent，直接返回所有组件
+        if (parents.length === 0) {
+            return comps;
+        }
+
+        // 使用 Set 优化过滤性能，避免 O(n²) 复杂度
+        const filterSet = new Set<Component>();
+        parents.forEach((parent: Component) => {
+            const childComps = parent.getComponentsInChildren(VMBase);
+            childComps.forEach(comp => filterSet.add(comp));
         });
 
-        comps = comps.filter((v) => filters.indexOf(v) < 0);
-        return comps;
+        // 使用 Set.has() 代替 indexOf，性能更好
+        return comps.filter((v) => !filterSet.has(v));
     }
 
     /**
@@ -109,7 +115,10 @@ export default class VMParent extends GameComponent {
 
         // 解除全部引用
         VM.remove(this.tag);
+        // @ts-ignore
         this.data = null;
+        // @ts-ignore
+        this.tag = null;
 
         super.onDestroy();
     }

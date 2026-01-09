@@ -137,4 +137,28 @@ export class LayerGame extends Node {
         node.parent = config.parent ? config.parent : this;
         if (config.siblingIndex != null) node.setSiblingIndex(config.siblingIndex);
     }
+
+    /** 销毁时清理所有游戏元素 */
+    onDestroy() {
+        // 清理所有对象池
+        this.elements.forEach((params) => {
+            if (params.pool) {
+                params.pool.clear();
+            }
+            // 清理普通节点数组
+            if (params.nodes) {
+                params.nodes.forEach(node => {
+                    if (node && node.isValid) {
+                        node.destroy();
+                    }
+                });
+                params.nodes.length = 0;
+            }
+            // 释放资源
+            if (params.config.prefab) {
+                resLoader.release(params.config.prefab, params.config.bundle);
+            }
+        });
+        this.elements.clear();
+    }
 }

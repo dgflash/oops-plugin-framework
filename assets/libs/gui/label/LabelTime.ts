@@ -11,38 +11,41 @@ const { ccclass, property, menu } = _decorator;
 @menu('OopsFramework/Label/LabelTime （倒计时标签）')
 export default class LabelTime extends Label {
     @property({
-        tooltip: '到计时间总时间（单位秒）',
+        tooltip: '倒计时总时间（单位秒）',
     })
-        countDown = 1000;
+    countDown = 1000;
 
     @property({
         tooltip: '天数数据格式化',
     })
-        dayFormat = '{0}天{1}小时';
+    dayFormat = '{0}天{1}小时';
 
     @property({
         tooltip: '时间格式化',
     })
-        timeFormat = '{0}:{1}:{2}';
+    timeFormat = '{0}:{1}:{2}';
 
     @property({
-        tooltip: '时间是否有固定二位数据',
+        tooltip: '时间是否有固定两位数字',
     })
-        zeroize = true;
+    zeroize = true;
 
     @property({
-        tooltip: '游戏进入后台时间暂时',
+        tooltip: '游戏进入后台时暂停倒计时',
     })
-        paused = false;
+    paused = false;
 
-    private backStartTime = 0; // 进入后台开始时间
-    private dateDisable!: boolean; // 时间能否由天数显示
-    private result!: string; // 时间结果字符串
+    /** 进入后台开始时间 */
+    private backStartTime = 0;
+    /** 时间能否由天数显示 */
+    private dateDisable = false;
+    /** 时间结果字符串 */
+    private result = '';
 
-    /** 每秒触发事件 */
-    onSecond: Function = null!;
-    /** 倒计时完成事件 */
-    onComplete: Function = null!;
+    /** 每秒触发事件回调 */
+    onSecond: ((node: any) => void) | null = null;
+    /** 倒计时完成事件回调 */
+    onComplete: ((node: any) => void) | null = null;
 
     private replace(value: string, ...args: any): string {
         return value.replace(/\{(\d+)\}/g, (m, i) => {
@@ -61,8 +64,7 @@ export default class LabelTime extends Label {
         c = c - minutes * 60;
         const seconds: number = c;
 
-        this.dateDisable = this.dateDisable || false;
-        if (date == 0 && hours == 0 && minutes == 0 && seconds == 0) {
+        if (date === 0 && hours === 0 && minutes === 0 && seconds === 0) {
             if (this.zeroize) {
                 this.result = this.replace(this.timeFormat, '00', '00', '00');
             }
@@ -73,7 +75,7 @@ export default class LabelTime extends Label {
         else if (date > 0 && !this.dateDisable) {
             let dataFormat = this.dayFormat;
             const index = dataFormat.indexOf('{1}');
-            if (hours == 0 && index > -1) {
+            if (hours === 0 && index > -1) {
                 dataFormat = dataFormat.substring(0, index);
             }
             let df = dataFormat;
@@ -88,13 +90,13 @@ export default class LabelTime extends Label {
                 this.result = this.replace(df, date, this.coverString(hours));
             }
             else {
-                this.result = this.replace(df, date, hours); // 如果天大于1，则显示 "1 Day..."
+                this.result = this.replace(df, date, hours);
             }
         }
         else {
             hours += date * 24;
             if (this.zeroize) {
-                this.result = this.replace(this.timeFormat, this.coverString(hours), this.coverString(minutes), this.coverString(seconds)); // 否则显示 "01:12:24"
+                this.result = this.replace(this.timeFormat, this.coverString(hours), this.coverString(minutes), this.coverString(seconds));
             }
             else {
                 this.result = this.replace(this.timeFormat, hours, minutes, seconds);
@@ -168,8 +170,16 @@ export default class LabelTime extends Label {
             oops.message.off(EventMessage.GAME_SHOW, this.onGameShow, this);
             oops.message.off(EventMessage.GAME_HIDE, this.onGameHide, this);
         }
+
+        // 清理回调函数引用，防止内存泄漏
+        this.onSecond = null;
+        this.onComplete = null;
+
+        // 停止计时
+        this.timing_end();
     }
 
+    /** 游戏从后台返回 */
     private onGameShow() {
         // 时间到了
         if (this.countDown <= 0) return;
@@ -184,12 +194,14 @@ export default class LabelTime extends Label {
         }
     }
 
+    /** 游戏进入后台 */
     private onGameHide() {
         this.backStartTime = oops.timer.getTime();
     }
 
+    /** 每秒回调 */
     private onScheduleSecond() {
-        if (this.countDown == 0) {
+        if (this.countDown === 0) {
             this.format();
             this.onScheduleComplete();
             return;
@@ -197,18 +209,23 @@ export default class LabelTime extends Label {
 
         this.countDown--;
         this.format();
-        if (this.onSecond) this.onSecond(this.node);
+        if (this.onSecond) {
+            this.onSecond(this.node);
+        }
 
-        if (this.countDown == 0) {
+        if (this.countDown === 0) {
             this.onScheduleComplete();
         }
     }
 
+    /** 倒计时完成 */
     private onScheduleComplete() {
         this.timing_end();
         this.format();
         this.unschedule(this.onScheduleSecond);
-        if (this.onComplete) this.onComplete(this.node);
+        if (this.onComplete) {
+            this.onComplete(this.node);
+        }
     }
 
     /** 开始计时 */

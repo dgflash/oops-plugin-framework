@@ -124,4 +124,16 @@ export class LayerPopUp extends LayerUI {
         super.clear(isDestroy);
         this.closeBlack();
     }
+
+    /** 销毁时释放资源 */
+    onDestroy() {
+        // 清理遮罩节点
+        if (this.mask) {
+            this.mask.destroy();
+            this.mask = null!;
+        }
+        
+        // 清理事件阻挡组件引用
+        this.black = null!;
+    }
 }

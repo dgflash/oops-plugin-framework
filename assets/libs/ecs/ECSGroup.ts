@@ -13,14 +13,27 @@ export class ECSGroup<E extends ECSEntity = ECSEntity> {
 
     private _matchEntities: Map<number, E> = new Map();
 
-    private _entitiesCache: E[] | null = null;
+    private _entitiesCache: E[] = [];
+    private _cacheValid = false;
 
     /**
      * 符合规则的实体
      */
     get matchEntities() {
-        if (this._entitiesCache === null) {
-            this._entitiesCache = Array.from(this._matchEntities.values());
+        if (!this._cacheValid) {
+            // 复用数组，减少 GC 压力
+            const cache = this._entitiesCache;
+            cache.length = 0;
+            
+            // 直接遍历 Map values 比 Array.from 更高效
+            const iterator = this._matchEntities.values();
+            let result = iterator.next();
+            while (!result.done) {
+                cache.push(result.value);
+                result = iterator.next();
+            }
+            
+            this._cacheValid = true;
         }
         return this._entitiesCache;
     }
@@ -47,18 +60,20 @@ export class ECSGroup<E extends ECSEntity = ECSEntity> {
 
     onComponentAddOrRemove(entity: E) {
         if (this.matcher.isMatch(entity)) { // Group只关心指定组件在实体身上的添加和删除动作。
-            this._matchEntities.set(entity.eid, entity);
-            this._entitiesCache = null;
-            this.count++;
+            if (!this._matchEntities.has(entity.eid)) {
+                this._matchEntities.set(entity.eid, entity);
+                this._cacheValid = false;
+                this.count++;
 
-            if (this._enteredEntities) {
-                this._enteredEntities.set(entity.eid, entity);
-                this._removedEntities!.delete(entity.eid);
+                if (this._enteredEntities) {
+                    this._enteredEntities.set(entity.eid, entity);
+                    this._removedEntities!.delete(entity.eid);
+                }
             }
         }
         else if (this._matchEntities.has(entity.eid)) { // 如果Group中有这个实体，但是这个实体已经不满足匹配规则，则从Group中移除该实体
             this._matchEntities.delete(entity.eid);
-            this._entitiesCache = null;
+            this._cacheValid = false;
             this.count--;
 
             if (this._enteredEntities) {
@@ -75,7 +90,8 @@ export class ECSGroup<E extends ECSEntity = ECSEntity> {
 
     clear() {
         this._matchEntities.clear();
-        this._entitiesCache = null;
+        this._entitiesCache.length = 0;
+        this._cacheValid = false;
         this.count = 0;
         this._enteredEntities?.clear();
         this._removedEntities?.clear();

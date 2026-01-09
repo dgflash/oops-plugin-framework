@@ -16,6 +16,8 @@ export class LayerUI extends Node {
     protected ui_nodes = new Collection<string, UIState>();
     /** 被移除的界面缓存数据 */
     protected ui_cache = new Map<string, UIState>();
+    /** 缓存界面的最大数量限制 */
+    protected readonly MAX_CACHE_SIZE = 10;
 
     /**
      * UI基础层，允许添加多个预制件节点
@@ -50,14 +52,25 @@ export class LayerUI extends Node {
     add(uiid: Uiid, config: UIConfig, params?: UIParam): Promise<Node> {
         return new Promise<Node>(async (resolve, reject) => {
             if (this.ui_nodes.has(config.prefab)) {
-                console.warn(`路径为【${config.prefab}】的预制重复加载`);
+                const error = `路径为【${config.prefab}】的预制重复加载`;
+                console.warn(error);
+                reject(new Error(error));
                 return;
             }
 
-            // 检查缓存中是否存界面
-            const state = this.initUIConfig(uiid, config, params);
-            await this.load(state);
-            resolve(state.node);
+            try {
+                // 检查缓存中是否存界面
+                const state = this.initUIConfig(uiid, config, params);
+                await this.load(state);
+                if (state.node) {
+                    resolve(state.node);
+                } else {
+                    reject(new Error(`路径为【${config.prefab}】的预制加载失败，节点为空`));
+                }
+            } catch (error) {
+                console.error(`添加界面【${config.prefab}】时发生错误:`, error);
+                reject(error);
+            }
         });
     }
 
@@ -90,28 +103,34 @@ export class LayerUI extends Node {
         return new Promise<Node>(async (resolve, reject) => {
             // 加载界面资源超时提示
             if (state.node == null) {
-                const timerId = setTimeout(this.onLoadingTimeoutGui, oops.config.game.loadingTimeoutGui);
+                let timerId: any = null;
+                
+                try {
+                    timerId = setTimeout(this.onLoadingTimeoutGui, oops.config.game.loadingTimeoutGui);
 
-                // 优先加载配置的指定资源包中资源，如果没配置则加载默认资源包资源
-                const res = await resLoader.load(state.config.bundle!, state.config.prefab, Prefab);
-                if (res) {
-                    state.node = instantiate(res);
+                    // 优先加载配置的指定资源包中资源，如果没配置则加载默认资源包资源
+                    const res = await resLoader.load(state.config.bundle!, state.config.prefab, Prefab);
+                    if (res) {
+                        state.node = instantiate(res);
 
-                    // 是否启动真机安全区域显示
-                    if (state.config.safeArea) state.node.addComponent(SafeArea);
+                        // 是否启动真机安全区域显示
+                        if (state.config.safeArea) state.node.addComponent(SafeArea);
 
-                    // 窗口事件委托
-                    const comp = state.node.addComponent(LayerUIElement);
-                    comp.state = state;
+                        // 窗口事件委托
+                        const comp = state.node.addComponent(LayerUIElement);
+                        comp.state = state;
+                    }
+                    else {
+                        console.warn(`路径为【${state.config.prefab}】的预制加载失败`);
+                        this.failure(state);
+                    }
+                } finally {
+                    // 确保在所有情况下都清理定时器和关闭等待提示
+                    if (timerId !== null) {
+                        clearTimeout(timerId);
+                    }
+                    oops.gui.waitClose();
                 }
-                else {
-                    console.warn(`路径为【${state.config.prefab}】的预制加载失败`);
-                    this.failure(state);
-                }
-
-                // 关闭界面资源超时提示
-                oops.gui.waitClose();
-                clearTimeout(timerId);
             }
 
             await this.uiInit(state);
@@ -168,7 +187,9 @@ export class LayerUI extends Node {
             const release: boolean = state.config.destroy!;
 
             // 不释放界面，缓存起来待下次使用
-            if (release === false) this.ui_cache.set(state.config.prefab, state);
+            if (release === false) {
+                this.addToCache(state.config.prefab, state);
+            }
 
             // 界面移出舞台
             if (state.valid) {
@@ -176,6 +197,23 @@ export class LayerUI extends Node {
                 comp && comp.remove(release);
             }
         }
+    }
+
+    /** 添加界面到缓存，实现 LRU 策略 */
+    private addToCache(prefabPath: string, state: UIState) {
+        // 如果缓存已满，移除最早的缓存项
+        if (this.ui_cache.size >= this.MAX_CACHE_SIZE) {
+            const firstKey = this.ui_cache.keys().next().value;
+            if (firstKey) {
+                const oldState = this.ui_cache.get(firstKey);
+                if (oldState) {
+                    this.ui_cache.delete(firstKey);
+                    const comp = oldState.node.getComponent(LayerUIElement);
+                    comp && comp.remove(true);
+                }
+            }
+        }
+        this.ui_cache.set(prefabPath, state);
     }
 
     /** 删除缓存的界面，当调用 remove 移除舞台时，可通过此方法删除缓存界面 */

@@ -169,10 +169,19 @@ export class VMCustom extends VMBase {
         this._timer = 0;
 
         const oldValue = this._oldValue;
-        const newValue = this.getComponentValue();
+        const newValue = this.getComponentValue(); // 只调用一次
 
-        if (this._oldValue === newValue) return;
-        this._oldValue = this.getComponentValue();
+        if (oldValue === newValue) return;
+        this._oldValue = newValue; // 直接使用已获取的值
         this.onValueController(newValue, oldValue);
+    }
+
+    /** 
+     * 组件销毁时清理引用，防止内存泄漏
+     */
+    onDestroy() {
+        // 清理组件引用
+        this._watchComponent = null;
+        this._oldValue = null;
     }
 }

@@ -13,59 +13,83 @@ const { ccclass, property, menu } = _decorator;
 @ccclass('LabelChange')
 @menu('OopsFramework/Label/LabelChange （数值变化动画标签）')
 export class LabelChange extends LabelNumber {
-    @property
-        isInteger = false;
+    @property({
+        tooltip: '是否为整数'
+    })
+    isInteger = false;
 
-    private duration = 0; // 持续时间
-    private callback: Function | undefined; // 完成回调
-    private isBegin = false; // 是否开始
-    private speed = 0; // 变化速度
-    private end = 0; // 最终值
-
+    /** 持续时间 */
+    private duration = 0;
+    /** 完成回调 */
+    private callback: (() => void) | null = null;
+    /** 是否开始动画 */
+    private isBegin = false;
+    /** 变化速度 */
+    private speed = 0;
+    /** 最终值 */
+    private end = 0;
+    /** 当前数据（用于插值计算） */
     private _data = 0;
 
     /**
-     * 变化到某值,如果从当前开始的begin传入null
-     * @param {number} duration
-     * @param {number} end
-     * @param {Function} [callback]
+     * 变化到某个目标值
+     * @param duration 持续时间（秒）
+     * @param end 目标值
+     * @param callback 完成回调
      */
-    changeTo(duration: number, end: number, callback?: Function) {
-        if (duration == 0) {
+    changeTo(duration: number, end: number, callback?: () => void) {
+        if (duration === 0) {
+            this.num = end;
             if (callback) callback();
             return;
         }
         this.playAnim(duration, this.num, end, callback);
     }
 
-
     /**
-     * 变化值,如果从当前开始的begin传入null
-     * @param {number} duration
-     * @param {number} value
-     * @param {Function} [callback]
-     * @memberof LabelChange
+     * 在当前值基础上变化
+     * @param duration 持续时间（秒）
+     * @param value 变化量（可正可负）
+     * @param callback 完成回调
      */
-    changeBy(duration: number, value: number, callback?: Function) {
-        if (duration == 0) {
+    changeBy(duration: number, value: number, callback?: () => void) {
+        if (duration === 0) {
+            this.num += value;
             if (callback) callback();
             return;
         }
         this.playAnim(duration, this.num, this.num + value, callback);
     }
 
-    /** 立刻停止 */
+    /** 
+     * 立刻停止动画
+     * @param excCallback 是否执行回调函数
+     */
     stop(excCallback = true) {
         this.num = this.end;
         this.isBegin = false;
-        if (excCallback && this.callback) this.callback();
+        if (excCallback && this.callback) {
+            this.callback();
+        }
+        this.callback = null;
     }
 
-    /** 播放动画 */
-    private playAnim(duration: number, begin: number, end: number, callback?: Function) {
+    /** 
+     * 播放数值变化动画
+     * @param duration 持续时间（秒）
+     * @param begin 起始值
+     * @param end 结束值
+     * @param callback 完成回调
+     */
+    private playAnim(duration: number, begin: number, end: number, callback?: () => void) {
+        // 清理之前的回调，防止内存泄漏
+        if (this.callback) {
+            this.callback = null;
+        }
+
         this.duration = duration;
         this.end = end;
-        this.callback = callback;
+        this.callback = callback || null;
         this.speed = (end - begin) / duration;
 
         this._data = begin;
@@ -73,7 +97,10 @@ export class LabelChange extends LabelNumber {
         this.isBegin = true;
     }
 
-    /** 是否已经结束 */
+    /** 
+     * 判断是否已经结束
+     * @param num 当前数值
+     */
     private isEnd(num: number): boolean {
         if (this.speed > 0) {
             return num >= this.end;
@@ -83,32 +110,56 @@ export class LabelChange extends LabelNumber {
         }
     }
 
+    /** 引擎更新事件 */
     update(dt: number) {
-        if (this.isBegin) {
-            if (this.num == this.end) {
-                this.isBegin = false;
-                if (this.callback) this.callback();
-                return;
-            }
-            this._data += dt * this.speed;
+        // 仅在动画播放时才执行
+        if (!this.isBegin) {
+            return;
+        }
 
-            if (this.isInteger) {
-                if (this.end < this._data) {
-                    this.num = Math.floor(this._data);
-                }
-                else {
-                    this.num = Math.ceil(this._data);
-                }
+        // 如果已经到达目标值，结束动画
+        if (this.num === this.end) {
+            this.isBegin = false;
+            if (this.callback) {
+                const cb = this.callback;
+                this.callback = null;
+                cb();
+            }
+            return;
+        }
+
+        // 计算新的数值
+        this._data += dt * this.speed;
+
+        // 根据是否为整数进行不同处理
+        if (this.isInteger) {
+            if (this.speed > 0) {
+                this.num = Math.floor(this._data);
             }
             else {
-                this.num = this._data;
-            }
-            /** 变化完成 */
-            if (this.isEnd(this._data)) {
-                this.num = this.end;
-                this.isBegin = false;
-                if (this.callback) this.callback();
+                this.num = Math.ceil(this._data);
             }
         }
+        else {
+            this.num = this._data;
+        }
+
+        // 检查是否完成
+        if (this.isEnd(this._data)) {
+            this.num = this.end;
+            this.isBegin = false;
+            if (this.callback) {
+                const cb = this.callback;
+                this.callback = null;
+                cb();
+            }
+        }
+    }
+
+    /** 组件销毁时的清理工作 */
+    onDestroy() {
+        // 清理回调函数引用，防止内存泄漏
+        this.callback = null;
+        this.isBegin = false;
     }
 }

@@ -23,8 +23,11 @@ export default class ButtonSimple extends Component {
         type: AudioClip
     })
     private effect: AudioClip = null!;
+    
+    /** 触摸次数计数 */
     private touchCount = 0;
-    private touchtEndTime = 0;
+    /** 上次触摸结束时间 */
+    private touchEndTime = 0;
 
     private static effectPath: string = null!;
     /** 批量设置触摸音效 */
@@ -47,12 +50,12 @@ export default class ButtonSimple extends Component {
             this.touchCount++;
         }
 
-        // 防连点500毫秒出发一次事件
-        if (this.touchtEndTime && game.totalTime - this.touchtEndTime < this.interval) {
+        // 防连点，根据设置的间隔触发一次事件
+        if (this.touchEndTime && game.totalTime - this.touchEndTime < this.interval) {
             event.propagationStopped = true;
         }
         else {
-            this.touchtEndTime = game.totalTime;
+            this.touchEndTime = game.totalTime;
 
             // 短按触摸音效
             this.playEffect();
@@ -69,8 +72,12 @@ export default class ButtonSimple extends Component {
         }
     }
 
+    /** 组件销毁时的清理工作 */
     onDestroy() {
         this.node.off(Node.EventType.TOUCH_END, this.onTouchEnd, this);
         this.node.off(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
+        
+        // 清理音效引用
+        this.effect = null!;
     }
 }

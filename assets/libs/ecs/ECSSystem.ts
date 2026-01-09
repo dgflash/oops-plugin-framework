@@ -79,18 +79,24 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
 
         this.dt = dt;
 
-        // 处理刚进来的实体
+        // 处理刚进来的实体 - 使用标准 for 循环优化性能
         if (this.enteredEntities.size > 0) {
-            const entities = this.enteredEntities.values();
-            for (const entity of entities) {
-                (this as unknown as ecs.IEntityEnterSystem).entityEnter(entity);
+            const entityEnterFn = (this as unknown as ecs.IEntityEnterSystem).entityEnter;
+            const iterator = this.enteredEntities.values();
+            let result = iterator.next();
+            while (!result.done) {
+                entityEnterFn.call(this, result.value);
+                result = iterator.next();
             }
             this.enteredEntities.clear();
         }
 
-        // 只执行firstUpdate
-        for (const entity of this.group.matchEntities) {
-            (this as unknown as ecs.ISystemFirstUpdate).firstUpdate(entity);
+        // 只执行firstUpdate - 使用标准 for 循环
+        const firstUpdateFn = (this as unknown as ecs.ISystemFirstUpdate).firstUpdate;
+        const entities = this.group.matchEntities;
+        const len = entities.length;
+        for (let i = 0; i < len; i++) {
+            firstUpdateFn.call(this, entities[i]);
         }
 
         this.execute = this.tmpExecute!;
@@ -108,10 +114,13 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
 
         this.dt = dt;
 
-        // 执行update
+        // 执行update - 使用标准 for 循环提升性能
         if (this.hasUpdate) {
-            for (const entity of this.group.matchEntities) {
-                (this as unknown as ecs.ISystemUpdate).update(entity);
+            const updateFn = (this as unknown as ecs.ISystemUpdate).update;
+            const entities = this.group.matchEntities;
+            const len = entities.length;
+            for (let i = 0; i < len; i++) {
+                updateFn.call(this, entities[i]);
             }
         }
     }
@@ -122,12 +131,15 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
      * @returns
      */
     private execute1(dt: number): void {
-        let entities;
+        // 处理移除的实体 - 使用标准循环优化
         if (this.removedEntities.size > 0) {
             if (this.hasEntityRemove) {
-                entities = this.removedEntities.values();
-                for (const entity of entities) {
-                    (this as unknown as ecs.IEntityRemoveSystem).entityRemove(entity);
+                const entityRemoveFn = (this as unknown as ecs.IEntityRemoveSystem).entityRemove;
+                const iterator = this.removedEntities.values();
+                let result = iterator.next();
+                while (!result.done) {
+                    entityRemoveFn.call(this, result.value);
+                    result = iterator.next();
                 }
             }
             this.removedEntities.clear();
@@ -137,21 +149,27 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
 
         this.dt = dt;
 
-        // 处理刚进来的实体
+        // 处理刚进来的实体 - 使用标准循环优化
         if (this.enteredEntities!.size > 0) {
             if (this.hasEntityEnter) {
-                entities = this.enteredEntities!.values();
-                for (const entity of entities) {
-                    (this as unknown as ecs.IEntityEnterSystem).entityEnter(entity);
+                const entityEnterFn = (this as unknown as ecs.IEntityEnterSystem).entityEnter;
+                const iterator = this.enteredEntities!.values();
+                let result = iterator.next();
+                while (!result.done) {
+                    entityEnterFn.call(this, result.value);
+                    result = iterator.next();
                 }
             }
             this.enteredEntities!.clear();
         }
 
-        // 执行update
+        // 执行update - 使用标准 for 循环提升性能
         if (this.hasUpdate) {
-            for (const entity of this.group.matchEntities) {
-                (this as unknown as ecs.ISystemUpdate).update(entity);
+            const updateFn = (this as unknown as ecs.ISystemUpdate).update;
+            const entities = this.group.matchEntities;
+            const len = entities.length;
+            for (let i = 0; i < len; i++) {
+                updateFn.call(this, entities[i]);
             }
         }
     }

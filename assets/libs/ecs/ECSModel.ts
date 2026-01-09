@@ -45,7 +45,7 @@ export class ECSModel {
     /** 组件构造函数，用于ecs.register注册时，记录不同类型的组件 */
     static compCtors: (CompCtor<any> | number)[] = [];
     /**
-     * 每个组件的添加和删除的动作都要派送到“关心”它们的group上。goup对当前拥有或者之前（删除前）拥有该组件的实体进行组件规则判断。判断该实体是否满足group
+     * 每个组件的添加和删除的动作都要派送到"关心"它们的group上。goup对当前拥有或者之前（删除前）拥有该组件的实体进行组件规则判断。判断该实体是否满足group
      * 所期望的组件组合。
      */
     static compAddOrRemove: Map<number, CompAddOrRemove[]> = new Map();
@@ -59,6 +59,10 @@ export class ECSModel {
      * key是组件的筛选规则，一个筛选规则对应一个group
      */
     static groups: Map<number, ECSGroup> = new Map();
+
+    /** 对象池配置 */
+    static readonly MAX_ENTITY_POOL_SIZE = 200; // 每种实体类型最多缓存数量
+    static readonly MAX_COMP_POOL_SIZE = 500;   // 每种组件类型最多缓存数量
 
     /**
      * 创建group，每个group只关心对应组件的添加和删除

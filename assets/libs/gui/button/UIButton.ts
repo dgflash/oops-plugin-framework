@@ -56,7 +56,7 @@ export default class UIButton extends Button {
                 this._touchCount++;
             }
 
-            // 防连点500毫秒出发一次事件
+            // 防连点，根据设置的间隔触发一次事件
             if (this._touchEndTime && game.totalTime - this._touchEndTime < this.interval) {
                 event.propagationStopped = true;
             }
@@ -87,5 +87,12 @@ export default class UIButton extends Button {
         else if (this.effect) {
             oops.audio.playEffect(this.effect);
         }
+    }
+
+    /** 组件销毁时的清理工作 */
+    onDestroy() {
+        // 清理音效引用
+        this.effect = null!;
+        super.onDestroy();
     }
 }

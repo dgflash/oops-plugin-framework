@@ -140,35 +140,25 @@ export class GameComponent extends Component {
             this.resPaths.set(type, rps);
         }
 
+        // 确定真实的 bundle 和 path
+        let realBundle: string;
+        let realPaths: string[];
+
         if (paths instanceof Array) {
-            const realBundle = bundleName;
-            for (let index = 0; index < paths.length; index++) {
-                const realPath = paths[index];
-                const key = this.getResKey(realBundle, realPath);
-                const rp = rps.get(key);
-                if (rp) {
-                    rp.refCount++;
-                }
-                else {
-                    rps.set(key, { path: realPath, bundle: realBundle, refCount: 1 });
-                }
-            }
+            realBundle = bundleName;
+            realPaths = paths;
         }
         else if (typeof paths === 'string') {
-            const realBundle = bundleName;
-            const realPath = paths;
-            const key = this.getResKey(realBundle, realPath);
-            const rp = rps.get(key);
-            if (rp) {
-                rp.refCount++;
-            }
-            else {
-                rps.set(key, { path: realPath, bundle: realBundle, refCount: 1 });
-            }
+            realBundle = bundleName;
+            realPaths = [paths];
         }
         else {
-            const realBundle = oops.res.defaultBundleName;
-            const realPath = bundleName;
+            realBundle = oops.res.defaultBundleName;
+            realPaths = [bundleName];
+        }
+
+        // 统一处理路径数组
+        for (const realPath of realPaths) {
             const key = this.getResKey(realBundle, realPath);
             const rp = rps.get(key);
             if (rp) {
@@ -252,31 +242,138 @@ export class GameComponent extends Component {
         oops.res.loadDir(bundleName, dir, type, onProgress, onComplete);
     }
 
-    /** 释放资源 */
+    /**
+     * 手动释放指定资源
+     * @param path          资源路径
+     * @param bundleName    资源包名
+     * @param releaseAll    是否释放所有引用计数（默认只释放一次）
+     */
+    releaseRes(path: string, bundleName: string = resLoader.defaultBundleName, releaseAll: boolean = false) {
+        if (!this.resPaths) return;
+        
+        const rps = this.resPaths.get(ResType.Load);
+        if (!rps) return;
+        
+        const key = this.getResKey(bundleName, path);
+        const record = rps.get(key);
+        if (record) {
+            if (releaseAll) {
+                // 释放所有引用
+                for (let i = 0; i < record.refCount; i++) {
+                    oops.res.release(record.path, record.bundle);
+                }
+                rps.delete(key);
+            }
+            else {
+                // 只释放一次引用
+                oops.res.release(record.path, record.bundle);
+                record.refCount--;
+                if (record.refCount <= 0) {
+                    rps.delete(key);
+                }
+            }
+        }
+    }
+
+    /** 释放所有加载的资源 */
     release() {
         if (this.resPaths) {
             const rps = this.resPaths.get(ResType.Load);
             if (rps) {
                 rps.forEach((value: ResRecord) => {
+                    // 根据引用计数释放资源
                     for (let i = 0; i < value.refCount; i++) {
                         oops.res.release(value.path, value.bundle);
                     }
                 });
                 rps.clear();
+                this.resPaths.delete(ResType.Load);
             }
         }
     }
 
-    /** 释放文件夹的资源 */
+    /** 释放所有文件夹资源 */
     releaseDir() {
         if (this.resPaths) {
             const rps = this.resPaths.get(ResType.LoadDir);
             if (rps) {
                 rps.forEach((value: ResRecord) => {
-                    oops.res.releaseDir(value.path, value.bundle);
+                    // 释放文件夹资源（根据引用计数多次释放）
+                    for (let i = 0; i < value.refCount; i++) {
+                        oops.res.releaseDir(value.path, value.bundle);
+                    }
                 });
+                rps.clear();
+                this.resPaths.delete(ResType.LoadDir);
             }
         }
+    }
+
+    /**
+     * 获取资源引用计数
+     * @param path          资源路径
+     * @param bundleName    资源包名
+     * @returns 引用计数，未找到返回0
+     */
+    getResRefCount(path: string, bundleName: string = resLoader.defaultBundleName): number {
+        if (!this.resPaths) return 0;
+        
+        const rps = this.resPaths.get(ResType.Load);
+        if (!rps) return 0;
+        
+        const key = this.getResKey(bundleName, path);
+        const record = rps.get(key);
+        return record ? record.refCount : 0;
+    }
+
+    /**
+     * 获取所有加载的资源信息（用于调试）
+     * @returns 资源记录数组
+     */
+    getAllResRecords(): ResRecord[] {
+        const records: ResRecord[] = [];
+        if (!this.resPaths) return records;
+        
+        const rps = this.resPaths.get(ResType.Load);
+        if (rps) {
+            rps.forEach((value: ResRecord) => {
+                records.push({ ...value });
+            });
+        }
+        
+        return records;
+    }
+
+    /**
+     * 打印资源使用情况（用于调试）
+     */
+    printResUsage() {
+        if (!this.resPaths) {
+            console.log('[资源管理] 暂无资源记录');
+            return;
+        }
+        
+        const loadRps = this.resPaths.get(ResType.Load);
+        const dirRps = this.resPaths.get(ResType.LoadDir);
+        
+        console.log('========== 资源使用情况 ==========');
+        console.log(`组件: ${this.node.name}`);
+        
+        if (loadRps && loadRps.size > 0) {
+            console.log(`\n[普通资源] 共 ${loadRps.size} 个:`);
+            loadRps.forEach((value: ResRecord, key: string) => {
+                console.log(`  - ${key} (引用计数: ${value.refCount})`);
+            });
+        }
+        
+        if (dirRps && dirRps.size > 0) {
+            console.log(`\n[文件夹资源] 共 ${dirRps.size} 个:`);
+            dirRps.forEach((value: ResRecord, key: string) => {
+                console.log(`  - ${key} (引用计数: ${value.refCount})`);
+            });
+        }
+        
+        console.log('==================================');
     }
 
     /**
@@ -296,6 +393,14 @@ export class GameComponent extends Component {
             }
             return;
         }
+        
+        // 释放旧的 spriteFrame 引用，避免内存泄漏
+        const oldSpriteFrame = target.spriteFrame;
+        if (oldSpriteFrame && isValid(oldSpriteFrame)) {
+            oldSpriteFrame.decRef();
+        }
+        
+        // 增加新 spriteFrame 引用并设置
         spriteFrame.addRef();
         target.spriteFrame = spriteFrame;
     }
@@ -318,19 +423,24 @@ export class GameComponent extends Component {
      */
     playEffect(url: string, params?: IAudioParams): Promise<AudioEffect> {
         return new Promise(async (resolve, reject) => {
-            // 音效播放完，关闭正在播放状态的音乐效果
+            // 确保参数中有 bundle 信息
             if (params == null) {
                 params = { bundle: resLoader.defaultBundleName };
             }
             else if (params.bundle == null) {
                 params.bundle = resLoader.defaultBundleName;
             }
+            
+            const bundle = params.bundle || resLoader.defaultBundleName;
             const ae = await oops.audio.playEffect(url, params);
+            
             if (ae) {
-                this.addPathToRecord(ResType.Load, ae.params.bundle!, url);
+                // 音效加载成功，记录资源引用
+                this.addPathToRecord(ResType.Load, bundle, url);
                 resolve(ae);
             }
             else {
+                // 音效加载失败，返回 null
                 resolve(null!);
             }
         });
