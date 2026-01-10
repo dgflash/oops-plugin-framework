@@ -3,7 +3,7 @@
         "target": "ES2017",
         "module": "CommonJS",
         "outDir": "./dist",
-        "rootDir": "./src",
+        "rootDir": "./",
         "strict": true,
         "moduleResolution": "node",
         "esModuleInterop": true,
@@ -19,7 +19,14 @@
             "./temp/declarations/cc.env"
         ]
     },
+    "include": [
+        "assets/**/*",
+        "src/**/*",
+        "typedoc.ts"
+    ],
     "exclude": [
-        "assets/**/*"
+        "node_modules",
+        "dist",
+        "temp"
     ]
 }

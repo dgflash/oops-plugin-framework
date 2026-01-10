@@ -55,11 +55,6 @@ declare module 'cc/env'{
 	export const WECHAT_MINI_PROGRAM: boolean;
 
 	/**
-	 * Running in the baidu's mini game.
-	 */
-	export const BAIDU: boolean;
-
-	/**
 	 * Running in the xiaomi's quick game.
 	 */
 	export const XIAOMI: boolean;
@@ -100,19 +95,19 @@ declare module 'cc/env'{
 	export const HUAWEI: boolean;
 
 	/**
-	 * Running in the cocosplay.
+	 * Running in the migu's quick game.
 	 */
-	export const COCOSPLAY: boolean;
+	export const MIGU: boolean;
 
 	/**
-	 * Running in the qtt's quick game.
+	 * Running in the honor's quick game.
 	 */
-	export const QTT: boolean;
+	export const HONOR: boolean;
 
 	/**
-	 * Running in the linksure's quick game.
+	 * Running in the cocos runtime.
 	 */
-	export const LINKSURE: boolean;
+	export const COCOS_RUNTIME: boolean;
 
 	/**
 	 * Running in the editor.
