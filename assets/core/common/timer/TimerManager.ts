@@ -15,7 +15,7 @@ interface ITimer<T = Record<string, number>> {
     /** 定时器 */
     timer: Timer;
     /** 数据对象 - 必须包含数字类型的字段 */
-    object: T;
+    object: any;
     /** 修改数据对象的字段 */
     field: keyof T;
     /** 事件侦听器的目标和被叫方 */
@@ -139,7 +139,7 @@ export class TimerManager extends Component {
             target: null!,
             startTime: 0,
             onSeconds: null,
-            onCompletes: null
+            onCompletes: null,
         };
     }
 
@@ -172,7 +172,7 @@ export class TimerManager extends Component {
     }
      */
     register<T extends Record<string, number>>(
-        object: T,
+        object: object,
         field: keyof T,
         target: object,
         onSecond?: Function,
@@ -194,16 +194,14 @@ export class TimerManager extends Component {
         if (onSecond) {
             data.onSeconds = data.onSeconds || [];
             data.onSeconds.push(onSecond);
-        }
-        else {
+        } else {
             data.onSeconds = null;
         }
 
         if (onComplete) {
             data.onCompletes = data.onCompletes || [];
             data.onCompletes.push(onComplete);
-        }
-        else {
+        } else {
             data.onCompletes = null;
         }
 
