@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist-doc",
+    "rootDir": "./",
+    "types": [
+      "./temp/declarations/cc.custom-macro",
+      "./temp/declarations/cc",
+      "./temp/declarations/jsb",
+      "./temp/declarations/cc.env"
+    ]
+  },
+  "include": [
+    "assets/**/*",
+    "typedoc.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "docs"
+  ]
+}

@@ -1,6 +1,15 @@
 {
-    "entryPoints": [
-        "typedoc.ts"
-    ],
-    "out": "docs"
+  "entryPoints": ["typedoc.ts"],
+  "out": "docs",
+  "tsconfig": "tsconfig.doc.json",
+  "name": "Oops Framework API",
+  "readme": "README.md",
+  "theme": "default",
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeExternals": true,
+  "includeVersion": true,
+  "categorizeByGroup": true,
+  "sort": ["source-order"],
+  "skipErrorChecking": true
 }
