@@ -11,7 +11,8 @@
     "scripts": {
         "build": "tsc -b",
         "watch": "tsc -w",
-        "doc": "npx typedoc"
+        "doc": "npx typedoc",
+        "update-report": "node tools/generate_update_report.js"
     },
     "panels": {
         "set_file_name": {
