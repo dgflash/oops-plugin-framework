@@ -17,7 +17,7 @@ type ECSCtor<T extends ecs.Comp> =
     | __private.__types_globals__AbstractedConstructor<T>;
 type ECSView = CCView<CCEntity>;
 type EntityCtor<T extends CCEntity = CCEntity> = new (...args: any[]) => T;
-type BusinessCtor<T extends CCBusiness<CCEntity> = CCBusiness<CCEntity>> = new () => T;
+type BusinessCtor<T extends CCBusiness<CCEntity> = CCBusiness<CCEntity>> = new (...args: any[]) => T;
 
 /** ECS 游戏模块实体 */
 export abstract class CCEntity extends ecs.Entity {
@@ -135,8 +135,7 @@ export abstract class CCEntity extends ecs.Entity {
 
         if (params == null) {
             params = { preload: true };
-        } 
-        else {
+        } else {
             params.preload = true;
         }
 

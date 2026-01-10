@@ -187,8 +187,6 @@ export namespace ecs {
             entity.isValid = true;
             entity.init();
         }
-        else
-            console.error(`${ctor.name} 实体缺少 init 方法初始化默认组件`);
 
         ECSModel.eid2Entity.set(entity.eid, entity);
         return entity as T;
