@@ -128,31 +128,37 @@ export namespace ecs {
         }
     }
     */
-    export function register<T>(name: string, canNew = true) {
-        return function (ctor: any) {
+    export function register<T extends Entity | IComp | ComblockSystem>(name: string, canNew = true) {
+        return function (ctor: EntityCtor<T> | CompCtor<T> | (new () => T)) {
+            const ctorAny = ctor as unknown as {
+                s?: boolean;
+                tid?: number;
+                compName?: string;
+            };
+
             // 注册系统
-            if (ctor.s) {
+            if (ctorAny.s) {
                 let system = ECSModel.systems.get(name);
                 if (system == null) {
                     system = new ecs.System();
                     ECSModel.systems.set(name, system);
                 }
-                system.add(new ctor);
+                system.add(new (ctor as new () => ComblockSystem)());
             }
             // 注册实体
-            else if (ctor.tid == undefined) {
-                ECSModel.entityCtors.set(ctor as EntityCtor<T>, name);
+            else if (ctorAny.tid === undefined) {
+                ECSModel.entityCtors.set(ctor as EntityCtor<ECSEntity>, name);
             }
             // 注册组件
             else {
-                if (ctor.tid === -1) {
-                    ctor.tid = ECSModel.compTid++;
-                    ctor.compName = name;
-                    ECSModel.compCtors.push(ctor); // 注册不同类型的组件
+                if (ctorAny.tid === -1) {
+                    ctorAny.tid = ECSModel.compTid++;
+                    ctorAny.compName = name;
+                    ECSModel.compCtors.push(ctor as CompCtor<IComp>);
                     if (canNew) {
-                        ECSModel.compPools.set(ctor.tid, []);
+                        ECSModel.compPools.set(ctorAny.tid, []);
                     }
-                    ECSModel.compAddOrRemove.set(ctor.tid, []);
+                    ECSModel.compAddOrRemove.set(ctorAny.tid, []);
                 }
                 else {
                     throw new Error(`ECS 组件重复注册: ${name}.`);
@@ -167,29 +173,32 @@ export namespace ecs {
      */
     export function getEntity<T extends Entity>(ctor: EntityCtor<T>): T {
         // 获取实体对象名
-        const entityName = ECSModel.entityCtors.get(ctor);
-        if (entityName == undefined)
+        const entityName = ECSModel.entityCtors.get(ctor as EntityCtor<ECSEntity>);
+        if (entityName === undefined) {
             console.error(`${ctor.name} 实体没有注册`);
+            throw new Error(`${ctor.name} 实体没有注册`);
+        }
 
         // 获取实体对象池
-        const entitys = ECSModel.entityPool.get(entityName!) || [];
-        let entity: any = entitys.pop();
+        const entitys = ECSModel.entityPool.get(entityName) || [];
+        let entity: T | undefined = entitys.pop() as T | undefined;
 
         // 缓存中没有同类实体，则创建一个新的
         if (!entity) {
             entity = new ctor();
-            entity.eid = ECSModel.eid++; // 实体唯一编号
-            entity.name = entityName;
+            (entity as ECSEntity).eid = ECSModel.eid++; // 实体唯一编号
+            (entity as ECSEntity).name = entityName;
         }
 
         // 触发实体初始化逻辑
-        if (entity.init) {
-            entity.isValid = true;
-            entity.init();
+        const entityWithInit = entity as ECSEntity & { init?: () => void };
+        if (entityWithInit.init) {
+            entityWithInit.isValid = true;
+            entityWithInit.init();
         }
 
-        ECSModel.eid2Entity.set(entity.eid, entity);
-        return entity as T;
+        ECSModel.eid2Entity.set((entity as ECSEntity).eid, entity as ECSEntity);
+        return entity;
     }
 
     /**
@@ -208,7 +217,7 @@ export namespace ecs {
     }
 
     /** 清理所有的实体 */
-    export function clear() {
+    export function clear(): void {
         ECSModel.eid2Entity.forEach((entity) => {
             entity.destroy();
         });
@@ -226,7 +235,7 @@ export namespace ecs {
      * 清理所有对象池 - 用于释放不再使用的缓存内存
      * 注意：此操作会清空所有实体池、组件池和 Mask 池，请在确保不再需要这些缓存时调用
      */
-    export function clearPools() {
+    export function clearPools(): void {
         // 清理实体池
         ECSModel.entityPool.forEach((pool) => {
             pool.length = 0;
@@ -246,20 +255,20 @@ export namespace ecs {
      * 通过实体唯一编号获得实体对象
      * @param eid 实体唯一编号
      */
-    export function getEntityByEid<E extends Entity = Entity>(eid: number): E {
-        return ECSModel.eid2Entity.get(eid) as E;
+    export function getEntityByEid<E extends Entity = Entity>(eid: number): E | undefined {
+        return ECSModel.eid2Entity.get(eid) as E | undefined;
     }
 
     /** 当前活动中的实体数量 */
-    export function activeEntityCount() {
+    export function activeEntityCount(): number {
         return ECSModel.eid2Entity.size;
     }
 
     /** 创建实体 */
     function createEntity<E extends Entity = Entity>(): E {
         const entity = new Entity();
-        entity.eid = ECSModel.eid++; // 实体id也是有限的资源
-        ECSModel.eid2Entity.set(entity.eid, entity);
+        (entity as ECSEntity).eid = ECSModel.eid++; // 实体id也是有限的资源
+        ECSModel.eid2Entity.set((entity as ECSEntity).eid, entity as ECSEntity);
         return entity as E;
     }
 
@@ -269,7 +278,7 @@ export namespace ecs {
      */
     function createEntityWithComp<T extends IComp>(ctor: CompCtor<T>): T {
         const entity = createEntity();
-        return entity.add(ctor);
+        return (entity as ECSEntity).add(ctor);
     }
 
     //#region 过滤器
@@ -280,7 +289,7 @@ export namespace ecs {
      * @example
      * ecs.allOf(AComponent, BComponent, CComponent);
      */
-    export function allOf(...args: CompType<IComp>[]) {
+    export function allOf(...args: CompType<IComp>[]): IMatcher {
         return new ECSMatcher().allOf(...args);
     }
 
@@ -290,7 +299,7 @@ export namespace ecs {
      * @example
      * ecs.anyOf(AComponent, BComponent);
      */
-    export function anyOf(...args: CompType<IComp>[]) {
+    export function anyOf(...args: CompType<IComp>[]): IMatcher {
         return new ECSMatcher().anyOf(...args);
     }
 
@@ -305,7 +314,7 @@ export namespace ecs {
      // 不同时包含CComponent和DComponent
      ecs.allOf(AComponent, BComponent).excludeOf(CComponent).excludeOf(DComponent);
      */
-    export function onlyOf(...args: CompType<IComp>[]) {
+    export function onlyOf(...args: CompType<IComp>[]): IMatcher {
         return new ECSMatcher().onlyOf(...args);
     }
 
@@ -316,7 +325,7 @@ export namespace ecs {
      // 表示不包含组件A或者组件B
      ecs.excludeOf(A, B);
      */
-    export function excludeOf(...args: CompType<IComp>[]) {
+    export function excludeOf(...args: CompType<IComp>[]): IMatcher {
         return new ECSMatcher().excludeOf(...args);
     }
     //#endregion
@@ -326,9 +335,9 @@ export namespace ecs {
      * 获取单例组件
      * @param ctor 组件类
      */
-    export function getSingleton<T extends IComp>(ctor: CompCtor<T>) {
+    export function getSingleton<T extends IComp>(ctor: CompCtor<T>): T {
         if (!ECSModel.tid2comp.has(ctor.tid)) {
-            const comp = createEntityWithComp(ctor) as T;
+            const comp = createEntityWithComp(ctor);
             ECSModel.tid2comp.set(ctor.tid, comp);
         }
         return ECSModel.tid2comp.get(ctor.tid) as T;
@@ -338,7 +347,7 @@ export namespace ecs {
      * 注册单例组件 - 主要用于那些不能手动创建对象的组件
      * @param obj
      */
-    export function addSingleton(obj: IComp) {
+    export function addSingleton(obj: IComp): void {
         const tid = (obj.constructor as CompCtor<IComp>).tid;
         if (!ECSModel.tid2comp.has(tid)) {
             ECSModel.tid2comp.set(tid, obj);

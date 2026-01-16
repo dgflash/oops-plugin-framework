@@ -7,11 +7,11 @@ import { ECSModel } from './ECSModel';
 export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
     static s = true;
 
-    protected group: ECSGroup<E>;
+    protected group!: ECSGroup<E>;
     protected dt = 0;
 
-    private enteredEntities: Map<number, E> = null!;
-    private removedEntities: Map<number, E> = null!;
+    private enteredEntities: Map<number, E> | null = null;
+    private removedEntities: Map<number, E> | null = null;
 
     private hasEntityEnter = false;
     private hasEntityRemove = false;
@@ -51,6 +51,13 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
             this.execute = this.updateOnce;
         }
     }
+    
+    /** 清理系统资源 */
+    protected cleanup(): void {
+        // 清理实体映射，防止内存泄漏
+        this.enteredEntities?.clear();
+        this.removedEntities?.clear();
+    }
 
     /** 系统实始化 */
     init(): void {
@@ -72,7 +79,7 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
      * @param dt
      * @returns
      */
-    private updateOnce(dt: number) {
+    private updateOnce(dt: number): void {
         if (this.group.count === 0) {
             return;
         }
@@ -80,8 +87,8 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
         this.dt = dt;
 
         // 处理刚进来的实体 - 使用标准 for 循环优化性能
-        if (this.enteredEntities.size > 0) {
-            const entityEnterFn = (this as unknown as ecs.IEntityEnterSystem).entityEnter;
+        if (this.enteredEntities && this.enteredEntities.size > 0) {
+            const entityEnterFn = (this as unknown as ecs.IEntityEnterSystem<E>).entityEnter;
             const iterator = this.enteredEntities.values();
             let result = iterator.next();
             while (!result.done) {
@@ -92,7 +99,7 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
         }
 
         // 只执行firstUpdate - 使用标准 for 循环
-        const firstUpdateFn = (this as unknown as ecs.ISystemFirstUpdate).firstUpdate;
+        const firstUpdateFn = (this as unknown as ecs.ISystemFirstUpdate<E>).firstUpdate;
         const entities = this.group.matchEntities;
         const len = entities.length;
         for (let i = 0; i < len; i++) {
@@ -116,7 +123,7 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
 
         // 执行update - 使用标准 for 循环提升性能
         if (this.hasUpdate) {
-            const updateFn = (this as unknown as ecs.ISystemUpdate).update;
+            const updateFn = (this as unknown as ecs.ISystemUpdate<E>).update;
             const entities = this.group.matchEntities;
             const len = entities.length;
             for (let i = 0; i < len; i++) {
@@ -132,9 +139,9 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
      */
     private execute1(dt: number): void {
         // 处理移除的实体 - 使用标准循环优化
-        if (this.removedEntities.size > 0) {
+        if (this.removedEntities && this.removedEntities.size > 0) {
             if (this.hasEntityRemove) {
-                const entityRemoveFn = (this as unknown as ecs.IEntityRemoveSystem).entityRemove;
+                const entityRemoveFn = (this as unknown as ecs.IEntityRemoveSystem<E>).entityRemove;
                 const iterator = this.removedEntities.values();
                 let result = iterator.next();
                 while (!result.done) {
@@ -150,22 +157,22 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
         this.dt = dt;
 
         // 处理刚进来的实体 - 使用标准循环优化
-        if (this.enteredEntities!.size > 0) {
+        if (this.enteredEntities && this.enteredEntities.size > 0) {
             if (this.hasEntityEnter) {
-                const entityEnterFn = (this as unknown as ecs.IEntityEnterSystem).entityEnter;
-                const iterator = this.enteredEntities!.values();
+                const entityEnterFn = (this as unknown as ecs.IEntityEnterSystem<E>).entityEnter;
+                const iterator = this.enteredEntities.values();
                 let result = iterator.next();
                 while (!result.done) {
                     entityEnterFn.call(this, result.value);
                     result = iterator.next();
                 }
             }
-            this.enteredEntities!.clear();
+            this.enteredEntities.clear();
         }
 
         // 执行update - 使用标准 for 循环提升性能
         if (this.hasUpdate) {
-            const updateFn = (this as unknown as ecs.ISystemUpdate).update;
+            const updateFn = (this as unknown as ecs.ISystemUpdate<E>).update;
             const entities = this.group.matchEntities;
             const len = entities.length;
             for (let i = 0; i < len; i++) {
@@ -214,19 +221,25 @@ export class ECSRootSystem {
         }
     }
 
-    clear() {
-        this.executeSystemFlows.forEach((sys) => sys.onDestroy());
+    clear(): void {
+        const len = this.executeSystemFlows.length;
+        for (let i = 0; i < len; i++) {
+            this.executeSystemFlows[i].onDestroy();
+        }
+        this.executeSystemFlows.length = 0;
+        this.systemCnt = 0;
     }
 }
 
 /** 系统组合器，用于将多个相同功能模块的系统逻辑上放在一起，系统也可以嵌套系统 */
 export class ECSSystem {
     private _comblockSystems: ECSComblockSystem[] = [];
-    get comblockSystems() {
+    
+    get comblockSystems(): ECSComblockSystem[] {
         return this._comblockSystems;
     }
 
-    add(system: ECSSystem | ECSComblockSystem) {
+    add(system: ECSSystem | ECSComblockSystem): this {
         if (system instanceof ECSSystem) {
             Array.prototype.push.apply(this._comblockSystems, system._comblockSystems);
             system._comblockSystems.length = 0;
@@ -235,5 +248,10 @@ export class ECSSystem {
             this._comblockSystems.push(system as ECSComblockSystem);
         }
         return this;
+    }
+    
+    /** 清理系统资源 */
+    clear(): void {
+        this._comblockSystems.length = 0;
     }
 }

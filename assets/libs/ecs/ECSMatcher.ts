@@ -137,7 +137,7 @@ export class ECSMatcher implements ecs.IMatcher {
 abstract class BaseOf {
     indices: number[] = [];
 
-    protected mask = new ECSMask();
+    protected mask: ECSMask = new ECSMask();
     private _keyCache: string | null = null; // 缓存 key，避免重复生成
 
     constructor(...args: CompType<ecs.IComp>[]) {
@@ -163,6 +163,13 @@ abstract class BaseOf {
         // 从 Set 转为排序数组
         this.indices = Array.from(uniqueIds).sort((a, b) => a - b);
     }
+    
+    /** 清理资源，防止内存泄漏 */
+    destroy(): void {
+        this.mask.destroy();
+        this.indices.length = 0;
+        this._keyCache = null;
+    }
 
     toString(): string {
         // 使用缓存避免重复生成字符串
@@ -182,8 +189,7 @@ abstract class BaseOf {
  */
 class AnyOf extends BaseOf {
     isMatch(entity: ECSEntity): boolean {
-        // @ts-ignore
-        return this.mask.or(entity.mask);
+        return this.mask.or((entity as ECSEntityInternal).getMask());
     }
 
     getKey(): string {
@@ -192,12 +198,11 @@ class AnyOf extends BaseOf {
 }
 
 /**
- * 用于描述包含了“这些”组件的实体，这个实体除了包含这些组件还可以包含其他组件
+ * 用于描述包含了"这些"组件的实体，这个实体除了包含这些组件还可以包含其他组件
  */
 class AllOf extends BaseOf {
     isMatch(entity: ECSEntity): boolean {
-        // @ts-ignore
-        return this.mask.and(entity.mask);
+        return this.mask.and((entity as ECSEntityInternal).getMask());
     }
 
     getKey(): string {
@@ -214,7 +219,11 @@ class ExcludeOf extends BaseOf {
     }
 
     isMatch(entity: ECSEntity): boolean {
-        // @ts-ignore
-        return !this.mask.or(entity.mask);
+        return !this.mask.or((entity as ECSEntityInternal).getMask());
     }
+}
+
+/** 内部接口，用于访问 ECSEntity 的私有成员 */
+interface ECSEntityInternal {
+    getMask(): ECSMask;
 }

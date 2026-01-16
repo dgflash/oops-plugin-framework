@@ -31,8 +31,8 @@ export interface CompCtor<T> {
 export class ECSModel {
     /** 实体自增id */
     static eid = 1;
-    /** 实体造函数 */
-    static entityCtors: Map<EntityCtor<any>, string> = new Map();
+    /** 实体构造函数 */
+    static entityCtors: Map<EntityCtor<ECSEntity>, string> = new Map();
     /** 实体对象缓存池 */
     static entityPool: Map<string, ECSEntity[]> = new Map();
     /** 通过实体id查找实体对象 */
@@ -43,7 +43,7 @@ export class ECSModel {
     /** 组件缓存池 */
     static compPools: Map<number, ecs.IComp[]> = new Map();
     /** 组件构造函数，用于ecs.register注册时，记录不同类型的组件 */
-    static compCtors: (CompCtor<any> | number)[] = [];
+    static compCtors: CompCtor<ecs.IComp>[] = [];
     /**
      * 每个组件的添加和删除的动作都要派送到"关心"它们的group上。goup对当前拥有或者之前（删除前）拥有该组件的实体进行组件规则判断。判断该实体是否满足group
      * 所期望的组件组合。

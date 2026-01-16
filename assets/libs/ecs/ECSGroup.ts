@@ -9,9 +9,9 @@ import type { ECSEntity } from './ECSEntity';
 
 export class ECSGroup<E extends ECSEntity = ECSEntity> {
     /** 实体筛选规则 */
-    private matcher: ecs.IMatcher;
+    private readonly matcher: ecs.IMatcher;
 
-    private _matchEntities: Map<number, E> = new Map();
+    private readonly _matchEntities: Map<number, E> = new Map();
 
     private _entitiesCache: E[] = [];
     private _cacheValid = false;
@@ -19,7 +19,7 @@ export class ECSGroup<E extends ECSEntity = ECSEntity> {
     /**
      * 符合规则的实体
      */
-    get matchEntities() {
+    get matchEntities(): E[] {
         if (!this._cacheValid) {
             // 复用数组，减少 GC 压力
             const cache = this._entitiesCache;
@@ -47,7 +47,7 @@ export class ECSGroup<E extends ECSEntity = ECSEntity> {
     count = 0;
 
     /** 获取matchEntities中第一个实体 */
-    get entity(): E {
+    get entity(): E | undefined {
         return this.matchEntities[0];
     }
 
@@ -58,7 +58,7 @@ export class ECSGroup<E extends ECSEntity = ECSEntity> {
         this.matcher = matcher;
     }
 
-    onComponentAddOrRemove(entity: E) {
+    onComponentAddOrRemove(entity: E): void {
         if (this.matcher.isMatch(entity)) { // Group只关心指定组件在实体身上的添加和删除动作。
             if (!this._matchEntities.has(entity.eid)) {
                 this._matchEntities.set(entity.eid, entity);
@@ -83,12 +83,12 @@ export class ECSGroup<E extends ECSEntity = ECSEntity> {
         }
     }
 
-    watchEntityEnterAndRemove(enteredEntities: Map<number, E>, removedEntities: Map<number, E>) {
+    watchEntityEnterAndRemove(enteredEntities: Map<number, E>, removedEntities: Map<number, E>): void {
         this._enteredEntities = enteredEntities;
         this._removedEntities = removedEntities;
     }
 
-    clear() {
+    clear(): void {
         this._matchEntities.clear();
         this._entitiesCache.length = 0;
         this._cacheValid = false;
