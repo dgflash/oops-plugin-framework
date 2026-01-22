@@ -4,10 +4,10 @@
     "outDir": "./dist-doc",
     "rootDir": "./",
     "types": [
-      "./temp/declarations/cc.custom-macro",
-      "./temp/declarations/cc",
-      "./temp/declarations/jsb",
-      "./temp/declarations/cc.env"
+      "../../temp/declarations/cc.custom-macro",
+      "../../temp/declarations/cc",
+      "../../temp/declarations/jsb",
+      "../../temp/declarations/cc.env"
     ]
   },
   "include": [

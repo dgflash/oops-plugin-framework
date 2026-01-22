@@ -5,6 +5,7 @@
         "outDir": "./dist",
         "rootDir": "./",
         "strict": true,
+        "strictNullChecks": false,
         "moduleResolution": "node",
         "esModuleInterop": true,
         "skipLibCheck": true,
@@ -12,17 +13,20 @@
         "resolveJsonModule": true,
         "experimentalDecorators": true,
         "isolatedModules": true,
+        "baseUrl": "./",
+        "paths": {
+            "db://oops-framework/*": ["./assets/*"]
+        },
         "types": [
-            "./temp/declarations/cc.custom-macro",
-            "./temp/declarations/cc",
-            "./temp/declarations/jsb",
-            "./temp/declarations/cc.env"
+            "../../temp/declarations/cc.custom-macro",
+            "../../temp/declarations/cc",
+            "../../temp/declarations/jsb",
+            "../../temp/declarations/cc.env"
         ]
     },
     "include": [
         "assets/**/*",
-        "src/**/*",
-        "typedoc.ts"
+        "src/**/*"
     ],
     "exclude": [
         "node_modules",
