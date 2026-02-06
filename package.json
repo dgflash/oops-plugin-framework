@@ -14,19 +14,6 @@
         "doc": "npx typedoc",
         "update-report": "node tools/generate_update_report.js"
     },
-    "panels": {
-        "set_file_name": {
-            "title": "i18n:oops-framework.panel_create_file",
-            "type": "dockable",
-            "main": "dist/default",
-            "size": {
-                "min-width": 450,
-                "min-height": 300,
-                "width": 450,
-                "height": 300
-            }
-        }
-    },
     "contributions": {
         "inspector": {
             "section": {
@@ -34,9 +21,6 @@
                     "directory": "./dist/asset-directory.js"
                 }
             }
-        },
-        "scene": {
-            "script": "./dist/scene.js"
         },
         "asset-db": {
             "mount": {
@@ -150,14 +134,10 @@
         }
     },
     "dependencies": {
-        "axios": "^1.7.7",
-        "fs-extra": "^10.0.0",
-        "systeminformation": "^5.23.5",
-        "vue": "^3.1.4"
+        "systeminformation": "^5.23.5"
     },
     "devDependencies": {
         "@cocos/creator-types": "^3.8.2",
-        "@types/fs-extra": "^9.0.5",
         "@types/node": "^20.16.12",
         "typedoc": "^0.23.24",
         "typescript": "^4.8.2"

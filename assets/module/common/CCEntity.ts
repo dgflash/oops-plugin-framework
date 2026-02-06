@@ -29,7 +29,7 @@ export abstract class CCEntity extends ecs.Entity {
      * 批量添加单例子实体
      * @param clss 单例子实体类数组
      */
-    addChildSingletons<T extends CCEntity>(...clss: EntityCtor<T>[]) {
+    addChildSingletons<T extends CCEntity>(...clss: EntityCtor<T>[]): void {
         for (const ctor of clss) {
             this.addChildSingleton<T>(ctor);
         }
@@ -66,7 +66,7 @@ export abstract class CCEntity extends ecs.Entity {
      * 移除单例子实体
      * @param cls 单例子实体类
      */
-    removeChildSingleton<T extends CCEntity>(cls: EntityCtor<T>) {
+    removeChildSingleton<T extends CCEntity>(cls: EntityCtor<T>): void {
         if (!this.singletons) return;
 
         const entity = this.singletons.get(cls);
@@ -135,7 +135,8 @@ export abstract class CCEntity extends ecs.Entity {
 
         if (params == null) {
             params = { preload: true };
-        } else {
+        }
+        else {
             params.preload = true;
         }
 
@@ -175,16 +176,19 @@ export abstract class CCEntity extends ecs.Entity {
                 comp.onClose = () => {
                     try {
                         this.remove(ctor);
-                    } catch (error) {
+                    }
+                    catch (error) {
                         console.error(`移除界面组件失败: ${key}`, error);
                     }
                 };
                 oops.gui.remove(key);
-            } else {
+            }
+            else {
                 // 没有 LayerUIElement，直接移除
                 this.remove(ctor);
             }
-        } else {
+        }
+        else {
             this.remove(ctor);
         }
     }
@@ -198,9 +202,9 @@ export abstract class CCEntity extends ecs.Entity {
      * 批量添加业务逻辑组件
      * @param clss 业务逻辑组件类数组
      */
-    addBusinesss<T extends CCBusiness<CCEntity>>(...clss: BusinessCtor<T>[]) {
+    addBusinesss(...clss: BusinessCtor[]) {
         for (const ctor of clss) {
-            this.addBusiness<T>(ctor);
+            this.addBusiness(ctor);
         }
     }
 
@@ -237,7 +241,7 @@ export abstract class CCEntity extends ecs.Entity {
      * 移除业务逻辑组件
      * @param cls 业务逻辑组件类
      */
-    removeBusiness<T extends CCBusiness<CCEntity>>(cls: BusinessCtor<T>) {
+    removeBusiness<T extends CCBusiness<CCEntity>>(cls: BusinessCtor<T>): void {
         if (this.businesss) {
             const business = this.businesss.get(cls);
             if (business) {
@@ -251,7 +255,7 @@ export abstract class CCEntity extends ecs.Entity {
     destroy(): void {
         // 1. 先销毁所有子实体，避免内存泄漏
         if (this.singletons) {
-            this.singletons.forEach(entity => {
+            this.singletons.forEach((entity) => {
                 if (entity && typeof entity.destroy === 'function') {
                     entity.destroy();
                 }
@@ -262,7 +266,7 @@ export abstract class CCEntity extends ecs.Entity {
 
         // 2. 再销毁所有业务组件
         if (this.businesss) {
-            this.businesss.forEach(business => business.destroy());
+            this.businesss.forEach((business) => business.destroy());
             this.businesss.clear();
             this.businesss = null!;
         }

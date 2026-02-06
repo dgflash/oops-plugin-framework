@@ -19,7 +19,7 @@ export function unload() { }
 export var config: any;
 
 /**
- * @en 
+ * @en
  * @zh 为扩展的主进程的注册方法
  */
 export const methods: { [key: string]: (...any: any) => any } = {

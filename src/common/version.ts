@@ -1,5 +1,5 @@
 import { PackageUtil } from "./package-util";
-const axios = require('axios');
+import * as https from 'https';
 
 /**
  * 检查更新
@@ -7,32 +7,46 @@ const axios = require('axios');
  */
 export function checkUpdate() {
     const packageJsonUrl = `${PackageUtil.repository}/raw/master/package.json`;
-    axios.get(packageJsonUrl)
-        .then(async (response: any) => {
-            const json = response.data;
+    
+    https.get(packageJsonUrl, (res) => {
+        let data = '';
 
-            if (json && json.version) {
-                const remoteVersion = json.version;
-                // 本地版本号
-                const localVersion = getLocalVersion();
-                // 对比版本号
-                const result = compareVersion(localVersion, remoteVersion);
+        // 接收数据块
+        res.on('data', (chunk) => {
+            data += chunk;
+        });
 
-                if (result < 0) {
-                    console.log('【Oops Framework】发现新版本');
-                    console.log('【Oops Framework】本地版本：', localVersion);
-                    console.log('【Oops Framework】最新版本：', remoteVersion);
-                    console.log('【Oops Framework】关闭 Cocos Creator 运行 update-oops-plugin-hot-update 可自动更新');
-                }
-                else {
-                    console.log('【Oops Framework】当前 Oops Framework 为最新版本');
-                    console.log('【Oops Framework】本地版本：', localVersion);
+        // 数据接收完成
+        res.on('end', () => {
+            try {
+                const json = JSON.parse(data);
+
+                if (json && json.version) {
+                    const remoteVersion = json.version;
+                    // 本地版本号
+                    const localVersion = getLocalVersion();
+                    // 对比版本号
+                    const result = compareVersion(localVersion, remoteVersion);
+
+                    if (result < 0) {
+                        console.log('【Oops Framework】发现新版本');
+                        console.log('【Oops Framework】本地版本：', localVersion);
+                        console.log('【Oops Framework】最新版本：', remoteVersion);
+                        console.log('【Oops Framework】关闭 Cocos Creator 运行 update-oops-plugin-hot-update 可自动更新');
+                    }
+                    else {
+                        console.log('【Oops Framework】当前 Oops Framework 为最新版本');
+                        console.log('【Oops Framework】本地版本：', localVersion);
+                    }
                 }
             }
-        })
-        .catch(() => {
-            console.error("【Oops Framework】请检查你的网络是否正常，框架版本验证失败");
+            catch (e) {
+                console.error("【Oops Framework】解析版本信息失败");
+            }
         });
+    }).on('error', () => {
+        console.error("【Oops Framework】请检查你的网络是否正常，框架版本验证失败");
+    });
 }
 
 export async function statistics() {
@@ -52,13 +66,38 @@ export async function statistics() {
 
     const si = require('systeminformation');
     const system = await si.system();
-    const axios = require('axios');
-    const api = `http://43.142.65.105:8866/ptl/Register`;
+    const http = require('http');
+    
     const params = {
         username: system.uuid,
         ip: getLocalIp()
     };
-    axios.post(api, params).then((response: any) => { }).catch(() => { });
+    
+    const postData = JSON.stringify(params);
+    
+    const options = {
+        hostname: '43.142.65.105',
+        port: 8866,
+        path: '/ptl/Register',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(postData)
+        }
+    };
+    
+    const req = http.request(options, (res: any) => {
+        // 静默处理响应
+        res.on('data', () => { });
+        res.on('end', () => { });
+    });
+    
+    req.on('error', () => {
+        // 静默处理错误
+    });
+    
+    req.write(postData);
+    req.end();
 }
 
 export async function reload() {

@@ -3,9 +3,10 @@
         "target": "ES2017",
         "module": "CommonJS",
         "outDir": "./dist",
-        "rootDir": "./",
+        "rootDir": "./src",
         "strict": true,
         "strictNullChecks": false,
+        "noImplicitAny": false,
         "moduleResolution": "node",
         "esModuleInterop": true,
         "skipLibCheck": true,
@@ -15,7 +16,9 @@
         "isolatedModules": true,
         "baseUrl": "./",
         "paths": {
-            "db://oops-framework/*": ["./assets/*"]
+            "db://oops-framework/*": [
+                "./assets/*"
+            ]
         },
         "types": [
             "../../temp/declarations/cc.custom-macro",
@@ -25,7 +28,7 @@
         ]
     },
     "include": [
-        "assets/**/*",
+        "@types/**/*",
         "src/**/*"
     ],
     "exclude": [

@@ -1,6 +1,9 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.close = exports.ready = exports.update = exports.template = exports.$ = void 0;
+exports.template = exports.$ = void 0;
+exports.update = update;
+exports.ready = ready;
+exports.close = close;
 const fs_1 = require("fs");
 const path_1 = require("path");
 exports.$ = {
@@ -38,8 +41,5 @@ function update(assetList, metaList) {
         this.$.section.hidden = false;
     }
 }
-exports.update = update;
 function ready() { }
-exports.ready = ready;
 function close() { }
-exports.close = close;

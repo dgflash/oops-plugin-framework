@@ -24,7 +24,7 @@ export class CCBusiness<T extends CCEntity> {
             this._event.destroy();
             this._event = null;
         }
-        
+
         // 清空实体引用，避免循环引用导致的内存泄漏
         this.ent = null!;
     }

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.compress = void 0;
+exports.compress = compress;
 const fs_1 = __importDefault(require("fs"));
 const https_1 = __importDefault(require("https"));
 const path_1 = __importDefault(require("path"));
@@ -59,7 +59,6 @@ function compress(filePath) {
         });
     }
 }
-exports.compress = compress;
 function getRandomIP() {
     return Array.from(Array(4)).map(() => Math.floor(255 * Math.random())).join('.');
 }
