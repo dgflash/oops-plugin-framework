@@ -18,7 +18,7 @@ export class LanguagePack {
     updateLanguage(lang: string) {
         const rootNodes = director.getScene()!.children;
         for (let i = 0; i < rootNodes.length; ++i) {
-            LanguageType.forEach((type) => {
+            LanguageType.forEach(type => {
                 const comps: any[] = rootNodes[i].getComponentsInChildren(type);
                 for (let j = 0; j < comps.length; j++) {
                     comps[j].language();
@@ -72,22 +72,32 @@ export class LanguagePack {
 
     /** Json格式多语言资源 */
     private async loadJson(lang: string): Promise<void> {
+        const path = `${LanguageData.path_json}/${lang}`;
+
+        // 尝试加载JSON资源，如果不存在则忽略错误
         try {
-            const path = `${LanguageData.path_json}/${lang}`;
             const jsonAsset = await resLoader.load(path, JsonAsset);
             if (jsonAsset) {
                 LanguageData.language.set(LanguageDataType.Json, jsonAsset.json);
                 Logger.instance.logConfig(path, '下载语言包 json 资源');
             }
+        }
+        catch (err) {
+            // JSON文件不存在时不报错，只记录日志
+            Logger.instance.logConfig(path, '语言包 json 资源不存在，跳过加载');
+        }
 
-            // 尝试加载字体资源
+        // 尝试加载字体资源，如果不存在则忽略错误
+        try {
             const font = await resLoader.load(path, TTFFont);
             if (font) {
                 LanguageData.font = font;
                 Logger.instance.logConfig(path, '下载语言包 ttf 资源');
             }
-        } catch (err) {
-            error('[LanguagePack] 加载JSON资源失败:', err);
+        }
+        catch (err) {
+            // 字体文件不存在时不报错
+            Logger.instance.logConfig(path, '语言包 ttf 资源不存在，跳过加载');
         }
     }
 
