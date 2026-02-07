@@ -36,23 +36,23 @@ export class LanguagePack {
         await this.loadTexture(lang);
         await this.loadSpine(lang);
         await this.loadJson(lang);
-        await this.loadTable(lang);
+        // await this.loadTable(lang);
 
         callback(lang);
     }
 
     /** 多语言Excel配置表数据 */
-    private async loadTable(lang: string): Promise<void> {
-        try {
-            const json = await JsonUtil.load('Language');
-            if (json) {
-                LanguageData.language.set(LanguageDataType.Excel, json);
-                Logger.instance.logConfig('config/game/Language', '下载语言包 table 资源');
-            }
-        } catch (err) {
-            error('[LanguagePack] 加载配置表失败:', err);
-        }
-    }
+    // private async loadTable(lang: string): Promise<void> {
+    //     try {
+    //         const json = await JsonUtil.load('Language');
+    //         if (json) {
+    //             LanguageData.language.set(LanguageDataType.Excel, json);
+    //             Logger.instance.logConfig('config/game/Language', '下载语言包 table 资源');
+    //         }
+    //     } catch (err) {
+    //         error('[LanguagePack] 加载配置表失败:', err);
+    //     }
+    // }
 
     /** 纹理多语言资源 */
     private loadTexture(lang: string): Promise<void> {
