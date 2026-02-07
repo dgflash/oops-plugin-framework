@@ -110,6 +110,14 @@ export class LayerUI extends Node {
 
                     // 优先加载配置的指定资源包中资源，如果没配置则加载默认资源包资源
                     const res = await resLoader.load(state.config.bundle!, state.config.prefab, Prefab);
+                    
+                    // 检查加载完成后 state 是否已被标记为移除，避免创建僵尸节点
+                    if (!state.valid) {
+                        console.log(`界面【${state.config.prefab}】在加载过程中已被移除，取消实例化`);
+                        resolve(null!);
+                        return;
+                    }
+                    
                     if (res) {
                         state.node = instantiate(res);
 
@@ -144,6 +152,12 @@ export class LayerUI extends Node {
      */
     protected uiInit(state: UIState): Promise<boolean> {
         return new Promise<boolean>(async (resolve, reject) => {
+            // 如果节点为空或已被标记为无效，直接返回失败
+            if (!state.node || !state.valid) {
+                resolve(false);
+                return;
+            }
+            
             const comp = state.node.getComponent(LayerUIElement)!;
             const r: boolean = await comp.add();
             if (r) {
@@ -184,6 +198,9 @@ export class LayerUI extends Node {
     remove(prefabPath: string): void {
         const state = this.ui_nodes.get(prefabPath);
         if (state) {
+            // 标记为无效，防止异步加载完成后创建僵尸节点
+            state.valid = false;
+            
             const release: boolean = state.config.destroy!;
 
             // 不释放界面，缓存起来待下次使用
@@ -191,8 +208,8 @@ export class LayerUI extends Node {
                 this.addToCache(state.config.prefab, state);
             }
 
-            // 界面移出舞台
-            if (state.valid) {
+            // 界面移出舞台（增加 node 判空保护，避免异步加载未完成时崩溃）
+            if (state.node) {
                 const comp = state.node.getComponent(LayerUIElement);
                 comp && comp.remove(release);
             }
