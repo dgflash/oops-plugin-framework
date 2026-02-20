@@ -1,4 +1,3 @@
-import { log } from 'cc';
 
 /** 日志类型 */
 export enum LogType {
@@ -16,13 +15,13 @@ export enum LogType {
     Trace = 32,
 }
 
-const names = {
-    '1': '网络日志',
-    '2': '数据日志',
-    '4': '业务日志',
-    '8': '视图日志',
-    '16': '配置日志',
-    '32': '标准日志',
+let names = {
+    "1": "网络日志",
+    "2": "数据日志",
+    "4": "业务日志",
+    "8": "视图日志",
+    "16": "配置日志",
+    "32": "标准日志"
 };
 
 export interface ILoggerConsole {
@@ -50,8 +49,21 @@ export class Logger {
         return this._instance;
     }
 
-    private tags = 0;
+    private tags: number = 0;
     private lc: ILoggerConsole = null!;
+
+    /** 禁用日志 */
+    disable(): void {
+        const nullFunc = () => { };
+        console.log = nullFunc;
+        console.warn = nullFunc;
+        console.info = nullFunc;
+        console.time = nullFunc;
+        console.timeEnd = nullFunc;
+        console.table = nullFunc;
+
+        this.setTags();
+    }
 
     /** 设置界面日志控制台 */
     setLoggerConsole(lc: ILoggerConsole) {
@@ -79,32 +91,33 @@ oops.log.setTags(LogType.View|LogType.Business)
         }
     }
 
+    // 用于存储计时开始时间
+    private timeMap: Map<string, number> = new Map<string, number>();
+
     /**
      * 记录开始计时
      * @param describe  标题描述
-     * @example
-oops.log.start();
-...
-省略N行代码
-...
-oops.log.end();
      */
-    start(describe = 'Time'): void {
-        console.time(describe);
+    start(describe: string): void {
+        this.timeMap.set(describe, Date.now());
     }
 
     /**
      * 打印范围内时间消耗
      * @param describe  标题描述
-     * @example
-oops.log.start();
-...
-省略N行代码
-...
-oops.log.end();
+     * @param color     日志文本颜色
      */
-    end(describe = 'Time'): void {
-        console.timeEnd(describe);
+    end(describe: string): void {
+        const startTime = this.timeMap.get(describe);
+        if (startTime) {
+            const duration = Date.now() - startTime;
+            this.timeMap.delete(describe);
+            const colorStyle = "color:#fff;background:#ec1b3c;padding:2px 6px;border-radius:4px;";
+            console.log(`%c[性能][${describe}]消耗[${duration}ms]`, colorStyle);
+        }
+        else {
+            console.error(`未找到名为"${describe}"的计时记录`);
+        }
     }
 
     /**
@@ -126,7 +139,7 @@ oops.log.table(object);
      * 打印标准日志
      * @param msg       日志消息
      */
-    trace(msg: any, color = '#000000ff') {
+    trace(msg: any, color: string = "#000000ff") {
         this.print(LogType.Trace, msg, color);
     }
 
@@ -173,27 +186,27 @@ oops.log.table(object);
 
     // 橙色
     private orange(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, '#ee7700', describe);
+        this.print(tag, msg, "#ee7700", describe);
     }
 
     // 紫色
     private violet(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, '#800080', describe);
+        this.print(tag, msg, "#800080", describe);
     }
 
     // 蓝色
     private blue(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, '#3a5fcd', describe);
+        this.print(tag, msg, "#3a5fcd", describe);
     }
 
     // 绿色
     private green(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, '#008000', describe);
+        this.print(tag, msg, "#008000", describe);
     }
 
     // 灰色
     private gray(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, '#808080', describe);
+        this.print(tag, msg, "#808080", describe);
     }
 
     private isOpen(tag: LogType): boolean {
@@ -209,19 +222,30 @@ oops.log.table(object);
      */
     private print(tag: LogType, msg: any, color: string, describe?: string) {
         // 标记没有打开，不打印该日志
-        if (!this.isOpen(tag)) {
-            return;
-        }
+        if (!this.isOpen(tag)) return;
 
         const type = names[tag];
         if (this.lc == null) {
-            const backLog = console.log || log;
-            color = 'color:' + color + ';';
-            if (describe) {
-                backLog.call(null, '%c%s%s%s:%s%o', color, this.getDateString(), '[' + type + ']', this.stack(5), describe, msg);
+            // 使用原始console方法，避免循环调用
+            const backLog = console.log;
+            color = "color:" + color + ";";
+
+            // 处理数组参数，展开打印
+            if (Array.isArray(msg)) {
+                if (describe) {
+                    backLog("%c%s%s: %s", color, this.getDateString(), "[" + type + "]", describe, ...msg);
+                }
+                else {
+                    backLog("%c%s%s: ", color, this.getDateString(), "[" + type + "]", ...msg);
+                }
             }
             else {
-                backLog.call(null, '%c%s%s%s:%o', color, this.getDateString(), '[' + type + ']', this.stack(5), msg);
+                if (describe) {
+                    backLog("%c%s%s: %s%o", color, this.getDateString(), "[" + type + "]", describe, msg);
+                }
+                else {
+                    backLog("%c%s%s: %o", color, this.getDateString(), "[" + type + "]", msg);
+                }
             }
         }
         else {
@@ -229,70 +253,21 @@ oops.log.table(object);
         }
     }
 
-    private stack(index: number): string {
-        const e = new Error();
-        const lines = e.stack!.split('\n');
-        const result: Array<any> = [];
-        lines.forEach((line) => {
-            line = line.substring(7);
-            const lineBreak = line.split(' ');
-            if (lineBreak.length < 2) {
-                result.push(lineBreak[0]);
-            }
-            else {
-                result.push({ [lineBreak[0]]: lineBreak[1] });
-            }
-        });
-
-        let list: string[] = [];
-        let splitList: Array<string> = [];
-        if (index < result.length - 1) {
-            let value: string;
-            for (const a in result[index]) {
-                splitList = a.split('.');
-
-                if (splitList.length == 2) {
-                    list = splitList.concat();
-                }
-                else {
-                    value = result[index][a];
-                    const start = value!.lastIndexOf('/');
-                    const end = value!.lastIndexOf('.');
-                    if (start > -1 && end > -1) {
-                        const r = value!.substring(start + 1, end);
-                        list.push(r);
-                    }
-                    else {
-                        list.push(value);
-                    }
-                }
-            }
-        }
-
-        if (list.length == 1) {
-            return '[' + list[0] + '.ts]';
-        }
-        else if (list.length == 2) {
-            return '[' + list[0] + '.ts->' + list[1] + ']';
-        }
-        return '';
-    }
-
     private getDateString(): string {
-        const d = new Date();
+        let d = new Date();
         let str = d.getHours().toString();
-        let timeStr = '';
-        timeStr += (str.length == 1 ? '0' + str : str) + ':';
+        let timeStr = "";
+        timeStr += (str.length == 1 ? "0" + str : str) + ":";
         str = d.getMinutes().toString();
-        timeStr += (str.length == 1 ? '0' + str : str) + ':';
+        timeStr += (str.length == 1 ? "0" + str : str) + ":";
         str = d.getSeconds().toString();
-        timeStr += (str.length == 1 ? '0' + str : str) + ':';
+        timeStr += (str.length == 1 ? "0" + str : str) + ":";
         str = d.getMilliseconds().toString();
-        if (str.length == 1) str = '00' + str;
-        if (str.length == 2) str = '0' + str;
+        if (str.length == 1) str = "00" + str;
+        if (str.length == 2) str = "0" + str;
         timeStr += str;
 
-        timeStr = '[' + timeStr + ']';
+        timeStr = "[" + timeStr + "]";
         return timeStr;
     }
 }

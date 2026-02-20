@@ -29,10 +29,12 @@ class EventDataPool {
 
     /** 回收对象到对象池 */
     static put(data: EventData) {
-        if (this.pool.length < this.MAX_POOL_SIZE) {
-            data.reset();
-            this.pool.push(data);
+        data.reset();
+        if (this.pool.length >= this.MAX_POOL_SIZE) {
+            // 删除最老的对象
+            this.pool.shift();
         }
+        this.pool.push(data);
     }
 
     /** 清空对象池 */
@@ -131,17 +133,17 @@ export class MessageEventData {
 
 /**
  * 全局消息管理
- * 
+ *
  * @性能优化说明
  * 1. 使用对象池管理 EventData 对象，减少 GC 压力
  * 2. 重复注册检测，避免同一监听器被多次添加
  * 3. Map 数据结构，提供 O(1) 的事件查找性能
  * 4. 支持精确移除单个监听器，避免误删
- * 
+ *
  * @内存管理注意事项
  * ⚠️ 重要：组件销毁时必须调用 off() 移除事件监听，否则会导致内存泄漏
  * ⚠️ 建议：在 onDestroy() 或 destroy() 中移除所有注册的事件
- * 
+ *
  * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037894&doc_id=2873565
  * @example
 // 注册持续监听的全局事件
