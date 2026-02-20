@@ -5,7 +5,7 @@
  * @LastEditTime: 2022-09-02 10:57:01
  */
 import type { ListenerFunc } from './EventMessage';
-import { MessageEventData } from './MessageManager';
+import { MessageEventData } from './MessageEventData';
 
 /**
  * 事件对象基类，继承该类将拥有发送和接收事件的能力
