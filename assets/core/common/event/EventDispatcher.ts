@@ -1,4 +1,4 @@
-import type { ListenerFunc } from './EventMessage';
+import type { ListenerFunc, ListenerFuncTyped } from './EventMessage';
 import type { TypedEventMap } from './MessageManager';
 import { EventData } from './EventData';
 import { EventDataPool } from './EventDataPool';
@@ -15,11 +15,7 @@ export class EventDispatcher {
      * @param listener   处理事件的侦听器函数
      * @param object     侦听函数绑定的作用域对象
      */
-    on<K extends keyof TypedEventMap>(
-        event: K,
-        listener: (event: K, data: TypedEventMap[K]) => void,
-        object: object
-    ): void;
+    on<K extends keyof TypedEventMap>(event: K, listener: ListenerFuncTyped<K, TypedEventMap[K]>, object: object): void;
 
     /**
      * 注册全局事件（兼容旧用法）
@@ -56,11 +52,7 @@ export class EventDispatcher {
      * @param listener  事件触发回调方法
      * @param object    侦听函数绑定的作用域对象
      */
-    once<K extends keyof TypedEventMap>(
-        event: K,
-        listener: (event: K, data: TypedEventMap[K]) => void,
-        object: object
-    ): void;
+    once<K extends keyof TypedEventMap>(event: K, listener: ListenerFuncTyped<K, TypedEventMap[K]>, object: object): void;
 
     /**
      * 监听一次事件，事件响应后，该监听自动移除（兼容旧用法）
@@ -96,11 +88,7 @@ export class EventDispatcher {
      * @param listener  处理事件的侦听器函数（可选，不传则移除该事件的所有监听器）
      * @param object    侦听函数绑定的作用域对象（可选）
      */
-    off<K extends keyof TypedEventMap>(
-        event: K,
-        listener?: (event: K, data: TypedEventMap[K]) => void,
-        object?: object
-    ): void;
+    off<K extends keyof TypedEventMap>(event: K, listener?: ListenerFuncTyped<K, TypedEventMap[K]>, object?: object): void;
 
     /**
      * 移除全局事件（兼容旧用法）
@@ -146,18 +134,6 @@ export class EventDispatcher {
     }
 
     /**
-     * 触发强类型事件（严格类型检查）
-     * @param event      事件名（枚举）
-     * @param data       事件数据（必须完全匹配类型定义）
-     */
-    emit<K extends keyof TypedEventMap>(
-        event: K,
-        data: TypedEventMap[K]
-    ): void {
-        message.emit(event, data);
-    }
-
-    /**
      * 触发全局事件（兼容旧用法）
      * @param event      事件名
      * @param args       事件参数
@@ -168,18 +144,6 @@ export class EventDispatcher {
     }
 
     /**
-     * 触发强类型异步事件（严格类型检查）
-     * @param event      事件名（枚举）
-     * @param data       事件数据（必须完全匹配类型定义）
-     */
-    emitAsync<K extends keyof TypedEventMap>(
-        event: K,
-        data: TypedEventMap[K]
-    ): Promise<void> {
-        return message.emitAsync(event, data);
-    }
-
-    /**
      * 触发全局事件,支持同步与异步处理（兼容旧用法）
      * @param event      事件名
      * @param args       事件参数
@@ -187,6 +151,24 @@ export class EventDispatcher {
 
     dispatchEventAsync(event: string, ...args: any[]): Promise<void> {
         return message.dispatchEventAsync(event, ...args);
+    }
+
+    /**
+     * 触发强类型事件（严格类型检查）
+     * @param event      事件名（枚举）
+     * @param data       事件数据（必须完全匹配类型定义）
+     */
+    emit<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): void {
+        message.emit(event, data);
+    }
+
+    /**
+     * 触发强类型异步事件（严格类型检查）
+     * @param event      事件名（枚举）
+     * @param data       事件数据（必须完全匹配类型定义）
+     */
+    emitAsync<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): Promise<void> {
+        return message.emitAsync(event, data);
     }
 
     /** 清除所有的全局事件监听 */

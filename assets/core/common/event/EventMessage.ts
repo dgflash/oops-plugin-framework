@@ -12,6 +12,13 @@
  */
 export type ListenerFunc = (event: string, ...args: any) => void
 
+/**
+ * 强类型事件监听方法
+ * @param event      事件名（枚举）
+ * @param data       事件数据（严格类型检查）
+ */
+export type ListenerFuncTyped<K, T> = (event: K, data: T) => void
+
 /** 框架内部全局事件  */
 export enum EventMessage {
     /** 游戏从后台进入事件 */

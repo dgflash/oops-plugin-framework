@@ -1,5 +1,5 @@
 import { log, warn } from 'cc';
-import type { ListenerFunc } from './EventMessage';
+import type { ListenerFunc, ListenerFuncTyped } from './EventMessage';
 import { EventData } from './EventData';
 import { EventDataPool } from './EventDataPool';
 
@@ -48,11 +48,7 @@ export class MessageManager {
      * @param listener   处理事件的侦听器函数
      * @param object     侦听函数绑定的作用域对象
      */
-    on<K extends keyof TypedEventMap>(
-        event: K,
-        listener: (event: K, data: TypedEventMap[K]) => void,
-        object: object
-    ): void;
+    on<K extends keyof TypedEventMap>(event: K, listener: ListenerFuncTyped<K, TypedEventMap[K]>, object: object): void;
 
     /**
      * 注册全局事件（兼容旧用法）
@@ -101,11 +97,7 @@ export class MessageManager {
      * @param listener  事件触发回调方法
      * @param object    侦听函数绑定的作用域对象
      */
-    once<K extends keyof TypedEventMap>(
-        event: K,
-        listener: (event: K, data: TypedEventMap[K]) => void,
-        object: object
-    ): void;
+    once<K extends keyof TypedEventMap>(event: K, listener: ListenerFuncTyped<K, TypedEventMap[K]>, object: object): void;
 
     /**
      * 监听一次事件，事件响应后，该监听自动移除（兼容旧用法）
@@ -119,7 +111,6 @@ export class MessageManager {
      * 监听一次事件，事件响应后，该监听自动移除（实现）
      */
     once(event: string, listener: ListenerFunc, object: object): void {
-
         const _listener: any = ($event: string, ...$args: any[]) => {
             this.off(event, _listener, object);
             listener.call(object, $event, ...$args);
@@ -133,11 +124,7 @@ export class MessageManager {
      * @param listener  处理事件的侦听器函数（可选，不传则移除该事件的所有监听器）
      * @param object    侦听函数绑定的作用域对象（可选）
      */
-    off<K extends keyof TypedEventMap>(
-        event: K,
-        listener?: (event: K, data: TypedEventMap[K]) => void,
-        object?: object
-    ): void;
+    off<K extends keyof TypedEventMap>(event: K, listener?: ListenerFuncTyped<K, TypedEventMap[K]>, object?: object): void;
 
     /**
      * 移除全局事件（兼容旧用法）

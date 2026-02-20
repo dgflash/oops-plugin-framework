@@ -10,7 +10,7 @@ import { oops } from '../../core/Oops';
 import type { AudioEffect } from '../../core/common/audio/AudioEffect';
 import type { IAudioParams } from '../../core/common/audio/IAudio';
 import { EventDispatcher } from '../../core/common/event/EventDispatcher';
-import type { ListenerFunc } from '../../core/common/event/EventMessage';
+import type { ListenerFunc, ListenerFuncTyped } from '../../core/common/event/EventMessage';
 import { EventMessage } from '../../core/common/event/EventMessage';
 import type { TypedEventMap } from '../../core/common/event/MessageManager';
 import type { AssetType, CompleteCallback, Paths, ProgressCallback } from '../../core/common/loader/ResLoader';
@@ -58,11 +58,7 @@ export class GameComponent extends Component {
      * @param listener    处理事件的侦听器函数
      * @param object      侦听函数绑定的this对象
      */
-    on<K extends keyof TypedEventMap>(
-        event: K,
-        listener: (event: K, data: TypedEventMap[K]) => void,
-        object: any
-    ): void;
+    on<K extends keyof TypedEventMap>(event: K, listener: ListenerFuncTyped<K, TypedEventMap[K]>, object: any): void;
 
     /**
      * 注册全局事件（兼容旧用法）
@@ -85,11 +81,7 @@ export class GameComponent extends Component {
      * @param listener  事件触发回调方法
      * @param object    侦听函数绑定的this对象
      */
-    once<K extends keyof TypedEventMap>(
-        event: K,
-        listener: (event: K, data: TypedEventMap[K]) => void,
-        object: any
-    ): void;
+    once<K extends keyof TypedEventMap>(event: K, listener: ListenerFuncTyped<K, TypedEventMap[K]>, object: any): void;
 
     /**
      * 监听一次事件，事件响应后，该监听自动移除（兼容旧用法）
@@ -126,15 +118,6 @@ export class GameComponent extends Component {
     }
 
     /**
-     * 触发强类型全局事件
-     * @param event      事件名（枚举）
-     * @param data       事件数据
-     */
-    emit<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): void {
-        this.event.emit(event, data);
-    }
-
-    /**
      * 触发全局事件（兼容旧用法）
      * @param event      事件名
      * @param args       事件参数
@@ -145,15 +128,6 @@ export class GameComponent extends Component {
     }
 
     /**
-     * 触发强类型异步全局事件（严格类型检查）
-     * @param event      事件名（枚举）
-     * @param data       事件数据（必须完全匹配类型定义）
-     */
-    emitAsync<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): Promise<void> {
-        return this.event.emitAsync(event, data);
-    }
-
-    /**
      * 触发全局事件,支持同步与异步处理（兼容旧用法）
      * @param event      事件名
      * @param args       事件参数
@@ -161,6 +135,24 @@ export class GameComponent extends Component {
 
     dispatchEventAsync(event: string, ...args: any[]): Promise<void> {
         return this.event.dispatchEventAsync(event, ...args);
+    }
+
+    /**
+     * 触发强类型全局事件
+     * @param event      事件名（枚举）
+     * @param data       事件数据
+     */
+    emit<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): void {
+        this.event.emit(event, data);
+    }
+
+    /**
+     * 触发强类型异步全局事件（严格类型检查）
+     * @param event      事件名（枚举）
+     * @param data       事件数据（必须完全匹配类型定义）
+     */
+    emitAsync<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): Promise<void> {
+        return this.event.emitAsync(event, data);
     }
     //#endregion
 
@@ -188,10 +180,11 @@ export class GameComponent extends Component {
      * @param path 资源路径
      */
     createPrefabNode(path: string, bundleName: string = oops.res.defaultBundleName): Promise<Node> {
-        return new Promise(async (resolve, reject) => {
-            const prefab = await this.load(bundleName, path, Prefab);
-            const node = instantiate(prefab);
-            resolve(node);
+        return new Promise((resolve) => {
+            this.load(bundleName, path, Prefab).then((prefab) => {
+                const node = instantiate(prefab);
+                resolve(node);
+            });
         });
     }
     //#endregion
@@ -216,7 +209,7 @@ export class GameComponent extends Component {
      * @param bundleName    资源包名
      * @param paths         资源路径
      */
-    private addPathToRecord<T>(type: ResType, bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null) {
+    private addPathToRecord<T>(type: ResType, bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null): void {
         if (this.resPaths == null) this.resPaths = new Map();
 
         let rps = this.resPaths.get(type);
@@ -267,7 +260,7 @@ export class GameComponent extends Component {
      * @param type          资源类型
      * @param onProgress    加载进度回调
      */
-    load<T extends Asset>(bundleName: string, paths: Paths | AssetType<T>, type?: AssetType<T>) {
+    load<T extends Asset>(bundleName: string, paths: Paths | AssetType<T>, type?: AssetType<T>): Promise<T> {
         this.addPathToRecord(ResType.Load, bundleName, paths);
         return oops.res.load(bundleName, paths, type);
     }
@@ -311,7 +304,7 @@ export class GameComponent extends Component {
         type?: AssetType<T> | ProgressCallback | CompleteCallback,
         onProgress?: ProgressCallback | CompleteCallback,
         onComplete?: CompleteCallback,
-    ) {
+    ): void {
         let realDir: string;
         let realBundle: string;
         if (typeof dir === 'string') {
@@ -507,7 +500,7 @@ export class GameComponent extends Component {
      * @param params        音效播放参数
      */
     playEffect(url: string, params?: IAudioParams): Promise<AudioEffect> {
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve) => {
             // 确保参数中有 bundle 信息
             if (params == null) {
                 params = { bundle: resLoader.defaultBundleName };
@@ -517,17 +510,18 @@ export class GameComponent extends Component {
             }
 
             const bundle = params.bundle || resLoader.defaultBundleName;
-            const ae = await oops.audio.playEffect(url, params);
 
-            if (ae) {
-                // 音效加载成功，记录资源引用
-                this.addPathToRecord(ResType.Load, bundle, url);
-                resolve(ae);
-            }
-            else {
-                // 音效加载失败，返回 null
-                resolve(null!);
-            }
+            oops.audio.playEffect(url, params).then((ae) => {
+                if (ae) {
+                    // 音效加载成功，记录资源引用
+                    this.addPathToRecord(ResType.Load, bundle, url);
+                    resolve(ae);
+                }
+                else {
+                    // 音效加载失败，返回 null
+                    resolve(null!);
+                }
+            });
         });
     }
     //#endregion
