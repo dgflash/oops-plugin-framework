@@ -1,4 +1,5 @@
 import type { ListenerFunc } from './EventMessage';
+import type { TypedEventMap } from './MessageManager';
 import { EventData } from './EventData';
 import { EventDataPool } from './EventDataPool';
 import { message } from './MessageManager';
@@ -9,10 +10,23 @@ export class MessageEventData {
     private events: Map<string, Array<EventData>> = new Map();
 
     /**
-     * 注册全局事件
+     * 注册全局事件（强类型重载）
+     * @param event      事件名（枚举）
+     * @param listener   处理事件的侦听器函数
+     * @param object     侦听函数绑定的作用域对象
+     */
+    on<K extends keyof TypedEventMap>(event: K, listener: (event: K, data: TypedEventMap[K]) => void, object: object): void;
+
+    /**
+     * 注册全局事件（兼容旧用法）
      * @param event      事件名
      * @param listener   处理事件的侦听器函数
      * @param object     侦听函数绑定的作用域对象
+     */
+    on(event: string, listener: ListenerFunc, object: object): void;
+
+    /**
+     * 注册全局事件（实现）
      */
     on(event: string, listener: ListenerFunc, object: object) {
         // 先注册到全局消息管理器
@@ -33,10 +47,23 @@ export class MessageEventData {
     }
 
     /**
-    * 移除全局事件
+    * 移除全局事件（强类型重载）
+     * @param event     事件名（枚举）
+     * @param listener  处理事件的侦听器函数（可选，不传则移除该事件的所有监听器）
+     * @param object    侦听函数绑定的作用域对象（可选）
+     */
+    off<K extends keyof TypedEventMap>(event: K, listener?: (event: K, data: TypedEventMap[K]) => void, object?: object): void;
+
+    /**
+    * 移除全局事件（兼容旧用法）
      * @param event     事件名
      * @param listener  处理事件的侦听器函数（可选，不传则移除该事件的所有监听器）
      * @param object    侦听函数绑定的作用域对象（可选）
+     */
+    off(event: string, listener?: ListenerFunc, object?: object): void;
+
+    /**
+    * 移除全局事件（实现）
      */
     off(event: string, listener?: ListenerFunc, object?: object) {
         const eds = this.events.get(event);
@@ -71,11 +98,25 @@ export class MessageEventData {
     }
 
     /**
-     * 触发全局事件
+     * 触发全局事件（强类型重载）
+     * @param event      事件名（枚举）
+     * @param data       事件数据
+     */
+    dispatchEvent<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): void;
+
+    /**
+     * 触发全局事件（兼容旧用法）
      * @param event      事件名
      * @param args       事件参数
      */
-    dispatchEvent(event: string, ...args: any) {
+
+    dispatchEvent(event: string, ...args: any[]): void;
+
+    /**
+     * 触发全局事件（实现）
+     */
+
+    dispatchEvent(event: string, ...args: any[]) {
         message.dispatchEvent(event, ...args);
     }
 
