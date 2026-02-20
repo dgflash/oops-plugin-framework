@@ -15,6 +15,7 @@ import { EventDataPool } from './EventDataPool';
  *     }
  * }
  */
+
 export interface TypedEventMap {
     // 业务层通过 declare module 扩展此接口
 }
@@ -32,55 +33,26 @@ export interface TypedEventMap {
  * ⚠️ 重要：组件销毁时必须调用 off() 移除事件监听，否则会导致内存泄漏
  * ⚠️ 建议：在 onDestroy() 或 destroy() 中移除所有注册的事件
  *
+ * @强类型事件说明
+ * - 使用 emit() 和 emitAsync() 方法可获得编译时的强类型约束
+ * - 使用 dispatchEvent() 和 dispatchEventAsync() 兼容旧代码
+ *
  * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037894&doc_id=2873565
- * @example
-// 注册持续监听的全局事件
-export class RoleViewComp extends Component{
-    onLoad(){
-        // 监听全局事件
-        oops.message.on(GameEvent.GameServerConnected, this.onHandler, this);
-    }
-
-    protected onDestroy() {
-        // 对象释放时取消注册的全局事件
-        oops.message.off(GameEvent.GameServerConnected, this.onHandler, this);
-    }
-
-    private onHandler(event: string, args: any) {
-        switch (event) {
-            case GameEvent.GameServerConnected:
-                console.log("处理游戏服务器连接成功后的逻辑");
-                break;
-        }
-    }
-}
-
-// 注册只触发一次的全局事件
-export class RoleViewComp extends Component{
-    onLoad(){
-        // 监听一次事件，事件响应后，该监听自动移除
-        oops.message.once(GameEvent.GameServerConnected, this.onHandler, this);
-    }
-
-    private onHandler(event: string, args: any) {
-        switch (event) {
-            case GameEvent.GameServerConnected:
-                console.log("处理游戏服务器连接成功后的逻辑");
-                break;
-        }
-    }
-}
  */
 export class MessageManager {
     private events: Map<string, Array<EventData>> = new Map();
 
     /**
-     * 注册全局事件（强类型重载）
+     * 注册全局事件（强类型）
      * @param event      事件名（枚举）
      * @param listener   处理事件的侦听器函数
      * @param object     侦听函数绑定的作用域对象
      */
-    on<K extends keyof TypedEventMap>(event: K, listener: (event: K, data: TypedEventMap[K]) => void, object: object): void;
+    on<K extends keyof TypedEventMap>(
+        event: K,
+        listener: (event: K, data: TypedEventMap[K]) => void,
+        object: object
+    ): void;
 
     /**
      * 注册全局事件（兼容旧用法）
@@ -93,7 +65,7 @@ export class MessageManager {
     /**
      * 注册全局事件（实现）
      */
-    on(event: string, listener: ListenerFunc, object: object) {
+    on(event: string, listener: ListenerFunc, object: object): void {
         if (!event || !listener) {
             warn(`注册【${event}】事件的侦听器函数为空`);
             return;
@@ -124,12 +96,16 @@ export class MessageManager {
     }
 
     /**
-     * 监听一次事件，事件响应后，该监听自动移除（强类型重载）
+     * 监听一次事件，事件响应后，该监听自动移除（强类型）
      * @param event     事件名（枚举）
      * @param listener  事件触发回调方法
      * @param object    侦听函数绑定的作用域对象
      */
-    once<K extends keyof TypedEventMap>(event: K, listener: (event: K, data: TypedEventMap[K]) => void, object: object): void;
+    once<K extends keyof TypedEventMap>(
+        event: K,
+        listener: (event: K, data: TypedEventMap[K]) => void,
+        object: object
+    ): void;
 
     /**
      * 监听一次事件，事件响应后，该监听自动移除（兼容旧用法）
@@ -142,17 +118,17 @@ export class MessageManager {
     /**
      * 监听一次事件，事件响应后，该监听自动移除（实现）
      */
-    once(event: string, listener: ListenerFunc, object: object) {
+    once(event: string, listener: ListenerFunc, object: object): void {
+
         const _listener: any = ($event: string, ...$args: any[]) => {
             this.off(event, _listener, object);
-            // 正确展开参数传递
             listener.call(object, $event, ...$args);
         };
         this.on(event, _listener, object);
     }
 
     /**
-     * 移除全局事件（强类型重载）
+     * 移除全局事件（强类型）
      * @param event     事件名（枚举）
      * @param listener  处理事件的侦听器函数（可选，不传则移除该事件的所有监听器）
      * @param object    侦听函数绑定的作用域对象（可选）
@@ -174,7 +150,7 @@ export class MessageManager {
     /**
      * 移除全局事件（实现）
      */
-    off(event: string, listener?: Function, object?: object) {
+    off(event: string, listener?: Function, object?: object): void {
         const eds = this.events.get(event);
 
         if (!eds) {
@@ -208,33 +184,15 @@ export class MessageManager {
     }
 
     /**
-     * 触发全局事件（强类型重载）
-     * @param event      事件名（枚举）
-     * @param data       事件数据
-     * @note 使用 concat() 创建数组副本，防止在事件回调中添加/删除监听器时影响遍历
-     */
-    dispatchEvent<K extends keyof TypedEventMap>(
-        event: K,
-        data: TypedEventMap[K]
-    ): void;
-
-    /**
      * 触发全局事件（兼容旧用法）
      * @param event      事件名
      * @param args       事件参数
      * @note 使用 concat() 创建数组副本，防止在事件回调中添加/删除监听器时影响遍历
      */
 
-    dispatchEvent(event: string, ...args: any[]): void;
-
-    /**
-     * 触发全局事件（实现）
-     */
-
-    dispatchEvent(event: string, ...args: any[]) {
+    dispatchEvent(event: string, ...args: any[]): void {
         const list = this.events.get(event);
         if (list != null) {
-            // 创建副本以支持在回调中安全地修改监听器列表
             const eds: Array<EventData> = list.concat();
             const length = eds.length;
             for (let i = 0; i < length; i++) {
@@ -245,45 +203,66 @@ export class MessageManager {
     }
 
     /**
-     * 触发全局事件,支持同步与异步处理（强类型重载）
-     * @param event      事件名（枚举）
-     * @param data       事件数据
-     * @note 使用 concat() 创建数组副本，防止在事件回调中添加/删除监听器时影响遍历
-     */
-    dispatchEventAsync<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): Promise<void>;
-
-    /**
      * 触发全局事件,支持同步与异步处理（兼容旧用法）
      * @param event      事件名
      * @param args       事件参数
      * @note 使用 concat() 创建数组副本，防止在事件回调中添加/删除监听器时影响遍历
-     * @example          事件响应示例
-        onTest(event: string, args: any): Promise<void> {
-            return new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    console.log("异步事逻辑");
-                    resolve();
-                }, 2000);
-            });
-        }
-     */
-    dispatchEventAsync(event: string, ...args: any[]): Promise<void>;
-
-    /**
-     * 触发全局事件,支持同步与异步处理（实现）
      */
 
     dispatchEventAsync(event: string, ...args: any[]): Promise<void> {
         return new Promise((resolve) => {
             const list = this.events.get(event);
             if (list != null) {
-                // 创建副本以支持在回调中安全地修改监听器列表
                 const eds: Array<EventData> = list.concat();
                 const length = eds.length;
                 (async () => {
                     for (let i = 0; i < length; i++) {
                         const ed = eds[i];
                         await Promise.resolve(ed.listener.call(ed.object, event, ...args));
+                    }
+                    resolve();
+                })();
+            }
+            else {
+                resolve();
+            }
+        });
+    }
+
+    /**
+     * 触发强类型事件（严格类型检查）
+     * @param event      事件名（枚举）
+     * @param data       事件数据（必须完全匹配类型定义）
+     * @note 使用此方法可获得编译时的强类型约束，参数不匹配会编译报错
+     */
+    emit<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): void {
+        const list = this.events.get(event as string);
+        if (list != null) {
+            const eds: Array<EventData> = list.concat();
+            const length = eds.length;
+            for (let i = 0; i < length; i++) {
+                const ed = eds[i];
+                ed.listener.call(ed.object, event, data);
+            }
+        }
+    }
+
+    /**
+     * 触发强类型异步事件（严格类型检查）
+     * @param event      事件名（枚举）
+     * @param data       事件数据（必须完全匹配类型定义）
+     * @note 使用此方法可获得编译时的强类型约束，参数不匹配会编译报错
+     */
+    emitAsync<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): Promise<void> {
+        return new Promise((resolve) => {
+            const list = this.events.get(event as string);
+            if (list != null) {
+                const eds: Array<EventData> = list.concat();
+                const length = eds.length;
+                (async () => {
+                    for (let i = 0; i < length; i++) {
+                        const ed = eds[i];
+                        await Promise.resolve(ed.listener.call(ed.object, event, data));
                     }
                     resolve();
                 })();

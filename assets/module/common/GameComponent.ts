@@ -12,6 +12,7 @@ import type { IAudioParams } from '../../core/common/audio/IAudio';
 import { EventDispatcher } from '../../core/common/event/EventDispatcher';
 import type { ListenerFunc } from '../../core/common/event/EventMessage';
 import { EventMessage } from '../../core/common/event/EventMessage';
+import type { TypedEventMap } from '../../core/common/event/MessageManager';
 import type { AssetType, CompleteCallback, Paths, ProgressCallback } from '../../core/common/loader/ResLoader';
 import { resLoader } from '../../core/common/loader/ResLoader';
 import { ViewUtil } from '../../core/utils/ViewUtil';
@@ -52,30 +53,114 @@ export class GameComponent extends Component {
     }
 
     /**
-     * 注册全局事件
+     * 注册全局事件（强类型）
+     * @param event       事件名（枚举）
+     * @param listener    处理事件的侦听器函数
+     * @param object      侦听函数绑定的this对象
+     */
+    on<K extends keyof TypedEventMap>(
+        event: K,
+        listener: (event: K, data: TypedEventMap[K]) => void,
+        object: any
+    ): void;
+
+    /**
+     * 注册全局事件（兼容旧用法）
      * @param event       事件名
      * @param listener    处理事件的侦听器函数
      * @param object      侦听函数绑定的this对象
      */
-    on(event: string, listener: ListenerFunc, object: any) {
+    on(event: string, listener: ListenerFunc, object: any): void;
+
+    /**
+     * 注册全局事件（实现）
+     */
+    on(event: string, listener: ListenerFunc, object: any): void {
         this.event.on(event, listener, object);
     }
 
     /**
-     * 移除全局事件
+     * 监听一次事件，事件响应后，该监听自动移除（强类型）
+     * @param event     事件名（枚举）
+     * @param listener  事件触发回调方法
+     * @param object    侦听函数绑定的this对象
+     */
+    once<K extends keyof TypedEventMap>(
+        event: K,
+        listener: (event: K, data: TypedEventMap[K]) => void,
+        object: any
+    ): void;
+
+    /**
+     * 监听一次事件，事件响应后，该监听自动移除（兼容旧用法）
+     * @param event     事件名
+     * @param listener  事件触发回调方法
+     * @param object    侦听函数绑定的this对象
+     */
+    once(event: string, listener: ListenerFunc, object: any): void;
+
+    /**
+     * 监听一次事件，事件响应后，该监听自动移除（实现）
+     */
+    once(event: string, listener: ListenerFunc, object: any): void {
+        this.event.once(event, listener, object);
+    }
+
+    /**
+     * 移除全局事件（强类型）
+     * @param event      事件名（枚举）
+     */
+    off<K extends keyof TypedEventMap>(event: K): void;
+
+    /**
+     * 移除全局事件（兼容旧用法）
      * @param event      事件名
      */
-    off(event: string) {
+    off(event: string): void;
+
+    /**
+     * 移除全局事件（实现）
+     */
+    off(event: string): void {
         this.event.off(event);
     }
 
     /**
-     * 触发全局事件
+     * 触发强类型全局事件
+     * @param event      事件名（枚举）
+     * @param data       事件数据
+     */
+    emit<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): void {
+        this.event.emit(event, data);
+    }
+
+    /**
+     * 触发全局事件（兼容旧用法）
      * @param event      事件名
      * @param args       事件参数
      */
-    dispatchEvent(event: string, ...args: any) {
+
+    dispatchEvent(event: string, ...args: any[]): void {
         this.event.dispatchEvent(event, ...args);
+    }
+
+    /**
+     * 触发强类型异步全局事件（严格类型检查）
+     * @param event      事件名（枚举）
+     * @param data       事件数据（必须完全匹配类型定义）
+     */
+    emitAsync<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): Promise<void> {
+        return this.event.emitAsync(event, data);
+    }
+
+    /**
+     * 触发全局事件,支持同步与异步处理（兼容旧用法）
+     * @param event      事件名
+     * @param args       事件参数
+     */
+
+    dispatchEventAsync(event: string, ...args: any[]): Promise<void> {
+        return this.event.dispatchEventAsync(event, ...args);
     }
     //#endregion
 
@@ -248,12 +333,12 @@ export class GameComponent extends Component {
      * @param bundleName    资源包名
      * @param releaseAll    是否释放所有引用计数（默认只释放一次）
      */
-    releaseRes(path: string, bundleName: string = resLoader.defaultBundleName, releaseAll: boolean = false) {
+    releaseRes(path: string, bundleName: string = resLoader.defaultBundleName, releaseAll = false) {
         if (!this.resPaths) return;
-        
+
         const rps = this.resPaths.get(ResType.Load);
         if (!rps) return;
-        
+
         const key = this.getResKey(bundleName, path);
         const record = rps.get(key);
         if (record) {
@@ -317,10 +402,10 @@ export class GameComponent extends Component {
      */
     getResRefCount(path: string, bundleName: string = resLoader.defaultBundleName): number {
         if (!this.resPaths) return 0;
-        
+
         const rps = this.resPaths.get(ResType.Load);
         if (!rps) return 0;
-        
+
         const key = this.getResKey(bundleName, path);
         const record = rps.get(key);
         return record ? record.refCount : 0;
@@ -333,14 +418,14 @@ export class GameComponent extends Component {
     getAllResRecords(): ResRecord[] {
         const records: ResRecord[] = [];
         if (!this.resPaths) return records;
-        
+
         const rps = this.resPaths.get(ResType.Load);
         if (rps) {
             rps.forEach((value: ResRecord) => {
                 records.push({ ...value });
             });
         }
-        
+
         return records;
     }
 
@@ -352,27 +437,27 @@ export class GameComponent extends Component {
             console.log('[资源管理] 暂无资源记录');
             return;
         }
-        
+
         const loadRps = this.resPaths.get(ResType.Load);
         const dirRps = this.resPaths.get(ResType.LoadDir);
-        
+
         console.log('========== 资源使用情况 ==========');
         console.log(`组件: ${this.node.name}`);
-        
+
         if (loadRps && loadRps.size > 0) {
             console.log(`\n[普通资源] 共 ${loadRps.size} 个:`);
             loadRps.forEach((value: ResRecord, key: string) => {
                 console.log(`  - ${key} (引用计数: ${value.refCount})`);
             });
         }
-        
+
         if (dirRps && dirRps.size > 0) {
             console.log(`\n[文件夹资源] 共 ${dirRps.size} 个:`);
             dirRps.forEach((value: ResRecord, key: string) => {
                 console.log(`  - ${key} (引用计数: ${value.refCount})`);
             });
         }
-        
+
         console.log('==================================');
     }
 
@@ -393,13 +478,13 @@ export class GameComponent extends Component {
             }
             return;
         }
-        
+
         // 释放旧的 spriteFrame 引用，避免内存泄漏
         const oldSpriteFrame = target.spriteFrame;
         if (oldSpriteFrame && isValid(oldSpriteFrame)) {
             oldSpriteFrame.decRef();
         }
-        
+
         // 增加新 spriteFrame 引用并设置
         spriteFrame.addRef();
         target.spriteFrame = spriteFrame;
@@ -430,10 +515,10 @@ export class GameComponent extends Component {
             else if (params.bundle == null) {
                 params.bundle = resLoader.defaultBundleName;
             }
-            
+
             const bundle = params.bundle || resLoader.defaultBundleName;
             const ae = await oops.audio.playEffect(url, params);
-            
+
             if (ae) {
                 // 音效加载成功，记录资源引用
                 this.addPathToRecord(ResType.Load, bundle, url);
@@ -588,7 +673,7 @@ export class GameComponent extends Component {
     protected onDestroy() {
         // 释放消息对象
         if (this._event) {
-            this._event.destroy();
+            this._event.clear();
             this._event = null;
         }
 
