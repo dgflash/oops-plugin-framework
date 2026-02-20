@@ -52,6 +52,11 @@ export class GameComponent extends Component {
         return this._event;
     }
 
+    /** 标记是否已注册键盘事件 */
+    private _keyboardEnabled = false;
+    /** 标记是否已注册按钮事件 */
+    private _buttonEnabled = false;
+
     /**
      * 注册全局事件（强类型）
      * @param event       事件名（枚举）
@@ -267,18 +272,26 @@ export class GameComponent extends Component {
 
     /**
      * 加载指定资源包中的多个任意类型资源
-     * @param bundleName    远程包名
-     * @param paths         资源路径
+     * @param bundleName    远程包名或资源路径数组
+     * @param paths         资源路径数组或进度回调
      * @param onProgress    加载进度回调
      * @param onComplete    加载完成回调
      */
     loadAny(bundleName: string | string[], paths: string[] | ProgressCallback, onProgress?: ProgressCallback | CompleteCallback, onComplete?: CompleteCallback): void {
-        if (typeof bundleName === 'string' && paths instanceof Array) {
+        // 处理资源记录
+        if (typeof bundleName === 'string' && Array.isArray(paths)) {
+            // 标准调用：loadAny(bundleName, paths, ...)
             this.addPathToRecord(ResType.Load, bundleName, paths);
         }
-        else {
+        else if (Array.isArray(bundleName)) {
+            // bundleName 是路径数组：loadAny(paths, onProgress, onComplete)
             this.addPathToRecord(ResType.Load, resLoader.defaultBundleName, bundleName);
         }
+        else if (typeof bundleName === 'string' && typeof paths === 'function') {
+            // 单个路径：loadAny(path, onProgress, onComplete)
+            this.addPathToRecord(ResType.Load, resLoader.defaultBundleName, bundleName);
+        }
+
         oops.res.loadAny(bundleName, paths, onProgress, onComplete);
     }
 
@@ -459,27 +472,19 @@ export class GameComponent extends Component {
      * @param target  目标精灵对象
      * @param path    图片资源地址
      * @param bundle  资源包名
+     * @remarks 资源引用计数由 load 方法自动管理，组件销毁时会自动释放
      */
     async setSprite(target: Sprite, path: string, bundle: string = resLoader.defaultBundleName) {
         const spriteFrame = await this.load(bundle, path, SpriteFrame);
         if (!spriteFrame || !isValid(target)) {
-            const rps = this.resPaths.get(ResType.Load);
-            if (rps) {
-                const key = this.getResKey(bundle, path);
-                rps.delete(key);
-                oops.res.release(path, bundle);
-            }
+            // 使用 releaseRes 正确处理引用计数，避免直接操作 resPaths
+            this.releaseRes(path, bundle);
             return;
         }
 
-        // 释放旧的 spriteFrame 引用，避免内存泄漏
-        const oldSpriteFrame = target.spriteFrame;
-        if (oldSpriteFrame && isValid(oldSpriteFrame)) {
-            oldSpriteFrame.decRef();
-        }
-
-        // 增加新 spriteFrame 引用并设置
-        spriteFrame.addRef();
+        // 直接设置 spriteFrame，不需要手动 addRef
+        // load 方法已经通过 addPathToRecord 管理了引用计数
+        // 手动 addRef 会导致双重引用，造成内存泄漏
         target.spriteFrame = spriteFrame;
     }
     //#endregion
@@ -498,6 +503,7 @@ export class GameComponent extends Component {
      * 播放音效
      * @param url           资源地址
      * @param params        音效播放参数
+     * @remarks 注意：音效资源由 AudioEffectPool 自动管理，不需要在此组件中记录
      */
     playEffect(url: string, params?: IAudioParams): Promise<AudioEffect> {
         return new Promise((resolve) => {
@@ -509,18 +515,10 @@ export class GameComponent extends Component {
                 params.bundle = resLoader.defaultBundleName;
             }
 
-            const bundle = params.bundle || resLoader.defaultBundleName;
-
+            // AudioEffectPool 已经管理了音效资源的加载和释放
+            // 不需要在此处通过 addPathToRecord 记录，避免双重管理导致过度释放
             oops.audio.playEffect(url, params).then((ae) => {
-                if (ae) {
-                    // 音效加载成功，记录资源引用
-                    this.addPathToRecord(ResType.Load, bundle, url);
-                    resolve(ae);
-                }
-                else {
-                    // 音效加载失败，返回 null
-                    resolve(null!);
-                }
+                resolve(ae || null!);
             });
         });
     }
@@ -538,6 +536,8 @@ export class GameComponent extends Component {
      * Label2(event: EventTouch) { console.log(event.target.name); }
      */
     protected setButton(bindRootEvent = true) {
+        this._buttonEnabled = true;
+
         // 自定义按钮批量绑定触摸事件
         if (bindRootEvent) {
             this.node.on(Node.EventType.TOUCH_END, (event: EventTouch) => {
@@ -598,11 +598,13 @@ export class GameComponent extends Component {
      */
     setKeyboard(on: boolean) {
         if (on) {
+            this._keyboardEnabled = true;
             input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
             input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
             input.on(Input.EventType.KEY_PRESSING, this.onKeyPressing, this);
         }
         else {
+            this._keyboardEnabled = false;
             input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
             input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
             input.off(Input.EventType.KEY_PRESSING, this.onKeyPressing, this);
@@ -665,6 +667,20 @@ export class GameComponent extends Component {
     }
 
     protected onDestroy() {
+        // 清理键盘事件
+        if (this._keyboardEnabled) {
+            input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+            input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
+            input.off(Input.EventType.KEY_PRESSING, this.onKeyPressing, this);
+            this._keyboardEnabled = false;
+        }
+
+        // 清理按钮事件
+        if (this._buttonEnabled) {
+            this.node.off(Node.EventType.TOUCH_END);
+            this._buttonEnabled = false;
+        }
+
         // 释放消息对象
         if (this._event) {
             this._event.clear();
