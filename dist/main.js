@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.methods = exports.config = void 0;
-exports.load = load;
-exports.unload = unload;
+exports.methods = exports.config = exports.unload = exports.load = void 0;
 const electron_1 = require("electron");
 const version_1 = require("./common/version");
 /**
@@ -13,11 +11,13 @@ function load() {
     (0, version_1.checkUpdate)();
     (0, version_1.statistics)();
 }
+exports.load = load;
 /**
  * @en Hooks triggered after extension uninstallation is complete
  * @zh 扩展卸载完成后触发的钩子
  */
 function unload() { }
+exports.unload = unload;
 /**
  * @en
  * @zh 为扩展的主进程的注册方法

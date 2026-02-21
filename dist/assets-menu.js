@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onAssetMenu = onAssetMenu;
+exports.onAssetMenu = void 0;
 const tinypng_1 = require("./tinypng");
 /** 资源栏右键菜单 */
 function onAssetMenu(assetInfo) {
@@ -23,4 +23,5 @@ function onAssetMenu(assetInfo) {
         },
     ];
 }
+exports.onAssetMenu = onAssetMenu;
 ;
