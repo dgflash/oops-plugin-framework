@@ -28,12 +28,7 @@
                 "readonly": false
             }
         },
-        "assets": {
-            "menu": {
-                "methods": "./dist/assets-menu.js",
-                "assetMenu": "onAssetMenu"
-            }
-        },
+
         "menu": [
             {
                 "path": "i18n:oops-framework.name/i18n:oops-framework.tools",

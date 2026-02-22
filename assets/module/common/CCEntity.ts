@@ -183,9 +183,7 @@ export abstract class CCEntity extends ecs.Entity {
                 layer.onClose = () => {
                     try {
                         const view = node.getComponent(ctor) as unknown as ecs.Comp;
-                        if (view) {
-                            this.remove(ctor as unknown as CompType<ecs.IComp>);
-                        }
+                        if (view) this.remove(ctor as unknown as CompType<ecs.IComp>);
                     }
                     catch (error) {
                         console.error(`移除界面组件失败: ${key}`, error);
