@@ -43,7 +43,7 @@ export class RoleViewComp extends CCView<Role> {
 @ecs.register('LoadingView', false)
 export class LoadingViewComp extends CCView<Initialize> {
     protected mvvm = true;  // 启用 MVVM 功能
-    
+
     data: LoadingData = {
         finished: 0,
         total: 0,
@@ -70,15 +70,15 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
 
     //#region MVVM 功能相关（仅在 mvvm = true 时使用）
     /** 是否启用 MVVM 功能（子类可覆盖为 true） */
-    protected mvvm: boolean = false;
-    
-    /** 
+    protected mvvm = false;
+
+    /**
      * MVVM 绑定的标签，延迟初始化以节省内存
      * 仅在启用 MVVM 时创建
      */
     protected tag?: string;
-    
-    /** 
+
+    /**
      * 需要绑定的私有数据
      * 注意：子类应该显式初始化此属性
      */
@@ -109,11 +109,11 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
         // 优化：只在必要时替换点号，使用更快的 replaceAll（如果支持）
         this.tag = `_temp<${uuid.replace('.', '')}>`;
         VM.add(this.data!, this.tag);
-        
+
         // 搜寻所有节点：找到 watch path
         const comps = this.getVMComponents();
         const len = comps.length;
-        
+
         // 优化：避免属性查找，缓存 tag
         const tag = this.tag;
         for (let i = 0; i < len; i++) {
@@ -143,7 +143,7 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
         // @ts-ignore - 优化：使用 any 类型避免多次类型转换
         const vmComp: any = comp;
         const path: string = vmComp.watchPath;
-        
+
         // 优化：使用严格相等避免类型转换
         if (vmComp.templateMode === true) {
             const pathArr: string[] = vmComp.watchPathArr;
@@ -171,20 +171,20 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
      */
     private getVMComponents(): Component[] {
         const comps = this.node.getComponentsInChildren(VMBase);
-        
+
         // 优化：提前返回，避免不必要的计算
         if (comps.length === 0) {
             return comps;
         }
-        
+
         // 优化：只在有嵌套 CCView 时才获取 parents
         const parents = this.node.getComponentsInChildren(CCView);
-        
+
         // 优化：使用数组长度判断，避免创建新数组
         let hasNested = false;
         const len = parents.length;
         const myUuid = this.uuid;
-        
+
         for (let i = 0; i < len; i++) {
             const p = parents[i];
             if (p.uuid !== myUuid && p.mvvm) {
@@ -219,7 +219,7 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
                 result.push(comps[i]);
             }
         }
-        
+
         return result;
     }
 
@@ -229,20 +229,20 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
             console.error(`组件 ${this.name} 移除失败，实体不存在`);
             return;
         }
-        
+
         if (this.tid < 0) {
             console.error(`组件 ${this.name} 移除失败，组件未注册 (tid=${this.tid})`);
             return;
         }
-        
+
         const cct = ECSModel.compCtors[this.tid];
         if (!cct) {
             console.error(`组件 ${this.name} 移除失败，组件构造函数不存在 (tid=${this.tid})`);
             return;
         }
-        
+
         this.ent.removeUi(cct);
-        this.ent = null!;  // 清空引用，避免内存泄漏
+        this.ent = null!; // 清空引用，避免内存泄漏
     }
 
     /**
@@ -260,7 +260,7 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
                 // @ts-ignore - 优化：显式清空引用，帮助 GC
                 this.tag = undefined;
             }
-            
+
             // @ts-ignore - 优化：显式清空引用，帮助 GC
             this.data = undefined;
         }

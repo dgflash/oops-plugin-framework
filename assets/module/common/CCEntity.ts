@@ -224,6 +224,10 @@ export abstract class CCEntity extends ecs.Entity {
         //@ts-ignore
         business.init();
         this.businesss.set(cls, business);
+
+        // 将业务逻辑组件直接附加到实体对象身上，方便直接获取
+        Reflect.set(this, cls.name, business);
+
         return business as T;
     }
 
@@ -247,6 +251,9 @@ export abstract class CCEntity extends ecs.Entity {
             if (business) {
                 business.destroy();
                 this.businesss.delete(cls);
+
+                // 清理实体上的业务逻辑组件引用
+                Reflect.set(this, cls.name, null);
             }
         }
     }
