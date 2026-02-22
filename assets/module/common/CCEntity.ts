@@ -12,11 +12,21 @@ import type { CCBusiness } from './CCBusiness';
 import type { CCView } from './CCView';
 import { GameComponent } from './GameComponent';
 
+/** ECS 组件构造函数类型（用于继承自 ecs.Comp 的组件） */
 type ECSCtor<T extends ecs.Comp> =
     | __private.__types_globals__Constructor<T>
     | __private.__types_globals__AbstractedConstructor<T>;
-type ECSView = CCView<CCEntity>;
+/**  UI 组件构造函数类型（用于继承自 GameComponent 并使用 gui.register 注册的组件） */
+type UICtor<T extends GameComponent = GameComponent> =
+    | __private.__types_globals__Constructor<T>
+    | __private.__types_globals__AbstractedConstructor<T>;
+/** ECS 游戏视图组件类型（继承自 CCView，用于完整的 ECS 组件） */
+export type ECSView = CCView<CCEntity>;
+/** GUI 视图组件类型（继承自 GameComponent，使用 @gui.register 装饰器注册的组件） */
+export type GUIView = GameComponent;
+/** ECS 实体构造函数类型 */
 type EntityCtor<T extends CCEntity = CCEntity> = new (...args: any[]) => T;
+/** ECS 业务逻辑组件构造函数类型 */
 type BusinessCtor<T extends CCBusiness<CCEntity> = CCBusiness<CCEntity>> = new (...args: any[]) => T;
 
 /** ECS 游戏模块实体 */
@@ -123,11 +133,11 @@ export abstract class CCEntity extends ecs.Entity {
 
     /**
      * 添加视图层组件
-     * @param ctor     界面逻辑组件
+     * @param ctor     界面逻辑组件（支持 CCView 或使用 gui.register 注册的 GameComponent 子类）
      * @param params   界面参数
      * @returns 界面节点
      */
-    async addUi<T extends ECSView>(ctor: ECSCtor<T>, params?: UIParam): Promise<Node> {
+    async addUi<T extends GUIView>(ctor: UICtor<T>, params?: UIParam): Promise<Node> {
         const key = gui.internal.getKey(ctor);
         if (!key) {
             throw new Error(`${ctor.name} 界面组件未使用 gui.register 注册`);
@@ -146,21 +156,18 @@ export abstract class CCEntity extends ecs.Entity {
         }
 
         const node = await oops.gui.open(key, params);
-        const comp = node.getComponent(ctor) as ecs.Comp;
-        if (!comp) {
-            throw new Error(`界面节点上未找到组件 ${ctor.name}`);
-        }
+        const comp = node.getComponent(ctor) as unknown as ecs.Comp;
+        if (comp) this.add(comp);
 
-        this.add(comp);
         oops.gui.show(key);
         return node;
     }
 
     /**
      * 移除视图层组件
-     * @param ctor      界面逻辑组件
+     * @param ctor      界面逻辑组件（支持 CCView 或使用 gui.register 注册的 GameComponent 子类）
      */
-    removeUi(ctor: CompType<ecs.IComp>) {
+    removeUi(ctor: UICtor) {
         const key = gui.internal.getKey(ctor);
 
         if (key) {
@@ -170,12 +177,15 @@ export abstract class CCEntity extends ecs.Entity {
                 return;
             }
 
-            const comp = node.getComponent(LayerUIElement);
-            if (comp) {
+            const layer = node.getComponent(LayerUIElement);
+            if (layer) {
                 // 处理界面关闭动画播放完成后，移除ECS组件，避免使用到组件实体数据还在动画播放时在使用导致的空对象问题
-                comp.onClose = () => {
+                layer.onClose = () => {
                     try {
-                        this.remove(ctor);
+                        const view = node.getComponent(ctor) as unknown as ecs.Comp;
+                        if (view) {
+                            this.remove(ctor as unknown as CompType<ecs.IComp>);
+                        }
                     }
                     catch (error) {
                         console.error(`移除界面组件失败: ${key}`, error);
@@ -185,11 +195,12 @@ export abstract class CCEntity extends ecs.Entity {
             }
             else {
                 // 没有 LayerUIElement，直接移除
-                this.remove(ctor);
+                this.remove(ctor as unknown as CompType<ecs.IComp>);
             }
         }
         else {
-            this.remove(ctor);
+            // 组件未使用 gui.register 注册，尝试直接移除
+            this.remove(ctor as unknown as CompType<ecs.IComp>);
         }
     }
     //#endregion
