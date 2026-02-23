@@ -19,8 +19,6 @@ module.exports = {
     createView: "Create ECS view layer script",
     createViewMvvm: "Create ECS view layer script - MVVM",
     tools: "Framework Tools",
-    tools_asset_menu: "Tools",
-    tools_compress: "Image Compression",
     tools_animator_editor: "Animation State Machine Editor",
     panel_create_file: "Create Framework Template",
 };

@@ -21,7 +21,7 @@ export class CCBusiness<T extends CCEntity> {
     destroy() {
         // 释放消息对象
         if (this._event) {
-            this._event.destroy();
+            this._event.clear();
             this._event = null;
         }
 

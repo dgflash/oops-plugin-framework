@@ -269,7 +269,7 @@ export class ECSEntity {
     remove(ctor: CompType<ecs.IComp>, isRecycle = true): void {
         const componentTypeId = typeof ctor === 'number' ? ctor : ctor.tid;
         const compName = typeof ctor === 'number' ? '' : ctor.compName;
-        
+
         if (!this.mask.has(componentTypeId)) {
             return;
         }
@@ -280,7 +280,7 @@ export class ECSEntity {
         }
 
         comp.ent = null!;
-        
+
         if (isRecycle) {
             comp.reset();
 
@@ -296,7 +296,8 @@ export class ECSEntity {
             // 限制缓存组件数量，防止内存泄漏
             if (this.compTid2Obj.size < ECSEntity.MAX_CACHE_COMP) {
                 this.compTid2Obj.set(componentTypeId, comp); // 用于缓存显示对象组件
-            } else {
+            }
+            else {
                 // 超过限制，强制回收
                 console.warn(`实体 ${this.name} 缓存组件数量超过限制，强制回收组件 ${compName}`);
                 comp.reset();
@@ -338,10 +339,10 @@ export class ECSEntity {
         // 移除实体上所有组件
         this.compTid2Ctor.forEach(this._remove, this);
         destroyEntity(this);
-        
+
         // 清理缓存的组件对象，防止内存泄漏
         this.compTid2Obj.clear();
-        
+
         // 回收 mask 到对象池
         this.mask.destroy();
     }
