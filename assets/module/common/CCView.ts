@@ -11,6 +11,7 @@ import { ECSModel } from '../../libs/ecs/ECSModel';
 import { VM } from '../../libs/model-view/ViewModel';
 import { VMBase } from '../../libs/model-view/VMBase';
 import type { CCEntity } from './CCEntity';
+import type { UICtor } from '../../types/Types';
 import { GameComponent } from './GameComponent';
 
 /**
@@ -83,7 +84,6 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
      * 注意：子类应该显式初始化此属性
      */
     protected data?: any;
-    //#endregion
 
     /**
      * 组件加载时调用
@@ -140,7 +140,7 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
      * @private
      */
     private replaceVMPath(comp: Component, tag: string) {
-        // @ts-ignore - 优化：使用 any 类型避免多次类型转换
+        // 优化：使用 any 类型避免多次类型转换
         const vmComp: any = comp;
         const path: string = vmComp.watchPath;
 
@@ -222,6 +222,7 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
 
         return result;
     }
+    //#endregion
 
     /** 从父节点移除自己 */
     remove() {
@@ -241,7 +242,7 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
             return;
         }
 
-        this.ent.removeUi(cct);
+        this.ent.removeUi(cct as unknown as UICtor);
         this.ent = null!; // 清空引用，避免内存泄漏
     }
 
@@ -257,7 +258,6 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
             // 解除全部引用
             if (this.tag) {
                 VM.remove(this.tag);
-                // @ts-ignore - 优化：显式清空引用，帮助 GC
                 this.tag = undefined;
             }
 

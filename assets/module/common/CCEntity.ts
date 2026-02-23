@@ -7,7 +7,7 @@ import { ViewUtil } from '../../core/utils/ViewUtil';
 import { ecs } from '../../libs/ecs/ECS';
 import type { ECSEntity } from '../../libs/ecs/ECSEntity';
 import type { CompType } from '../../libs/ecs/ECSModel';
-import type { BusinessCtor, EntityCtor, GUIView, UICtor, ViewCtor } from '../types/Types';
+import type { BusinessCtor, EntityCtor, UICtor, View, ViewCtor } from '../../types/Types';
 import type { CCBusiness } from './CCBusiness';
 import { GameComponent } from './GameComponent';
 
@@ -77,14 +77,14 @@ export abstract class CCEntity extends ecs.Entity {
     //#region 游戏视图层管理
     /**
      * 通过资源内存中获取预制上的组件添加到ECS实体中
-     * @param ctor       界面逻辑组件（支持 ECSView 或使用 gui.register 注册的 GUIView）
+     * @param ctor       界面逻辑组件（支持 ECSView 或使用 gui.register 注册的 GameComponent）
      * @param parent     显示对象父级
      * @param path       显示资源地址（可选，不传时使用 @game.prefab 装饰器注册的路径）
      * @param bundleName 资源包名称（可选，不传时使用 @game.prefab 装饰器注册的包名）
      */
-    async addPrefab<T extends GUIView>(
+    async addPrefab<T extends GameComponent>(
         ctor: ViewCtor<T>,
-        parent: Node | GameComponent,
+        parent: View,
         path?: string,
         bundleName?: string
     ): Promise<Node> {
@@ -118,12 +118,25 @@ export abstract class CCEntity extends ecs.Entity {
     }
 
     /**
+     * 移除预制体组件及其节点
+     * @param node     要销毁的节点或组件（Node 或 GameComponent）
+     */
+    removePrefab(node: View): void {
+        if (node instanceof GameComponent) {
+            node.remove();
+        }
+        else {
+            node.destroy();
+        }
+    }
+
+    /**
      * 添加视图层组件
      * @param ctor     界面逻辑组件（支持 CCView 或使用 gui.register 注册的 GameComponent 子类）
      * @param params   界面参数
      * @returns 界面节点
      */
-    async addUi<T extends GUIView>(ctor: UICtor<T>, params?: UIParam): Promise<Node> {
+    async addUi<T extends GameComponent>(ctor: UICtor<T>, params?: UIParam): Promise<Node> {
         const key = gui.internal.getKey(ctor);
         if (!key) {
             throw new Error(`${ctor.name} 界面组件未使用 gui.register 注册`);

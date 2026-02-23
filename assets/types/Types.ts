@@ -1,3 +1,4 @@
+import type { Node } from 'cc';
 import type { GameComponent } from 'db://oops-framework/module/common/GameComponent';
 import type { ecs } from 'db://oops-framework/libs/ecs/ECS';
 import type { CCView } from 'db://oops-framework/module/common/CCView';
@@ -17,14 +18,14 @@ export type GameComponentCtor<T extends GameComponent = GameComponent> = Ctor<T>
 /** UI 组件构造函数类型（用于继承自 GameComponent 并使用 gui.register 注册的组件） */
 export type UICtor<T extends GameComponent = GameComponent> = Ctor<T>;
 
-/** 通用的视图组件构造函数类型（支持 ECSView 或 GUIView） */
+/** 通用的视图组件构造函数类型（支持 ECSView 或 GameComponent） */
 export type ViewCtor<T extends GameComponent | ecs.Comp = GameComponent | ecs.Comp> = Ctor<T>;
 
 /** ECS 游戏视图组件类型（继承自 CCView，用于完整的 ECS 组件） */
 export type ECSView = CCView<CCEntity>;
 
-/** GUI 视图组件类型（继承自 GameComponent，使用 @gui.register 装饰器注册的组件） */
-export type GUIView = GameComponent;
+/** 视图节点类型（Node 或 GameComponent） */
+export type View = Node | GameComponent;
 
 // ==================== 实体类型 ====================
 

@@ -9,6 +9,7 @@ import { director, isValid } from 'cc';
 import { GameComponent } from '../../module/common/GameComponent';
 import { resLoader } from '../common/loader/ResLoader';
 import { ViewUtil } from '../utils/ViewUtil';
+import { View } from '../../types/Types';
 
 /** 游戏元素打开参数 */
 export interface ElementParams {
@@ -37,7 +38,7 @@ export class GameManager {
      * @param params        可选参数据
      * @returns Promise<Node | null> 成功返回节点，失败返回 null
      */
-    async open(parent: Node | GameComponent, prefabPath: string, params?: ElementParams): Promise<Node | null> {
+    async open(parent: View, prefabPath: string, params?: ElementParams): Promise<Node | null> {
         try {
             // 简化 bundleName 获取逻辑
             const bundleName = params?.bundle || resLoader.defaultBundleName;
@@ -61,7 +62,7 @@ export class GameManager {
                     return null;
                 }
                 node.parent = parent;
-                
+
                 // 记录手动管理的节点，便于后续释放
                 this._manualNodes.add(node);
             }
@@ -144,7 +145,7 @@ export class GameManager {
     destroy(): void {
         // 释放所有手动管理的节点
         this.releaseAllManualNodes();
-        
+
         // 清理引用
         this.root = null!;
     }
