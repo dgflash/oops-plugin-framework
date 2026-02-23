@@ -1,37 +1,20 @@
-import type { __private, Node } from 'cc';
-import { resLoader } from '../../core/common/loader/ResLoader';
+import type { Node } from 'cc';
+import { oops } from '../../core/Oops';
 import { gui } from '../../core/gui/Gui';
 import type { UIParam } from '../../core/gui/layer/LayerUIElement';
 import { LayerUIElement } from '../../core/gui/layer/LayerUIElement';
-import { oops } from '../../core/Oops';
 import { ViewUtil } from '../../core/utils/ViewUtil';
 import { ecs } from '../../libs/ecs/ECS';
 import type { ECSEntity } from '../../libs/ecs/ECSEntity';
 import type { CompType } from '../../libs/ecs/ECSModel';
+import type { BusinessCtor, EntityCtor, GUIView, UICtor, ViewCtor } from '../types/Types';
 import type { CCBusiness } from './CCBusiness';
-import type { CCView } from './CCView';
 import { GameComponent } from './GameComponent';
-
-/** ECS 组件构造函数类型（用于继承自 ecs.Comp 的组件） */
-type ECSCtor<T extends ecs.Comp> =
-    | __private.__types_globals__Constructor<T>
-    | __private.__types_globals__AbstractedConstructor<T>;
-/**  UI 组件构造函数类型（用于继承自 GameComponent 并使用 gui.register 注册的组件） */
-type UICtor<T extends GameComponent = GameComponent> =
-    | __private.__types_globals__Constructor<T>
-    | __private.__types_globals__AbstractedConstructor<T>;
-/** ECS 游戏视图组件类型（继承自 CCView，用于完整的 ECS 组件） */
-export type ECSView = CCView<CCEntity>;
-/** GUI 视图组件类型（继承自 GameComponent，使用 @gui.register 装饰器注册的组件） */
-export type GUIView = GameComponent;
-/** ECS 实体构造函数类型 */
-type EntityCtor<T extends CCEntity = CCEntity> = new (...args: any[]) => T;
-/** ECS 业务逻辑组件构造函数类型 */
-type BusinessCtor<T extends CCBusiness<CCEntity> = CCBusiness<CCEntity>> = new (...args: any[]) => T;
 
 /** ECS 游戏模块实体 */
 export abstract class CCEntity extends ecs.Entity {
     //#region 子模块管理
+
     /** 单例子实体集合（key: 实体类构造函数，value: 实体实例） */
     private singletons: Map<EntityCtor, ECSEntity> = null!;
 
@@ -94,37 +77,40 @@ export abstract class CCEntity extends ecs.Entity {
     //#region 游戏视图层管理
     /**
      * 通过资源内存中获取预制上的组件添加到ECS实体中
-     * @param ctor       界面逻辑组件
+     * @param ctor       界面逻辑组件（支持 ECSView 或使用 gui.register 注册的 GUIView）
      * @param parent     显示对象父级
-     * @param path       显示资源地址
-     * @param bundleName 资源包名称
+     * @param path       显示资源地址（可选，不传时使用 @game.prefab 装饰器注册的路径）
+     * @param bundleName 资源包名称（可选，不传时使用 @game.prefab 装饰器注册的包名）
      */
-    async addPrefab<T extends ECSView>(
-        ctor: ECSCtor<T>,
+    async addPrefab<T extends GUIView>(
+        ctor: ViewCtor<T>,
         parent: Node | GameComponent,
-        path: string,
-        bundleName: string = resLoader.defaultBundleName
+        path?: string,
+        bundleName?: string
     ): Promise<Node> {
+        // 未传入路径时，从装饰器注册的数据中获取
+        if (path == null) {
+            path = (ctor as any).GAME_PREFAB_PATH;
+            bundleName = (ctor as any).GAME_PREFAB_BUNDLE;
+            if (path == null) {
+                throw new Error(`组件 ${(ctor as any).name} 未使用 @game.prefab 装饰器注册，请添加 @game.prefab('path/to/prefab') 装饰器或手动传入路径参数`);
+            }
+        }
+
         let node: Node;
 
         // 跟随父节点释放自动释放当前资源
         if (parent instanceof GameComponent) {
             node = await parent.createPrefabNode(path, bundleName);
             const comp = node.getComponent(ctor);
-            if (!comp) {
-                throw new Error(`组件 ${ctor.name} 不存在于预制 ${path} 中`);
-            }
-            this.add(comp);
+            if (comp) this.add(comp as unknown as ecs.Comp);
             node.parent = parent.node;
         }
         // 手动内存管理
         else {
             node = await ViewUtil.createPrefabNodeAsync(path, bundleName);
             const comp = node.getComponent(ctor);
-            if (!comp) {
-                throw new Error(`组件 ${ctor.name} 不存在于预制 ${path} 中`);
-            }
-            this.add(comp);
+            if (comp) this.add(comp as unknown as ecs.Comp);
             node.parent = parent;
         }
 

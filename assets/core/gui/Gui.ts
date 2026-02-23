@@ -1,3 +1,4 @@
+import type { GameComponentCtor, UICtor } from '../../module/types/Types';
 import type { UIConfigMap } from './layer/LayerEnum';
 import type { UIConfig } from './layer/UIConfig';
 
@@ -5,10 +6,9 @@ const configs: UIConfigMap = {};
 
 export namespace gui {
     /** 注册界面组件 */
-    export function register(key: string, config: UIConfig) {
-        return function (ctor: any) {
-            //@ts-ignore
-            ctor[gui.internal.GUI_KEY] = key;
+    export function register(key: string, config: UIConfig): (ctor: GameComponentCtor) => void {
+        return function (ctor: GameComponentCtor): void {
+            (ctor as any)[gui.internal.GUI_KEY] = key;
             internal.setConfig(key, config);
         };
     }
@@ -19,28 +19,26 @@ export namespace gui {
         export const GUI_KEY = 'OOPS_GUI_KEY';
 
         /** 获取界面唯一关键字 */
-        export function getKey(ctor: any) {
-            return ctor[GUI_KEY];
+        export function getKey(ctor: UICtor): string {
+            return (ctor as any)[GUI_KEY];
         }
 
         /** 获取界面组件配置 */
-        export function getConfig(key: string) {
+        export function getConfig(key: string): UIConfig {
             return configs[key];
         }
 
-        /** 获取界面组件配置 */
-        export function setConfig(key: string, config: UIConfig) {
-            const c = getConfig(key);
-            if (c == null) {
-                configs[key] = config;
-            }
-            else {
+        /** 设置界面组件配置 */
+        export function setConfig(key: string, config: UIConfig): void {
+            if (configs[key] != null) {
                 console.error(`界面${key}重复注册`);
+                return;
             }
+            configs[key] = config;
         }
 
         /** 初始化界面组件配置 */
-        export function initConfigs(uicm: UIConfigMap) {
+        export function initConfigs(uicm: UIConfigMap): void {
             for (const key in uicm) {
                 configs[key] = uicm[key];
             }
