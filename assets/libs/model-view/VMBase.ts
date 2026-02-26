@@ -28,7 +28,7 @@ export class VMBase extends Component {
     templateMode = false;
 
     /** watch 多路径 */
-    protected watchPathArr: string[] = [];
+    watchPathArr: string[] = [];
 
     /** 储存模板多路径的值 */
     protected templateValueArr: any[] = [];

@@ -25,8 +25,9 @@ export namespace prefab {
     export function register(path: string, bundleName?: string): (ctor: GameComponentCtor) => void {
         return function (ctor: GameComponentCtor): void {
             const bundle = bundleName || resLoader.defaultBundleName;
-            (ctor as any).GAME_PREFAB_PATH = path;
-            (ctor as any).GAME_PREFAB_BUNDLE = bundle;
+            const c = ctor as any;
+            c.GAME_PREFAB_PATH = path;
+            c.GAME_PREFAB_BUNDLE = bundle;
         };
     }
 }

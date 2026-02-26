@@ -83,18 +83,24 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
      * 需要绑定的私有数据
      * 注意：子类应该显式初始化此属性
      */
-    protected data?: any;
+    protected data?: object;
 
     /**
      * 组件加载时调用
      * 注意：如果子类需要覆盖此方法，必须调用 super.onLoad()
      */
     onLoad() {
-        // 只有启用 MVVM 且数据存在时才初始化 VM
-        // 使用位运算优化布尔判断（虽然现代引擎已优化，但这是极致优化）
-        if (this.mvvm && this.data !== undefined && this.data !== null) {
-            this.initializeVM();
+        if (!this.mvvm) return;
+
+        // onBind 语义为"绑定初始化"，与 data 是否存在解耦，始终调用
+        this.onBind();
+
+        if (this.data === undefined || this.data === null) {
+            console.warn(`[CCView] ${this.constructor.name}: mvvm=true 但 data 未定义，VM 绑定已跳过`);
+            return;
         }
+
+        this.initializeVM();
     }
 
     /**
@@ -102,19 +108,13 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
      * @private
      */
     private initializeVM() {
-        this.onBind();
-
-        // 优化：使用模板字符串（现代引擎优化更好），并缓存 uuid
+        // 使用 split/join 替换 uuid 中所有的点，避免 VM.add 内部校验失败
         const uuid = this.node.uuid;
-        // 优化：只在必要时替换点号，使用更快的 replaceAll（如果支持）
-        this.tag = `_temp<${uuid.replace('.', '')}>`;
+        this.tag = `_temp<${uuid.split('.').join('')}>`;
         VM.add(this.data!, this.tag);
 
-        // 搜寻所有节点：找到 watch path
         const comps = this.getVMComponents();
         const len = comps.length;
-
-        // 优化：避免属性查找，缓存 tag
         const tag = this.tag;
         for (let i = 0; i < len; i++) {
             this.replaceVMPath(comps[i], tag);
@@ -139,70 +139,37 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
      * 替换 VM 组件的路径
      * @private
      */
-    private replaceVMPath(comp: Component, tag: string) {
-        // 优化：使用 any 类型避免多次类型转换
-        const vmComp: any = comp;
-        const path: string = vmComp.watchPath;
-
-        // 优化：使用严格相等避免类型转换
-        if (vmComp.templateMode === true) {
-            const pathArr: string[] = vmComp.watchPathArr;
-            if (pathArr) {
-                const len = pathArr.length;
-                // 优化：避免在循环中重复声明变量
-                for (let i = 0; i < len; i++) {
-                    // 优化：直接修改数组元素，避免中间变量
-                    pathArr[i] = pathArr[i].replace('*', tag);
-                }
+    private replaceVMPath(comp: VMBase, tag: string) {
+        if (comp.templateMode) {
+            const pathArr = comp.watchPathArr;
+            const len = pathArr.length;
+            for (let i = 0; i < len; i++) {
+                pathArr[i] = pathArr[i].replace('*', tag);
             }
-        }
-        else if (path) {
-            // 优化：使用 startsWith 比 split 更快
-            // 优化：避免不必要的 split 操作
-            if (path.charCodeAt(0) === 42) { // 42 是 '*' 的字符码
-                vmComp.watchPath = path.replace('*', tag);
-            }
+        } else if (comp.watchPath.charCodeAt(0) === 42) { // 42 是 '*' 的字符码
+            comp.watchPath = comp.watchPath.replace('*', tag);
         }
     }
 
     /**
-     * 优化的遍历节点，获取 VM 组件
+     * 获取当前节点下属于本 CCView 管辖的 VMBase 组件（排除嵌套启用 MVVM 的子 CCView 管辖范围）
      * @private
      */
-    private getVMComponents(): Component[] {
+    private getVMComponents(): VMBase[] {
         const comps = this.node.getComponentsInChildren(VMBase);
+        if (comps.length === 0) return comps;
 
-        // 优化：提前返回，避免不必要的计算
-        if (comps.length === 0) {
-            return comps;
-        }
-
-        // 优化：只在有嵌套 CCView 时才获取 parents
         const parents = this.node.getComponentsInChildren(CCView);
-
-        // 优化：使用数组长度判断，避免创建新数组
-        let hasNested = false;
-        const len = parents.length;
         const myUuid = this.uuid;
 
+        // 单次遍历：同时判断是否有嵌套 MVVM CCView，并构建过滤集合
+        const filterSet = new Set<VMBase>();
+        const len = parents.length;
+        let hasNested = false;
         for (let i = 0; i < len; i++) {
             const p = parents[i];
             if (p.uuid !== myUuid && p.mvvm) {
                 hasNested = true;
-                break;
-            }
-        }
-
-        // 如果没有嵌套的启用了 MVVM 的 CCView，直接返回所有组件
-        if (!hasNested) {
-            return comps;
-        }
-
-        // 优化：使用 Set 过滤，但避免多次遍历
-        const filterSet = new Set<Component>();
-        for (let i = 0; i < len; i++) {
-            const p = parents[i];
-            if (p.uuid !== myUuid && p.mvvm) {
                 const childComps = p.node.getComponentsInChildren(VMBase);
                 const childLen = childComps.length;
                 for (let j = 0; j < childLen; j++) {
@@ -211,15 +178,15 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
             }
         }
 
-        // 优化：使用传统 for 循环比 filter 更快
-        const result: Component[] = [];
+        if (!hasNested) return comps;
+
+        const result: VMBase[] = [];
         const compsLen = comps.length;
         for (let i = 0; i < compsLen; i++) {
             if (!filterSet.has(comps[i])) {
                 result.push(comps[i]);
             }
         }
-
         return result;
     }
     //#endregion
@@ -261,7 +228,6 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
                 this.tag = undefined;
             }
 
-            // @ts-ignore - 优化：显式清空引用，帮助 GC
             this.data = undefined;
         }
 

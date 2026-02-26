@@ -186,16 +186,14 @@ export namespace ecs {
         // 缓存中没有同类实体，则创建一个新的
         if (!entity) {
             entity = new ctor();
-            (entity as ECSEntity).eid = ECSModel.eid++; // 实体唯一编号
-            (entity as ECSEntity).name = entityName;
+            entity.eid = ECSModel.eid++; // 实体唯一编号
+            entity.name = entityName;
         }
 
         // 触发实体初始化逻辑
         const entityWithInit = entity as ECSEntity & { init?: () => void };
-        if (entityWithInit.init) {
-            entityWithInit.isValid = true;
-            entityWithInit.init();
-        }
+        entity.isValid = true; // 无论新建还是复用，都标记为有效
+        if (entityWithInit.init) entityWithInit.init();
 
         ECSModel.eid2Entity.set((entity as ECSEntity).eid, entity as ECSEntity);
         return entity;
@@ -267,7 +265,7 @@ export namespace ecs {
     /** 创建实体 */
     function createEntity<E extends Entity = Entity>(): E {
         const entity = new Entity();
-        (entity as ECSEntity).eid = ECSModel.eid++; // 实体id也是有限的资源
+        entity.eid = ECSModel.eid++; // 实体id也是有限的资源
         ECSModel.eid2Entity.set((entity as ECSEntity).eid, entity as ECSEntity);
         return entity as E;
     }
@@ -278,7 +276,7 @@ export namespace ecs {
      */
     function createEntityWithComp<T extends IComp>(ctor: CompCtor<T>): T {
         const entity = createEntity();
-        return (entity as ECSEntity).add(ctor);
+        return entity.add(ctor);
     }
 
     //#region 过滤器
