@@ -76,7 +76,13 @@ function destroyEntity(entity: ECSEntity): void {
         }
         // 限制对象池大小，防止内存无限增长
         if (entitys.length < ECSModel.MAX_ENTITY_POOL_SIZE) {
+            // 池未满：保留 Uint32Array，仅清空位图，复用时零开销
+            entity.getMask().clear();
             entitys.push(entity);
+        }
+        else {
+            // 池已满：实体真正丢弃，将 Uint32Array 回收到 MaskPool 供后续复用
+            entity.getMask().destroy();
         }
         ECSModel.eid2Entity.delete(entity.eid);
     }
@@ -342,9 +348,6 @@ export class ECSEntity {
 
         // 清理缓存的组件对象，防止内存泄漏
         this.compTid2Obj.clear();
-
-        // 回收 mask 到对象池
-        this.mask.destroy();
     }
 
     private _remove(comp: CompType<ecs.IComp>): void {
