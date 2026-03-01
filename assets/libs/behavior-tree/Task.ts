@@ -6,14 +6,12 @@
  */
 import { BTreeNode } from './BTreeNode';
 
-/** 
- * 任务行为节点
- * 这是一个基类，子类应该实现具体的 run 方法
+/**
+ * 叶子任务节点基类，子类重写 run() 实现具体行为逻辑。
+ * 默认实现直接调用 success()。
  */
 export class Task extends BTreeNode {
-    run(blackboard?: any) {
-        // 默认实现：直接成功
-        // 子类应该重写此方法实现具体逻辑
+    run(blackboard?: object): void {
         this.success();
     }
 }

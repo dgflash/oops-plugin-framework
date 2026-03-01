@@ -4,17 +4,19 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-07-20 14:04:27
  */
+import type { BTreeNode } from './BTreeNode';
+
 /** 行为控制接口 */
 export interface IControl {
     /** 行为处理成功 */
-    success(blackboard?: any): void;
+    success(): void;
 
     /** 行为处理失败 */
-    fail(blackboard?: any): void;
+    fail(): void;
 
     /** 处理行为逻辑 */
-    run(blackboard?: any): void;
+    run(blackboard?: object): void;
 
-    /** 正在处理中 */
-    running(blackboard?: any): void;
+    /** 正在处理中，传入当前正在运行的节点 */
+    running(node: BTreeNode): void;
 }

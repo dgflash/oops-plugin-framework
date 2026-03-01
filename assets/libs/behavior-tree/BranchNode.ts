@@ -4,94 +4,90 @@
  * @LastEditors: dgflash
  * @LastEditTime: 2022-07-20 13:58:32
  */
-import { BehaviorTree } from './BehaviorTree';
+import type { BTNodeJson } from './BTNodeJson';
 import { BTreeNode } from './BTreeNode';
 
 /** 复合节点 */
 export abstract class BranchNode extends BTreeNode {
     /** 子节点数组 */
-    children: Array<BTreeNode>;
+    children: BTreeNode[];
     /** 当前任务索引 */
     protected _actualTask: number = 0;
-    /** 正在运行的节点 */
-    protected _runningNode: BTreeNode | null = null;
-    protected _nodeRunning: BTreeNode | null = null;
+    /**
+     * 当前正在执行的子节点。
+     * 原 _runningNode 与 _nodeRunning 语义重叠，合并为单一引用。
+     */
+    protected _activeNode: BTreeNode | null = null;
     /** 外部参数对象 */
-    protected _blackboard: any;
+    protected _blackboard: object | undefined = undefined;
 
-    constructor(nodes: Array<BTreeNode>) {
+    constructor(nodes: BTreeNode[]) {
         super();
-        this.children = nodes || [];
+        this.children = nodes ?? [];
     }
 
-    start() {
+    start(blackboard?: object): void {
         this._actualTask = 0;
-        super.start();
+        super.start(blackboard);
     }
 
-    run(blackboard?: any) {
-        if (this.children.length === 0) { // 没有子任务直接视为执行失败
-            if (this._control) {
-                this._control.fail();
-            }
+    run(blackboard?: object): void {
+        if (this.children.length === 0) {
+            this._control?.fail();
         }
         else {
             this._blackboard = blackboard;
-            this.start();
+            this.start(blackboard);
             if (this._actualTask < this.children.length) {
                 this._run();
             }
         }
 
-        this.end();
+        this.end(blackboard);
     }
 
-    /** 执行当前节点逻辑 */
-    protected _run(blackboard?: any) {
-        // 直接使用子节点，不需要通过 getNode 查询（性能优化）
+    /** 执行当前索引对应的子节点 */
+    protected _run(): void {
         const node = this.children[this._actualTask];
         if (node) {
-            this._runningNode = node;
+            this._activeNode = node;
             node.setControl(this);
             node.start(this._blackboard);
             node.run(this._blackboard);
         }
     }
 
-    running(node: BTreeNode) {
-        this._nodeRunning = node;
-        if (this._control) {
-            this._control.running(node);
-        }
+    running(node: BTreeNode): void {
+        this._activeNode = node;
+        this._control?.running(node);
     }
 
-    success() {
-        this._nodeRunning = null;
-        if (this._runningNode) {
-            this._runningNode.end(this._blackboard);
-        }
+    success(): void {
+        const node = this._activeNode;
+        this._activeNode = null;
+        node?.end(this._blackboard);
     }
 
-    fail() {
-        this._nodeRunning = null;
-        if (this._runningNode) {
-            this._runningNode.end(this._blackboard);
-        }
+    fail(): void {
+        const node = this._activeNode;
+        this._activeNode = null;
+        node?.end(this._blackboard);
+    }
+
+    toJSON(): BTNodeJson {
+        const json = super.toJSON();
+        json.children = this.children.map(c => c.toJSON());
+        return json;
     }
 
     /** 清理节点资源 */
-    destroy() {
-        // 清理所有子节点
-        if (this.children) {
-            this.children.forEach(child => {
-                if (child && typeof child.destroy === 'function') {
-                    child.destroy();
-                }
-            });
+    destroy(): void {
+        for (const child of this.children) {
+            child.destroy();
         }
-        this._runningNode = null;
-        this._nodeRunning = null;
-        this._blackboard = null;
+        this.children.length = 0;
+        this._activeNode = null;
+        this._blackboard = undefined;
         super.destroy();
     }
 }
