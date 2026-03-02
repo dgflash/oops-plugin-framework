@@ -1,13 +1,12 @@
 import { shell } from "electron";
-import { checkUpdate, statistics } from "./common/version";
+import { PackageUtil } from "./common/package-util";
 
 /**
  * @en Hooks triggered after extension loading is complete
  * @zh 扩展加载完成后触发的钩子
  */
 export function load() {
-    checkUpdate();
-    statistics();
+    console.log('【Oops Framework】当前版本：', PackageUtil.version);
 }
 
 /**
@@ -34,9 +33,6 @@ export const methods: { [key: string]: (...any: any) => any } = {
     /** 打开框架更新日志 */
     log() {
         shell.openExternal('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12101082&doc_id=2873565');
-    },
-    update() {
-        checkUpdate();
     },
     /** 打开解决方案列表 */
     solution() {

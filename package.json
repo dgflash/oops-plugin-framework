@@ -73,11 +73,6 @@
                 "path": "i18n:oops-framework.name",
                 "label": "i18n:oops-framework.log",
                 "message": "log"
-            },
-            {
-                "path": "i18n:oops-framework.name",
-                "label": "i18n:oops-framework.update",
-                "message": "update"
             }
         ],
         "messages": {
@@ -94,11 +89,6 @@
             "log": {
                 "methods": [
                     "log"
-                ]
-            },
-            "update": {
-                "methods": [
-                    "update"
                 ]
             },
             "tutorial": {
@@ -128,9 +118,7 @@
             }
         }
     },
-    "dependencies": {
-        "systeminformation": "^5.23.5"
-    },
+    "dependencies": {},
     "devDependencies": {
         "@cocos/creator-types": "^3.8.2",
         "@types/node": "^20.16.12",
