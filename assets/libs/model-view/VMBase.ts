@@ -38,6 +38,9 @@ export class VMBase extends Component {
     private _parsedPathArr: string[] = [];
     private _pathParsed: boolean = false;
 
+    /** 自动管理的VM标签 */
+    private _autoVMTag: string | null = null;
+
     /**
      * 快速获取节点在父节点中的索引（优化版）
      */
@@ -184,5 +187,60 @@ export class VMBase extends Component {
      */
     protected onValueChanged(n: any, o: any, pathArr: string[]) {
 
+    }
+
+    /**
+     * 启用自动VM管理（推荐使用）
+     * 自动创建VM并绑定到组件生命周期，无需手动管理tag和清理
+     * @param data 需要绑定的数据
+     * @param activeRootObject 激活主路径通知
+     * @returns ViewModel实例
+     */
+    protected enableAutoVM<T>(data: T, activeRootObject = false): ViewModel<T> | undefined {
+        if (this._autoVMTag) {
+            console.warn('[VMBase] VM already initialized for component:', this.node.name);
+            return this.VM.get(this._autoVMTag);
+        }
+        
+        this._autoVMTag = this.VM.addAuto(data, this, activeRootObject);
+        return this.VM.get(this._autoVMTag);
+    }
+
+    /**
+     * 获取自动管理的VM实例
+     */
+    protected getAutoVM<T>(): ViewModel<T> | undefined {
+        if (!this._autoVMTag) {
+            console.warn('[VMBase] Auto VM not initialized, call enableAutoVM first');
+            return undefined;
+        }
+        return this.VM.get(this._autoVMTag);
+    }
+
+    /**
+     * 获取自动管理的VM标签
+     */
+    protected getAutoVMTag(): string | null {
+        return this._autoVMTag;
+    }
+
+    /**
+     * 手动禁用自动VM（一般不需要调用，组件销毁时会自动清理）
+     */
+    protected disableAutoVM() {
+        if (this._autoVMTag) {
+            this.VM.removeAuto(this);
+            this._autoVMTag = null;
+        }
+    }
+
+    onDestroy() {
+        if (VMEnv.editor) return;
+
+        // 自动清理VM，防止内存泄漏
+        if (this._autoVMTag) {
+            this.VM.removeAuto(this);
+            this._autoVMTag = null;
+        }
     }
 }
