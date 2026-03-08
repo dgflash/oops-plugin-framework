@@ -2,6 +2,7 @@ import type { ecs } from './ECS';
 import { ECSMask } from './ECSMask';
 import type { CompCtor, CompType } from './ECSModel';
 import { ECSModel } from './ECSModel';
+import { globalPoolCoordinator } from './ECSPoolManager';
 
 //#region 辅助方法
 
@@ -45,7 +46,7 @@ function deleteEntityComp(entity: ECSEntity, compName: string): void {
 }
 
 /**
- * 创建组件对象
+ * 创建组件对象（使用动态池管理）
  * @param ctor
  */
 function createComp<T extends ecs.IComp>(ctor: CompCtor<T>): T {
@@ -53,37 +54,36 @@ function createComp<T extends ecs.IComp>(ctor: CompCtor<T>): T {
     if (!cct) {
         throw Error(`没有找到该组件的构造函数，检查${ctor.compName}是否为不可构造的组件`);
     }
-    const comps = ECSModel.compPools.get(ctor.tid);
-    if (!comps) {
-        throw Error(`组件${ctor.compName}的对象池不存在`);
-    }
-    const component = comps.pop() || new (cct as CompCtor<T>)();
+    
+    // 使用动态池管理器
+    const pool = globalPoolCoordinator.getPool(
+        ctor.compName,
+        () => new (cct as CompCtor<T>)(),
+        ctor
+    );
+    
+    const component = pool.get();
     return component as T;
 }
 
 /**
- * 销毁实体
+ * 销毁实体（使用动态池管理）
  *
  * 缓存销毁的实体，下次新建实体时会优先从缓存中拿
  * @param entity
  */
 function destroyEntity(entity: ECSEntity): void {
     if (ECSModel.eid2Entity.has(entity.eid)) {
-        let entitys = ECSModel.entityPool.get(entity.name);
-        if (entitys === undefined) {
-            entitys = [];
-            ECSModel.entityPool.set(entity.name, entitys);
-        }
-        // 限制对象池大小，防止内存无限增长
-        if (entitys.length < ECSModel.MAX_ENTITY_POOL_SIZE) {
-            // 池未满：保留 Uint32Array，仅清空位图，复用时零开销
-            entity.getMask().clear();
-            entitys.push(entity);
-        }
-        else {
-            // 池已满：实体真正丢弃，将 Uint32Array 回收到 MaskPool 供后续复用
-            entity.getMask().destroy();
-        }
+        // 使用动态池管理器
+        const pool = globalPoolCoordinator.getPool(
+            entity.name,
+            () => new ECSEntity()
+        );
+        
+        // 清空mask并回收
+        entity.getMask().clear();
+        pool.recycle(entity);
+        
         ECSModel.eid2Entity.delete(entity.eid);
     }
     else {
@@ -133,7 +133,7 @@ export class ECSEntity {
     }
 
     /**
-     * 添加子实体
+     * 添加子实体（带循环引用检测）
      * @param entity 被添加的实体对象
      * @returns      子实体的唯一编号, -1表示添加失败
      */
@@ -147,9 +147,27 @@ export class ECSEntity {
             return -1;
         }
 
+        // 检测循环引用
+        if (this.hasAncestor(entity)) {
+            console.error(`检测到循环引用: ${this.name} -> ${entity.name}`);
+            return -1;
+        }
+
         entity._parent = this;
         this.childs.set(entity.eid, entity);
         return entity.eid;
+    }
+
+    /**
+     * 检测是否存在祖先关系（防止循环引用）
+     */
+    private hasAncestor(entity: ECSEntity): boolean {
+        let current: ECSEntity | null = this;
+        while (current) {
+            if (current === entity) return true;
+            current = current.parent;
+        }
+        return false;
     }
 
     /**
@@ -290,11 +308,16 @@ export class ECSEntity {
         if (isRecycle) {
             comp.reset();
 
-            // 回收组件到指定缓存池中，限制池大小
+            // 使用动态池管理器回收组件
             if (comp.canRecycle) {
-                const compPoolsType = ECSModel.compPools.get(componentTypeId);
-                if (compPoolsType && compPoolsType.length < ECSModel.MAX_COMP_POOL_SIZE) {
-                    compPoolsType.push(comp);
+                const ctor = ECSModel.compCtors[componentTypeId];
+                if (ctor) {
+                    const pool = globalPoolCoordinator.getPool(
+                        ctor.compName,
+                        () => new (ctor as any)(),
+                        ctor
+                    );
+                    pool.recycle(comp);
                 }
             }
         }
@@ -308,9 +331,14 @@ export class ECSEntity {
                 console.warn(`实体 ${this.name} 缓存组件数量超过限制，强制回收组件 ${compName}`);
                 comp.reset();
                 if (comp.canRecycle) {
-                    const compPoolsType = ECSModel.compPools.get(componentTypeId);
-                    if (compPoolsType && compPoolsType.length < ECSModel.MAX_COMP_POOL_SIZE) {
-                        compPoolsType.push(comp);
+                    const ctor = ECSModel.compCtors[componentTypeId];
+                    if (ctor) {
+                        const pool = globalPoolCoordinator.getPool(
+                            ctor.compName,
+                            () => new (ctor as any)(),
+                            ctor
+                        );
+                        pool.recycle(comp);
                     }
                 }
             }

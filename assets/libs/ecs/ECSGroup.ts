@@ -17,19 +17,25 @@ export class ECSGroup<E extends ECSEntity = ECSEntity> {
     private _cacheValid = false;
 
     /**
-     * 符合规则的实体
+     * 符合规则的实体（带数组容量管理）
      */
     get matchEntities(): E[] {
         if (!this._cacheValid) {
-            // 复用数组，减少 GC 压力
             const cache = this._entitiesCache;
-            cache.length = 0;
+            const targetSize = this._matchEntities.size;
+            
+            // 如果缓存数组过大，重新创建以释放内存
+            if (cache.length > targetSize * 2 && targetSize < 100) {
+                this._entitiesCache = [];
+            } else {
+                cache.length = 0;
+            }
             
             // 直接遍历 Map values 比 Array.from 更高效
             const iterator = this._matchEntities.values();
             let result = iterator.next();
             while (!result.done) {
-                cache.push(result.value);
+                this._entitiesCache.push(result.value);
                 result = iterator.next();
             }
             
