@@ -33,58 +33,101 @@ export class VMBase extends Component {
     /** 储存模板多路径的值 */
     protected templateValueArr: any[] = [];
 
+    /** 缓存解析后的路径，避免重复解析 */
+    private _parsedPath: string = '';
+    private _parsedPathArr: string[] = [];
+    private _pathParsed: boolean = false;
+
+    /**
+     * 快速获取节点在父节点中的索引（优化版）
+     */
+    private getNodeIndex(): number {
+        if (!this.node.parent) return 0;
+        
+        const children = this.node.parent.children;
+        const len = children.length;
+        
+        // 使用传统for循环代替findIndex，性能更好
+        for (let i = 0; i < len; i++) {
+            if (children[i] === this.node) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * 解析单个路径中的通配符
+     */
+    private parsePath(path: string): string {
+        // 快速检查是否包含通配符，避免不必要的split操作
+        if (path.indexOf('*') === -1) {
+            return path;
+        }
+
+        const paths = path.split('.');
+        for (let i = 1; i < paths.length; i++) {
+            if (paths[i] === '*') {
+                paths[i] = this.getNodeIndex().toString();
+                break; // 只处理第一个通配符
+            }
+        }
+        return paths.join('.');
+    }
+
+    /**
+     * 延迟解析路径，只在首次使用时解析
+     */
+    private ensurePathParsed() {
+        if (this._pathParsed) return;
+        
+        this._pathParsed = true;
+
+        // 解析单路径
+        if (this.watchPath) {
+            this._parsedPath = this.parsePath(this.watchPath);
+        }
+
+        // 解析多路径
+        if (this.watchPathArr.length > 0) {
+            this._parsedPathArr = new Array(this.watchPathArr.length);
+            for (let i = 0; i < this.watchPathArr.length; i++) {
+                this._parsedPathArr[i] = this.parsePath(this.watchPathArr[i]);
+            }
+        }
+
+        // 打印调试信息
+        if (DEBUG_WATCH_PATH && DEBUG) {
+            log('所有路径', this._parsedPath ? [this._parsedPath] : this._parsedPathArr, '<<', this.node.parent!.name + '.' + this.node.name);
+        }
+
+        if (!this._parsedPath && this._parsedPathArr.join('') === '') {
+            log('可能未设置路径的节点:', this.node.parent!.name + '.' + this.node.name);
+        }
+    }
+
+    /**
+     * 获取解析后的单路径
+     */
+    private getParsedPath(): string {
+        this.ensurePathParsed();
+        return this._parsedPath;
+    }
+
+    /**
+     * 获取解析后的多路径数组
+     */
+    private getParsedPathArr(): string[] {
+        this.ensurePathParsed();
+        return this._parsedPathArr;
+    }
+
     /**
      * 如果需要重写onLoad 方法，请根据顺序调用 super.onLoad()，执行默认方法
      */
     onLoad() {
         if (VMEnv.editor) return;
-
-        // 提前拆分、并且解析路径
-        const paths = this.watchPath.split('.');
-        for (let i = 1; i < paths.length; i++) {
-            const p = paths[i];
-            // 如果发现了路径使用了 * ，则自动去自己的父节点查找自己所在 index 值
-            if (p == '*') {
-                let index = this.node.parent!.children.findIndex((n) => n === this.node);
-                if (index <= 0) index = 0;
-                paths[i] = index.toString();
-                break;
-            }
-        }
-
-        // 替换掉原路径
-        this.watchPath = paths.join('.');
-
-        // 提前进行路径数组 的 解析
-        const pathArr = this.watchPathArr;
-        if (pathArr.length >= 1) {
-            for (let i = 0; i < pathArr.length; i++) {
-                const path = pathArr[i];
-                const paths = path.split('.');
-
-                for (let i = 1; i < paths.length; i++) {
-                    const p = paths[i];
-                    if (p == '*') {
-                        let index = this.node.parent!.children.findIndex((n) => n === this.node);
-                        if (index <= 0) index = 0;
-                        paths[i] = index.toString();
-                        break;
-                    }
-
-                }
-
-                this.watchPathArr[i] = paths.join('.');
-            }
-        }
-
-        // 打印出所有绑定的路径，方便调试信息
-        if (DEBUG_WATCH_PATH && DEBUG) {
-            log('所有路径', this.watchPath ? [this.watchPath] : this.watchPathArr, '<<', this.node.parent!.name + '.' + this.node.name);
-        }
-
-        if (this.watchPath == '' && this.watchPathArr.join('') == '') {
-            log('可能未设置路径的节点:', this.node.parent!.name + '.' + this.node.name);
-        }
+        // onLoad中不再进行路径解析，延迟到onEnable时才解析
     }
 
     onEnable() {
@@ -94,7 +137,8 @@ export class VMBase extends Component {
             this.setMultPathEvent(true);
         }
         else if (this.watchPath != '') {
-            this.VM.bindPath(this.watchPath, this.onValueChanged, this);
+            const parsedPath = this.getParsedPath();
+            this.VM.bindPath(parsedPath, this.onValueChanged, this);
         }
 
         this.onValueInit(); // 激活时,调用值初始化
@@ -107,7 +151,8 @@ export class VMBase extends Component {
             this.setMultPathEvent(false);
         }
         else if (this.watchPath != '') {
-            this.VM.unbindPath(this.watchPath, this.onValueChanged, this);
+            const parsedPath = this.getParsedPath();
+            this.VM.unbindPath(parsedPath, this.onValueChanged, this);
         }
     }
 
@@ -115,7 +160,7 @@ export class VMBase extends Component {
     private setMultPathEvent(enabled = true) {
         if (VMEnv.editor) return;
 
-        const arr = this.watchPathArr;
+        const arr = this.getParsedPathArr();
         for (let i = 0; i < arr.length; i++) {
             const path = arr[i];
             if (enabled) {
