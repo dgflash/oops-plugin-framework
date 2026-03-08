@@ -5,7 +5,7 @@ import { ECSMatcher } from './ECSMatcher';
 import type { CompCtor, CompType, EntityCtor } from './ECSModel';
 import { ECSModel } from './ECSModel';
 import { ECSComblockSystem, ECSRootSystem, ECSSystem } from './ECSSystem';
-import { globalPoolCoordinator } from './ECSPoolManager';
+import { ecsPoolCoordinator } from './ECSPoolManager';
 
 /**
  * ECSEntity对象在destroy后，会回收到ECSModel.entityPool实体对象池中
@@ -181,15 +181,14 @@ export namespace ecs {
         }
 
         // 使用动态池管理器
-        const pool = globalPoolCoordinator.getPool(
+        const pool = ecsPoolCoordinator.getPool(
             entityName,
             () => {
                 const entity = new ctor();
                 entity.eid = ECSModel.eid++; // 实体唯一编号
                 entity.name = entityName;
                 return entity;
-            },
-            ctor
+            }
         );
 
         const entity = pool.get();
@@ -231,9 +230,6 @@ export namespace ecs {
         });
         ECSModel.eid2Entity.clear();
         ECSModel.groups.clear();
-        
-        // 保存历史数据用于下次学习
-        globalPoolCoordinator.saveHistory();
     }
 
     /**
@@ -256,7 +252,7 @@ export namespace ecs {
         ECSMask.clearPool();
         
         // 清理动态池管理器
-        globalPoolCoordinator.getSmartManager().clearAll();
+        ecsPoolCoordinator.clearAll();
     }
 
     /**

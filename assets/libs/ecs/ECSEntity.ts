@@ -2,7 +2,7 @@ import type { ecs } from './ECS';
 import { ECSMask } from './ECSMask';
 import type { CompCtor, CompType } from './ECSModel';
 import { ECSModel } from './ECSModel';
-import { globalPoolCoordinator } from './ECSPoolManager';
+import { ecsPoolCoordinator } from './ECSPoolManager';
 
 //#region 辅助方法
 
@@ -56,10 +56,9 @@ function createComp<T extends ecs.IComp>(ctor: CompCtor<T>): T {
     }
     
     // 使用动态池管理器
-    const pool = globalPoolCoordinator.getPool(
+    const pool = ecsPoolCoordinator.getPool(
         ctor.compName,
-        () => new (cct as CompCtor<T>)(),
-        ctor
+        () => new (cct as CompCtor<T>)()
     );
     
     const component = pool.get();
@@ -75,7 +74,7 @@ function createComp<T extends ecs.IComp>(ctor: CompCtor<T>): T {
 function destroyEntity(entity: ECSEntity): void {
     if (ECSModel.eid2Entity.has(entity.eid)) {
         // 使用动态池管理器
-        const pool = globalPoolCoordinator.getPool(
+        const pool = ecsPoolCoordinator.getPool(
             entity.name,
             () => new ECSEntity()
         );
@@ -347,10 +346,9 @@ export class ECSEntity {
             if (comp.canRecycle) {
                 const ctor = ECSModel.compCtors[componentTypeId];
                 if (ctor) {
-                    const pool = globalPoolCoordinator.getPool(
+                    const pool = ecsPoolCoordinator.getPool(
                         ctor.compName,
-                        () => new (ctor as any)(),
-                        ctor
+                        () => new (ctor as any)()
                     );
                     pool.recycle(comp);
                 }
@@ -386,10 +384,9 @@ export class ECSEntity {
             comp.reset();
             if (comp.canRecycle) {
                 if (ctorObj) {
-                    const pool = globalPoolCoordinator.getPool(
+                    const pool = ecsPoolCoordinator.getPool(
                         ctorObj.compName,
-                        () => new (ctorObj as any)(),
-                        ctorObj
+                        () => new (ctorObj as any)()
                     );
                     pool.recycle(comp);
                 }
@@ -412,10 +409,9 @@ export class ECSEntity {
             if (comp.canRecycle) {
                 const ctor = ECSModel.compCtors[tid];
                 if (ctor) {
-                    const pool = globalPoolCoordinator.getPool(
+                    const pool = ecsPoolCoordinator.getPool(
                         ctor.compName,
-                        () => new (ctor as any)(),
-                        ctor
+                        () => new (ctor as any)()
                     );
                     pool.recycle(comp);
                 }
