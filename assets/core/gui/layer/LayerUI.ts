@@ -198,9 +198,6 @@ export class LayerUI extends Node {
     remove(prefabPath: string): void {
         const state = this.ui_nodes.get(prefabPath);
         if (state) {
-            // 标记为无效，防止异步加载完成后创建僵尸节点
-            state.valid = false;
-            
             const release: boolean = state.config.destroy!;
 
             // 不释放界面，缓存起来待下次使用
@@ -213,6 +210,9 @@ export class LayerUI extends Node {
                 const comp = state.node.getComponent(LayerUIElement);
                 comp && comp.remove(release);
             }
+            
+            // 标记为无效，防止异步加载完成后创建僵尸节点
+            state.valid = false;
         }
     }
 
