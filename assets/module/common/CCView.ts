@@ -90,12 +90,14 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
      * 注意：如果子类需要覆盖此方法，必须调用 super.onLoad()
      */
     onLoad() {
+        // 提前返回，避免不必要的检查
         if (!this.mvvm) return;
 
         // onBind 语义为"绑定初始化"，与 data 是否存在解耦，始终调用
         this.onBind();
 
-        if (this.data === undefined || this.data === null) {
+        const data = this.data;
+        if (data === undefined || data === null) {
             console.warn(`[CCView] ${this.constructor.name}: mvvm=true 但 data 未定义，VM 绑定已跳过`);
             return;
         }
@@ -108,9 +110,9 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
      * @private
      */
     private initializeVM() {
-        // 使用 split/join 替换 uuid 中所有的点，避免 VM.add 内部校验失败
-        const uuid = this.node.uuid;
-        this.tag = `_temp<${uuid.split('.').join('')}>`;
+        // 使用正则替换所有的点，避免 VM.add 内部校验失败
+        const uuid = this.node.uuid.replace(/\./g, '');
+        this.tag = `_temp<${uuid}>`;
         VM.add(this.data!, this.tag);
 
         const comps = this.getVMComponents();
@@ -146,70 +148,74 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
             for (let i = 0; i < len; i++) {
                 pathArr[i] = pathArr[i].replace('*', tag);
             }
-        } else if (comp.watchPath.charCodeAt(0) === 42) { // 42 是 '*' 的字符码
+        } else if (comp.watchPath[0] === '*') {
             comp.watchPath = comp.watchPath.replace('*', tag);
         }
     }
 
     /**
      * 获取当前节点下属于本 CCView 管辖的 VMBase 组件（排除嵌套启用 MVVM 的子 CCView 管辖范围）
+     * 使用深度优先遍历 + 剪枝优化性能
      * @private
      */
     private getVMComponents(): VMBase[] {
-        const comps = this.node.getComponentsInChildren(VMBase);
-        if (comps.length === 0) return comps;
-
-        const parents = this.node.getComponentsInChildren(CCView);
+        const result: VMBase[] = [];
         const myUuid = this.uuid;
-
-        // 单次遍历：同时判断是否有嵌套 MVVM CCView，并构建过滤集合
-        const filterSet = new Set<VMBase>();
-        const len = parents.length;
-        let hasNested = false;
-        for (let i = 0; i < len; i++) {
-            const p = parents[i];
-            if (p.uuid !== myUuid && p.mvvm) {
-                hasNested = true;
-                const childComps = p.node.getComponentsInChildren(VMBase);
-                const childLen = childComps.length;
-                for (let j = 0; j < childLen; j++) {
-                    filterSet.add(childComps[j]);
+        
+        // 深度优先遍历，遇到嵌套的 MVVM CCView 时剪枝
+        const traverse = (node: any) => {
+            // 检查当前节点的组件
+            const vmComps = node.getComponents(VMBase);
+            const vmLen = vmComps.length;
+            for (let i = 0; i < vmLen; i++) {
+                result.push(vmComps[i]);
+            }
+            
+            // 检查是否有嵌套的 MVVM CCView（排除自己）
+            const ccViews = node.getComponents(CCView);
+            const ccLen = ccViews.length;
+            for (let i = 0; i < ccLen; i++) {
+                const view = ccViews[i];
+                if (view.uuid !== myUuid && view.mvvm) {
+                    // 遇到嵌套的 MVVM CCView，剪枝，不再遍历其子节点
+                    return;
                 }
             }
-        }
-
-        if (!hasNested) return comps;
-
-        const result: VMBase[] = [];
-        const compsLen = comps.length;
-        for (let i = 0; i < compsLen; i++) {
-            if (!filterSet.has(comps[i])) {
-                result.push(comps[i]);
+            
+            // 递归遍历子节点
+            const children = node.children;
+            const childLen = children.length;
+            for (let i = 0; i < childLen; i++) {
+                traverse(children[i]);
             }
-        }
+        };
+        
+        traverse(this.node);
         return result;
     }
     //#endregion
 
     /** 从父节点移除自己 */
     remove() {
-        if (!this.ent) {
+        const ent = this.ent;
+        if (!ent) {
             console.error(`组件 ${this.name} 移除失败，实体不存在`);
             return;
         }
 
-        if (this.tid < 0) {
-            console.error(`组件 ${this.name} 移除失败，组件未注册 (tid=${this.tid})`);
+        const tid = this.tid;
+        if (tid < 0) {
+            console.error(`组件 ${this.name} 移除失败，组件未注册 (tid=${tid})`);
             return;
         }
 
-        const cct = ECSModel.compCtors[this.tid];
+        const cct = ECSModel.compCtors[tid];
         if (!cct) {
-            console.error(`组件 ${this.name} 移除失败，组件构造函数不存在 (tid=${this.tid})`);
+            console.error(`组件 ${this.name} 移除失败，组件构造函数不存在 (tid=${tid})`);
             return;
         }
 
-        this.ent.removeUi(cct as unknown as UICtor);
+        ent.removeUi(cct as unknown as UICtor);
         this.ent = null!; // 清空引用，避免内存泄漏
     }
 
@@ -223,8 +229,9 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
             this.onUnBind();
 
             // 解除全部引用
-            if (this.tag) {
-                VM.remove(this.tag);
+            const tag = this.tag;
+            if (tag) {
+                VM.remove(tag);
                 this.tag = undefined;
             }
 

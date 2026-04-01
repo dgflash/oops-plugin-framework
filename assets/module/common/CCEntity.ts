@@ -81,13 +81,14 @@ export abstract class CCEntity extends ecs.Entity {
      * @param parent     显示对象父级
      * @param path       显示资源地址（可选，不传时使用 @game.prefab 装饰器注册的路径）
      * @param bundleName 资源包名称（可选，不传时使用 @game.prefab 装饰器注册的包名）
+     * @returns 预制体节点，如果实体已销毁则返回 null
      */
     async addPrefab<T extends GameComponent>(
         ctor: ViewCtor<T>,
         parent: View,
         path?: string,
         bundleName?: string
-    ): Promise<Node> {
+    ): Promise<Node | null> {
         // 未传入路径时，从装饰器注册的数据中获取
         if (path == null) {
             path = (ctor as any).GAME_PREFAB_PATH;
@@ -102,6 +103,14 @@ export abstract class CCEntity extends ecs.Entity {
         // 跟随父节点释放自动释放当前资源
         if (parent instanceof GameComponent) {
             node = await parent.createPrefabNode(path, bundleName);
+
+            // 检查实体是否已销毁
+            if (!this.isValid) {
+                console.warn(`实体已销毁，取消添加预制体组件: ${(ctor as any).name}`);
+                node.destroy();
+                return null;
+            }
+
             const comp = node.getComponent(ctor);
             if (comp) this.add(comp as unknown as ecs.Comp);
             node.parent = parent.node;
@@ -109,6 +118,14 @@ export abstract class CCEntity extends ecs.Entity {
         // 手动内存管理
         else {
             node = await ViewUtil.createPrefabNodeAsync(path, bundleName);
+
+            // 检查实体是否已销毁
+            if (!this.isValid) {
+                console.warn(`实体已销毁，取消添加预制体组件: ${(ctor as any).name}`);
+                node.destroy();
+                return null;
+            }
+
             const comp = node.getComponent(ctor);
             if (comp) this.add(comp as unknown as ecs.Comp);
             node.parent = parent;
@@ -134,9 +151,9 @@ export abstract class CCEntity extends ecs.Entity {
      * 添加视图层组件
      * @param ctor     界面逻辑组件（支持 CCView 或使用 gui.register 注册的 GameComponent 子类）
      * @param params   界面参数
-     * @returns 界面节点
+     * @returns 界面节点，如果实体已销毁则返回 null
      */
-    async addUi<T extends GameComponent>(ctor: UICtor<T>, params?: UIParam): Promise<Node> {
+    async addUi<T extends GameComponent>(ctor: UICtor<T>, params?: UIParam): Promise<Node | null> {
         const key = gui.internal.getKey(ctor);
         if (!key) {
             throw new Error(`${ctor.name} 界面组件未使用 gui.register 注册`);
@@ -155,6 +172,14 @@ export abstract class CCEntity extends ecs.Entity {
         }
 
         const node = await oops.gui.open(key, params);
+
+        // 检查实体是否已销毁
+        if (!this.isValid) {
+            console.warn(`实体已销毁，取消添加界面组件: ${key}`);
+            oops.gui.remove(key);
+            return null;
+        }
+
         const comp = node.getComponent(ctor) as unknown as ecs.Comp;
         if (comp) this.add(comp);
 

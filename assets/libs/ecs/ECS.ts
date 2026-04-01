@@ -5,6 +5,7 @@ import { ECSMatcher } from './ECSMatcher';
 import type { CompCtor, CompType, EntityCtor } from './ECSModel';
 import { ECSModel } from './ECSModel';
 import { ECSComblockSystem, ECSRootSystem, ECSSystem } from './ECSSystem';
+import { ecsPoolCoordinator } from './ECSPoolManager';
 
 /**
  * ECSEntity对象在destroy后，会回收到ECSModel.entityPool实体对象池中
@@ -168,7 +169,7 @@ export namespace ecs {
     }
 
     /**
-     * 创建一个新的实体对象或从缓存中获取一个实体对象
+     * 创建一个新的实体对象或从缓存中获取一个实体对象（使用动态池）
      * @param ctor 实体类
      */
     export function getEntity<T extends Entity>(ctor: EntityCtor<T>): T {
@@ -179,16 +180,18 @@ export namespace ecs {
             throw new Error(`${ctor.name} 实体没有注册`);
         }
 
-        // 获取实体对象池
-        const entitys = ECSModel.entityPool.get(entityName) || [];
-        let entity: T | undefined = entitys.pop() as T | undefined;
+        // 使用动态池管理器
+        const pool = ecsPoolCoordinator.getPool(
+            entityName,
+            () => {
+                const entity = new ctor();
+                entity.eid = ECSModel.eid++; // 实体唯一编号
+                entity.name = entityName;
+                return entity;
+            }
+        );
 
-        // 缓存中没有同类实体，则创建一个新的
-        if (!entity) {
-            entity = new ctor();
-            entity.eid = ECSModel.eid++; // 实体唯一编号
-            entity.name = entityName;
-        }
+        const entity = pool.get();
 
         // 触发实体初始化逻辑
         const entityWithInit = entity as ECSEntity & { init?: () => void };
@@ -234,19 +237,22 @@ export namespace ecs {
      * 注意：此操作会清空所有实体池、组件池和 Mask 池，请在确保不再需要这些缓存时调用
      */
     export function clearPools(): void {
-        // 清理实体池
+        // 清理旧的实体池
         ECSModel.entityPool.forEach((pool) => {
             pool.length = 0;
         });
         ECSModel.entityPool.clear();
 
-        // 清理组件池
+        // 清理旧的组件池
         ECSModel.compPools.forEach((pool) => {
             pool.length = 0;
         });
 
         // 清理 Mask 对象池
         ECSMask.clearPool();
+        
+        // 清理动态池管理器
+        ecsPoolCoordinator.clearAll();
     }
 
     /**

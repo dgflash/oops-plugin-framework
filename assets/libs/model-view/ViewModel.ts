@@ -40,15 +40,15 @@ function getValueFromPath(obj: any, path: string, def?: any, tag: string | null 
  */
 class ViewModel<T> {
     constructor(data: T, tag: string) {
-        this._jsonOb = new JsonOb(data, this._callback.bind(this));
+        this._tag = tag; // 先设置tag
         this.$data = data;
-        this._tag = tag;
+        this._jsonOb = new JsonOb(data, this._callback.bind(this));
     }
 
     $data: T;
 
     // 索引值用的标签
-    private _tag: string | null = null;
+    private _tag: string;
 
     // JsonOb 实例引用，用于销毁时清理
     private _jsonOb: JsonOb<T> | null = null;
@@ -73,12 +73,12 @@ class ViewModel<T> {
 
     // 通过路径设置数据的方法
     setValue(path: string, value: any) {
-        setValueFromPath(this.$data, path, value, this._tag);
+        setValueFromPath(this.$data, path, value, this._tag || '');
     }
 
     // 获取路径的值
     getValue(path: string, def?: any): any {
-        return getValueFromPath(this.$data, path, def, this._tag);
+        return getValueFromPath(this.$data, path, def, this._tag || '');
     }
 
     // 销毁 ViewModel，释放内存
@@ -89,6 +89,7 @@ class ViewModel<T> {
         }
         // @ts-ignore
         this.$data = null;
+        // @ts-ignore
         this._tag = null;
         this.active = false;
     }
@@ -99,6 +100,11 @@ class ViewModel<T> {
  */
 class VMManager {
     private _mvs: Map<string, ViewModel<any>> = new Map<string, ViewModel<any>>();
+    
+    // 自动管理相关
+    private _autoIdCounter = 0;
+    private _autoIdPool: number[] = []; // 回收的ID池
+    private _componentToTag: WeakMap<any, string> = new WeakMap();
 
     /**
      * 绑定一个数据，并且可以由VM所管理（绑定的数据只能是值类型）
@@ -133,6 +139,89 @@ class VMManager {
             vm.destroy();
             this._mvs.delete(tag);
         }
+    }
+
+    /**
+     * 获取或回收ID
+     */
+    private _getAutoId(): number {
+        return this._autoIdPool.pop() ?? ++this._autoIdCounter;
+    }
+
+    /**
+     * 回收ID供复用
+     */
+    private _recycleAutoId(id: number) {
+        if (id > 0) {
+            this._autoIdPool.push(id);
+        }
+    }
+
+    /**
+     * 自动管理模式：为组件创建VM，自动生成唯一tag
+     * @param data 需要绑定的数据
+     * @param component 关联的组件实例
+     * @param activeRootObject 激活主路径通知
+     * @returns 生成的tag
+     */
+    addAuto<T>(data: T, component: any, activeRootObject = false): string {
+        // 检查是否已经创建过
+        const existingTag = this._componentToTag.get(component);
+        if (existingTag) {
+            console.warn('组件已存在自动 VM，标签：', existingTag);
+            return existingTag;
+        }
+
+        const id = this._getAutoId();
+        const tag = `_vm${id}`; // 短标签: _vm1, _vm2...
+        
+        const vm = new ViewModel<T>(data, tag);
+        vm.emitToRootPath = activeRootObject;
+        
+        this._mvs.set(tag, vm);
+        this._componentToTag.set(component, tag);
+        
+        return tag;
+    }
+
+    /**
+     * 自动管理模式：移除组件关联的VM
+     * @param component 关联的组件实例
+     */
+    removeAuto(component: any) {
+        const tag = this._componentToTag.get(component);
+        if (tag) {
+            const vm = this._mvs.get(tag);
+            if (vm) {
+                vm.destroy();
+                this._mvs.delete(tag);
+            }
+            
+            // 回收ID
+            const id = parseInt(tag.substring(3)); // 从 "_vm123" 提取 123
+            if (!isNaN(id)) {
+                this._recycleAutoId(id);
+            }
+            
+            this._componentToTag.delete(component);
+        }
+    }
+
+    /**
+     * 获取组件关联的VM
+     * @param component 关联的组件实例
+     */
+    getAuto<T>(component: any): ViewModel<T> | undefined {
+        const tag = this._componentToTag.get(component);
+        return tag ? this._mvs.get(tag) : undefined;
+    }
+
+    /**
+     * 获取组件关联的tag
+     * @param component 关联的组件实例
+     */
+    getAutoTag(component: any): string | undefined {
+        return this._componentToTag.get(component);
     }
 
     /**

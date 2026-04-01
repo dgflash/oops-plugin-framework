@@ -2,6 +2,7 @@ import type { ecs } from './ECS';
 import { ECSMask } from './ECSMask';
 import type { CompCtor, CompType } from './ECSModel';
 import { ECSModel } from './ECSModel';
+import { ecsPoolCoordinator } from './ECSPoolManager';
 
 //#region 辅助方法
 
@@ -45,7 +46,7 @@ function deleteEntityComp(entity: ECSEntity, compName: string): void {
 }
 
 /**
- * 创建组件对象
+ * 创建组件对象（使用动态池管理）
  * @param ctor
  */
 function createComp<T extends ecs.IComp>(ctor: CompCtor<T>): T {
@@ -53,37 +54,35 @@ function createComp<T extends ecs.IComp>(ctor: CompCtor<T>): T {
     if (!cct) {
         throw Error(`没有找到该组件的构造函数，检查${ctor.compName}是否为不可构造的组件`);
     }
-    const comps = ECSModel.compPools.get(ctor.tid);
-    if (!comps) {
-        throw Error(`组件${ctor.compName}的对象池不存在`);
-    }
-    const component = comps.pop() || new (cct as CompCtor<T>)();
+    
+    // 使用动态池管理器
+    const pool = ecsPoolCoordinator.getPool(
+        ctor.compName,
+        () => new (cct as CompCtor<T>)()
+    );
+    
+    const component = pool.get();
     return component as T;
 }
 
 /**
- * 销毁实体
+ * 销毁实体（使用动态池管理）
  *
  * 缓存销毁的实体，下次新建实体时会优先从缓存中拿
  * @param entity
  */
 function destroyEntity(entity: ECSEntity): void {
     if (ECSModel.eid2Entity.has(entity.eid)) {
-        let entitys = ECSModel.entityPool.get(entity.name);
-        if (entitys === undefined) {
-            entitys = [];
-            ECSModel.entityPool.set(entity.name, entitys);
-        }
-        // 限制对象池大小，防止内存无限增长
-        if (entitys.length < ECSModel.MAX_ENTITY_POOL_SIZE) {
-            // 池未满：保留 Uint32Array，仅清空位图，复用时零开销
-            entity.getMask().clear();
-            entitys.push(entity);
-        }
-        else {
-            // 池已满：实体真正丢弃，将 Uint32Array 回收到 MaskPool 供后续复用
-            entity.getMask().destroy();
-        }
+        // 使用动态池管理器
+        const pool = ecsPoolCoordinator.getPool(
+            entity.name,
+            () => new ECSEntity()
+        );
+        
+        // 清空mask并回收
+        entity.getMask().clear();
+        pool.recycle(entity);
+        
         ECSModel.eid2Entity.delete(entity.eid);
     }
     else {
@@ -105,10 +104,25 @@ export class ECSEntity {
     private mask: ECSMask = new ECSMask();
     /** 当前实体身上附加的组件构造函数 */
     private compTid2Ctor: Map<number, CompType<ecs.IComp>> = new Map();
-    /** 配合 entity.remove(Comp, false)， 记录组件实例上的缓存数据，在添加时恢复原数据 */
+    /** 
+     * 配合 entity.remove(Comp, false)， 记录组件实例上的缓存数据，在添加时恢复原数据
+     * 
+     * ⚠️ 核心机制：
+     * - isRecycle=true：调用reset()，根据canRecycle决定是否回收到全局池
+     * - isRecycle=false：不调用reset()，缓存在实体上
+     * 
+     * ⚠️ 使用场景说明：
+     * 1. UI显示/隐藏 - 保留UI状态数据
+     * 2. 技能冷却 - 保留冷却时间
+     * 3. 临时禁用功能 - 保留配置数据
+     * 
+     * 💡 管理建议：
+     * - 无任何限制，完全由用户自行管理
+     * - 使用 ECSMemoryMonitor 监控缓存使用情况
+     * - 定期调用 clearComponentCache() 或 clearAllComponentCache() 清理
+     * - 在场景切换、内存警告时主动清理缓存
+     */
     private compTid2Obj: Map<number, ecs.IComp> = new Map();
-    /** 组件缓存容量限制，防止内存泄漏 */
-    private static readonly MAX_CACHE_COMP = 10;
 
     /** 获取 mask 对象（内部使用） */
     getMask(): ECSMask {
@@ -133,7 +147,7 @@ export class ECSEntity {
     }
 
     /**
-     * 添加子实体
+     * 添加子实体（带循环引用检测）
      * @param entity 被添加的实体对象
      * @returns      子实体的唯一编号, -1表示添加失败
      */
@@ -147,9 +161,27 @@ export class ECSEntity {
             return -1;
         }
 
+        // 检测循环引用
+        if (this.hasAncestor(entity)) {
+            console.error(`检测到循环引用: ${this.name} -> ${entity.name}`);
+            return -1;
+        }
+
         entity._parent = this;
         this.childs.set(entity.eid, entity);
         return entity.eid;
+    }
+
+    /**
+     * 检测是否存在祖先关系（防止循环引用）
+     */
+    private hasAncestor(entity: ECSEntity): boolean {
+        let current: ECSEntity | null = this;
+        while (current) {
+            if (current === entity) return true;
+            current = current.parent;
+        }
+        return false;
     }
 
     /**
@@ -268,9 +300,29 @@ export class ECSEntity {
     /**
      * 从实体上删除指定组件
      * @param ctor      组件构造函数或者组件Tag
-     * @param isRecycle 是否回收该组件对象。对于有些组件上有大量数据，当要描述移除组件但是不想清除组件上的数据是可以
-     * 设置该参数为false，这样该组件对象会缓存在实体身上，下次重新添加组件时会将该组件对象添加回来，不会重新从组件缓存
-     * 池中拿一个组件来用。
+     * @param isRecycle 是否回收该组件对象
+     * 
+     * **isRecycle=true（默认）：**
+     * - 调用组件的 reset() 方法清理数据
+     * - 如果 canRecycle=true，回收到全局对象池供复用
+     * - 如果 canRecycle=false，直接销毁
+     * - 适用于大部分场景
+     * 
+     * **isRecycle=false：**
+     * - 不调用 reset()，数据完整保留
+     * - 组件缓存在当前实体上，下次 add() 时恢复
+     * - 无任何限制和检查，完全由用户自行管理
+     * - 适用于需要保留状态的场景（UI切换、技能冷却等）
+     * 
+     * ⚠️ isRecycle=false 使用场景：
+     * - UI显示/隐藏：保留UI状态（如滚动位置、选中项）
+     * - 技能冷却：保留冷却剩余时间
+     * - 临时禁用：保留配置数据，稍后恢复
+     * 
+     * 💡 管理建议：
+     * - 使用 ECSMemoryMonitor 监控缓存使用情况
+     * - 定期调用 clearComponentCache() 或 clearAllComponentCache() 清理
+     * - 在场景切换、内存警告时主动清理缓存
      */
     remove(ctor: CompType<ecs.IComp>, isRecycle = true): void {
         const componentTypeId = typeof ctor === 'number' ? ctor : ctor.tid;
@@ -289,31 +341,23 @@ export class ECSEntity {
 
         if (isRecycle) {
             comp.reset();
-
-            // 回收组件到指定缓存池中，限制池大小
+            
+            // 回收到全局池
             if (comp.canRecycle) {
-                const compPoolsType = ECSModel.compPools.get(componentTypeId);
-                if (compPoolsType && compPoolsType.length < ECSModel.MAX_COMP_POOL_SIZE) {
-                    compPoolsType.push(comp);
+                const ctor = ECSModel.compCtors[componentTypeId];
+                if (ctor) {
+                    const pool = ecsPoolCoordinator.getPool(
+                        ctor.compName,
+                        () => new (ctor as any)()
+                    );
+                    pool.recycle(comp);
                 }
             }
         }
         else {
-            // 限制缓存组件数量，防止内存泄漏
-            if (this.compTid2Obj.size < ECSEntity.MAX_CACHE_COMP) {
-                this.compTid2Obj.set(componentTypeId, comp); // 用于缓存显示对象组件
-            }
-            else {
-                // 超过限制，强制回收
-                console.warn(`实体 ${this.name} 缓存组件数量超过限制，强制回收组件 ${compName}`);
-                comp.reset();
-                if (comp.canRecycle) {
-                    const compPoolsType = ECSModel.compPools.get(componentTypeId);
-                    if (compPoolsType && compPoolsType.length < ECSModel.MAX_COMP_POOL_SIZE) {
-                        compPoolsType.push(comp);
-                    }
-                }
-            }
+            // isRecycle=false：用户明确要求缓存，完全尊重用户意图
+            // 不做任何检查和限制，由用户通过 ECSMemoryMonitor 自行管理
+            this.compTid2Obj.set(componentTypeId, comp);
         }
 
         // 删除实体上的组件逻辑
@@ -321,6 +365,76 @@ export class ECSEntity {
         this.mask.delete(componentTypeId);
         this.compTid2Ctor.delete(componentTypeId);
         broadcastCompAddOrRemove(this, componentTypeId);
+    }
+    
+    /**
+     * 清理指定组件的缓存
+     * @param ctor 组件构造函数
+     */
+    clearComponentCache(ctor: CompType<ecs.IComp>): void {
+        const componentTypeId = typeof ctor === 'number' ? ctor : ctor.tid;
+        const comp = this.compTid2Obj.get(componentTypeId);
+        
+        if (comp) {
+            this.compTid2Obj.delete(componentTypeId);
+            
+            const ctorObj = ECSModel.compCtors[componentTypeId];
+            const compName = ctorObj?.compName || `tid:${componentTypeId}`;
+            
+            comp.reset();
+            if (comp.canRecycle) {
+                if (ctorObj) {
+                    const pool = ecsPoolCoordinator.getPool(
+                        ctorObj.compName,
+                        () => new (ctorObj as any)()
+                    );
+                    pool.recycle(comp);
+                }
+            }
+            
+            console.log(`[ECS] 实体 ${this.name} 清理组件缓存: ${compName}`);
+        }
+    }
+    
+    /**
+     * 清理所有组件缓存
+     */
+    clearAllComponentCache(): void {
+        if (this.compTid2Obj.size === 0) return;
+        
+        const count = this.compTid2Obj.size;
+        
+        this.compTid2Obj.forEach((comp, tid) => {
+            comp.reset();
+            if (comp.canRecycle) {
+                const ctor = ECSModel.compCtors[tid];
+                if (ctor) {
+                    const pool = ecsPoolCoordinator.getPool(
+                        ctor.compName,
+                        () => new (ctor as any)()
+                    );
+                    pool.recycle(comp);
+                }
+            }
+        });
+        
+        this.compTid2Obj.clear();
+        
+        console.log(`[ECS] 实体 ${this.name} 清理所有缓存，共 ${count} 个组件`);
+    }
+    
+    /**
+     * 获取缓存的组件数量
+     */
+    getCachedComponentCount(): number {
+        return this.compTid2Obj.size;
+    }
+    
+    /**
+     * 获取缓存的组件列表（用于监控）
+     */
+    getCachedComponents(): Map<number, ecs.IComp> {
+        return new Map(this.compTid2Obj);
     }
 
     /** 销毁实体，实体会被回收到实体缓存池中 */
@@ -347,7 +461,7 @@ export class ECSEntity {
         destroyEntity(this);
 
         // 清理缓存的组件对象，防止内存泄漏
-        this.compTid2Obj.clear();
+        this.clearAllComponentCache();
     }
 
     private _remove(comp: CompType<ecs.IComp>): void {

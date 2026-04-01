@@ -21,6 +21,7 @@
             ]
         },
         "types": [
+            "node",
             "../../temp/declarations/cc.custom-macro",
             "../../temp/declarations/cc",
             "../../temp/declarations/jsb",

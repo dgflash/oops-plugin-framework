@@ -48,13 +48,36 @@ export class LayerPopUp extends LayerUI {
         this.closeBlack();
     }
 
+    /** 检查是否存在需要 mask 的窗口 */
+    private hasMaskWindow(): boolean {
+        for (const value of this.ui_nodes.values()) {
+            if (value.config.mask) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** 检查是否存在需要 vacancy 的窗口 */
+    private hasVacancyWindow(): boolean {
+        for (const value of this.ui_nodes.values()) {
+            if (value.config.vacancy) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** 设置触摸事件阻挡 */
     protected closeBlack() {
-        // 所有弹窗关闭后，关闭事件阻挡功能
-        if (this.ui_nodes.size == 0) {
+        // 检查是否还需要阻挡输入（mask 或 vacancy）
+        const needsBlocking = this.hasMaskWindow() || this.hasVacancyWindow();
+
+        if (!needsBlocking) {
             if (this.black) this.black.enabled = false;
             this.closeVacancyRemove();
         }
+
         this.closeMask();
     }
 
@@ -62,22 +85,10 @@ export class LayerPopUp extends LayerUI {
     protected closeMask() {
         if (this.mask == null) return;
 
-        let flag = true;
-        for (const value of this.ui_nodes.values()) {
-            if (value.config.mask) {
-                flag = false;
-                break;
-            }
-        }
-
-        if (flag) {
-            if (this.ui_nodes.size == 0) {
-                this.mask.uiSprite.enabled = true;
-                this.mask.parent = null;
-            }
-            else {
-                this.mask.uiSprite.enabled = false;
-            }
+        // 如果不存在需要 mask 的窗口，则完全移除 mask
+        if (!this.hasMaskWindow()) {
+            this.mask.uiSprite.enabled = false;
+            this.mask.parent = null;
         }
     }
 
@@ -97,15 +108,7 @@ export class LayerPopUp extends LayerUI {
 
     /** 关闭触摸非窗口区域关闭 */
     protected closeVacancyRemove() {
-        let flag = true;
-        for (const value of this.ui_nodes.values()) {
-            if (value.config.vacancy) {
-                flag = false;
-                break;
-            }
-        }
-
-        if (flag && this.hasEventListener(Node.EventType.TOUCH_END, this.onTouchEnd, this)) {
+        if (!this.hasVacancyWindow() && this.hasEventListener(Node.EventType.TOUCH_END, this.onTouchEnd, this)) {
             this.off(Node.EventType.TOUCH_END, this.onTouchEnd, this);
         }
     }
@@ -132,7 +135,7 @@ export class LayerPopUp extends LayerUI {
             this.mask.destroy();
             this.mask = null!;
         }
-        
+
         // 清理事件阻挡组件引用
         this.black = null!;
     }
