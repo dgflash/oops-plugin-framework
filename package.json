@@ -28,6 +28,9 @@
                 "readonly": false
             }
         },
+        "scene": {
+            "script": "./dist/common/Scene.js"
+        },
 
         "menu": [
             {
