@@ -7,7 +7,7 @@ import { ViewUtil } from '../../core/utils/ViewUtil';
 import { ecs } from '../../libs/ecs/ECS';
 import type { ECSEntity } from '../../libs/ecs/ECSEntity';
 import type { CompType } from '../../libs/ecs/ECSModel';
-import type { BusinessCtor, EntityCtor, UICtor, View, ViewCtor } from '../../types/Types';
+import type { BusinessCtor, EntityCtor, UICtor, View, ViewCtor } from '../../types/Module';
 import type { CCBusiness } from './CCBusiness';
 import { GameComponent } from './GameComponent';
 

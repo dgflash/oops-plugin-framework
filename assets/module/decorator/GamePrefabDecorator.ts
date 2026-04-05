@@ -1,5 +1,5 @@
 import { resLoader } from '../../core/common/loader/ResLoader';
-import { GameComponentCtor } from '../../types/Types';
+import { GameComponentCtor } from '../../types/Module';
 
 /**
  * 游戏装饰器命名空间

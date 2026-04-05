@@ -12,10 +12,10 @@ import type { IAudioParams } from '../../core/common/audio/IAudio';
 import { EventDispatcher } from '../../core/common/event/EventDispatcher';
 import type { ListenerFunc, ListenerFuncTyped } from '../../core/common/event/EventMessage';
 import { EventMessage } from '../../core/common/event/EventMessage';
-import type { TypedEventMap } from '../../core/common/event/MessageManager';
 import type { AssetType, CompleteCallback, Paths, ProgressCallback } from '../../core/common/loader/ResLoader';
 import { resLoader } from '../../core/common/loader/ResLoader';
 import { ViewUtil } from '../../core/utils/ViewUtil';
+import type { EventMapKeys } from '../../types/Event';
 
 const { ccclass } = _decorator;
 
@@ -57,27 +57,16 @@ export class GameComponent extends Component {
     /** 标记是否已注册按钮事件 */
     private _buttonEnabled = false;
 
+    //#region 强类型事件方法（提供给 Agent 自动生成用）
+
     /**
      * 注册全局事件（强类型）
      * @param event       事件名（枚举）
      * @param listener    处理事件的侦听器函数
      * @param object      侦听函数绑定的this对象
      */
-    on<K extends keyof TypedEventMap>(event: K, listener: ListenerFuncTyped<K, TypedEventMap[K]>, object: any): void;
-
-    /**
-     * 注册全局事件（兼容旧用法）
-     * @param event       事件名
-     * @param listener    处理事件的侦听器函数
-     * @param object      侦听函数绑定的this对象
-     */
-    on(event: string, listener: ListenerFunc, object: any): void;
-
-    /**
-     * 注册全局事件（实现）
-     */
-    on(event: string, listener: ListenerFunc, object: any): void {
-        this.event.on(event, listener, object);
+    watch<K extends keyof OopsFramework.TypedEventMap>(event: K, listener: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>, object: any): void {
+        this.event.on(event as string, listener as ListenerFunc, object);
     }
 
     /**
@@ -86,60 +75,18 @@ export class GameComponent extends Component {
      * @param listener  事件触发回调方法
      * @param object    侦听函数绑定的this对象
      */
-    once<K extends keyof TypedEventMap>(event: K, listener: ListenerFuncTyped<K, TypedEventMap[K]>, object: any): void;
-
-    /**
-     * 监听一次事件，事件响应后，该监听自动移除（兼容旧用法）
-     * @param event     事件名
-     * @param listener  事件触发回调方法
-     * @param object    侦听函数绑定的this对象
-     */
-    once(event: string, listener: ListenerFunc, object: any): void;
-
-    /**
-     * 监听一次事件，事件响应后，该监听自动移除（实现）
-     */
-    once(event: string, listener: ListenerFunc, object: any): void {
-        this.event.once(event, listener, object);
+    watchOnce<K extends keyof OopsFramework.TypedEventMap>(event: K, listener: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>, object: any): void {
+        this.event.once(event as string, listener as ListenerFunc, object);
     }
 
     /**
      * 移除全局事件（强类型）
      * @param event      事件名（枚举）
+     * @param listener   处理事件的侦听器函数（可选）
+     * @param object     侦听函数绑定的this对象（可选）
      */
-    off<K extends keyof TypedEventMap>(event: K): void;
-
-    /**
-     * 移除全局事件（兼容旧用法）
-     * @param event      事件名
-     */
-    off(event: string): void;
-
-    /**
-     * 移除全局事件（实现）
-     */
-    off(event: string): void {
-        this.event.off(event);
-    }
-
-    /**
-     * 触发全局事件（兼容旧用法）
-     * @param event      事件名
-     * @param args       事件参数
-     */
-
-    dispatchEvent(event: string, ...args: any[]): void {
-        this.event.dispatchEvent(event, ...args);
-    }
-
-    /**
-     * 触发全局事件,支持同步与异步处理（兼容旧用法）
-     * @param event      事件名
-     * @param args       事件参数
-     */
-
-    dispatchEventAsync(event: string, ...args: any[]): Promise<void> {
-        return this.event.dispatchEventAsync(event, ...args);
+    unwatch<K extends keyof OopsFramework.TypedEventMap>(event: K, listener?: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>, object?: any): void {
+        this.event.off(event as string, listener as ListenerFunc, object);
     }
 
     /**
@@ -147,7 +94,7 @@ export class GameComponent extends Component {
      * @param event      事件名（枚举）
      * @param data       事件数据
      */
-    emit<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): void {
+    emit<K extends keyof OopsFramework.TypedEventMap>(event: K, data: OopsFramework.TypedEventMap[K]): void {
         this.event.emit(event, data);
     }
 
@@ -156,9 +103,62 @@ export class GameComponent extends Component {
      * @param event      事件名（枚举）
      * @param data       事件数据（必须完全匹配类型定义）
      */
-    emitAsync<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): Promise<void> {
+    emitAsync<K extends keyof OopsFramework.TypedEventMap>(event: K, data: OopsFramework.TypedEventMap[K]): Promise<void> {
         return this.event.emitAsync(event, data);
     }
+
+    //#endregion
+
+    //#region 弱类型事件方法
+    /**
+     * 注册全局事件
+     * @param event       事件名
+     * @param listener    处理事件的侦听器函数
+     * @param object      侦听函数绑定的this对象
+     */
+    on(event: string, listener: ListenerFunc, object: any): void {
+        this.event.on(event, listener, object);
+    }
+
+    /**
+     * 监听一次事件，事件响应后，该监听自动移除
+     * @param event     事件名
+     * @param listener  事件触发回调方法
+     * @param object    侦听函数绑定的this对象
+     */
+    once(event: string, listener: ListenerFunc, object: any): void {
+        this.event.once(event, listener, object);
+    }
+
+    /**
+     * 移除全局事件
+     * @param event      事件名
+     * @param listener   处理事件的侦听器函数（可选）
+     * @param object     侦听函数绑定的this对象（可选）
+     */
+    off(event: string, listener?: ListenerFunc, object?: object): void {
+        this.event.off(event, listener, object);
+    }
+
+    /**
+     * 触发全局事件
+     * @param event      事件名
+     * @param args       事件参数
+     */
+    dispatchEvent(event: string, ...args: any[]): void {
+        this.event.dispatchEvent(event, ...args);
+    }
+
+    /**
+     * 触发全局事件,支持同步与异步处理
+     * @param event      事件名
+     * @param args       事件参数
+     */
+    dispatchEventAsync(event: string, ...args: any[]): Promise<void> {
+        return this.event.dispatchEventAsync(event, ...args);
+    }
+    //#endregion
+
     //#endregion
 
     //#region 预制节点管理

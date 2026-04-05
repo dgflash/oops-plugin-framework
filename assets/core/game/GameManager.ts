@@ -9,7 +9,7 @@ import { director, isValid } from 'cc';
 import { GameComponent } from '../../module/common/GameComponent';
 import { resLoader } from '../common/loader/ResLoader';
 import { ViewUtil } from '../utils/ViewUtil';
-import { View } from '../../types/Types';
+import { View } from '../../types/Module';
 
 /** 游戏元素打开参数 */
 export interface ElementParams {

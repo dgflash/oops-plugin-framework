@@ -1,27 +1,7 @@
 import { log, warn } from 'cc';
-import type { ListenerFunc, ListenerFuncTyped } from './EventMessage';
 import { EventData } from './EventData';
 import { EventDataPool } from './EventDataPool';
-
-/**
- * 全局事件类型映射接口
- * 业务层可以通过 declare module 扩展此接口来定义强类型事件
- *
- * @example
- * // 在业务代码中扩展
- * declare module 'db://oops-framework/core/common/event/MessageManager' {
- *     interface TypedEventMap {
- *         [YourEvent.SomeEvent]: { data: string };
- *     }
- * }
- */
-
-export interface TypedEventMap {
-    // 业务层通过 declare module 扩展此接口
-}
-
-/** 获取 TypedEventMap 中所有事件 key 的联合类型 */
-export type EventMapKeys = keyof TypedEventMap;
+import type { ListenerFunc, ListenerFuncTyped } from './EventMessage';
 
 /**
  * 全局消息管理
@@ -53,7 +33,7 @@ export class MessageManager {
      * @param listener   处理事件的侦听器函数
      * @param object     侦听函数绑定的作用域对象
      */
-    watch<K extends keyof TypedEventMap>(event: K, listener: ListenerFuncTyped<K, TypedEventMap[K]>, object: object): void {
+    watch<K extends keyof OopsFramework.TypedEventMap>(event: K, listener: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>, object: object): void {
         this.on(event as string, listener as ListenerFunc, object);
     }
 
@@ -63,7 +43,7 @@ export class MessageManager {
      * @param listener  事件触发回调方法
      * @param object    侦听函数绑定的作用域对象
      */
-    watchOnce<K extends keyof TypedEventMap>(event: K, listener: ListenerFuncTyped<K, TypedEventMap[K]>, object: object): void {
+    watchOnce<K extends keyof OopsFramework.TypedEventMap>(event: K, listener: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>, object: object): void {
         this.once(event as string, listener as ListenerFunc, object);
     }
 
@@ -73,7 +53,7 @@ export class MessageManager {
      * @param listener  处理事件的侦听器函数（可选，不传则移除该事件的所有监听器）
      * @param object    侦听函数绑定的作用域对象（可选）
      */
-    unwatch<K extends keyof TypedEventMap>(event: K, listener?: ListenerFuncTyped<K, TypedEventMap[K]>, object?: object): void {
+    unwatch<K extends keyof OopsFramework.TypedEventMap>(event: K, listener?: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>, object?: object): void {
         this.off(event as string, listener as ListenerFunc, object);
     }
 
@@ -83,7 +63,7 @@ export class MessageManager {
      * @param data       事件数据（必须完全匹配类型定义）
      * @note 使用此方法可获得编译时的强类型约束，参数不匹配会编译报错
      */
-    emit<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): void {
+    emit<K extends keyof OopsFramework.TypedEventMap>(event: K, data: OopsFramework.TypedEventMap[K]): void {
         const list = this.events.get(event as string);
         if (list != null) {
             const eds: Array<EventData> = list.concat();
@@ -101,7 +81,7 @@ export class MessageManager {
      * @param data       事件数据（必须完全匹配类型定义）
      * @note 使用此方法可获得编译时的强类型约束，参数不匹配会编译报错
      */
-    emitAsync<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): Promise<void> {
+    emitAsync<K extends keyof OopsFramework.TypedEventMap>(event: K, data: OopsFramework.TypedEventMap[K]): Promise<void> {
         return new Promise((resolve) => {
             const list = this.events.get(event as string);
             if (list != null) {

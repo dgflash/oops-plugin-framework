@@ -1,4 +1,4 @@
-import type { GameComponentCtor, UICtor } from '../../types/Types';
+import type { GameComponentCtor, UICtor } from '../../types/Module';
 import type { UIConfigMap } from './layer/LayerEnum';
 import type { UIConfig } from './layer/UIConfig';
 

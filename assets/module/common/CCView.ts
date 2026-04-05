@@ -11,7 +11,7 @@ import { ECSModel } from '../../libs/ecs/ECSModel';
 import { VM } from '../../libs/model-view/ViewModel';
 import { VMBase } from '../../libs/model-view/VMBase';
 import type { CCEntity } from './CCEntity';
-import type { UICtor } from '../../types/Types';
+import type { UICtor } from '../../types/Module';
 import { GameComponent } from './GameComponent';
 
 /**
