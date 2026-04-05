@@ -182,14 +182,16 @@ export class GameComponent extends Component {
     /**
      * 从资源缓存中找到预制资源名并创建一个显示对象
      * @param path 资源路径
+     * @param bundleName 资源包名
+     * @returns 预制节点，加载失败返回 null
      */
-    createPrefabNode(path: string, bundleName: string = oops.res.defaultBundleName): Promise<Node> {
-        return new Promise((resolve) => {
-            this.load(bundleName, path, Prefab).then((prefab) => {
-                const node = instantiate(prefab);
-                resolve(node);
-            });
-        });
+    async createPrefabNode(path: string, bundleName: string = oops.res.defaultBundleName): Promise<Node | null> {
+        const prefab = await this.load(bundleName, path, Prefab);
+        if (!prefab) {
+            console.warn('[OopsFramework]', `预制体加载失败: ${path}`);
+            return null;
+        }
+        return instantiate(prefab);
     }
     //#endregion
 
@@ -258,44 +260,99 @@ export class GameComponent extends Component {
     }
 
     /**
+     * 移除资源使用记录（用于加载失败时回滚）
+     * @param type          资源类型
+     * @param bundleName    资源包名
+     * @param paths         资源路径
+     */
+    private removePathFromRecord(type: ResType, bundleName: string, path: string): void {
+        if (!this.resPaths) return;
+
+        const rps = this.resPaths.get(type);
+        if (!rps) return;
+
+        const key = this.getResKey(bundleName, path);
+        const record = rps.get(key);
+        if (record) {
+            record.refCount--;
+            if (record.refCount <= 0) {
+                rps.delete(key);
+            }
+        }
+    }
+
+    /**
      * 加载一个资源
      * @param bundleName    远程包名
      * @param paths         资源路径
      * @param type          资源类型
      * @param onProgress    加载进度回调
      */
-    load<T extends Asset>(bundleName: string, paths: Paths | AssetType<T>, type?: AssetType<T>): Promise<T> {
+    async load<T extends Asset>(bundleName: string, paths: Paths | AssetType<T>, type?: AssetType<T>): Promise<T> {
+        let realBundle: string;
+        let realPath: string;
+
+        if (typeof paths === 'string') {
+            realBundle = bundleName;
+            realPath = paths;
+        }
+        else {
+            realBundle = oops.res.defaultBundleName;
+            realPath = bundleName;
+        }
+
         this.addPathToRecord(ResType.Load, bundleName, paths);
-        return oops.res.load(bundleName, paths, type);
+        try {
+            const result = await oops.res.load(bundleName, paths, type);
+            if (!result) {
+                this.removePathFromRecord(ResType.Load, realBundle, realPath);
+            }
+            return result;
+        }
+        catch (error) {
+            this.removePathFromRecord(ResType.Load, realBundle, realPath);
+            throw error;
+        }
     }
 
     /**
-     * 加载指定资源包中的多个任意类型资源
+     * 加载指定资源包中的多个任意类型资源（回调模式）
      * @param bundleName    远程包名或资源路径数组
      * @param paths         资源路径数组或进度回调
      * @param onProgress    加载进度回调
      * @param onComplete    加载完成回调
      */
     loadAny(bundleName: string | string[], paths: string[] | ProgressCallback, onProgress?: ProgressCallback | CompleteCallback, onComplete?: CompleteCallback): void {
-        // 处理资源记录
+        const originalComplete = onComplete as ((err: Error | null, data: Asset[]) => void) | undefined;
+        const pathsToTrack: { bundle: string; path: string }[] = [];
+
         if (typeof bundleName === 'string' && Array.isArray(paths)) {
-            // 标准调用：loadAny(bundleName, paths, ...)
             this.addPathToRecord(ResType.Load, bundleName, paths);
+            pathsToTrack.push(...paths.map(p => ({ bundle: bundleName, path: p })));
         }
         else if (Array.isArray(bundleName)) {
-            // bundleName 是路径数组：loadAny(paths, onProgress, onComplete)
             this.addPathToRecord(ResType.Load, resLoader.defaultBundleName, bundleName);
+            pathsToTrack.push(...bundleName.map(p => ({ bundle: resLoader.defaultBundleName, path: p })));
         }
         else if (typeof bundleName === 'string' && typeof paths === 'function') {
-            // 单个路径：loadAny(path, onProgress, onComplete)
             this.addPathToRecord(ResType.Load, resLoader.defaultBundleName, bundleName);
+            pathsToTrack.push({ bundle: resLoader.defaultBundleName, path: bundleName });
         }
 
-        oops.res.loadAny(bundleName, paths, onProgress, onComplete);
+        const wrappedComplete = (err: Error | null, data: Asset[]) => {
+            if (err || !data) {
+                pathsToTrack.forEach(({ bundle, path }) => {
+                    this.removePathFromRecord(ResType.Load, bundle, path);
+                });
+            }
+            originalComplete?.(err, data);
+        };
+
+        oops.res.loadAny(bundleName, paths, onProgress, wrappedComplete);
     }
 
     /**
-     * 加载文件夹中的资源
+     * 加载文件夹中的资源（回调模式）
      * @param bundleName    远程包名
      * @param dir           文件夹名
      * @param type          资源类型
@@ -329,7 +386,16 @@ export class GameComponent extends Component {
         }
 
         this.addPathToRecord(ResType.LoadDir, realBundle, realDir);
-        oops.res.loadDir(bundleName, dir, type, onProgress, onComplete);
+
+        const originalComplete = onComplete as ((err: Error | null, data: T[]) => void) | undefined;
+        const wrappedComplete = (err: Error | null, data: T[]) => {
+            if (err || !data) {
+                this.removePathFromRecord(ResType.LoadDir, realBundle, realDir);
+            }
+            originalComplete?.(err, data);
+        };
+
+        oops.res.loadDir(bundleName, dir, type, onProgress, wrappedComplete);
     }
 
     /**
@@ -471,20 +537,20 @@ export class GameComponent extends Component {
      * @param target  目标精灵对象
      * @param path    图片资源地址
      * @param bundle  资源包名
-     * @remarks 资源引用计数由 load 方法自动管理，组件销毁时会自动释放
+     * @returns 是否设置成功
+     * @remarks 资源引用计数由 load 方法自动管理，加载失败时会自动回滚
      */
-    async setSprite(target: Sprite, path: string, bundle: string = resLoader.defaultBundleName) {
+    async setSprite(target: Sprite, path: string, bundle: string = resLoader.defaultBundleName): Promise<boolean> {
         const spriteFrame = await this.load(bundle, path, SpriteFrame);
-        if (!spriteFrame || !isValid(target)) {
-            // 使用 releaseRes 正确处理引用计数，避免直接操作 resPaths
-            this.releaseRes(path, bundle);
-            return;
+        if (!spriteFrame) {
+            return false;
         }
-
-        // 直接设置 spriteFrame，不需要手动 addRef
-        // load 方法已经通过 addPathToRecord 管理了引用计数
-        // 手动 addRef 会导致双重引用，造成内存泄漏
+        if (!isValid(target)) {
+            this.releaseRes(path, bundle);
+            return false;
+        }
         target.spriteFrame = spriteFrame;
+        return true;
     }
     //#endregion
 
@@ -502,11 +568,11 @@ export class GameComponent extends Component {
      * 播放音效
      * @param url           资源地址
      * @param params        音效播放参数
+     * @returns 音效实例，播放失败返回 null
      * @remarks 注意：音效资源由 AudioEffectPool 自动管理，不需要在此组件中记录
      */
-    playEffect(url: string, params?: IAudioParams): Promise<AudioEffect> {
+    playEffect(url: string, params?: IAudioParams): Promise<AudioEffect | null> {
         return new Promise((resolve) => {
-            // 确保参数中有 bundle 信息
             if (params == null) {
                 params = { bundle: resLoader.defaultBundleName };
             }
@@ -514,10 +580,8 @@ export class GameComponent extends Component {
                 params.bundle = resLoader.defaultBundleName;
             }
 
-            // AudioEffectPool 已经管理了音效资源的加载和释放
-            // 不需要在此处通过 addPathToRecord 记录，避免双重管理导致过度释放
             oops.audio.playEffect(url, params).then((ae) => {
-                resolve(ae || null!);
+                resolve(ae ?? null);
             });
         });
     }
@@ -554,6 +618,12 @@ export class GameComponent extends Component {
 
         // Cocos Creator Button组件批量绑定触摸事件（使用UIButton支持放连点功能）
         const regex = /<([^>]+)>/;
+        const match = this.name.match(regex);
+        if (!match || !match[1]) {
+            console.warn('[OopsFramework]', `组件名 "${this.name}" 不符合 "<组件名>" 格式，跳过按钮事件绑定`);
+            return;
+        }
+        const componentName = match[1];
         const buttons = this.node.getComponentsInChildren<Button>(Button);
         buttons.forEach((b: Button) => {
             const node = b.node;
@@ -563,7 +633,7 @@ export class GameComponent extends Component {
                 const event = new EventHandler();
                 event.target = this.node;
                 event.handler = b.node.name;
-                event.component = this.name.match(regex)![1];
+                event.component = componentName;
                 b.clickEvents.push(event);
             }
             // else {
