@@ -6,7 +6,7 @@
  */
 
 import { EventDispatcher } from '../../core/common/event/EventDispatcher';
-import type { ListenerFunc } from '../../core/common/event/EventMessage';
+import type { ListenerFunc, ListenerFuncTyped } from '../../core/common/event/EventMessage';
 import type { CCEntity } from './CCEntity';
 
 /** 业务逻辑 */
@@ -38,6 +38,60 @@ export class CCBusiness<T extends CCEntity> {
         return this._event;
     }
 
+    //#region 强类型事件方法
+
+    /**
+     * 注册全局事件（强类型）
+     * @param event       事件名（枚举）
+     * @param listener    处理事件的侦听器函数
+     * @param object      侦听函数绑定的this对象
+     */
+    watch<K extends keyof OopsFramework.TypedEventMap>(event: K, listener: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>, object: any): void {
+        this.event.on(event as string, listener as ListenerFunc, object);
+    }
+
+    /**
+     * 监听一次事件，事件响应后，该监听自动移除（强类型）
+     * @param event     事件名（枚举）
+     * @param listener  事件触发回调方法
+     * @param object    侦听函数绑定的this对象
+     */
+    watchOnce<K extends keyof OopsFramework.TypedEventMap>(event: K, listener: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>, object: any): void {
+        this.event.once(event as string, listener as ListenerFunc, object);
+    }
+
+    /**
+     * 移除全局事件（强类型）
+     * @param event      事件名（枚举）
+     * @param listener   处理事件的侦听器函数（可选）
+     * @param object     侦听函数绑定的this对象（可选）
+     */
+    unwatch<K extends keyof OopsFramework.TypedEventMap>(event: K, listener?: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>, object?: any): void {
+        this.event.off(event as string, listener as ListenerFunc, object);
+    }
+
+    /**
+     * 触发强类型全局事件
+     * @param event      事件名（枚举）
+     * @param data       事件数据
+     */
+    emit<K extends keyof OopsFramework.TypedEventMap>(event: K, data: OopsFramework.TypedEventMap[K]): void {
+        this.event.emit(event, data);
+    }
+
+    /**
+     * 触发强类型异步全局事件（严格类型检查）
+     * @param event      事件名（枚举）
+     * @param data       事件数据（必须完全匹配类型定义）
+     */
+    emitAsync<K extends keyof OopsFramework.TypedEventMap>(event: K, data: OopsFramework.TypedEventMap[K]): Promise<void> {
+        return this.event.emitAsync(event, data);
+    }
+
+    //#endregion
+
+    //#region 弱类型事件方法
+
     /**
      * 注册全局事件
      * @param event       事件名
@@ -49,11 +103,23 @@ export class CCBusiness<T extends CCEntity> {
     }
 
     /**
+     * 监听一次事件，事件响应后，该监听自动移除
+     * @param event     事件名
+     * @param listener  事件触发回调方法
+     * @param object    侦听函数绑定的this对象
+     */
+    once(event: string, listener: ListenerFunc, object: object) {
+        this.event.once(event, listener, object);
+    }
+
+    /**
      * 移除全局事件
      * @param event      事件名
+     * @param listener   处理事件的侦听器函数（可选）
+     * @param object     侦听函数绑定的this对象（可选）
      */
-    off(event: string) {
-        this.event.off(event);
+    off(event: string, listener?: ListenerFunc, object?: object) {
+        this.event.off(event, listener, object);
     }
 
     /**
@@ -63,6 +129,15 @@ export class CCBusiness<T extends CCEntity> {
      */
     dispatchEvent(event: string, ...args: unknown[]) {
         this.event.dispatchEvent(event, ...args);
+    }
+
+    /**
+     * 触发全局事件,支持同步与异步处理
+     * @param event      事件名
+     * @param args       事件参数
+     */
+    dispatchEventAsync(event: string, ...args: unknown[]): Promise<void> {
+        return this.event.dispatchEventAsync(event, ...args);
     }
 
     /**
@@ -84,6 +159,8 @@ export class CCBusiness<T extends CCEntity> {
             }
         }
     }
+
+    //#endregion
 
     //#endregion
 }
