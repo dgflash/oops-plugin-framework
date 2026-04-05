@@ -35,7 +35,7 @@ export abstract class CCEntity extends ecs.Entity {
     addChildSingleton<T extends CCEntity>(cls: OopsFramework.EntityCtor<T>): T {
         if (this.singletons == null) this.singletons = new Map();
         if (this.singletons.has(cls)) {
-            console.error(`${cls.name} 单例子实体已存在`);
+            console.error('[OopsFramework]', `${cls.name} 单例子实体已存在`);
             return null!;
         }
         const entity = ecs.getEntity<T>(cls);
@@ -105,7 +105,7 @@ export abstract class CCEntity extends ecs.Entity {
 
             // 检查实体是否已销毁
             if (!this.isValid) {
-                console.warn(`实体已销毁，取消添加预制体组件: ${(ctor as any).name}`);
+                console.warn('[OopsFramework]', `实体已销毁，取消添加预制体组件: ${(ctor as any).name}`);
                 node.destroy();
                 return null;
             }
@@ -120,7 +120,7 @@ export abstract class CCEntity extends ecs.Entity {
 
             // 检查实体是否已销毁
             if (!this.isValid) {
-                console.warn(`实体已销毁，取消添加预制体组件: ${(ctor as any).name}`);
+                console.warn('[OopsFramework]', `实体已销毁，取消添加预制体组件: ${(ctor as any).name}`);
                 node.destroy();
                 return null;
             }
@@ -166,7 +166,7 @@ export abstract class CCEntity extends ecs.Entity {
         }
 
         if (oops.gui.has(key)) {
-            console.warn(`${key} 界面已存在`);
+            console.warn('[OopsFramework]', `${key} 界面已存在`);
             return oops.gui.get(key);
         }
 
@@ -174,7 +174,7 @@ export abstract class CCEntity extends ecs.Entity {
 
         // 检查实体是否已销毁
         if (!this.isValid) {
-            console.warn(`实体已销毁，取消添加界面组件: ${key}`);
+            console.warn('[OopsFramework]', `实体已销毁，取消添加界面组件: ${key}`);
             oops.gui.remove(key);
             return null;
         }
@@ -196,7 +196,7 @@ export abstract class CCEntity extends ecs.Entity {
         if (key) {
             const node = oops.gui.get(key);
             if (node == null) {
-                console.warn(`${key} 界面不存在或已关闭`);
+                console.warn('[OopsFramework]', `${key} 界面不存在或已关闭`);
                 return;
             }
 
@@ -209,7 +209,7 @@ export abstract class CCEntity extends ecs.Entity {
                         if (view) this.remove(ctor as unknown as CompType<ecs.IComp>);
                     }
                     catch (error) {
-                        console.error(`移除界面组件失败: ${key}`, error);
+                        console.error('[OopsFramework]', `移除界面组件失败: ${key}`, error);
                     }
                 };
                 oops.gui.remove(key);
@@ -248,7 +248,7 @@ export abstract class CCEntity extends ecs.Entity {
     addBusiness<T extends CCBusiness<CCEntity>>(cls: OopsFramework.BusinessCtor<T>): T {
         if (this.businesss == null) this.businesss = new Map();
         if (this.businesss.has(cls)) {
-            console.error(`${cls.name} 业务逻辑组件已存在`);
+            console.error('[OopsFramework]', `${cls.name} 业务逻辑组件已存在`);
             return null!;
         }
         const business = new cls();
