@@ -9,24 +9,65 @@ export class EventDispatcher {
     /** 本地事件列表，用于批量清理 */
     private events: Map<string, Array<EventData>> = new Map();
 
+    //#region 强类型事件方法
+
     /**
      * 注册全局事件（强类型）
      * @param event      事件名（枚举）
      * @param listener   处理事件的侦听器函数
      * @param object     侦听函数绑定的作用域对象
      */
-    on<K extends keyof TypedEventMap>(event: K, listener: ListenerFuncTyped<K, TypedEventMap[K]>, object: object): void;
+    watch<K extends keyof TypedEventMap>(event: K, listener: ListenerFuncTyped<K, TypedEventMap[K]>, object: object): void {
+        this.on(event as string, listener as ListenerFunc, object);
+    }
 
     /**
-     * 注册全局事件（兼容旧用法）
+     * 监听一次事件，事件响应后，该监听自动移除（强类型）
+     * @param event     事件名（枚举）
+     * @param listener  事件触发回调方法
+     * @param object    侦听函数绑定的作用域对象
+     */
+    watchOnce<K extends keyof TypedEventMap>(event: K, listener: ListenerFuncTyped<K, TypedEventMap[K]>, object: object): void {
+        this.once(event as string, listener as ListenerFunc, object);
+    }
+
+    /**
+     * 移除全局事件（强类型）
+     * @param event     事件名（枚举）
+     * @param listener  处理事件的侦听器函数（可选，不传则移除该事件的所有监听器）
+     * @param object    侦听函数绑定的作用域对象（可选）
+     */
+    unwatch<K extends keyof TypedEventMap>(event: K, listener?: ListenerFuncTyped<K, TypedEventMap[K]>, object?: object): void {
+        this.off(event as string, listener as ListenerFunc, object);
+    }
+
+    /**
+     * 触发强类型事件（严格类型检查）
+     * @param event      事件名（枚举）
+     * @param data       事件数据（必须完全匹配类型定义）
+     */
+    emit<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): void {
+        message.emit(event, data);
+    }
+
+    /**
+     * 触发强类型异步事件（严格类型检查）
+     * @param event      事件名（枚举）
+     * @param data       事件数据（必须完全匹配类型定义）
+     */
+    emitAsync<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): Promise<void> {
+        return message.emitAsync(event, data);
+    }
+
+    //#endregion
+
+    //#region 弱类型事件方法
+
+    /**
+     * 注册全局事件
      * @param event      事件名
      * @param listener   处理事件的侦听器函数
      * @param object     侦听函数绑定的作用域对象
-     */
-    on(event: string, listener: ListenerFunc, object: object): void;
-
-    /**
-     * 注册全局事件（实现）
      */
     on(event: string, listener: ListenerFunc, object: object): void {
         // 先注册到全局消息管理器
@@ -47,23 +88,10 @@ export class EventDispatcher {
     }
 
     /**
-     * 监听一次事件，事件响应后，该监听自动移除（强类型）
-     * @param event     事件名（枚举）
-     * @param listener  事件触发回调方法
-     * @param object    侦听函数绑定的作用域对象
-     */
-    once<K extends keyof TypedEventMap>(event: K, listener: ListenerFuncTyped<K, TypedEventMap[K]>, object: object): void;
-
-    /**
-     * 监听一次事件，事件响应后，该监听自动移除（兼容旧用法）
+     * 监听一次事件，事件响应后，该监听自动移除
      * @param event     事件名
      * @param listener  事件触发回调方法
      * @param object    侦听函数绑定的作用域对象
-     */
-    once(event: string, listener: ListenerFunc, object: object): void;
-
-    /**
-     * 监听一次事件，事件响应后，该监听自动移除（实现）
      */
     once(event: string, listener: ListenerFunc, object: object): void {
         message.once(event, listener, object);
@@ -83,23 +111,10 @@ export class EventDispatcher {
     }
 
     /**
-     * 移除全局事件（强类型）
-     * @param event     事件名（枚举）
-     * @param listener  处理事件的侦听器函数（可选，不传则移除该事件的所有监听器）
-     * @param object    侦听函数绑定的作用域对象（可选）
-     */
-    off<K extends keyof TypedEventMap>(event: K, listener?: ListenerFuncTyped<K, TypedEventMap[K]>, object?: object): void;
-
-    /**
-     * 移除全局事件（兼容旧用法）
+     * 移除全局事件
      * @param event     事件名
      * @param listener  处理事件的侦听器函数（可选，不传则移除该事件的所有监听器）
      * @param object    侦听函数绑定的作用域对象（可选）
-     */
-    off(event: string, listener?: ListenerFunc, object?: object): void;
-
-    /**
-     * 移除全局事件（实现）
      */
     off(event: string, listener?: ListenerFunc, object?: object): void {
         const eds = this.events.get(event);
@@ -134,42 +149,24 @@ export class EventDispatcher {
     }
 
     /**
-     * 触发全局事件（兼容旧用法）
+     * 触发全局事件
      * @param event      事件名
      * @param args       事件参数
      */
-
     dispatchEvent(event: string, ...args: any[]): void {
         message.dispatchEvent(event, ...args);
     }
 
     /**
-     * 触发全局事件,支持同步与异步处理（兼容旧用法）
+     * 触发全局事件,支持同步与异步处理
      * @param event      事件名
      * @param args       事件参数
      */
-
     dispatchEventAsync(event: string, ...args: any[]): Promise<void> {
         return message.dispatchEventAsync(event, ...args);
     }
 
-    /**
-     * 触发强类型事件（严格类型检查）
-     * @param event      事件名（枚举）
-     * @param data       事件数据（必须完全匹配类型定义）
-     */
-    emit<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): void {
-        message.emit(event, data);
-    }
-
-    /**
-     * 触发强类型异步事件（严格类型检查）
-     * @param event      事件名（枚举）
-     * @param data       事件数据（必须完全匹配类型定义）
-     */
-    emitAsync<K extends keyof TypedEventMap>(event: K, data: TypedEventMap[K]): Promise<void> {
-        return message.emitAsync(event, data);
-    }
+    //#endregion
 
     /** 清除所有的全局事件监听 */
     clear(): void {
