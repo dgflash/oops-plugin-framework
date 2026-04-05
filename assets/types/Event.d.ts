@@ -21,7 +21,4 @@ declare global {
     }
 }
 
-/** 获取 TypedEventMap 中所有事件 key 的联合类型 */
-export type EventMapKeys = keyof OopsFramework.TypedEventMap;
-
 export { };

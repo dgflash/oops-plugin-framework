@@ -36,3 +36,5 @@ export type EntityCtor<T extends CCEntity = CCEntity> = Ctor<T>;
 
 /** ECS 业务逻辑组件构造函数类型 */
 export type BusinessCtor<T extends CCBusiness<CCEntity> = CCBusiness<CCEntity>> = Ctor<T>;
+
+export {};

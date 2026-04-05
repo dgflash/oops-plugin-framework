@@ -15,7 +15,6 @@ import { EventMessage } from '../../core/common/event/EventMessage';
 import type { AssetType, CompleteCallback, Paths, ProgressCallback } from '../../core/common/loader/ResLoader';
 import { resLoader } from '../../core/common/loader/ResLoader';
 import { ViewUtil } from '../../core/utils/ViewUtil';
-import type { EventMapKeys } from '../../types/Event';
 
 const { ccclass } = _decorator;
 
