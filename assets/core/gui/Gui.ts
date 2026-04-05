@@ -1,4 +1,3 @@
-import type { GameComponentCtor, UICtor } from '../../types/Module';
 import type { UIConfigMap } from './layer/LayerEnum';
 import type { UIConfig } from './layer/UIConfig';
 
@@ -6,8 +5,8 @@ const configs: UIConfigMap = {};
 
 export namespace gui {
     /** 注册界面组件 */
-    export function register(key: string, config: UIConfig): (ctor: GameComponentCtor) => void {
-        return function (ctor: GameComponentCtor): void {
+    export function register(key: string, config: UIConfig): (ctor: OopsFramework.GameComponentCtor) => void {
+        return function (ctor: OopsFramework.GameComponentCtor): void {
             (ctor as any)[gui.internal.GUI_KEY] = key;
             internal.setConfig(key, config);
         };
@@ -19,7 +18,7 @@ export namespace gui {
         export const GUI_KEY = 'OOPS_GUI_KEY';
 
         /** 获取界面唯一关键字 */
-        export function getKey(ctor: UICtor): string {
+        export function getKey(ctor: OopsFramework.UICtor): string {
             return (ctor as any)[GUI_KEY];
         }
 

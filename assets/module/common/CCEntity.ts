@@ -7,7 +7,6 @@ import { ViewUtil } from '../../core/utils/ViewUtil';
 import { ecs } from '../../libs/ecs/ECS';
 import type { ECSEntity } from '../../libs/ecs/ECSEntity';
 import type { CompType } from '../../libs/ecs/ECSModel';
-import type { BusinessCtor, EntityCtor, UICtor, View, ViewCtor } from '../../types/Module';
 import type { CCBusiness } from './CCBusiness';
 import { GameComponent } from './GameComponent';
 
@@ -16,13 +15,13 @@ export abstract class CCEntity extends ecs.Entity {
     //#region 子模块管理
 
     /** 单例子实体集合（key: 实体类构造函数，value: 实体实例） */
-    private singletons: Map<EntityCtor, ECSEntity> = null!;
+    private singletons: Map<OopsFramework.EntityCtor, ECSEntity> = null!;
 
     /**
      * 批量添加单例子实体
      * @param clss 单例子实体类数组
      */
-    addChildSingletons<T extends CCEntity>(...clss: EntityCtor<T>[]): void {
+    addChildSingletons<T extends CCEntity>(...clss: OopsFramework.EntityCtor<T>[]): void {
         for (const ctor of clss) {
             this.addChildSingleton<T>(ctor);
         }
@@ -33,7 +32,7 @@ export abstract class CCEntity extends ecs.Entity {
      * @param cls 单例子实体类
      * @returns   单例子实体
      */
-    addChildSingleton<T extends CCEntity>(cls: EntityCtor<T>): T {
+    addChildSingleton<T extends CCEntity>(cls: OopsFramework.EntityCtor<T>): T {
         if (this.singletons == null) this.singletons = new Map();
         if (this.singletons.has(cls)) {
             console.error(`${cls.name} 单例子实体已存在`);
@@ -50,7 +49,7 @@ export abstract class CCEntity extends ecs.Entity {
      * @param cls 单例子实体类
      * @returns   单例子实体，不存在则返回 null
      */
-    getChildSingleton<T extends CCEntity>(cls: EntityCtor<T>): T {
+    getChildSingleton<T extends CCEntity>(cls: OopsFramework.EntityCtor<T>): T {
         if (!this.singletons) return null!;
         return (this.singletons.get(cls) as T) || null!;
     }
@@ -59,7 +58,7 @@ export abstract class CCEntity extends ecs.Entity {
      * 移除单例子实体
      * @param cls 单例子实体类
      */
-    removeChildSingleton<T extends CCEntity>(cls: EntityCtor<T>): void {
+    removeChildSingleton<T extends CCEntity>(cls: OopsFramework.EntityCtor<T>): void {
         if (!this.singletons) return;
 
         const entity = this.singletons.get(cls);
@@ -84,8 +83,8 @@ export abstract class CCEntity extends ecs.Entity {
      * @returns 预制体节点，如果实体已销毁则返回 null
      */
     async addPrefab<T extends GameComponent>(
-        ctor: ViewCtor<T>,
-        parent: View,
+        ctor: OopsFramework.ViewCtor<T>,
+        parent: OopsFramework.View,
         path?: string,
         bundleName?: string
     ): Promise<Node | null> {
@@ -138,7 +137,7 @@ export abstract class CCEntity extends ecs.Entity {
      * 移除预制体组件及其节点
      * @param node     要销毁的节点或组件（Node 或 GameComponent）
      */
-    removePrefab(node: View): void {
+    removePrefab(node: OopsFramework.View): void {
         if (node instanceof GameComponent) {
             node.remove();
         }
@@ -153,7 +152,7 @@ export abstract class CCEntity extends ecs.Entity {
      * @param params   界面参数
      * @returns 界面节点，如果实体已销毁则返回 null
      */
-    async addUi<T extends GameComponent>(ctor: UICtor<T>, params?: UIParam): Promise<Node | null> {
+    async addUi<T extends GameComponent>(ctor: OopsFramework.UICtor<T>, params?: UIParam): Promise<Node | null> {
         const key = gui.internal.getKey(ctor);
         if (!key) {
             throw new Error(`${ctor.name} 界面组件未使用 gui.register 注册`);
@@ -191,7 +190,7 @@ export abstract class CCEntity extends ecs.Entity {
      * 移除视图层组件
      * @param ctor      界面逻辑组件（支持 CCView 或使用 gui.register 注册的 GameComponent 子类）
      */
-    removeUi(ctor: UICtor) {
+    removeUi(ctor: OopsFramework.UICtor) {
         const key = gui.internal.getKey(ctor);
 
         if (key) {
@@ -229,13 +228,13 @@ export abstract class CCEntity extends ecs.Entity {
 
     //#region 游戏业务层管理
     /** 模块业务逻辑组件集合（key: 业务类构造函数，value: 业务实例） */
-    private businesss: Map<BusinessCtor, CCBusiness<CCEntity>> = null!;
+    private businesss: Map<OopsFramework.BusinessCtor, CCBusiness<CCEntity>> = null!;
 
     /**
      * 批量添加业务逻辑组件
      * @param clss 业务逻辑组件类数组
      */
-    addBusinesss(...clss: BusinessCtor[]) {
+    addBusinesss(...clss: OopsFramework.BusinessCtor[]) {
         for (const ctor of clss) {
             this.addBusiness(ctor);
         }
@@ -246,7 +245,7 @@ export abstract class CCEntity extends ecs.Entity {
      * @param cls 业务逻辑组件类
      * @returns 业务逻辑组件实例
      */
-    addBusiness<T extends CCBusiness<CCEntity>>(cls: BusinessCtor<T>): T {
+    addBusiness<T extends CCBusiness<CCEntity>>(cls: OopsFramework.BusinessCtor<T>): T {
         if (this.businesss == null) this.businesss = new Map();
         if (this.businesss.has(cls)) {
             console.error(`${cls.name} 业务逻辑组件已存在`);
@@ -269,7 +268,7 @@ export abstract class CCEntity extends ecs.Entity {
      * @param cls 业务逻辑组件类
      * @returns 业务逻辑组件实例，不存在则返回 null
      */
-    getBusiness<T extends CCBusiness<CCEntity>>(cls: BusinessCtor<T>): T {
+    getBusiness<T extends CCBusiness<CCEntity>>(cls: OopsFramework.BusinessCtor<T>): T {
         if (!this.businesss) return null!;
         return (this.businesss.get(cls) as T) || null!;
     }
@@ -278,7 +277,7 @@ export abstract class CCEntity extends ecs.Entity {
      * 移除业务逻辑组件
      * @param cls 业务逻辑组件类
      */
-    removeBusiness<T extends CCBusiness<CCEntity>>(cls: BusinessCtor<T>): void {
+    removeBusiness<T extends CCBusiness<CCEntity>>(cls: OopsFramework.BusinessCtor<T>): void {
         if (this.businesss) {
             const business = this.businesss.get(cls);
             if (business) {

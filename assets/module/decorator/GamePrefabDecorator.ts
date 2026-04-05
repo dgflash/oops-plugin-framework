@@ -1,5 +1,4 @@
 import { resLoader } from '../../core/common/loader/ResLoader';
-import { GameComponentCtor } from '../../types/Module';
 
 /**
  * 游戏装饰器命名空间
@@ -22,8 +21,8 @@ export namespace prefab {
      * await entity.addPrefab(V_Backpack_Prop, parentNode);
      * ```
      */
-    export function register(path: string, bundleName?: string): (ctor: GameComponentCtor) => void {
-        return function (ctor: GameComponentCtor): void {
+    export function register(path: string, bundleName?: string): (ctor: OopsFramework.GameComponentCtor) => void {
+        return function (ctor: OopsFramework.GameComponentCtor): void {
             const bundle = bundleName || resLoader.defaultBundleName;
             const c = ctor as any;
             c.GAME_PREFAB_PATH = path;
