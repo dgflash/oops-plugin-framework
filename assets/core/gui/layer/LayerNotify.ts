@@ -20,6 +20,10 @@ export class LayerNotify extends Node {
     private notify: Node = null!;
     /** 自定义弹出提示内容资源 */
     private notifyItem: Node = null!;
+    /** 标记是否正在打开等待提示中 */
+    private waitOpening: boolean = false;
+    /** 标记是否在打开过程中被请求关闭 */
+    private waitShouldClose: boolean = false;
 
     constructor(name: string) {
         super(name);
@@ -31,28 +35,53 @@ export class LayerNotify extends Node {
 
     /** 打开等待提示 */
     async waitOpen() {
-        if (this.wait == null) {
-            // 兼容编辑器预览模式
-            if (EDITOR) {
-                this.wait = await ViewUtil.createPrefabNodeAsync(PromptResType.Wait);
-            }
-            else {
-                this.wait = ViewUtil.createPrefabNode(PromptResType.Wait);
-            }
-        }
+        this.waitOpening = true;
 
-        if (this.wait.parent == null) {
-            this.wait.parent = this;
-            this.black.enabled = true;
+        try {
+            if (this.wait == null) {
+                // 兼容编辑器预览模式
+                if (EDITOR) {
+                    this.wait = await ViewUtil.createPrefabNodeAsync(PromptResType.Wait);
+                }
+                else {
+                    this.wait = ViewUtil.createPrefabNode(PromptResType.Wait);
+                }
+            }
+
+            // 异步操作完成后，检查是否已被请求关闭
+            if (this.waitShouldClose) {
+                this.waitShouldClose = false;
+                this.doWaitClose();
+                return;
+            }
+
+            if (this.wait.parent == null) {
+                this.wait.parent = this;
+                this.black.enabled = true;
+            }
+        } finally {
+            this.waitOpening = false;
         }
     }
 
     /** 关闭等待提示 */
     waitClose() {
+        // 如果正在打开中，标记应该关闭，等打开完成后再关闭
+        if (this.waitOpening) {
+            this.waitShouldClose = true;
+            return;
+        }
+
+        this.doWaitClose();
+    }
+
+    /** 实际执行关闭等待提示 */
+    private doWaitClose() {
         if (this.wait && this.wait.parent) {
             this.wait.parent = null;
             this.black.enabled = false;
         }
+        this.waitShouldClose = false;
     }
 
     /**
