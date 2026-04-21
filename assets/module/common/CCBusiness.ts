@@ -113,7 +113,7 @@ export class CCBusiness<T extends CCEntity> {
      * @param event      事件名（枚举）
      * @param data       事件数据
      */
-    emit<K extends keyof OopsFramework.TypedEventMap>(event: K, data: OopsFramework.TypedEventMap[K]): void {
+    emit<K extends keyof OopsFramework.TypedEventMap>(event: K, data?: OopsFramework.TypedEventMap[K]): void {
         if (this._destroyed) {
             console.warn('[OopsFramework]', '尝试在已销毁的业务逻辑上触发事件');
             return;

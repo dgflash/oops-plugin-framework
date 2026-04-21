@@ -63,7 +63,7 @@ export class MessageManager {
      * @param data       事件数据（必须完全匹配类型定义）
      * @note 使用此方法可获得编译时的强类型约束，参数不匹配会编译报错
      */
-    emit<K extends keyof OopsFramework.TypedEventMap>(event: K, data: OopsFramework.TypedEventMap[K]): void {
+    emit<K extends keyof OopsFramework.TypedEventMap>(event: K, data?: OopsFramework.TypedEventMap[K]): void {
         const list = this.events.get(event as string);
         if (list != null) {
             const eds: Array<EventData> = list.concat();

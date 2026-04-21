@@ -93,7 +93,7 @@ export class GameComponent extends Component {
      * @param event      事件名（枚举）
      * @param data       事件数据
      */
-    emit<K extends keyof OopsFramework.TypedEventMap>(event: K, data: OopsFramework.TypedEventMap[K]): void {
+    emit<K extends keyof OopsFramework.TypedEventMap>(event: K, data?: OopsFramework.TypedEventMap[K]): void {
         this.event.emit(event, data);
     }
 

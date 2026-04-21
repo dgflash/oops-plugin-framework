@@ -1,4 +1,5 @@
 import type { Node, Vec3 } from 'cc';
+import { LayerCustomType, LayerType } from './LayerEnum';
 
 /**
  * 界面配置结构体
@@ -28,7 +29,7 @@ export interface UIConfig {
     /** 远程包名 */
     bundle?: string;
     /** 窗口层级 */
-    layer: string;
+    layer: LayerType | LayerCustomType;
     /** 预制资源相对路径 */
     prefab: string;
     /** 是否自动施放（默认自动释放） */

@@ -45,7 +45,7 @@ export class EventDispatcher {
      * @param event      事件名（枚举）
      * @param data       事件数据（必须完全匹配类型定义）
      */
-    emit<K extends keyof OopsFramework.TypedEventMap>(event: K, data: OopsFramework.TypedEventMap[K]): void {
+    emit<K extends keyof OopsFramework.TypedEventMap>(event: K, data?: OopsFramework.TypedEventMap[K]): void {
         message.emit(event, data);
     }
 
