@@ -35,16 +35,17 @@ export class StorageSecuritySimple implements IStorageSecurity {
 
     init() {
         this.secretkey = this.key + this.iv;
-        // 预计算密钥字节数组，避免每次加密时重复计算
-        this.secretKeyBytes = this.stringToBytes(this.secretkey);
-        
-        // 初始化编码器（只创建一次）
-        if (!StorageSecuritySimple.encoder) {
+
+        // 初始化编码器（只创建一次）- 先检测是否支持 TextEncoder
+        if (typeof TextEncoder !== 'undefined' && !StorageSecuritySimple.encoder) {
             StorageSecuritySimple.encoder = new TextEncoder();
         }
-        if (!StorageSecuritySimple.decoder) {
+        if (typeof TextDecoder !== 'undefined' && !StorageSecuritySimple.decoder) {
             StorageSecuritySimple.decoder = new TextDecoder();
         }
+
+        // 预计算密钥字节数组，避免每次加密时重复计算
+        this.secretKeyBytes = this.stringToBytes(this.secretkey);
     }
 
     /**
