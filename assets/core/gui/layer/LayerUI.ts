@@ -268,6 +268,14 @@ export class LayerUI extends Node {
     }
 
     /**
+     * 判断当前层缓存中是否包含指定预制件路径的界面
+     * @param prefabPath 预制件路径
+     */
+    hasCache(prefabPath: string): boolean {
+        return this.ui_cache.has(prefabPath);
+    }
+
+    /**
      * 清除所有节点，队列当中的也删除
      * @param isDestroy  移除后是否释放
      */

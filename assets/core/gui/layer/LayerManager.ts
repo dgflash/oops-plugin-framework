@@ -344,6 +344,26 @@ export class LayerManager {
     }
 
     /**
+     * 界面缓存中是否存在指定标识的窗口（用于 destroy: false 的界面）
+     * @param uiid 窗口唯一标识
+     * @example
+     * oops.gui.isCached(UIID.Loading);
+     */
+    hasCache(uiid: Uiid): boolean {
+        const info = this.getInfo(uiid);
+        let result = false;
+        const layer = this.uiLayers.get(info.config.layer);
+        if (layer) {
+            result = layer.hasCache(info.config.prefab);
+        }
+        else {
+            console.error(`验证编号为【${uiid}】的界面缓存失败，界面层不存在`);
+        }
+
+        return result;
+    }
+
+    /**
      * 缓存中是否存在指定标识的窗口
      * @param uiid 窗口唯一标识
      * @example
