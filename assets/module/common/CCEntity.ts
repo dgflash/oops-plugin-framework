@@ -93,7 +93,7 @@ export abstract class CCEntity extends ecs.Entity {
             path = (ctor as any).GAME_PREFAB_PATH;
             bundleName = (ctor as any).GAME_PREFAB_BUNDLE;
             if (path == null) {
-                throw new Error(`组件 ${(ctor as any).name} 未使用 @game.prefab 装饰器注册，请添加 @game.prefab('path/to/prefab') 装饰器或手动传入路径参数`);
+                throw new Error(`组件 ${(ctor as any).name} 未使用 @prefab.register 装饰器注册，请添加 @prefab.register('path/to/prefab') 装饰器或手动传入路径参数`);
             }
         }
 
@@ -101,10 +101,13 @@ export abstract class CCEntity extends ecs.Entity {
 
         // 跟随父节点释放自动释放当前资源
         if (parent instanceof GameComponent) {
-            node = await parent.createPrefabNode(path, bundleName);
+            const result = await parent.createPrefabNode(path, bundleName);
+            if (result == null) return null;
+            
+            node = result;
 
             // 检查实体是否已销毁
-            if (!this.isValid) {
+            if ( !this.isValid) {
                 console.warn('[OopsFramework]', `实体已销毁，取消添加预制体组件: ${(ctor as any).name}`);
                 node.destroy();
                 return null;
