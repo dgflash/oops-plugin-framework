@@ -72,7 +72,7 @@ export interface IConfigJson {
 
 /** 资源配置加载器传入的 config 结构 */
 export interface IConfigResource {
-    json: IConfigJson;
+    json: IConfigJson | any;
 }
 
 /* 游戏配置解析，对应 resources/config/config.json 配置 */

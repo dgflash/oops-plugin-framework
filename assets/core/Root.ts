@@ -93,7 +93,7 @@ export class Root extends Component {
             oops.res.defaultBundleName = oops.config.game.bundleDefault;
 
             // 游戏界面管理
-            oops.gui.mobileSafeArea = oops.config.game.mobileSafeArea;
+            oops.gui.adapter.mobileSafeArea = oops.config.game.mobileSafeArea;
             //@ts-ignore
             oops.gui.initLayer(this.gui, config.json.gui);
 

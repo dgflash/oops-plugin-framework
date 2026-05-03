@@ -103,7 +103,7 @@ export abstract class CCEntity extends ecs.Entity {
         if (parent instanceof GameComponent) {
             const result = await parent.createPrefabNode(path, bundleName);
             if (result == null) return null;
-            
+
             node = result;
 
             // 检查实体是否已销毁

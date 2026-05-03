@@ -1,4 +1,4 @@
-import { Camera, Node, ResolutionPolicy, SafeArea, screen, view, warn } from 'cc';
+import { Camera, Node, warn } from 'cc';
 import { oops } from '../../Oops';
 import { gui } from '../Gui';
 import { LayerDialog } from './LayerDialog';
@@ -12,6 +12,7 @@ import { LayerUI } from './LayerUI';
 import type { UIParam } from './LayerUIElement';
 import { LayerUIElement } from './LayerUIElement';
 import type { UIConfig } from './UIConfig';
+import { ScreenAdapter } from './ScreenAdapter';
 
 /** 界面层级管理器 */
 export class LayerManager {
@@ -23,13 +24,8 @@ export class LayerManager {
     game!: LayerGame;
     /** 新手引导层 */
     guide!: Node;
-
-    /** 窗口宽高比例 */
-    windowAspectRatio = 0;
-    /** 设计宽高比例 */
-    designAspectRatio = 0;
-    /** 是否开启移动设备安全区域适配 */
-    mobileSafeArea = false;
+    /** 屏幕适配器 */
+    adapter: ScreenAdapter = new ScreenAdapter();
 
     /** 消息提示控制器，请使用show方法来显示 */
     private notify!: LayerNotify;
@@ -70,7 +66,7 @@ export class LayerManager {
             return;
         }
         this.root = root;
-        this.initScreenAdapter();
+        this.adapter.init(this.root);
         this.camera = this.root.getComponentInChildren(Camera)!;
 
         // 创建界面层
@@ -79,10 +75,10 @@ export class LayerManager {
             let layer: Node = null!;
             if (data.type == LayerTypeCls.Node) {
                 switch (data.name) {
-                case LayerCustomType.Guide:
-                    this.guide = this.create_node(data.name);
-                    layer = this.guide;
-                    break;
+                    case LayerCustomType.Guide:
+                        this.guide = this.create_node(data.name);
+                        layer = this.guide;
+                        break;
                 }
             }
             else {
@@ -102,34 +98,6 @@ export class LayerManager {
                 this.notify = layer;
             else if (layer instanceof LayerGame)
                 this.game = layer;
-        }
-    }
-
-    /** 初始化屏幕适配 */
-    private initScreenAdapter() {
-        const drs = view.getDesignResolutionSize();
-        const ws = screen.windowSize;
-        this.windowAspectRatio = ws.width / ws.height;
-        this.designAspectRatio = drs.width / drs.height;
-
-        let finalW = 0;
-        let finalH = 0;
-
-        if (this.windowAspectRatio > this.designAspectRatio) {
-            finalH = drs.height;
-            finalW = finalH * ws.width / ws.height;
-            oops.log.logView('适配屏幕高度', '【横屏】');
-        }
-        else {
-            finalW = drs.width;
-            finalH = finalW * ws.height / ws.width;
-            oops.log.logView('适配屏幕宽度', '【竖屏】');
-        }
-        view.setDesignResolutionSize(finalW, finalH, ResolutionPolicy.UNKNOWN);
-
-        if (this.mobileSafeArea) {
-            this.root.addComponent(SafeArea);
-            oops.log.logView('开启移动设备安全区域适配');
         }
     }
 
