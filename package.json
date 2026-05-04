@@ -1,6 +1,6 @@
 {
     "package_version": 2,
-    "version": "3.0.0.20260220",
+    "version": "3.1.0.20260504",
     "name": "oops-framework",
     "description": "i18n:oops-framework.description",
     "main": "./dist/main.js",
