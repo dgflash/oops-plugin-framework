@@ -5,7 +5,7 @@ import { ECSMatcher } from './ECSMatcher';
 import type { CompCtor, CompType, EntityCtor } from './ECSModel';
 import { ECSModel } from './ECSModel';
 import { ECSComblockSystem, ECSRootSystem, ECSSystem } from './ECSSystem';
-import { ecsPoolCoordinator } from './ECSPoolManager';
+import { ecsPoolCoordinator } from './pool';
 
 /**
  * ECSEntity对象在destroy后，会回收到ECSPoolManager动态对象池中

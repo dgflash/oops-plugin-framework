@@ -2,7 +2,7 @@ import type { ecs } from './ECS';
 import { ECSMask } from './ECSMask';
 import type { CompCtor, CompType } from './ECSModel';
 import { ECSModel } from './ECSModel';
-import { ecsPoolCoordinator } from './ECSPoolManager';
+import { ecsPoolCoordinator } from './pool';
 
 //#region 辅助方法
 

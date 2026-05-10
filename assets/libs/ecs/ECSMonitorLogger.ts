@@ -5,7 +5,7 @@
  */
 
 import { ECSModel } from './ECSModel';
-import { ecsPoolCoordinator } from './ECSPoolManager';
+import { ecsPoolCoordinator } from './pool';
 
 /** 监控数据项 */
 interface MonitorItem {
