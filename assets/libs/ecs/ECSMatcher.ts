@@ -145,7 +145,7 @@ abstract class BaseOf {
         const len = args.length;
         // 使用 Set 去重，性能更好
         const uniqueIds = new Set<number>();
-        
+
         for (let i = 0; i < len; i++) {
             if (typeof (args[i]) === 'number') {
                 componentTypeId = args[i] as number;
@@ -159,11 +159,11 @@ abstract class BaseOf {
             this.mask.set(componentTypeId);
             uniqueIds.add(componentTypeId);
         }
-        
+
         // 从 Set 转为排序数组
         this.indices = Array.from(uniqueIds).sort((a, b) => a - b);
     }
-    
+
     /** 清理资源，防止内存泄漏 */
     destroy(): void {
         this.mask.destroy();

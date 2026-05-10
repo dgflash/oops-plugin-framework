@@ -23,14 +23,15 @@ export class ECSGroup<E extends ECSEntity = ECSEntity> {
         if (!this._cacheValid) {
             const cache = this._entitiesCache;
             const targetSize = this._matchEntities.size;
-            
+
             // 如果缓存数组过大，重新创建以释放内存
             if (cache.length > targetSize * 2 && targetSize < 100) {
                 this._entitiesCache = [];
-            } else {
+            }
+            else {
                 cache.length = 0;
             }
-            
+
             // 直接遍历 Map values 比 Array.from 更高效
             const iterator = this._matchEntities.values();
             let result = iterator.next();
@@ -38,7 +39,7 @@ export class ECSGroup<E extends ECSEntity = ECSEntity> {
                 this._entitiesCache.push(result.value);
                 result = iterator.next();
             }
-            
+
             this._cacheValid = true;
         }
         return this._entitiesCache;

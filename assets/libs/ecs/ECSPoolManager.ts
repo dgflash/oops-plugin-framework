@@ -6,11 +6,16 @@
 
 /** 池统计指标 */
 interface PoolMetrics {
-    createCount: number;        // 创建次数
-    recycleCount: number;       // 回收次数
-    hitCount: number;           // 命中次数（从池中获取）
-    missCount: number;          // 未命中次数（需要新建）
-    currentSize: number;        // 当前池大小
+    /** 创建次数 */
+    createCount: number;
+    /** 回收次数 */
+    recycleCount: number;
+    /** 命中次数（从池中获取） */
+    hitCount: number;
+    /** 未命中次数（需要新建） */
+    missCount: number;
+    /** 当前池大小 */
+    currentSize: number;
 }
 
 //#endregion
@@ -304,12 +309,12 @@ class GlobalPoolCoordinator {
 
 /**
  * 全局池协调器实例
- * 
+ *
  * 用于管理 ECS 框架中的对象池，主要包括：
  * 1. ECS 实体对象 (ECSEntity) - 实体销毁后回收复用
  * 2. ECS 组件对象 (IComp) - 组件移除后回收复用
  * 3. 其他自定义对象 - 支持任意类型的对象池化
- * 
+ *
  * 核心功能：
  * - 对象复用：减少频繁创建销毁带来的性能开销
  * - 统计监控：跟踪命中率、创建次数等指标

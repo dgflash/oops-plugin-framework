@@ -8,8 +8,8 @@ import { ECSComblockSystem, ECSRootSystem, ECSSystem } from './ECSSystem';
 import { ecsPoolCoordinator } from './ECSPoolManager';
 
 /**
- * ECSEntity对象在destroy后，会回收到ECSModel.entityPool实体对象池中
- * ECSComp对象从ECSEntity.remove后，数据组件会回收到ECSModel.compPools组件对象池中
+ * ECSEntity对象在destroy后，会回收到ECSPoolManager动态对象池中
+ * ECSComp对象从ECSEntity.remove后，数据组件会回收到ECSPoolManager动态对象池中
  */
 
 /**
@@ -156,9 +156,6 @@ export namespace ecs {
                     ctorAny.tid = ECSModel.compTid++;
                     ctorAny.compName = name;
                     ECSModel.compCtors.push(ctor as CompCtor<IComp>);
-                    if (canNew) {
-                        ECSModel.compPools.set(ctorAny.tid, []);
-                    }
                     ECSModel.compAddOrRemove.set(ctorAny.tid, []);
                 }
                 else {
@@ -237,20 +234,9 @@ export namespace ecs {
      * 注意：此操作会清空所有实体池、组件池和 Mask 池，请在确保不再需要这些缓存时调用
      */
     export function clearPools(): void {
-        // 清理旧的实体池
-        ECSModel.entityPool.forEach((pool) => {
-            pool.length = 0;
-        });
-        ECSModel.entityPool.clear();
-
-        // 清理旧的组件池
-        ECSModel.compPools.forEach((pool) => {
-            pool.length = 0;
-        });
-
         // 清理 Mask 对象池
         ECSMask.clearPool();
-        
+
         // 清理动态池管理器
         ecsPoolCoordinator.clearAll();
     }
