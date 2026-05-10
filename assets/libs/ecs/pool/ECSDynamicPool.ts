@@ -59,18 +59,6 @@ export class ECSDynamicPool<T> {
     }
 
     /**
-     * 预热池，提前创建指定数量的对象
-     * @param count 要预热的对象数量
-     */
-    preWarm(count: number): void {
-        while (this.pool.length < count) {
-            this.pool.push(this.factory());
-            this.metrics.createCount++;
-        }
-        this.metrics.currentSize = this.pool.length;
-    }
-
-    /**
      * 获取池的统计信息
      * @returns 只读的统计指标对象
      */
@@ -84,25 +72,5 @@ export class ECSDynamicPool<T> {
     clear(): void {
         this.pool.length = 0;
         this.metrics.currentSize = 0;
-    }
-
-    /**
-     * 手动缩减池大小到指定容量
-     * @param targetSize 目标池大小
-     * @returns 移除的对象数量
-     */
-    shrinkTo(targetSize: number): number {
-        let removed = 0;
-
-        while (this.pool.length > targetSize) {
-            this.pool.pop();
-            removed++;
-        }
-
-        if (removed > 0) {
-            this.metrics.currentSize = this.pool.length;
-        }
-
-        return removed;
     }
 }
