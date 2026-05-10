@@ -148,11 +148,32 @@ export class ECSMonitorLogger {
     }
 
     /**
-     * 打印组件池明细表格
+     * 获取组件分类排序权重
+     * @param compName 组件名
+     * @returns 排序权重（越小越靠前）
+     */
+    private getCompSortWeight(compName: string): number {
+        // M_ 开头 - Model 数据层 (权重 1)
+        if (compName.startsWith('M_')) return 1;
+        // B_ 开头 - Business 业务层 (权重 2)
+        if (compName.startsWith('B_')) return 2;
+        // V_ 开头 - View 视图层 (权重 3)
+        if (compName.startsWith('V_')) return 3;
+        // VC_ 开头 - ViewController 视图控制层 (权重 4)
+        if (compName.startsWith('VC_')) return 4;
+        // 其他 (权重 5)
+        return 5;
+    }
+
+    /**
+     * 打印组件池明细表格（按 M/B/V/VC/其他 分类排序）
      */
     printComponentPools(): void {
         const data: PoolMonitorItem[] = [];
         const poolMetrics = ecsPoolCoordinator.getAllMetrics();
+
+        // 收集所有组件数据
+        const compDataList: { item: PoolMonitorItem; weight: number }[] = [];
 
         ECSModel.compCtors.forEach((ctor) => {
             const metrics = poolMetrics.get(ctor.compName);
@@ -162,27 +183,40 @@ export class ECSMonitorLogger {
                 if (entity.has(ctor.tid)) activeCount++;
             });
 
-            if (metrics) {
-                data.push({
-                    typeName: ctor.compName,
-                    active: activeCount,
-                    hitCount: metrics.hitCount,
-                    missCount: metrics.missCount,
-                    currentCache: metrics.currentSize,
-                    totalCreated: metrics.createCount,
-                });
-            }
-            else {
-                data.push({
-                    typeName: ctor.compName,
-                    active: activeCount,
-                    hitCount: 0,
-                    missCount: 0,
-                    currentCache: 0,
-                    totalCreated: 0,
-                });
-            }
+            const item: PoolMonitorItem = metrics
+                ? {
+                        typeName: ctor.compName,
+                        active: activeCount,
+                        hitCount: metrics.hitCount,
+                        missCount: metrics.missCount,
+                        currentCache: metrics.currentSize,
+                        totalCreated: metrics.createCount,
+                    }
+                : {
+                        typeName: ctor.compName,
+                        active: activeCount,
+                        hitCount: 0,
+                        missCount: 0,
+                        currentCache: 0,
+                        totalCreated: 0,
+                    };
+
+            compDataList.push({
+                item,
+                weight: this.getCompSortWeight(ctor.compName),
+            });
         });
+
+        // 按权重排序，同权重按名称排序
+        compDataList.sort((a, b) => {
+            if (a.weight !== b.weight) {
+                return a.weight - b.weight;
+            }
+            return a.item.typeName.localeCompare(b.item.typeName);
+        });
+
+        // 提取排序后的数据
+        compDataList.forEach(({ item }) => data.push(item));
 
         console.log('%c[ECS Monitor] 组件池明细', 'color:#fff;background:#3a5fcd;padding:2px 8px;border-radius:4px;font-weight:bold;');
         console.table(data);
