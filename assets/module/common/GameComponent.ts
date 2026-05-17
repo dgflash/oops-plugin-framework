@@ -15,31 +15,30 @@ import { EventMessage } from '../../core/common/event/EventMessage';
 import type { AssetType, CompleteCallback, Paths, ProgressCallback } from '../../core/common/loader/ResLoader';
 import { resLoader } from '../../core/common/loader/ResLoader';
 import { ViewUtil } from '../../core/utils/ViewUtil';
+import { resRef } from '../../core/common/loader/ResRefManager';
 
 const { ccclass } = _decorator;
 
-/** 加载资源类型 */
-enum ResType {
-    Load,
-    LoadDir
-}
-
-/** 资源加载记录 */
-interface ResRecord {
-    /** 资源包名 */
-    bundle: string,
-    /** 资源路径 */
-    path: string,
-    /** 引用计数 */
-    refCount: number,
-    /** 资源编号 */
-    resId?: number
-}
-
 /**
  * 游戏显示对象组件模板
- * 1、当前对象加载的资源，会在对象释放时，自动释放引用的资源
- * 2、当前对象支持启动游戏引擎提供的各种常用逻辑事件
+ *
+ * 特性：
+ * 1. 自动管理资源引用计数 - 多组件共享资源时不会错误释放
+ * 2. 组件销毁时自动释放资源引用 - 开发者无需手动管理
+ * 3. 全局资源追踪 - 可查看任意资源的引用者和引用计数
+ *
+ * 使用示例：
+ * ```typescript
+ * // 加载资源（自动注册引用）
+ * const spriteFrame = await this.load('textures/avatar', SpriteFrame);
+ *
+ * // 组件销毁时自动释放引用（无需手动调用）
+ * // 只有当所有引用者都销毁时，资源才会被真正释放
+ *
+ * // 调试：查看资源引用情况
+ * GameComponent.printGlobalResStatus();
+ * GameComponent.setResDebugMode(true); // 开启详细日志
+ * ```
  */
 @ccclass('GameComponent')
 export class GameComponent extends Component {
@@ -196,9 +195,6 @@ export class GameComponent extends Component {
     //#endregion
 
     //#region 资源加载管理
-    /** 资源路径 */
-    private resPaths: Map<ResType, Map<string, ResRecord>> = null!; // 资源使用记录
-
     /**
      * 获取资源
      * @param path          资源路径
@@ -210,83 +206,15 @@ export class GameComponent extends Component {
     }
 
     /**
-     * 添加资源使用记录
-     * @param type          资源类型
-     * @param bundleName    资源包名
-     * @param paths         资源路径
-     */
-    private addPathToRecord<T>(type: ResType, bundleName: string, paths?: string | string[] | AssetType<T> | ProgressCallback | CompleteCallback | null): void {
-        if (this.resPaths == null) this.resPaths = new Map();
-
-        let rps = this.resPaths.get(type);
-        if (rps == null) {
-            rps = new Map();
-            this.resPaths.set(type, rps);
-        }
-
-        // 确定真实的 bundle 和 path
-        let realBundle: string;
-        let realPaths: string[];
-
-        if (paths instanceof Array) {
-            realBundle = bundleName;
-            realPaths = paths;
-        }
-        else if (typeof paths === 'string') {
-            realBundle = bundleName;
-            realPaths = [paths];
-        }
-        else {
-            realBundle = oops.res.defaultBundleName;
-            realPaths = [bundleName];
-        }
-
-        // 统一处理路径数组
-        for (const realPath of realPaths) {
-            const key = this.getResKey(realBundle, realPath);
-            const rp = rps.get(key);
-            if (rp) {
-                rp.refCount++;
-            }
-            else {
-                rps.set(key, { path: realPath, bundle: realBundle, refCount: 1 });
-            }
-        }
-    }
-
-    private getResKey(realBundle: string, realPath: string): string {
-        const key = `${realBundle}:${realPath}`;
-        return key;
-    }
-
-    /**
-     * 移除资源使用记录（用于加载失败时回滚）
-     * @param type          资源类型
-     * @param bundleName    资源包名
-     * @param paths         资源路径
-     */
-    private removePathFromRecord(type: ResType, bundleName: string, path: string): void {
-        if (!this.resPaths) return;
-
-        const rps = this.resPaths.get(type);
-        if (!rps) return;
-
-        const key = this.getResKey(bundleName, path);
-        const record = rps.get(key);
-        if (record) {
-            record.refCount--;
-            if (record.refCount <= 0) {
-                rps.delete(key);
-            }
-        }
-    }
-
-    /**
-     * 加载一个资源
+     * 加载一个资源（自动管理引用计数）
      * @param bundleName    远程包名
      * @param paths         资源路径
      * @param type          资源类型
      * @param onProgress    加载进度回调
+     * @remarks
+     * - 资源引用会自动注册到全局管理器
+     * - 组件销毁时会自动减少引用计数
+     * - 只有引用计数为0时才会真正释放资源
      */
     async load<T extends Asset>(bundleName: string, paths: Paths | AssetType<T>, type?: AssetType<T>): Promise<T> {
         let realBundle: string;
@@ -301,16 +229,17 @@ export class GameComponent extends Component {
             realPath = bundleName;
         }
 
-        this.addPathToRecord(ResType.Load, bundleName, paths);
+        resRef.addRef(realBundle, realPath, this);
+
         try {
             const result = await oops.res.load(bundleName, paths, type);
             if (!result) {
-                this.removePathFromRecord(ResType.Load, realBundle, realPath);
+                resRef.removeRef(realBundle, realPath, this);
             }
             return result;
         }
         catch (error) {
-            this.removePathFromRecord(ResType.Load, realBundle, realPath);
+            resRef.removeRef(realBundle, realPath, this);
             throw error;
         }
     }
@@ -327,22 +256,26 @@ export class GameComponent extends Component {
         const pathsToTrack: { bundle: string; path: string }[] = [];
 
         if (typeof bundleName === 'string' && Array.isArray(paths)) {
-            this.addPathToRecord(ResType.Load, bundleName, paths);
-            pathsToTrack.push(...paths.map(p => ({ bundle: bundleName, path: p })));
+            paths.forEach(p => {
+                resRef.addRef(bundleName, p, this);
+                pathsToTrack.push({ bundle: bundleName, path: p });
+            });
         }
         else if (Array.isArray(bundleName)) {
-            this.addPathToRecord(ResType.Load, resLoader.defaultBundleName, bundleName);
-            pathsToTrack.push(...bundleName.map(p => ({ bundle: resLoader.defaultBundleName, path: p })));
+            bundleName.forEach(p => {
+                resRef.addRef(resLoader.defaultBundleName, p, this);
+                pathsToTrack.push({ bundle: resLoader.defaultBundleName, path: p });
+            });
         }
         else if (typeof bundleName === 'string' && typeof paths === 'function') {
-            this.addPathToRecord(ResType.Load, resLoader.defaultBundleName, bundleName);
+            resRef.addRef(resLoader.defaultBundleName, bundleName, this);
             pathsToTrack.push({ bundle: resLoader.defaultBundleName, path: bundleName });
         }
 
         const wrappedComplete = (err: Error | null, data: Asset[]) => {
             if (err || !data) {
                 pathsToTrack.forEach(({ bundle, path }) => {
-                    this.removePathFromRecord(ResType.Load, bundle, path);
+                    resRef.removeRef(bundle, path, this);
                 });
             }
             originalComplete?.(err, data);
@@ -385,12 +318,12 @@ export class GameComponent extends Component {
             realBundle = oops.res.defaultBundleName;
         }
 
-        this.addPathToRecord(ResType.LoadDir, realBundle, realDir);
+        resRef.addRef(realBundle, realDir, this);
 
         const originalComplete = onComplete as ((err: Error | null, data: T[]) => void) | undefined;
         const wrappedComplete = (err: Error | null, data: T[]) => {
             if (err || !data) {
-                this.removePathFromRecord(ResType.LoadDir, realBundle, realDir);
+                resRef.removeRef(realBundle, realDir, this);
             }
             originalComplete?.(err, data);
         };
@@ -399,137 +332,80 @@ export class GameComponent extends Component {
     }
 
     /**
-     * 手动释放指定资源
+     * 手动释放指定资源引用
      * @param path          资源路径
      * @param bundleName    资源包名
-     * @param releaseAll    是否释放所有引用计数（默认只释放一次）
+     * @remarks
+     * - 只减少当前组件对该资源的引用计数
+     * - 只有引用计数为0时才会真正释放资源
+     * - 其他组件的引用不受影响
      */
-    releaseRes(path: string, bundleName: string = resLoader.defaultBundleName, releaseAll = false) {
-        if (!this.resPaths) return;
-
-        const rps = this.resPaths.get(ResType.Load);
-        if (!rps) return;
-
-        const key = this.getResKey(bundleName, path);
-        const record = rps.get(key);
-        if (record) {
-            if (releaseAll) {
-                // 释放所有引用
-                for (let i = 0; i < record.refCount; i++) {
-                    oops.res.release(record.path, record.bundle);
-                }
-                rps.delete(key);
-            }
-            else {
-                // 只释放一次引用
-                oops.res.release(record.path, record.bundle);
-                record.refCount--;
-                if (record.refCount <= 0) {
-                    rps.delete(key);
-                }
-            }
-        }
+    releaseRes(path: string, bundleName: string = resLoader.defaultBundleName) {
+        resRef.removeRef(bundleName, path, this);
     }
 
-    /** 释放所有加载的资源 */
+    /**
+     * 释放当前组件所有资源引用
+     * @remarks
+     * - 自动减少所有资源的引用计数
+     * - 只有引用计数为0的资源才会被真正释放
+     * - 共享资源不会被错误释放
+     */
     release() {
-        if (this.resPaths) {
-            const rps = this.resPaths.get(ResType.Load);
-            if (rps) {
-                rps.forEach((value: ResRecord) => {
-                    // 根据引用计数释放资源
-                    for (let i = 0; i < value.refCount; i++) {
-                        oops.res.release(value.path, value.bundle);
-                    }
-                });
-                rps.clear();
-                this.resPaths.delete(ResType.Load);
-            }
-        }
-    }
-
-    /** 释放所有文件夹资源 */
-    releaseDir() {
-        if (this.resPaths) {
-            const rps = this.resPaths.get(ResType.LoadDir);
-            if (rps) {
-                rps.forEach((value: ResRecord) => {
-                    // 释放文件夹资源（根据引用计数多次释放）
-                    for (let i = 0; i < value.refCount; i++) {
-                        oops.res.releaseDir(value.path, value.bundle);
-                    }
-                });
-                rps.clear();
-                this.resPaths.delete(ResType.LoadDir);
-            }
+        const released = resRef.releaseAllByComponent(this);
+        if (released.length > 0) {
+            console.log(`[GameComponent] ${this.node?.name} 释放了 ${released.length} 个资源:`, released);
         }
     }
 
     /**
-     * 获取资源引用计数
+     * 释放所有文件夹资源引用
+     * @deprecated 文件夹资源现在也通过全局引用计数管理，直接调用 release() 即可
+     */
+    releaseDir() {
+        console.warn('[GameComponent] releaseDir() 已废弃，请直接使用 release()');
+    }
+
+    /**
+     * 获取资源的全局引用计数
      * @param path          资源路径
      * @param bundleName    资源包名
-     * @returns 引用计数，未找到返回0
+     * @returns 全局引用计数
      */
     getResRefCount(path: string, bundleName: string = resLoader.defaultBundleName): number {
-        if (!this.resPaths) return 0;
-
-        const rps = this.resPaths.get(ResType.Load);
-        if (!rps) return 0;
-
-        const key = this.getResKey(bundleName, path);
-        const record = rps.get(key);
-        return record ? record.refCount : 0;
+        return resRef.getRefCount(bundleName, path);
     }
 
     /**
-     * 获取所有加载的资源信息（用于调试）
-     * @returns 资源记录数组
+     * 获取资源的所有引用者
+     * @param path          资源路径
+     * @param bundleName    资源包名
+     * @returns 引用者列表
      */
-    getAllResRecords(): ResRecord[] {
-        const records: ResRecord[] = [];
-        if (!this.resPaths) return records;
-
-        const rps = this.resPaths.get(ResType.Load);
-        if (rps) {
-            rps.forEach((value: ResRecord) => {
-                records.push({ ...value });
-            });
-        }
-
-        return records;
+    getResReferrers(path: string, bundleName: string = resLoader.defaultBundleName): string[] {
+        return resRef.getReferrers(bundleName, path);
     }
 
     /**
-     * 打印资源使用情况（用于调试）
+     * 打印当前组件的资源引用情况
      */
     printResUsage() {
-        if (!this.resPaths) {
-            console.log('[资源管理] 暂无资源记录');
-            return;
-        }
+        resRef.printComponentStatus(this);
+    }
 
-        const loadRps = this.resPaths.get(ResType.Load);
-        const dirRps = this.resPaths.get(ResType.LoadDir);
+    /**
+     * 打印全局资源引用状态（调试用）
+     */
+    static printGlobalResStatus() {
+        resRef.printStatus();
+    }
 
-        console.log('========== 资源使用情况 ==========');
-        console.log(`组件: ${this.node.name}`);
-
-        if (loadRps && loadRps.size > 0) {
-            console.log(`\n[普通资源] 共 ${loadRps.size} 个:`);
-            loadRps.forEach((value: ResRecord, key: string) => {
-                console.log(`  - ${key} (引用计数: ${value.refCount})`);
-            });
-        }
-
-        if (dirRps && dirRps.size > 0) {
-            console.log(`\n[文件夹资源] 共 ${dirRps.size} 个:`);
-            dirRps.forEach((value: ResRecord, key: string) => {
-                console.log(`  - ${key} (引用计数: ${value.refCount})`);
-            });
-        }
-
-        console.log('==================================');
+    /**
+     * 开启/关闭全局资源调试模式
+     * @param enabled 是否开启
+     */
+    static setResDebugMode(enabled: boolean) {
+        resRef.enableDebug(enabled);
     }
 
     /**
@@ -736,7 +612,6 @@ export class GameComponent extends Component {
     }
 
     protected onDestroy() {
-        // 清理键盘事件
         if (this._keyboardEnabled) {
             input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
             input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
@@ -744,30 +619,21 @@ export class GameComponent extends Component {
             this._keyboardEnabled = false;
         }
 
-        // 清理按钮事件
         if (this._buttonEnabled) {
             this.node.off(Node.EventType.TOUCH_END);
             this._buttonEnabled = false;
         }
 
-        // 释放消息对象
         if (this._event) {
             this._event.clear();
             this._event = null;
         }
 
-        // 节点引用数据清除
         if (this.nodes) {
             this.nodes.clear();
             this.nodes = null!;
         }
 
-        // 自动释放资源
-        if (this.resPaths) {
-            this.release();
-            this.releaseDir();
-            this.resPaths.clear();
-            this.resPaths = null!;
-        }
+        this.release();
     }
 }
