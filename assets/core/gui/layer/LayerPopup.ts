@@ -103,7 +103,10 @@ export class LayerPopUp extends LayerUI {
             this.black.enabled = false;
         }
 
-        if (config.mask) this.mask.parent = this;
+        if (config.mask) {
+            this.mask.parent = this;
+            this.mask.uiSprite.enabled = true;
+        }
     }
 
     /** 关闭触摸非窗口区域关闭 */

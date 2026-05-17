@@ -2,7 +2,7 @@ import type { ecs } from './ECS';
 import { ECSMask } from './ECSMask';
 import type { CompCtor, CompType } from './ECSModel';
 import { ECSModel } from './ECSModel';
-import { ecsPoolCoordinator } from './ECSPoolManager';
+import { ecsPoolCoordinator } from './pool';
 
 //#region 辅助方法
 
@@ -54,13 +54,13 @@ function createComp<T extends ecs.IComp>(ctor: CompCtor<T>): T {
     if (!cct) {
         throw Error(`没有找到该组件的构造函数，检查${ctor.compName}是否为不可构造的组件`);
     }
-    
+
     // 使用动态池管理器
     const pool = ecsPoolCoordinator.getPool(
         ctor.compName,
         () => new (cct as CompCtor<T>)()
     );
-    
+
     const component = pool.get();
     return component as T;
 }
@@ -78,11 +78,11 @@ function destroyEntity(entity: ECSEntity): void {
             entity.name,
             () => new ECSEntity()
         );
-        
+
         // 清空mask并回收
         entity.getMask().clear();
         pool.recycle(entity);
-        
+
         ECSModel.eid2Entity.delete(entity.eid);
     }
     else {
@@ -104,18 +104,18 @@ export class ECSEntity {
     private mask: ECSMask = new ECSMask();
     /** 当前实体身上附加的组件构造函数 */
     private compTid2Ctor: Map<number, CompType<ecs.IComp>> = new Map();
-    /** 
+    /**
      * 配合 entity.remove(Comp, false)， 记录组件实例上的缓存数据，在添加时恢复原数据
-     * 
+     *
      * ⚠️ 核心机制：
      * - isRecycle=true：调用reset()，根据canRecycle决定是否回收到全局池
      * - isRecycle=false：不调用reset()，缓存在实体上
-     * 
+     *
      * ⚠️ 使用场景说明：
      * 1. UI显示/隐藏 - 保留UI状态数据
      * 2. 技能冷却 - 保留冷却时间
      * 3. 临时禁用功能 - 保留配置数据
-     * 
+     *
      * 💡 管理建议：
      * - 无任何限制，完全由用户自行管理
      * - 使用 ECSMemoryMonitor 监控缓存使用情况
@@ -301,24 +301,24 @@ export class ECSEntity {
      * 从实体上删除指定组件
      * @param ctor      组件构造函数或者组件Tag
      * @param isRecycle 是否回收该组件对象
-     * 
+     *
      * **isRecycle=true（默认）：**
      * - 调用组件的 reset() 方法清理数据
      * - 如果 canRecycle=true，回收到全局对象池供复用
      * - 如果 canRecycle=false，直接销毁
      * - 适用于大部分场景
-     * 
+     *
      * **isRecycle=false：**
      * - 不调用 reset()，数据完整保留
      * - 组件缓存在当前实体上，下次 add() 时恢复
      * - 无任何限制和检查，完全由用户自行管理
      * - 适用于需要保留状态的场景（UI切换、技能冷却等）
-     * 
+     *
      * ⚠️ isRecycle=false 使用场景：
      * - UI显示/隐藏：保留UI状态（如滚动位置、选中项）
      * - 技能冷却：保留冷却剩余时间
      * - 临时禁用：保留配置数据，稍后恢复
-     * 
+     *
      * 💡 管理建议：
      * - 使用 ECSMemoryMonitor 监控缓存使用情况
      * - 定期调用 clearComponentCache() 或 clearAllComponentCache() 清理
@@ -341,7 +341,7 @@ export class ECSEntity {
 
         if (isRecycle) {
             comp.reset();
-            
+
             // 回收到全局池
             if (comp.canRecycle) {
                 const ctor = ECSModel.compCtors[componentTypeId];
@@ -366,7 +366,7 @@ export class ECSEntity {
         this.compTid2Ctor.delete(componentTypeId);
         broadcastCompAddOrRemove(this, componentTypeId);
     }
-    
+
     /**
      * 清理指定组件的缓存
      * @param ctor 组件构造函数
@@ -374,13 +374,13 @@ export class ECSEntity {
     clearComponentCache(ctor: CompType<ecs.IComp>): void {
         const componentTypeId = typeof ctor === 'number' ? ctor : ctor.tid;
         const comp = this.compTid2Obj.get(componentTypeId);
-        
+
         if (comp) {
             this.compTid2Obj.delete(componentTypeId);
-            
+
             const ctorObj = ECSModel.compCtors[componentTypeId];
             const compName = ctorObj?.compName || `tid:${componentTypeId}`;
-            
+
             comp.reset();
             if (comp.canRecycle) {
                 if (ctorObj) {
@@ -391,19 +391,19 @@ export class ECSEntity {
                     pool.recycle(comp);
                 }
             }
-            
+
             console.log(`[ECS] 实体 ${this.name} 清理组件缓存: ${compName}`);
         }
     }
-    
+
     /**
      * 清理所有组件缓存
      */
     clearAllComponentCache(): void {
         if (this.compTid2Obj.size === 0) return;
-        
+
         const count = this.compTid2Obj.size;
-        
+
         this.compTid2Obj.forEach((comp, tid) => {
             comp.reset();
             if (comp.canRecycle) {
@@ -417,19 +417,19 @@ export class ECSEntity {
                 }
             }
         });
-        
+
         this.compTid2Obj.clear();
-        
+
         console.log(`[ECS] 实体 ${this.name} 清理所有缓存，共 ${count} 个组件`);
     }
-    
+
     /**
      * 获取缓存的组件数量
      */
     getCachedComponentCount(): number {
         return this.compTid2Obj.size;
     }
-    
+
     /**
      * 获取缓存的组件列表（用于监控）
      */

@@ -51,7 +51,7 @@ export abstract class ECSComblockSystem<E extends ECSEntity = ECSEntity> {
             this.execute = this.updateOnce;
         }
     }
-    
+
     /** 清理系统资源 */
     protected cleanup(): void {
         // 清理实体映射，防止内存泄漏
@@ -234,7 +234,7 @@ export class ECSRootSystem {
 /** 系统组合器，用于将多个相同功能模块的系统逻辑上放在一起，系统也可以嵌套系统 */
 export class ECSSystem {
     private _comblockSystems: ECSComblockSystem[] = [];
-    
+
     get comblockSystems(): ECSComblockSystem[] {
         return this._comblockSystems;
     }
@@ -249,7 +249,7 @@ export class ECSSystem {
         }
         return this;
     }
-    
+
     /** 清理系统资源 */
     clear(): void {
         this._comblockSystems.length = 0;

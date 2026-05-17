@@ -33,15 +33,11 @@ export class ECSModel {
     static eid = 1;
     /** 实体构造函数 */
     static entityCtors: Map<EntityCtor<ECSEntity>, string> = new Map();
-    /** 实体对象缓存池 */
-    static entityPool: Map<string, ECSEntity[]> = new Map();
     /** 通过实体id查找实体对象 */
     static eid2Entity: Map<number, ECSEntity> = new Map();
 
     /** 组件类型id */
     static compTid = 0;
-    /** 组件缓存池 */
-    static compPools: Map<number, ecs.IComp[]> = new Map();
     /** 组件构造函数，用于ecs.register注册时，记录不同类型的组件 */
     static compCtors: CompCtor<ecs.IComp>[] = [];
     /**
@@ -62,7 +58,7 @@ export class ECSModel {
 
     /** 对象池配置 */
     static readonly MAX_ENTITY_POOL_SIZE = 200; // 每种实体类型最多缓存数量
-    static readonly MAX_COMP_POOL_SIZE = 500;   // 每种组件类型最多缓存数量
+    static readonly MAX_COMP_POOL_SIZE = 500; // 每种组件类型最多缓存数量
 
     /**
      * 创建group，每个group只关心对应组件的添加和删除
