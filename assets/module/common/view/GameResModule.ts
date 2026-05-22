@@ -10,10 +10,10 @@ import type { AssetType, CompleteCallback, Paths, ProgressCallback } from '../..
 import { resLoader } from '../../../core/common/loader/ResLoader';
 import { resAutoTracker } from '../../../core/common/loader/ResAutoTracker';
 import { GameViewModule } from './GameViewModuleBase';
+import { DEBUG } from 'cc/env';
 
 /** 资源加载与引用计数管理 */
 export class GameResModule extends GameViewModule {
-
     /** 获取资源
      * @param path 资源路径
      * @param type 资源类型
@@ -98,32 +98,9 @@ export class GameResModule extends GameViewModule {
     /** 销毁资源模块 */
     override destroy(): void {
         const released = resAutoTracker.releaseAll(this.comp);
-        if (released > 0) {
+        if (DEBUG && released > 0) {
             console.log(`[GameComponent] ${this.comp.node?.name} 释放 ${released} 条资源登记`);
         }
-    }
-
-    /** 获取资源引用计数
-     * @param path 资源路径
-     * @param bundleName 资源包名称
-     * @returns 引用计数
-     */
-    getResRefCount(path: string, bundleName: string = resLoader.defaultBundleName): number {
-        const bundle = assetManager.getBundle(bundleName);
-        const a = bundle?.get(path) as Asset | null;
-        return a ? a.refCount : 0;
-    }
-
-    /** 获取追踪的资源根节点数量
-     * @returns 资源根节点数量
-     */
-    getTrackedResRootCount(): number {
-        return resAutoTracker.getOwnerEntryCount(this.comp);
-    }
-
-    /** 打印资源使用情况 */
-    printResUsage(): void {
-        resAutoTracker.printOwnerStatus(this.comp);
     }
 
     /** 设置精灵图片

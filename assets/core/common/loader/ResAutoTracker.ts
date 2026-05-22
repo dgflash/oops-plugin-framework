@@ -20,11 +20,19 @@ class ResAutoTracker {
     private readonly ownerEntries = new Map<Component, TrackedResEntry[]>();
     private debugMode = false;
 
+    /**
+     * 启用或关闭调试模式
+     * @param enabled - 是否启用调试输出
+     */
     enableDebug(enabled: boolean): void {
         this.debugMode = enabled;
     }
 
-    /** 持有者是否已通过本追踪器占用过资源 */
+    /**
+     * 持有者是否已通过本追踪器占用过资源
+     * @param owner - 资源持有者（Component）
+     * @returns 是否正在追踪该持有者的资源
+     */
     isTracking(owner: Component): boolean {
         const list = this.ownerEntries.get(owner);
         return list != null && list.length > 0;
@@ -32,6 +40,8 @@ class ResAutoTracker {
 
     /**
      * 为持有者增加对资源及其递归依赖的引用（主资源 + deps 各自 addRef）
+     * @param owner - 资源持有者（Component）
+     * @param asset - 要引用的资源，可为 null 或 undefined
      */
     acquire(owner: Component, asset: Asset | null | undefined): void {
         if (!owner || !asset) {
@@ -60,6 +70,8 @@ class ResAutoTracker {
 
     /**
      * 为持有者批量登记资源（常用于 loadDir / loadAny）
+     * @param owner - 资源持有者（Component）
+     * @param assets - 要引用的资源数组，可为 null 或 undefined
      */
     acquireMany(owner: Component, assets: (Asset | null | undefined)[] | null | undefined): void {
         if (!owner || !assets || assets.length === 0) {
@@ -73,6 +85,9 @@ class ResAutoTracker {
 
     /**
      * 释放持有者登记的一条「与给定 asset uuid 匹配的」条目（若同 asset 有多条仅移除最先匹配的一条）
+     * @param owner - 资源持有者（Component）
+     * @param asset - 要释放的资源，可为 null 或 undefined
+     * @returns 是否成功释放
      */
     releaseByAsset(owner: Component, asset: Asset | null | undefined): boolean {
         if (!owner || !asset) {
@@ -95,7 +110,13 @@ class ResAutoTracker {
         return true;
     }
 
-    /** 路径 + bundle：从缓存取资源后解除一条逻辑引用（供 releaseRes(path) 使用） */
+    /**
+     * 路径 + bundle：从缓存取资源后解除一条逻辑引用（供 releaseRes(path) 使用）
+     * @param owner - 资源持有者（Component）
+     * @param path - 资源路径
+     * @param bundleName - bundle 名称
+     * @returns 是否成功释放
+     */
     releaseByPath(owner: Component, path: string, bundleName: string): boolean {
         if (!owner || !path) {
             return false;
@@ -113,6 +134,8 @@ class ResAutoTracker {
 
     /**
      * 释放持有者名下全部条目，返回被逻辑释放的条目数
+     * @param owner - 资源持有者（Component），可为 null 或 undefined
+     * @returns 被释放的条目数量
      */
     releaseAll(owner: Component | null | undefined): number {
         if (!owner) {
@@ -134,11 +157,19 @@ class ResAutoTracker {
         return count;
     }
 
-    /** 持有者当前登记的根资源条目数 */
+    /**
+     * 持有者当前登记的根资源条目数
+     * @param owner - 资源持有者（Component）
+     * @returns 该持有者登记的条目数量
+     */
     getOwnerEntryCount(owner: Component): number {
         return this.ownerEntries.get(owner)?.length ?? 0;
     }
 
+    /**
+     * 获取追踪器统计信息
+     * @returns 包含持有者数、根资源条目数、依赖条数之和的统计对象
+     */
     getStats(): { totalOwners: number; totalTrackedRoots: number; totalDepAssetsInEntries: number } {
         let totalTrackedRoots = 0;
         let totalDepAssetsInEntries = 0;
@@ -159,6 +190,10 @@ class ResAutoTracker {
         return { totalOwners, totalTrackedRoots, totalDepAssetsInEntries };
     }
 
+    /**
+     * 打印指定持有者的资源状态到控制台
+     * @param owner - 资源持有者（Component）
+     */
     printOwnerStatus(owner: Component): void {
         const entries = this.ownerEntries.get(owner);
         console.log(`\n===== ResAutoTracker ${this.ownerLabel(owner)} =====`);
@@ -166,13 +201,20 @@ class ResAutoTracker {
             console.log('  (无)');
         }
         else {
-            entries.forEach((e, idx) => {
-                console.log(`  [${idx}] ${e.asset.constructor.name} name=${e.asset.name} uuid=${e.asset.uuid} refCount=${e.asset.refCount} deps=${e.deps.length}`);
-            });
+            console.table(entries.map((e, idx) => ({
+                类型: e.asset.constructor.name,
+                名称: e.asset.name,
+                唯一标识: e.asset.uuid,
+                引用数: e.asset.refCount,
+                依赖数: e.deps.length
+            })));
         }
         console.log('========================================\n');
     }
 
+    /**
+     * 打印追踪器全局状态到控制台
+     */
     printStatus(): void {
         console.log('\n========== ResAutoTracker 全局 ==========');
         const stats = this.getStats();
@@ -180,22 +222,22 @@ class ResAutoTracker {
 
         this.ownerEntries.forEach((entries, owner) => {
             console.log(`\n  ▸ ${this.ownerLabel(owner)} — ${entries.length} 条`);
-            entries.forEach((e, i) => {
-                console.log(`     [${i}] ${e.asset.constructor.name} ref=${e.asset.refCount} deps=${e.deps.length}`);
-            });
+            console.table(entries.map((e, i) => ({
+                类型: e.asset.constructor.name,
+                名称: e.asset.name,
+                引用: e.asset.refCount,
+                依赖数: e.deps.length
+            })));
         });
 
         console.log('=========================================\n');
     }
 
-    /** 清空记录（不推荐运行时使用；不传参清空全部持有者） */
-    clear(): void {
-        this.ownerEntries.clear();
-        if (this.debugMode) {
-            console.warn('[ResAutoTracker] clear() — 已与引擎 refCount 不同步：仅清空表，不负责 decRef');
-        }
-    }
-
+    /**
+     * 生成持有者的标签字符串（用于调试输出）
+     * @param owner - 资源持有者（Component）
+     * @returns 格式化的持有者标签字符串
+     */
     private ownerLabel(owner: Component): string {
         const ctor = owner?.constructor?.name ?? 'Unknown';
         const nodeName = owner?.node?.name ?? '?';
@@ -203,6 +245,11 @@ class ResAutoTracker {
         return `${ctor}<${nodeName}>@${uuidShort}`;
     }
 
+    /**
+     * 收集指定资源的递归依赖资源列表
+     * @param root - 根资源
+     * @returns 依赖资源数组（不含根资源本身）
+     */
     private collectDependencyAssets(root: Asset): Asset[] {
         const out: Asset[] = [];
         const seen = new Set<string>();
@@ -229,6 +276,11 @@ class ResAutoTracker {
         return out;
     }
 
+    /**
+     * 释放单个条目（执行 decRef 操作）
+     * @param owner - 资源持有者（Component）
+     * @param entry - 要释放的追踪条目
+     */
     private releaseEntry(owner: Component, entry: TrackedResEntry): void {
         const deps = entry.deps;
         const dLen = deps.length;

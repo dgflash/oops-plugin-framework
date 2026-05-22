@@ -1,7 +1,3 @@
-/**
- * 池统计指标
- */
-
 /** 池统计指标 */
 export interface IECSPoolMetrics {
     /** 创建次数 */
