@@ -1,137 +1,190 @@
-import type { __private, AssetManager } from 'cc';
-import { AnimationClip, Asset, assetManager, AudioClip, Font, ImageAsset, js, JsonAsset, Material, Mesh, Prefab, resources, sp, SpriteFrame, Texture2D } from 'cc';
+import { Asset, assetManager, resources } from 'cc';
+import { AssetType, ILoadResArgs, IRemoteOptions, Paths, ProgressCallback, CompleteCallback } from './ResTypes';
+import { ResourceError } from './ResErrors';
+import { isValidString, warn, error, createError, releasePrefabDepsRecursively } from './ResUtils';
 
-export type AssetType<T = Asset> = __private.__types_globals__Constructor<T> | null;
-export type Paths = string | string[];
-export type ProgressCallback = ((finished: number, total: number, item: AssetManager.RequestItem) => void) | null;
-export type CompleteCallback = any;
-export type IRemoteOptions = { [k: string]: any; ext?: string; } | null;
+// 类型导出
+export type { AssetType, Paths, ProgressCallback, CompleteCallback, IRemoteOptions, ILoadResArgs } from './ResTypes';
 
-interface ILoadResArgs<T extends Asset> {
-    /** 资源包名 */
-    bundle?: string;
-    /** 资源文件夹名 */
-    dir?: string;
-    /** 资源路径 */
-    paths: Paths;
-    /** 资源类型 */
-    type: AssetType<T>;
-    /** 资源加载进度 */
-    onProgress: ProgressCallback;
-    /** 资源加载完成 */
-    onComplete: CompleteCallback;
-    /** 是否为预加载 */
-    preload?: boolean;
-}
+// 错误类导出
+export { ResourceError } from './ResErrors';
+
+// 工具方法导出
+export { isValidString, warn, error, createError, releasePrefabDepsRecursively } from './ResUtils';
+
+// 调试工具导出
+export { ResDebug } from './ResDebug';
 
 /**
- * 游戏资源管理
- * 1、加载默认resources文件夹中资源
- * 2、加载默认bundle远程资源
- * 3、主动传递bundle名时，优先加载传递bundle名资源包中的资源
- *
- * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037901&doc_id=2873565
+ * 资源加载器核心类
+ * 负责底层资源加载、释放、缓存管理
  */
 export class ResLoader {
-    //#region 资源配置数据
     /** 全局默认加载的资源包名 */
     defaultBundleName = 'resources';
 
-    /** 下载时的最大并发数 - 项目设置 -> 项目数据 -> 资源下载并发数，设置默认值；初始值为15 */
+    /** 正在加载的 Bundle Promise 缓存，防止并发重复加载 */
+    private _loadingBundles: Map<string, Promise<any>> = new Map();
+
+    /** 正在加载的资源 Promise 缓存，防止并发重复加载 */
+    private _loadingAssets: Map<string, Promise<any>> = new Map();
+
+    /** 已加载的远程资源缓存，用于统一管理释放 */
+    private _remoteAssets: Map<string, Asset> = new Map();
+
+    //#region 下载配置
+    /** 获取最大并发下载数 */
     get maxConcurrency(): number {
         return assetManager.downloader.maxConcurrency;
     }
+
+    /** 设置最大并发下载数 */
     set maxConcurrency(value: number) {
         assetManager.downloader.maxConcurrency = value;
     }
 
-    /** 下载时每帧可以启动的最大请求数 - 默认值为15 */
+    /** 获取每帧最大请求数 */
     get maxRequestsPerFrame(): number {
         return assetManager.downloader.maxRequestsPerFrame;
     }
+
+    /** 设置每帧最大请求数 */
     set maxRequestsPerFrame(value: number) {
         assetManager.downloader.maxRequestsPerFrame = value;
     }
 
-    /** 失败重试次数 - 默认值为0 */
+    /** 获取最大重试次数 */
     get maxRetryCount(): number {
         return assetManager.downloader.maxRetryCount;
     }
+
+    /** 设置最大重试次数 */
     set maxRetryCount(value: number) {
         assetManager.downloader.maxRetryCount = value;
     }
 
-    /** 重试的间隔时间，单位为毫秒 - 默认值为2000毫秒 */
+    /** 获取重试间隔（毫秒） */
     get retryInterval(): number {
         return assetManager.downloader.retryInterval;
     }
+
+    /** 设置重试间隔（毫秒） */
     set retryInterval(value: number) {
         assetManager.downloader.retryInterval = value;
     }
     //#endregion
 
-    //#region 加载远程资源
+    //#region 远程资源加载
     /**
      * 加载远程资源
-     * @param url           资源地址
-     * @param options       资源参数，例：{ ext: ".png" }
-     * @example
-        var opt: IRemoteOptions = { ext: ".png" };
-        var data = await oops.res.loadRemote<ImageAsset>(this.url, opt);
-        const texture = new Texture2D();
-        texture.image = data;
-
-        const spriteFrame = new SpriteFrame();
-        spriteFrame.texture = texture;
-
-        var sprite = this.sprite.addComponent(Sprite);
-        sprite.spriteFrame = spriteFrame;
+     * @param url 资源URL
+     * @param options 加载选项
+     * @returns 资源Promise
      */
     loadRemote<T extends Asset>(url: string, options: IRemoteOptions | null = null): Promise<T> {
         return new Promise<T>((resolve, reject) => {
+            if (!isValidString(url)) {
+                reject(createError('loadRemote', 'url 不能为空'));
+                return;
+            }
+
+            const cachedAsset = this._remoteAssets.get(url);
+            if (cachedAsset) {
+                resolve(cachedAsset as T);
+                return;
+            }
+
             assetManager.loadRemote<T>(url, options, (err, data: T) => {
                 if (err) {
-                    reject(err);
+                    reject(createError('loadRemote', `加载远程资源失败: ${url}`, err));
                     return;
                 }
+                this._remoteAssets.set(url, data);
                 resolve(data);
             });
         });
     }
-    //#endregion
-
-    //#region 资源包管理
 
     /**
-     * 获取资源包
-     * @param name 资源包名
+     * 释放指定远程资源
+     * @param url 资源URL
+     */
+    releaseRemote(url: string) {
+        if (!isValidString(url)) {
+            warn('releaseRemote', 'url 不能为空');
+            return;
+        }
+
+        const asset = this._remoteAssets.get(url);
+        if (!asset) {
+            warn('releaseRemote', `远程资源 "${url}" 不存在`);
+            return;
+        }
+
+        asset.decRef();
+        this._remoteAssets.delete(url);
+    }
+
+    /** 释放所有远程资源 */
+    releaseRemoteAll() {
+        this._remoteAssets.forEach((asset) => asset.decRef());
+        this._remoteAssets.clear();
+    }
+
+    /**
+     * 获取远程资源数量
+     * @returns 资源数量
+     */
+    getRemoteAssetCount(): number {
+        return this._remoteAssets.size;
+    }
+    //#endregion
+
+    //#region Bundle 管理
+    /**
+     * 获取已加载的Bundle
+     * @param name Bundle名称
+     * @returns Bundle对象或null
      */
     getBundle(name: string) {
         return assetManager.bundles.get(name);
     }
 
     /**
-     * 加载资源包
-     * @param name       资源地址
-     * @param options    资源参数，例：{ version: "74fbe" }
-     * @example
-        await oops.res.loadBundle(name, options);
+     * 加载Bundle
+     * @param name Bundle名称
+     * @param options 加载选项
+     * @returns Bundle Promise
      */
-    loadBundle(name: string, options: { [k: string]: any; version?: string; } | null = null): Promise<AssetManager.Bundle> {
-        return new Promise<AssetManager.Bundle>((resolve, reject) => {
-            assetManager.loadBundle(name, options, (err, bundle: AssetManager.Bundle) => {
+    loadBundle(name: string, options: { [k: string]: any; version?: string; } | null = null): Promise<any> {
+        if (!isValidString(name)) {
+            return Promise.reject(createError('loadBundle', 'name 不能为空'));
+        }
+
+        const existingBundle = assetManager.bundles.get(name);
+        if (existingBundle) return Promise.resolve(existingBundle);
+
+        const loadingPromise = this._loadingBundles.get(name);
+        if (loadingPromise) return loadingPromise;
+
+        const promise = new Promise((resolve, reject) => {
+            assetManager.loadBundle(name, options, (err, bundle) => {
+                this._loadingBundles.delete(name);
                 if (err) {
-                    reject(err);
+                    reject(createError('loadBundle', `加载资源包失败: ${name}`, err));
                     return;
                 }
                 resolve(bundle);
             });
         });
+
+        this._loadingBundles.set(name, promise);
+        return promise;
     }
 
     /**
-     * 释放资源包与包中所有资源
-     * @param bundleName 资源地址
+     * 移除并释放Bundle
+     * @param bundleName Bundle名称
      */
     removeBundle(bundleName: string) {
         const bundle = assetManager.bundles.get(bundleName);
@@ -142,31 +195,103 @@ export class ResLoader {
     }
     //#endregion
 
-    //#region 预加载资源
+    //#region 资源加载
     /**
-     * 加载一个资源
-     * @param bundleName    远程包名
-     * @param paths         资源路径
-     * @param type          资源类型
-     * @param onProgress    加载进度回调
-     * @param onComplete    加载完成回调
+     * 加载资源
+     * @param bundleName Bundle名称
+     * @param paths 资源路径或类型
+     * @param type 资源类型
+     * @returns 资源Promise
      */
-    preload<T extends Asset>(bundleName: string, paths: Paths, type: AssetType<T>, onProgress: ProgressCallback): Promise<AssetManager.RequestItem>;
-    preload<T extends Asset>(bundleName: string, paths: Paths, onProgress: ProgressCallback): Promise<AssetManager.RequestItem>;
-    preload<T extends Asset>(bundleName: string, paths: Paths): Promise<AssetManager.RequestItem>;
-    preload<T extends Asset>(bundleName: string, paths: Paths, type: AssetType<T>): Promise<AssetManager.RequestItem>;
-    preload<T extends Asset>(paths: Paths, type: AssetType<T>, onProgress: ProgressCallback): Promise<AssetManager.RequestItem>;
-    preload<T extends Asset>(paths: Paths, onProgress: ProgressCallback): Promise<AssetManager.RequestItem>;
-    preload<T extends Asset>(paths: Paths): Promise<AssetManager.RequestItem>;
-    preload<T extends Asset>(paths: Paths, type: AssetType<T>): Promise<AssetManager.RequestItem>;
-    preload<T extends Asset>(
-        bundleName: string,
-        paths?: Paths | AssetType<T> | ProgressCallback,
-        type?: AssetType<T> | ProgressCallback,
-        onProgress?: ProgressCallback
-    ) {
+    load<T extends Asset>(bundleName: string, paths: Paths | AssetType<T>, type?: AssetType<T>): Promise<T> {
+        let args: ILoadResArgs<T> | null = null;
+        if (typeof paths === 'string' || paths instanceof Array) {
+            args = this.parseLoadResArgs(paths, type, null);
+            args.bundle = bundleName;
+        }
+        else {
+            args = this.parseLoadResArgs(bundleName, paths, null);
+            args.bundle = this.defaultBundleName;
+        }
+
+        const pathsKey = Array.isArray(args.paths) ? args.paths.join(',') : args.paths;
+        const typeKey = args.type ? (args.type as any).name || 'Asset' : 'Asset';
+        const cacheKey = `${args.bundle}:${pathsKey}:${typeKey}`;
+
+        const loadingPromise = this._loadingAssets.get(cacheKey);
+        if (loadingPromise) return loadingPromise as Promise<T>;
+
+        const promise = new Promise<T>((resolve, reject) => {
+            const onComplete = (err: Error | null, data: T) => {
+                this._loadingAssets.delete(cacheKey);
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve(data);
+            };
+
+            args!.onComplete = onComplete;
+            this.loadByArgs(args!);
+        });
+
+        this._loadingAssets.set(cacheKey, promise);
+        return promise;
+    }
+
+    /**
+     * 加载任意资源（支持多种参数组合）
+     * @param bundleName Bundle名称或路径数组
+     * @param paths 路径数组或进度回调
+     * @param onProgress 进度回调
+     * @param onComplete 完成回调
+     */
+    loadAny<T extends Asset>(bundleName: string | string[], paths: string[] | ProgressCallback, onProgress?: ProgressCallback | CompleteCallback, onComplete?: CompleteCallback): void {
+        let args: ILoadResArgs<T> | null = null;
+        if (typeof bundleName === 'string' && paths instanceof Array) {
+            args = this.parseLoadResArgs(paths, onProgress, onComplete);
+            args.bundle = bundleName;
+        }
+        else {
+            args = this.parseLoadResArgs(bundleName, paths, onProgress);
+            args.bundle = this.defaultBundleName;
+        }
+        this.loadByArgs(args);
+    }
+
+    /**
+     * 加载目录资源
+     * @param bundleName Bundle名称
+     * @param dir 目录路径或类型或回调
+     * @param type 资源类型或回调
+     * @param onProgress 进度回调
+     * @param onComplete 完成回调
+     */
+    loadDir<T extends Asset>(bundleName: string, dir?: string | AssetType<T> | ProgressCallback | CompleteCallback, type?: AssetType<T> | ProgressCallback | CompleteCallback, onProgress?: ProgressCallback | CompleteCallback, onComplete?: CompleteCallback): void {
+        let args: ILoadResArgs<T> | null = null;
+        if (typeof dir === 'string') {
+            args = this.parseLoadResArgs(dir, type, onProgress, onComplete);
+            args.bundle = bundleName;
+        }
+        else {
+            args = this.parseLoadResArgs(bundleName, dir, type, onProgress);
+            args.bundle = this.defaultBundleName;
+        }
+        args.dir = args.paths as string;
+        this.loadByArgs(args);
+    }
+
+    /**
+     * 预加载资源
+     * @param bundleName Bundle名称
+     * @param paths 资源路径或类型或回调
+     * @param type 资源类型或回调
+     * @param onProgress 进度回调
+     * @returns Promise
+     */
+    preload<T extends Asset>(bundleName: string, paths?: Paths | AssetType<T> | ProgressCallback, type?: AssetType<T> | ProgressCallback, onProgress?: ProgressCallback): Promise<any> {
         return new Promise((resolve, reject) => {
-            const onComplete = (err: Error | null, data: AssetManager.RequestItem) => {
+            const onComplete = (err: Error | null, data: any) => {
                 if (err) {
                     reject(err);
                     return;
@@ -189,28 +314,14 @@ export class ResLoader {
     }
 
     /**
-     * 预加载文件夹中的资源
-     * @param bundleName    远程包名
-     * @param dir           文件夹名
-     * @param type          资源类型
-     * @param onProgress    加载进度回调
-     * @param onComplete    加载完成回调
+     * 预加载目录资源
+     * @param bundleName Bundle名称
+     * @param dir 目录路径或类型或回调
+     * @param type 资源类型或回调
+     * @param onProgress 进度回调
+     * @param onComplete 完成回调
      */
-    preloadDir<T extends Asset>(bundleName: string, dir: string, type: AssetType<T>, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    preloadDir<T extends Asset>(bundleName: string, dir: string, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    preloadDir<T extends Asset>(bundleName: string, dir: string, onComplete?: CompleteCallback): void;
-    preloadDir<T extends Asset>(bundleName: string, dir: string, type: AssetType<T>, onComplete?: CompleteCallback): void;
-    preloadDir<T extends Asset>(dir: string, type: AssetType<T>, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    preloadDir<T extends Asset>(dir: string, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    preloadDir<T extends Asset>(dir: string, onComplete?: CompleteCallback): void;
-    preloadDir<T extends Asset>(dir: string, type: AssetType<T>, onComplete?: CompleteCallback): void;
-    preloadDir<T extends Asset>(
-        bundleName: string,
-        dir?: string | AssetType<T> | ProgressCallback | CompleteCallback,
-        type?: AssetType<T> | ProgressCallback | CompleteCallback,
-        onProgress?: ProgressCallback | CompleteCallback,
-        onComplete?: CompleteCallback,
-    ) {
+    preloadDir<T extends Asset>(bundleName: string, dir?: string | AssetType<T> | ProgressCallback | CompleteCallback, type?: AssetType<T> | ProgressCallback | CompleteCallback, onProgress?: ProgressCallback | CompleteCallback, onComplete?: CompleteCallback): void {
         let args: ILoadResArgs<T> | null = null;
         if (typeof dir === 'string') {
             args = this.parseLoadResArgs(dir, type, onProgress, onComplete);
@@ -226,141 +337,48 @@ export class ResLoader {
     }
     //#endregion
 
-    //#region 资源加载、获取、释放
+    //#region 资源释放
     /**
-     * 加载一个资源
-     * @param bundleName    远程包名
-     * @param paths         资源路径
-     * @param type          资源类型
-     * @example
-        const sd = await oops.res.load("spine_path", sp.SkeletonData);
-     */
-    load<T extends Asset>(bundleName: string, paths: Paths | AssetType<T>, type?: AssetType<T>) {
-        return new Promise<T>((resolve, reject) => {
-            const onComplete = (err: Error | null, data: T) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                // 增加引用计数，防止资源被意外释放
-                // if (data) {
-                //     data.addRef();
-                // }
-                resolve(data);
-            };
-
-            let args: ILoadResArgs<T> | null = null;
-            if (typeof paths === 'string' || paths instanceof Array) {
-                args = this.parseLoadResArgs(paths, type, onComplete);
-                args.bundle = bundleName;
-            }
-            else {
-                args = this.parseLoadResArgs(bundleName, paths, onComplete);
-                args.bundle = this.defaultBundleName;
-            }
-            this.loadByArgs(args);
-        });
-    }
-
-    /**
-     * 加载指定资源包中的多个任意类型资源
-     * @param bundleName    远程包名
-     * @param paths         资源路径
-     * @param onProgress    加载进度回调
-     * @param onComplete    加载完成回调
-     */
-    loadAny<T extends Asset>(bundleName: string | string[], paths: string[] | ProgressCallback, onProgress?: ProgressCallback | CompleteCallback, onComplete?: CompleteCallback): void {
-        let args: ILoadResArgs<T> | null = null;
-        if (typeof bundleName === 'string' && paths instanceof Array) {
-            args = this.parseLoadResArgs(paths, onProgress, onComplete);
-            args.bundle = bundleName;
-        }
-        else {
-            args = this.parseLoadResArgs(bundleName, paths, onProgress);
-            args.bundle = this.defaultBundleName;
-        }
-        this.loadByArgs(args);
-    }
-
-    /**
-     * 加载文件夹中的资源
-     * @param bundleName    远程包名
-     * @param dir           文件夹名
-     * @param type          资源类型
-     * @param onProgress    加载进度回调
-     * @param onComplete    加载完成回调
-     * @example
-        // 加载进度事件
-        var onProgressCallback = (finished: number, total: number, item: any) => {
-            console.log("资源加载进度", finished, total);
-        }
-
-        // 加载完成事件
-        var onCompleteCallback = () => {
-            console.log("资源加载完成");
-        }
-        oops.res.loadDir("game", onProgressCallback, onCompleteCallback);
-     */
-    loadDir<T extends Asset>(bundleName: string, dir: string, type: AssetType<T>, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    loadDir<T extends Asset>(bundleName: string, dir: string, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    loadDir<T extends Asset>(bundleName: string, dir: string, onComplete?: CompleteCallback): void;
-    loadDir<T extends Asset>(bundleName: string, dir: string, type: AssetType<T>, onComplete?: CompleteCallback): void;
-    loadDir<T extends Asset>(dir: string, type: AssetType<T>, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    loadDir<T extends Asset>(dir: string, onProgress: ProgressCallback, onComplete: CompleteCallback): void;
-    loadDir<T extends Asset>(dir: string, onComplete?: CompleteCallback): void;
-    loadDir<T extends Asset>(dir: string, type: AssetType<T>, onComplete?: CompleteCallback): void;
-    loadDir<T extends Asset>(
-        bundleName: string,
-        dir?: string | AssetType<T> | ProgressCallback | CompleteCallback,
-        type?: AssetType<T> | ProgressCallback | CompleteCallback,
-        onProgress?: ProgressCallback | CompleteCallback,
-        onComplete?: CompleteCallback,
-    ) {
-        let args: ILoadResArgs<T> | null = null;
-        if (typeof dir === 'string') {
-            args = this.parseLoadResArgs(dir, type, onProgress, onComplete);
-            args.bundle = bundleName;
-        }
-        else {
-            args = this.parseLoadResArgs(bundleName, dir, type, onProgress);
-            args.bundle = this.defaultBundleName;
-        }
-        args.dir = args.paths as string;
-        this.loadByArgs(args);
-    }
-
-    /**
-     * 通过资源相对路径释放资源
-     * @param path          资源路径
-     * @param bundleName    远程资源包名
+     * 释放指定资源
+     * @param path 资源路径
+     * @param bundleName Bundle名称
      */
     release(path: string, bundleName?: string) {
+        if (!isValidString(path)) {
+            warn('release', 'path 不能为空');
+            return;
+        }
+
         if (bundleName == undefined) bundleName = this.defaultBundleName;
 
         const bundle = assetManager.getBundle(bundleName);
-        if (bundle) {
-            const asset = bundle.get(path);
-            if (asset) {
-                this.releasePrefabDepsRecursively(asset);
-            }
+        if (!bundle) {
+            warn('release', `资源包 "${bundleName}" 不存在`);
+            return;
         }
+
+        const asset = bundle.get(path);
+        if (!asset) {
+            warn('release', `资源 "${path}" 在资源包 "${bundleName}" 中不存在`);
+            return;
+        }
+
+        releasePrefabDepsRecursively(asset);
     }
 
     /**
-     * 通过相对文件夹路径删除所有文件夹中资源
-     * @param path          资源文件夹路径
-     * @param bundleName    远程资源包名
+     * 释放目录资源
+     * @param path 目录路径
+     * @param bundleName Bundle名称
      */
     releaseDir(path: string, bundleName?: string) {
         if (bundleName == undefined) bundleName = this.defaultBundleName;
 
-        const bundle: AssetManager.Bundle | null = assetManager.getBundle(bundleName);
+        const bundle = assetManager.getBundle(bundleName);
         if (bundle) {
             const infos = bundle.getDirWithPath(path);
             if (infos) {
-                infos.forEach((info) => {
-                    this.releasePrefabDepsRecursively(info.uuid);
-                });
+                infos.forEach((info: any) => releasePrefabDepsRecursively(info.uuid));
             }
 
             if (path == '' && bundleName != 'resources') {
@@ -368,12 +386,36 @@ export class ResLoader {
             }
         }
     }
+    //#endregion
+
+    //#region 资源获取
+    /**
+     * 获取已加载的资源
+     * @param path 资源路径
+     * @param type 资源类型
+     * @param bundleName Bundle名称
+     * @returns 资源对象或null
+     */
+    get<T extends Asset>(path: string, type?: AssetType<T>, bundleName: string = this.defaultBundleName): T | null {
+        if (!isValidString(path)) {
+            warn('get', 'path 不能为空');
+            return null;
+        }
+
+        const bundle = assetManager.getBundle(bundleName);
+        if (!bundle) {
+            warn('get', `资源包 "${bundleName}" 不存在`);
+            return null;
+        }
+
+        return bundle.get(path, type);
+    }
 
     /**
      * 获取资源路径
-     * @param bundleName 资源包名
-     * @param uuid       资源唯一编号
-     * @returns
+     * @param bundleName Bundle名称
+     * @param uuid 资源UUID
+     * @returns 资源路径
      */
     getAssetPath(bundleName: string, uuid: string): string {
         const b = this.getBundle(bundleName);
@@ -382,60 +424,36 @@ export class ResLoader {
         if (!info) return '';
         return (info as any).path || '';
     }
-
-    /** 释放预制依赖资源 */
-    private releasePrefabDepsRecursively(uuid: string | Asset) {
-        let asset: Asset | null | undefined;
-        if (uuid instanceof Asset) {
-            asset = uuid;
-            uuid.decRef();
-        }
-        else {
-            asset = assetManager.assets.get(uuid);
-            if (asset) asset.decRef();
-        }
-
-        // 释放预制引用资源（防止内存泄漏）
-        // if (asset instanceof Prefab) {
-        //     const uuids: string[] = assetManager.dependUtil.getDepsRecursively(asset.uuid)!;
-        //     uuids.forEach(depUuid => {
-        //         const depAsset = assetManager.assets.get(depUuid);
-        //         if (depAsset) depAsset.decRef();
-        //     });
-        // }
-    }
-
-    /**
-     * 获取资源
-     * @param path          资源路径
-     * @param type          资源类型
-     * @param bundleName    远程资源包名
-     */
-    get<T extends Asset>(path: string, type?: AssetType<T>, bundleName: string = this.defaultBundleName): T | null {
-        const bundle: AssetManager.Bundle = assetManager.getBundle(bundleName)!;
-        return bundle.get(path, type);
-    }
     //#endregion
 
-    private parseLoadResArgs<T extends Asset>(paths: Paths, type?: AssetType<T> | ProgressCallback | CompleteCallback, onProgress?: AssetType<T> | ProgressCallback | CompleteCallback, onComplete?: ProgressCallback | CompleteCallback) {
+    //#region 私有方法
+    /**
+     * 解析加载资源参数
+     * @param paths 资源路径
+     * @param type 资源类型或回调
+     * @param onProgress 进度回调或类型
+     * @param onComplete 完成回调
+     * @returns 解析后的参数对象
+     */
+    private parseLoadResArgs<T extends Asset>(paths: Paths, type?: AssetType<T> | ProgressCallback | CompleteCallback, onProgress?: AssetType<T> | ProgressCallback | CompleteCallback, onComplete?: ProgressCallback | CompleteCallback): ILoadResArgs<T> {
         const pathsOut: any = paths;
         let typeOut: any = type;
         let onProgressOut: any = onProgress;
         let onCompleteOut: any = onComplete;
         if (onComplete === undefined) {
-            const isValidType = js.isChildClassOf(type as AssetType, Asset);
+            const isValidType = (t: any) => t && typeof t === 'function' && t.prototype instanceof Asset;
             if (onProgress) {
                 onCompleteOut = onProgress as CompleteCallback;
-                if (isValidType) {
+                if (isValidType(type)) {
                     onProgressOut = null;
                 }
             }
-            else if (onProgress === undefined && !isValidType) {
+            else if (onProgress === undefined && !isValidType(type)) {
                 onCompleteOut = type as CompleteCallback;
                 onProgressOut = null;
                 typeOut = null;
             }
-            if (onProgress !== undefined && !isValidType) {
+            if (onProgress !== undefined && !isValidType(type)) {
                 onProgressOut = type as ProgressCallback;
                 typeOut = null;
             }
@@ -443,7 +461,12 @@ export class ResLoader {
         return { paths: pathsOut, type: typeOut, onProgress: onProgressOut, onComplete: onCompleteOut };
     }
 
-    private loadByBundleAndArgs<T extends Asset>(bundle: AssetManager.Bundle, args: ILoadResArgs<T>): void {
+    /**
+     * 根据Bundle和参数加载资源
+     * @param Bundle Bundle对象
+     * @param args 加载参数
+     */
+    private loadByBundleAndArgs<T extends Asset>(bundle: any, args: ILoadResArgs<T>): void {
         if (args.dir) {
             if (args.preload) {
                 bundle.preloadDir(args.paths as string, args.type, args.onProgress, args.onComplete);
@@ -462,91 +485,46 @@ export class ResLoader {
         }
     }
 
+    /**
+     * 根据参数加载资源
+     * @param args 加载参数
+     */
     private async loadByArgs<T extends Asset>(args: ILoadResArgs<T>) {
         try {
             if (args.bundle) {
                 let bundle = assetManager.bundles.get(args.bundle);
 
-                // 自动加载资源包
                 if (bundle == null) {
                     bundle = await this.loadBundle(args.bundle);
                     if (!bundle) {
-                        const error = new Error(`加载资源包失败: ${args.bundle}`);
-                        console.error(error.message);
-                        if (args.onComplete) {
-                            args.onComplete(error, null);
-                        }
+                        const resError = new ResourceError(`加载资源包失败`, { bundle: args.bundle });
+                        error('loadByArgs', `加载资源包失败: ${args.bundle}`);
+                        if (args.onComplete) args.onComplete(resError, null);
                         return;
                     }
                 }
 
-                // 加载指定资源包中的资源
                 this.loadByBundleAndArgs(bundle, args);
             }
-            // 默认资源包
             else {
                 this.loadByBundleAndArgs(resources, args);
             }
         }
-        catch (error) {
-            console.error('loadByArgs 错误:', error);
-            if (args.onComplete) {
-                args.onComplete(error as Error, null);
-            }
+        catch (err) {
+            const pathsStr = Array.isArray(args.paths) ? args.paths.join(',') : args.paths;
+            const resError = err instanceof ResourceError
+                ? err
+                : new ResourceError(`资源加载失败`, {
+                    path: pathsStr,
+                    bundle: args.bundle,
+                    cause: err instanceof Error ? err : String(err)
+                });
+            error('loadByArgs', `资源加载失败: ${pathsStr}`, resError);
+            if (args.onComplete) args.onComplete(resError, null);
         }
     }
-
-    /** 打印缓存中所有资源信息 */
-    dump() {
-        assetManager.assets.forEach((value: Asset, key: string) => {
-            console.log(`[${key}] 引用数量: ${value.refCount}`, value);
-        });
-        console.log(`当前资源总数: ${assetManager.assets.count}`);
-    }
-
-    private debugLogReleasedAsset(bundleName: string, asset: Asset) {
-        if (asset.refCount == 0) {
-            const path = this.getAssetPath(bundleName, asset.uuid);
-            let content = '';
-            if (asset instanceof JsonAsset) {
-                content = '【释放资源】Json【路径】' + path;
-            }
-            else if (asset instanceof Prefab) {
-                content = '【释放资源】Prefab【路径】' + path;
-            }
-            else if (asset instanceof SpriteFrame) {
-                content = '【释放资源】SpriteFrame【路径】' + path;
-            }
-            else if (asset instanceof Texture2D) {
-                content = '【释放资源】Texture2D【路径】' + path;
-            }
-            else if (asset instanceof ImageAsset) {
-                content = '【释放资源】ImageAsset【路径】' + path;
-            }
-            else if (asset instanceof AudioClip) {
-                content = '【释放资源】AudioClip【路径】' + path;
-            }
-            else if (asset instanceof AnimationClip) {
-                content = '【释放资源】AnimationClip【路径】' + path;
-            }
-            else if (asset instanceof Font) {
-                content = '【释放资源】Font【路径】' + path;
-            }
-            else if (asset instanceof Material) {
-                content = '【释放资源】Material【路径】' + path;
-            }
-            else if (asset instanceof Mesh) {
-                content = '【释放资源】Mesh【路径】' + path;
-            }
-            else if (asset instanceof sp.SkeletonData) {
-                content = '【释放资源】Spine【路径】' + path;
-            }
-            else {
-                content = '【释放资源】未知【路径】' + path;
-            }
-            console.log(content);
-        }
-    }
+    //#endregion
 }
 
+/** 资源加载器单例实例 */
 export const resLoader = new ResLoader();

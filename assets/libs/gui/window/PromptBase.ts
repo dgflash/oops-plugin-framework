@@ -95,7 +95,7 @@ export class PromptBase extends GameComponent {
     }
 
     protected onLoad(): void {
-        this.setButton();
+        this.button.setButton();
     }
 
     /** 确认按钮点击事件 */

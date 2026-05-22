@@ -1,4 +1,3 @@
-
 /*
  * @Author: dgflash
  * @Date: 2022-03-25 18:12:10
@@ -7,9 +6,8 @@
  */
 import { Component, error, Node, Vec3, _decorator } from 'cc';
 import { Timer } from '../../core/common/timer/Timer';
-import { Vec3Util } from '../../core/utils/Vec3Util';
 
-const { ccclass, property } = _decorator;
+const { ccclass } = _decorator;
 
 /** 移动到指定目标位置 */
 @ccclass('MoveTo')
@@ -17,7 +15,7 @@ export class MoveTo extends Component {
     /** 目标位置 */
     target: Vec3 | Node | null = null;
     /** 移动方向 */
-    velocity: Vec3 = Vec3Util.zero;
+    velocity: Vec3 = new Vec3();
     /** 移动速度（每秒移动的像素距离） */
     speed = 0;
     /** 是否计算将 Y 轴带入计算 */
@@ -40,6 +38,8 @@ export class MoveTo extends Component {
     private timer: Timer = new Timer();
     /** 终点备份 */
     private end: Vec3 | null = null;
+    /** 复用向量——避免每帧分配 Vec3 对象 */
+    private _temp: Vec3 = new Vec3();
 
     protected onLoad(): void {
         this.enabled = false;
@@ -86,9 +86,10 @@ export class MoveTo extends Component {
                 target.y = 0;
             }
 
-            // 移动方向与移动速度
+            // 移动方向与移动速度（直接写入 velocity，避免 new Vec3）
             const start = this.ns === Node.NodeSpace.WORLD ? this.node.worldPosition : this.node.position;
-            this.velocity = Vec3Util.sub(target, start).normalize();
+            Vec3.subtract(this.velocity, target, start);
+            this.velocity.normalize();
 
             // 移动时间与目标偏位置计算
             const distance = Vec3.distance(start, target) - this.offset;
@@ -108,12 +109,19 @@ export class MoveTo extends Component {
         }
 
         if (this.speed > 0) {
-            const trans = Vec3Util.mul(this.velocity, this.speed * dt);
+            // _temp = velocity * speed * dt（写入预分配向量，零分配）
+            Vec3.multiplyScalar(this._temp, this.velocity, this.speed * dt);
+            const curPos = this.ns === Node.NodeSpace.WORLD
+                ? this.node.worldPosition
+                : this.node.position;
+            this._temp.x += curPos.x;
+            this._temp.y += curPos.y;
+            this._temp.z += curPos.z;
             if (this.ns === Node.NodeSpace.WORLD) {
-                this.node.worldPosition = Vec3Util.add(this.node.worldPosition, trans);
+                this.node.worldPosition = this._temp;
             }
             else {
-                this.node.position = Vec3Util.add(this.node.position, trans);
+                this.node.position = this._temp;
             }
         }
 
@@ -138,7 +146,7 @@ export class MoveTo extends Component {
         this.enabled = false;
 
         this.target = null;
-        this.velocity = Vec3Util.zero;
+        this.velocity.set(0, 0, 0);
         this.speed = 0;
         this.hasYAxis = true;
         this.ns = Node.NodeSpace.LOCAL;

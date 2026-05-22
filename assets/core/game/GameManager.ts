@@ -9,7 +9,6 @@ import { director, isValid } from 'cc';
 import { GameComponent } from '../../module/common/GameComponent';
 import { resLoader } from '../common/loader/ResLoader';
 import { ViewUtil } from '../utils/ViewUtil';
-import { View } from '../../types/Module';
 
 /** 游戏元素打开参数 */
 export interface ElementParams {
@@ -38,7 +37,7 @@ export class GameManager {
      * @param params        可选参数据
      * @returns Promise<Node | null> 成功返回节点，失败返回 null
      */
-    async open(parent: View, prefabPath: string, params?: ElementParams): Promise<Node | null> {
+    async open(parent: OopsFramework.View, prefabPath: string, params?: ElementParams): Promise<Node | null> {
         try {
             // 简化 bundleName 获取逻辑
             const bundleName = params?.bundle || resLoader.defaultBundleName;
@@ -47,7 +46,7 @@ export class GameManager {
 
             // 自动内存管理
             if (parent instanceof GameComponent) {
-                node = await parent.createPrefabNode(prefabPath, bundleName);
+                node = await parent.nodes.createPrefabNode(prefabPath, bundleName);
                 if (!node || !isValid(node)) {
                     console.error(`[GameManager] 创建预制失败: ${prefabPath}`);
                     return null;

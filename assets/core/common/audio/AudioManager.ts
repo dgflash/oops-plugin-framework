@@ -47,6 +47,15 @@ export class AudioManager extends Component {
         this.effect.put(ae);
     }
 
+    /**
+     * 释放指定远程音效资源
+     * @param path      远程资源 URL
+     * @returns         是否成功释放
+     */
+    releaseEffectRemote(path: string): boolean {
+        return this.effect.releaseResRemoteByPath(path);
+    }
+
     /** 恢复当前暂停的音乐与音效播放 */
     resumeAll() {
         this.music.resume();

@@ -1,6 +1,8 @@
 import { instantiate, Node, Prefab, SafeArea } from 'cc';
 import { Collection } from 'db://oops-framework/libs/collection/Collection';
+import { resAutoTracker } from '../../common/loader/ResAutoTracker';
 import { resLoader } from '../../common/loader/ResLoader';
+import { GameComponent } from '../../../module/common/GameComponent';
 import { oops } from '../../Oops';
 import type { Uiid } from './LayerEnum';
 import { LayerHelper } from './LayerHelper';
@@ -114,6 +116,9 @@ export class LayerUI extends Node {
                     // 检查加载完成后 state 是否已被标记为移除，避免创建僵尸节点
                     if (!state.valid) {
                         console.log(`界面【${state.config.prefab}】在加载过程中已被移除，取消实例化`);
+                        if (res) {
+                            res.decRef();
+                        }
                         resolve(null!);
                         return;
                     }
@@ -127,6 +132,15 @@ export class LayerUI extends Node {
                         // 窗口事件委托
                         const comp = state.node.addComponent(LayerUIElement);
                         comp.state = state;
+
+                        const viewRoot = state.node.getComponent(GameComponent);
+                        if (viewRoot) {
+                            resAutoTracker.acquire(viewRoot, res);
+                            state.prefabTrackedByView = true;
+                        }
+                        else {
+                            state.prefabTrackedByView = false;
+                        }
                     }
                     else {
                         console.warn(`路径为【${state.config.prefab}】的预制加载失败`);

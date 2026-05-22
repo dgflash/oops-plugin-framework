@@ -101,7 +101,7 @@ export abstract class CCEntity extends ecs.Entity {
 
         // 跟随父节点释放自动释放当前资源
         if (parent instanceof GameComponent) {
-            const result = await parent.createPrefabNode(path, bundleName);
+            const result = await parent.nodes.createPrefabNode(path, bundleName);
             if (result == null) return null;
 
             node = result;

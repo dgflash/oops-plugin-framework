@@ -81,8 +81,10 @@ export class LayerUIElement extends Component {
             // 释放界面显示对象
             this.node.destroy();
 
-            // 释放界面相关资源
-            oops.res.release(this.state.config.prefab, this.state.config.bundle);
+            // 预制已由根节点 GameComponent + ResAutoTracker 管理时可不额外 release，否则会与 decRef 重复
+            if (!this.state.prefabTrackedByView) {
+                oops.res.release(this.state.config.prefab, this.state.config.bundle);
+            }
 
             // oops.log.logView(`【界面管理】释放【${uip.config.prefab}】界面资源`);
         }
@@ -122,6 +124,10 @@ export class UIState {
     valid = true;
     /** 界面根节点 */
     node: Node = null!;
+    /**
+     * 根节点上存在 GameComponent 时，LayerUI 已将预制资源交给 ResAutoTracker，关闭界面时不再调用 oops.res.release
+     */
+    prefabTrackedByView = false;
 }
 
 /*** 界面打开参数 */

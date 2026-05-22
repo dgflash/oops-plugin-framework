@@ -42,7 +42,7 @@ export class AudioEffect extends AudioSource {
 
     /** 组件销毁时清理资源 */
     onDestroy() {
-        this.node.off(AudioSource.EventType.ENDED, this.onAudioEnded, this);
+        if (this.node) this.node.off(AudioSource.EventType.ENDED, this.onAudioEnded, this);
         this.reset();
     }
 }
