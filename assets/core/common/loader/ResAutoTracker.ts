@@ -29,6 +29,73 @@ class ResAutoTracker {
     }
 
     /**
+     * 获取追踪器统计信息
+     * @returns 包含持有者数、根资源条目数、依赖条数之和的统计对象
+     */
+    getStats(): { totalOwners: number; totalTrackedRoots: number; totalDepAssetsInEntries: number } {
+        let totalTrackedRoots = 0;
+        let totalDepAssetsInEntries = 0;
+
+        const owners = [...this.ownerEntries.keys()];
+        const totalOwners = owners.length;
+
+        owners.forEach((owner) => {
+            const entries = this.ownerEntries.get(owner);
+            const len = entries?.length ?? 0;
+            if (!entries || len === 0) return;
+            totalTrackedRoots += len;
+            for (let i = 0; i < len; i++) {
+                totalDepAssetsInEntries += entries[i]!.deps.length;
+            }
+        });
+
+        return { totalOwners, totalTrackedRoots, totalDepAssetsInEntries };
+    }
+
+    /**
+     * 打印指定持有者的资源状态到控制台
+     * @param owner - 资源持有者（Component）
+     */
+    printOwnerStatus(owner: Component): void {
+        const entries = this.ownerEntries.get(owner);
+        console.log(`\n===== ResAutoTracker ${this.ownerLabel(owner)} =====`);
+        if (!entries || entries.length === 0) {
+            console.log('  (无)');
+        }
+        else {
+            console.table(entries.map((e, idx) => ({
+                类型: e.asset.constructor.name,
+                名称: e.asset.name,
+                唯一标识: e.asset.uuid,
+                引用数: e.asset.refCount,
+                依赖数: e.deps.length
+            })));
+        }
+        console.log('========================================\n');
+    }
+
+    /**
+     * 打印追踪器全局状态到控制台
+     */
+    printStatus(): void {
+        console.log('\n========== ResAutoTracker 全局 ==========');
+        const stats = this.getStats();
+        console.log(`  持有者数: ${stats.totalOwners} | 根资源条目: ${stats.totalTrackedRoots} | 条目内依赖条数之和: ${stats.totalDepAssetsInEntries}`);
+
+        this.ownerEntries.forEach((entries, owner) => {
+            console.log(`\n  ▸ ${this.ownerLabel(owner)} — ${entries.length} 条`);
+            console.table(entries.map((e, i) => ({
+                类型: e.asset.constructor.name,
+                名称: e.asset.name,
+                引用: e.asset.refCount,
+                依赖数: e.deps.length
+            })));
+        });
+
+        console.log('=========================================\n');
+    }
+
+    /**
      * 持有者是否已通过本追踪器占用过资源
      * @param owner - 资源持有者（Component）
      * @returns 是否正在追踪该持有者的资源
@@ -64,7 +131,7 @@ class ResAutoTracker {
         arr.push(entry);
 
         if (this.debugMode) {
-            console.log(`[ResAutoTracker] acquire owner=${this.ownerLabel(owner)} asset=${asset.name} deps=${deps.length} ref(main)=${asset.refCount}`);
+            console.log(`[ResAutoTracker] 获取 [持有者]${this.ownerLabel(owner)} [资源]${asset.name} [依赖数]${deps.length} [引用数]${asset.refCount}`);
         }
     }
 
@@ -167,73 +234,6 @@ class ResAutoTracker {
     }
 
     /**
-     * 获取追踪器统计信息
-     * @returns 包含持有者数、根资源条目数、依赖条数之和的统计对象
-     */
-    getStats(): { totalOwners: number; totalTrackedRoots: number; totalDepAssetsInEntries: number } {
-        let totalTrackedRoots = 0;
-        let totalDepAssetsInEntries = 0;
-
-        const owners = [...this.ownerEntries.keys()];
-        const totalOwners = owners.length;
-
-        owners.forEach((owner) => {
-            const entries = this.ownerEntries.get(owner);
-            const len = entries?.length ?? 0;
-            if (!entries || len === 0) return;
-            totalTrackedRoots += len;
-            for (let i = 0; i < len; i++) {
-                totalDepAssetsInEntries += entries[i]!.deps.length;
-            }
-        });
-
-        return { totalOwners, totalTrackedRoots, totalDepAssetsInEntries };
-    }
-
-    /**
-     * 打印指定持有者的资源状态到控制台
-     * @param owner - 资源持有者（Component）
-     */
-    printOwnerStatus(owner: Component): void {
-        const entries = this.ownerEntries.get(owner);
-        console.log(`\n===== ResAutoTracker ${this.ownerLabel(owner)} =====`);
-        if (!entries || entries.length === 0) {
-            console.log('  (无)');
-        }
-        else {
-            console.table(entries.map((e, idx) => ({
-                类型: e.asset.constructor.name,
-                名称: e.asset.name,
-                唯一标识: e.asset.uuid,
-                引用数: e.asset.refCount,
-                依赖数: e.deps.length
-            })));
-        }
-        console.log('========================================\n');
-    }
-
-    /**
-     * 打印追踪器全局状态到控制台
-     */
-    printStatus(): void {
-        console.log('\n========== ResAutoTracker 全局 ==========');
-        const stats = this.getStats();
-        console.log(`  持有者数: ${stats.totalOwners} | 根资源条目: ${stats.totalTrackedRoots} | 条目内依赖条数之和: ${stats.totalDepAssetsInEntries}`);
-
-        this.ownerEntries.forEach((entries, owner) => {
-            console.log(`\n  ▸ ${this.ownerLabel(owner)} — ${entries.length} 条`);
-            console.table(entries.map((e, i) => ({
-                类型: e.asset.constructor.name,
-                名称: e.asset.name,
-                引用: e.asset.refCount,
-                依赖数: e.deps.length
-            })));
-        });
-
-        console.log('=========================================\n');
-    }
-
-    /**
      * 生成持有者的标签字符串（用于调试输出）
      * @param owner - 资源持有者（Component）
      * @returns 格式化的持有者标签字符串
@@ -291,7 +291,7 @@ class ResAutoTracker {
         entry.asset.decRef();
 
         if (this.debugMode) {
-            console.log(`[ResAutoTracker] release owner=${this.ownerLabel(owner)} asset=${entry.asset.name}`);
+            console.log(`[ResAutoTracker] 释放 [持有者]${this.ownerLabel(owner)} [资源]${entry.asset.name}`);
         }
     }
 }
