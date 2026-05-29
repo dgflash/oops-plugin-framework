@@ -6,10 +6,10 @@ const { ccclass } = _decorator;
 /** 粒子动画自动释放组件 */
 @ccclass('ParticleEffectAutoRelease')
 export class ParticleEffectAutoRelease extends Component implements IAutoRelease {
-    private callback: (() => void) | null = null;
+    private callback: Function | null = null;
     private timerId: number | null = null;
 
-    onPlayComplete(callback: () => void): void {
+    onPlayComplete(callback: Function): void {
         this.callback = callback;
     }
 
@@ -24,7 +24,6 @@ export class ParticleEffectAutoRelease extends Component implements IAutoRelease
             this.timerId = setTimeout(() => {
                 this.timerId = null;
                 this.callback && this.callback();
-                this.callback = null;
             }, duration) as unknown as number;
         }
     }

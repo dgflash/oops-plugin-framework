@@ -6,9 +6,9 @@ const { ccclass } = _decorator;
 /** Cocos Animation动画自动释放组件 */
 @ccclass('AnimationEffectAutoRelease')
 export class AnimationEffectAutoRelease extends Component implements IAutoRelease {
-    private callback: (() => void) | null = null;
+    private callback: Function | null = null;
 
-    onPlayComplete(callback: () => void): void {
+    onPlayComplete(callback: Function): void {
         this.callback = callback;
     }
 
@@ -16,10 +16,7 @@ export class AnimationEffectAutoRelease extends Component implements IAutoReleas
         const anim = this.getComponent(Animation);
         if (anim) {
             anim.once(Animation.EventType.FINISHED, () => {
-                if (this.callback) {
-                    this.callback();
-                    this.callback = null;
-                }
+                this.callback && this.callback();
             });
             anim.play();
         }

@@ -157,11 +157,6 @@ export class GamePartNodePool extends GamePartBase {
         if (comp) {
             // 设置自动回收
             if (params.isPlayFinishedRelease) {
-                // @ts-ignore
-                if (node._oops_auto_release) return;
-                // @ts-ignore
-                node._oops_auto_release = true;
-
                 comp.onPlayComplete(() => this.put(node));
             }
             comp.setSpeed(this._speed);

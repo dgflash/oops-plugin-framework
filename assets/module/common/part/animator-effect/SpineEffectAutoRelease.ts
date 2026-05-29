@@ -6,29 +6,26 @@ const { ccclass } = _decorator;
 /** Spine动画自动释放组件 */
 @ccclass('SpineEffectAutoRelease')
 export class SpineEffectAutoRelease extends Component implements IAutoRelease {
-    private callback: (() => void) | null = null;
+    private callback: Function | null = null;
     private spine: sp.Skeleton | null = null;
 
-    onPlayComplete(callback: () => void): void {
+    onPlayComplete(callback: Function): void {
         this.callback = callback;
     }
 
     play(): void {
         this.spine = this.getComponent(sp.Skeleton);
-        if (this.spine) {
-            this.spine.setCompleteListener(() => {
-                this.spine!.setCompleteListener(null!);
-                if (this.callback) {
-                    this.callback();
-                    this.callback = null;
-                }
-            });
+        if (!this.spine) return;
 
-            const json = (this.spine.skeletonData!.skeletonJson! as any).animations;
-            for (const name in json) {
-                this.spine.setAnimation(0, name, false);
-                break;
-            }
+        this.spine.setCompleteListener(() => {
+            this.spine!.setCompleteListener(null!);
+            this.callback && this.callback();
+        });
+
+        const json = (this.spine.skeletonData!.skeletonJson! as any).animations;
+        for (const name in json) {
+            this.spine.setAnimation(0, name, false);
+            break;
         }
     }
 

@@ -100,9 +100,6 @@ class GameNodePool {
                     node.removeFromParent();
                 }
 
-                // 重置节点状态
-                node.active = false;
-
                 // 回收到池中
                 pool.put(node);
             }
