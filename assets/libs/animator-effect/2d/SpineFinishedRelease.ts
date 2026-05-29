@@ -9,7 +9,10 @@ import { _decorator, Component, sp } from 'cc';
 import { oops } from '../../../core/Oops';
 const { ccclass, property } = _decorator;
 
-/** 动画播放完隐藏特效 */
+/**
+ * 动画播放完隐藏特效
+ * @deprecated 已废弃
+ */
 @ccclass('SpineFinishedRelease')
 export class SpineFinishedRelease extends Component {
     @property

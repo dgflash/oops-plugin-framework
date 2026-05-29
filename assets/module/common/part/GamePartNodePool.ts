@@ -92,7 +92,6 @@ export class GamePartNodePool extends GamePartBase {
             console.warn(`[GamePartNodePool] 预制资源未加载: ${bundleName}/${path}`);
             return null!;
         }
-        this._loadedPrefabs.add(prefab);
         const node = gameNodePool.get(prefab, parent);
         this._applyEffectParams(node, params);
         return node;
@@ -153,7 +152,7 @@ export class GamePartNodePool extends GamePartBase {
         if (params.pos) node.position = params.pos;
         if (params.worldPos) node.worldPosition = params.worldPos;
 
-        const comp = this.getAutoRelease(node);
+        const comp = this._getAutoRelease(node);
         if (comp) {
             // 设置自动回收
             if (params.isPlayFinishedRelease) {
@@ -165,7 +164,7 @@ export class GamePartNodePool extends GamePartBase {
     }
 
     /** 获取 IAutoRelease 组件（查找或自动添加） */
-    private getAutoRelease(node: Node): IAutoRelease | null {
+    private _getAutoRelease(node: Node): IAutoRelease | null {
         const spine = node.getComponent(sp.Skeleton);
         if (spine) return node.addComponent(SpineEffectAutoRelease);
         const anim = node.getComponent(Animation);

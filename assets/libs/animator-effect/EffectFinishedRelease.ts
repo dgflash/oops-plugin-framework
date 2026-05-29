@@ -4,7 +4,10 @@ import { message } from '../../core/common/event/MessageManager';
 
 const { ccclass } = _decorator;
 
-/** 动画播放完释放特效 - Animation、ParticleSystem */
+/**
+ * 动画播放完释放特效 - Animation、ParticleSystem
+ * @deprecated 已废弃
+ */
 @ccclass('EffectFinishedRelease')
 export class EffectFinishedRelease extends Component {
     /** 动画最大播放时间 */
