@@ -1,27 +1,25 @@
-/*
- * @Author: dgflash
- * @Date: 2022-04-14 17:08:01
- * @LastEditors: dgflash
- */
 import type { Asset, Sprite, __private } from 'cc';
-import { SpriteFrame, assetManager, isValid } from 'cc';
-import { oops } from '../../../core/Oops';
-import type { AssetType, CompleteCallback, Paths, ProgressCallback } from '../../../core/common/loader/ResLoader';
+import { SpriteFrame, isValid } from 'cc';
+import type { GameComponent } from '../GameComponent';
+import type { AssetType, CompleteCallback, IRemoteOptions, Paths, ProgressCallback } from '../../../core/common/loader/ResLoader';
 import { resLoader } from '../../../core/common/loader/ResLoader';
 import { resAutoTracker } from '../../../core/common/loader/ResAutoTracker';
-import { GameViewModule } from './GameViewModuleBase';
+import { GamePartBase } from '../GamePartBase';
 import { DEBUG } from 'cc/env';
 
 /** 资源加载与引用计数管理 */
-export class GameResModule extends GameViewModule {
+export class GamePartRes extends GamePartBase {
+    /** 宿主组件 */
+    protected declare comp: GameComponent;
+
     /** 获取资源
      * @param path 资源路径
      * @param type 资源类型
      * @param bundleName 资源包名称
      * @returns 资源对象
      */
-    getRes<T extends Asset>(path: string, type?: __private.__types_globals__Constructor<T> | null, bundleName?: string): T | null {
-        return oops.res.get(path, type, bundleName);
+    get<T extends Asset>(path: string, type?: __private.__types_globals__Constructor<T> | null, bundleName?: string): T | null {
+        return resLoader.get(path, type, bundleName);
     }
 
     /** 加载资源
@@ -31,7 +29,7 @@ export class GameResModule extends GameViewModule {
      * @returns 资源对象
      */
     async load<T extends Asset>(bundleName: string, paths: Paths | AssetType<T>, type?: AssetType<T>): Promise<T> {
-        const result = await oops.res.load(bundleName, paths, type);
+        const result = await resLoader.load(bundleName, paths, type);
         if (result) {
             resAutoTracker.acquire(this.comp, result);
         }
@@ -59,7 +57,7 @@ export class GameResModule extends GameViewModule {
             originalComplete?.(err, data);
         };
 
-        oops.res.loadAny(bundleName, paths, onProgress, wrappedComplete);
+        resLoader.loadAny(bundleName, paths, onProgress, wrappedComplete);
     }
 
     /** 加载目录资源
@@ -84,7 +82,7 @@ export class GameResModule extends GameViewModule {
             originalComplete?.(err, data);
         };
 
-        oops.res.loadDir(bundleName, dir, type, onProgress, wrappedComplete);
+        resLoader.loadDir(bundleName, dir, type, onProgress, wrappedComplete);
     }
 
     /** 释放资源
@@ -101,6 +99,26 @@ export class GameResModule extends GameViewModule {
         if (DEBUG && released > 0) {
             console.log(`[GameComponent] ${this.comp.node?.name} 释放 ${released} 条资源登记`);
         }
+    }
+
+    /** 加载远程资源
+     * @param url 资源URL
+     * @param options 加载选项
+     * @returns 资源对象
+     */
+    async loadRemote<T extends Asset>(url: string, options?: IRemoteOptions): Promise<T> {
+        const result = await resLoader.loadRemote<T>(url, options);
+        if (result) {
+            resAutoTracker.acquire(this.comp, result);
+        }
+        return result;
+    }
+
+    /** 释放远程资源
+     * @param url 资源URL
+     */
+    releaseRemote(url: string): void {
+        resLoader.releaseRemote(url);
     }
 
     /** 设置精灵图片

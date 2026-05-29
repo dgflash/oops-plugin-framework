@@ -1,8 +1,3 @@
-/*
- * @Date: 2021-11-24 16:08:36
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 13:44:28
- */
 import type { EventTouch } from 'cc';
 import { BlockInputEvents, Node } from 'cc';
 import { ViewUtil } from '../../utils/ViewUtil';

@@ -1,10 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2021-11-24 15:51:01
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 10:04:57
- */
-import type { Size } from 'cc';
 import { CCString, Component, Sprite, SpriteFrame, UITransform, _decorator } from 'cc';
 import { EDITOR } from 'cc/env';
 import { resLoader } from '../../../core/common/loader/ResLoader';

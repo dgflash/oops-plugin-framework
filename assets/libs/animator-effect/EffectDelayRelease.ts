@@ -1,10 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2021-08-11 16:41:12
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-22 14:54:17
- */
-
 import { Component, _decorator } from 'cc';
 import { EffectSingleCase } from './EffectSingleCase';
 const { ccclass, property } = _decorator;

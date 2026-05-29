@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2022-04-14 17:08:01
- * @LastEditors: dgflash
- * @LastEditTime: 2023-08-11 10:27:04
- */
 import { Label, _decorator } from 'cc';
 
 const { ccclass, property, menu } = _decorator;

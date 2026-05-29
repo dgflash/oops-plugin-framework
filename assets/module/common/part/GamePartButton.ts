@@ -1,18 +1,17 @@
-/*
- * @Author: dgflash
- * @Date: 2022-04-14 17:08:01
- * @LastEditors: dgflash
- */
 import type { EventTouch } from 'cc';
 import { Button, EventHandler, Node } from 'cc';
-import { GameViewModule } from './GameViewModuleBase';
+import type { GameComponent } from '../GameComponent';
+import { GamePartBase } from '../GamePartBase';
 
 /** 界面按钮批量绑定 */
-export class GameButtonModule extends GameViewModule {
+export class GamePartButton extends GamePartBase {
+    /** 宿主组件 */
+    protected declare comp: GameComponent;
+
     /** 设置按钮事件绑定
      * @param bindRootEvent 是否绑定根节点事件，默认为 true
      */
-    setButton(bindRootEvent = true): void {
+    bind(bindRootEvent = true): void {
         if (bindRootEvent) {
             this.comp.node.on(Node.EventType.TOUCH_END, (event: EventTouch) => {
                 const self: any = this.comp;

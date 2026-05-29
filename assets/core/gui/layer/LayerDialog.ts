@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2021-07-03 16:13:17
- * @LastEditors: dgflash
- * @LastEditTime: 2023-07-24 17:14:57
- */
 import type { Node } from 'cc';
 import { LayerPopUp } from './LayerPopup';
 import type { UIParam, UIState } from './LayerUIElement';

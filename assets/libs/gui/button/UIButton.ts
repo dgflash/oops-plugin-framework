@@ -1,19 +1,21 @@
 import type { EventTouch } from 'cc';
-import { AudioClip, Button, EventHandler, _decorator, game } from 'cc';
-import { oops } from '../../../core/Oops';
+import { Button, Component, EventHandler, _decorator, game } from 'cc';
 
-const { ccclass, property, menu } = _decorator;
+const { ccclass, property, menu, requireComponent } = _decorator;
 
 /**
  * 通用按钮
  * 1、防连点
- * 2、按钮点击触发音效
+ * 2、支持只触发一次
+ * 
+ * 注意：此组件需要配合 Button 组件使用，会自动添加 Button 组件
  */
 @ccclass('UIButton')
 @menu('OopsFramework/Button/UIButton （通用按钮）')
-export default class UIButton extends Button {
+@requireComponent(Button)
+export default class UIButton extends Component {
     @property({
-        tooltip: '每次触发间隔'
+        tooltip: '每次触发间隔（毫秒）'
     })
     private interval = 500;
 
@@ -22,31 +24,43 @@ export default class UIButton extends Button {
     })
     private once = false;
 
-    @property({
-        tooltip: '触摸音效',
-        type: AudioClip
-    })
-    private effect: AudioClip = null!;
-
     /** 触摸次数 */
     private _touchCount = 0;
     /** 触摸结束时间 */
     private _touchEndTime = 0;
+    /** 按钮组件引用 */
+    private _button: Button | null = null;
+    /** 原始触摸结束回调 */
+    private _originalTouchEnded: Function | null = null;
 
-    private static effectPath: string = null!;
-    /** 批量设置触摸音效 */
-    static setBatchEffect(path: string) {
-        this.effectPath = path;
-    }
-
-    /** 触摸结束 */
-    protected _onTouchEnded(event: EventTouch) {
-        if (!this._interactable || !this.enabledInHierarchy) {
+    onLoad() {
+        this._button = this.getComponent(Button);
+        if (!this._button) {
+            console.warn('[UIButton] 未找到 Button 组件，请确保节点上有 Button 组件');
             return;
         }
 
-        //@ts-ignore
-        if (this._pressed) {
+        // 保存原始回调并劫持
+        // @ts-ignore
+        this._originalTouchEnded = this._button._onTouchEnded;
+        // @ts-ignore
+        this._button._onTouchEnded = this._onTouchEnded.bind(this);
+    }
+
+    /**
+     * 触摸结束事件处理
+     * @param event 触摸事件
+     */
+    private _onTouchEnded(event: EventTouch) {
+        if (!this._button) return;
+
+        // @ts-ignore
+        if (!this._button._interactable || !this._button.enabledInHierarchy) {
+            return;
+        }
+
+        // @ts-ignore
+        if (this._button._pressed) {
             // 是否只触发一次
             if (this.once) {
                 if (this._touchCount > 0) {
@@ -62,37 +76,28 @@ export default class UIButton extends Button {
             }
             else {
                 this._touchEndTime = game.totalTime;
-                EventHandler.emitEvents(this.clickEvents, event);
-                this.node.emit(Button.EventType.CLICK, this);
-
-                // 短按触摸音效
-                this.playEffect();
+                EventHandler.emitEvents(this._button.clickEvents, event);
+                this.node.emit(Button.EventType.CLICK, this._button);
             }
         }
 
-        //@ts-ignore
-        this._pressed = false;
-        this._updateState();
+        // @ts-ignore
+        this._button._pressed = false;
+        // @ts-ignore
+        this._button._updateState();
 
         if (event) {
             event.propagationStopped = true;
         }
     }
 
-    /** 短按触摸音效 */
-    protected playEffect() {
-        if (UIButton.effectPath) {
-            oops.audio.playEffect(UIButton.effectPath);
-        }
-        else if (this.effect) {
-            oops.audio.playEffect(this.effect);
-        }
-    }
-
-    /** 组件销毁时的清理工作 */
     onDestroy() {
-        // 清理音效引用
-        this.effect = null!;
-        super.onDestroy();
+        // 恢复原始回调
+        if (this._button && this._originalTouchEnded) {
+            // @ts-ignore
+            this._button._onTouchEnded = this._originalTouchEnded;
+        }
+        this._button = null;
+        this._originalTouchEnded = null;
     }
 }

@@ -1,10 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2023-01-19 11:09:38
- * @LastEditors: dgflash
- * @LastEditTime: 2023-01-19 14:28:05
- */
-
 /**
  * 定时触发组件
  * @help    https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12037964&doc_id=2873565

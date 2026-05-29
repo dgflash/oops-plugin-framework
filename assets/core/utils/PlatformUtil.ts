@@ -1,8 +1,3 @@
-/*
- * @Date: 2021-08-14 16:17:03
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 14:39:03
- */
 import type { __private } from 'cc';
 import { native, sys } from 'cc';
 

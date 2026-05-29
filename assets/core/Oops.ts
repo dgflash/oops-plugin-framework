@@ -1,11 +1,4 @@
-/*
- * @Author: dgflash
- * @Date: 2022-02-11 09:32:47
- * @LastEditors: dgflash
- * @LastEditTime: 2023-08-21 15:19:56
- */
 import { DEBUG } from 'cc/env';
-import { EffectSingleCase } from '../libs/animator-effect/EffectSingleCase';
 import { ecs } from '../libs/ecs/ECS';
 import type { ECSRootSystem } from '../libs/ecs/ECSSystem';
 import { LanguageManager } from '../libs/gui/language/Language';
@@ -57,8 +50,6 @@ export class oops {
     static ecs: ECSRootSystem = new ecs.RootSystem();
     /** MVVM */
     static mvvm = VM;
-    /** 对象池 */
-    static pool = EffectSingleCase.instance;
 }
 
 // 引入oops全局变量以方便调试

@@ -254,7 +254,7 @@ declare global {
     },
     orderBy: {
         value: function () {
-            const mappers = [];
+            const mappers : any[] = [];
             for (let _i = 0; _i < arguments.length; _i++) {
                 mappers[_i] = arguments[_i];
             }
@@ -275,7 +275,7 @@ declare global {
     },
     orderByDesc: {
         value: function () {
-            const mappers = [];
+            const mappers : any[] = [];
             for (let _i = 0; _i < arguments.length; _i++) {
                 mappers[_i] = arguments[_i];
             }

@@ -1,10 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2022-03-31 18:03:50
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-22 14:53:47
- */
-
 import type { Camera } from 'cc';
 import { _decorator, Component, Node, Vec3 } from 'cc';
 import { oops } from '../../core/Oops';

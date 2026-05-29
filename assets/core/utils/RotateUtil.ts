@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2022-07-26 15:29:57
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 12:08:28
- */
 import type { Node } from 'cc';
 import { Quat, toRadian, Vec3 } from 'cc';
 import { Vec3Util } from './Vec3Util';

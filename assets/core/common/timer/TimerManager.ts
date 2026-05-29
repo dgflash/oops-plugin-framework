@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2023-01-19 10:33:49
- * @LastEditors: dgflash
- * @LastEditTime: 2023-01-19 14:37:19
- */
 import { Component, game } from 'cc';
 import { StringUtil } from '../../utils/StringUtil';
 import { Timer } from './Timer';

@@ -1,10 +1,5 @@
-/*
- * @Author: dgflash
- * @Date: 2021-07-03 16:13:17
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-09 17:42:19
- */
 import { Logger } from '../../core/common/log/Logger';
+import { oops } from '../../core/Oops';
 import type { ISocket, MessageFunc, NetData } from './NetInterface';
 
 type Connected = (event: any) => void;
@@ -31,7 +26,7 @@ export class WebSock implements ISocket {
     connect(options: any) {
         if (this._ws) {
             if (this._ws.readyState === WebSocket.CONNECTING) {
-                Logger.logNet('websocket connecting, wait for a moment...');
+                oops.log.logNet('websocket connecting, wait for a moment...');
                 return false;
             }
         }

@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2022-04-21 13:45:51
- * @LastEditors: dgflash
- * @LastEditTime: 2022-04-21 13:51:33
- */
 import type { IProtocolHelper, IRequestProtocol, IResponseProtocol, NetData } from './NetInterface';
 
 const unzip = function (str: string) {

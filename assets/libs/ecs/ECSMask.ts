@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2022-05-12 14:18:44
- * @LastEditors: dgflash
- * @LastEditTime: 2022-05-24 11:09:49
- */
 import { ECSModel } from './ECSModel';
 
 /**

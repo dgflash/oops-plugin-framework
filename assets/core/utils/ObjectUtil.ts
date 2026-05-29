@@ -1,10 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2022-07-26 15:29:57
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 12:07:54
- */
-
 /** 对象工具 */
 export class ObjectUtil {
     /**

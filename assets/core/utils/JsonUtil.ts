@@ -1,10 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2021-08-18 17:00:59
- * @LastEditors: dgflash
- * @LastEditTime: 2023-08-22 15:48:02
- */
-
 import { JsonAsset } from 'cc';
 import { ZipLoader } from 'db://oops-framework/core/common/loader/ZipLoader';
 import { resLoader } from '../common/loader/ResLoader';

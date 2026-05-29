@@ -1,10 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2021-07-03 16:13:17
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 11:03:08
- */
-
 /**
  * 全局事件监听方法
  * @param event      事件名

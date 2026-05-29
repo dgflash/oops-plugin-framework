@@ -1,5 +1,4 @@
 import { Camera, Node, warn } from 'cc';
-import { oops } from '../../Oops';
 import { gui } from '../Gui';
 import { LayerDialog } from './LayerDialog';
 import type { UIConfigMap, Uiid } from './LayerEnum';

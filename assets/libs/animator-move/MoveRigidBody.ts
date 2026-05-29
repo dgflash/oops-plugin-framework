@@ -15,10 +15,10 @@ const ROTATION_ANGLE_THRESHOLD = 10;
 @ccclass('MoveRigidBody')
 export class MoveRigidBody extends Component {
     @property({ tooltip: '阻尼' })
-        damping = 0.5;
+    damping = 0.5;
 
     @property({ tooltip: '重力' })
-        gravity = -10;
+    gravity = -10;
 
     @property
     private _speed = 5;

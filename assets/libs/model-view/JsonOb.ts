@@ -1,9 +1,4 @@
 /*
- * @Author: dgflash
- * @Date: 2022-09-01 18:00:28
- * @LastEditors: dgflash
- * @LastEditTime: 2024-03-08 10:00:00
- * 
  * JsonOb 性能优化版本（默认实现）
  * 
  * 优化特性：

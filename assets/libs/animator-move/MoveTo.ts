@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2022-03-25 18:12:10
- * @LastEditors: dgflash
- * @LastEditTime: 2023-01-19 14:59:50
- */
 import { Component, error, Node, Vec3, _decorator } from 'cc';
 import { Timer } from '../../core/common/timer/Timer';
 

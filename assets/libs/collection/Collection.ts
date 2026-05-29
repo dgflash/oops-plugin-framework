@@ -1,10 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2022-07-22 15:54:51
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-22 14:47:59
- */
-
 /** 支持Map与Array功能的集合对象 */
 export class Collection<K, V> extends Map<K, V> {
     private _array: V[] = [];

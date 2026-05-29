@@ -1,10 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2021-11-11 19:05:32
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-06 17:20:51
- */
-
 import type { ecs } from '../../libs/ecs/ECS';
 import { ECSModel } from '../../libs/ecs/ECSModel';
 import { VM } from '../../libs/model-view/ViewModel';
@@ -94,7 +87,7 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
 
         const data = this.data;
         if (data === undefined || data === null) {
-            console.warn('[OopsFramework]', `${this.constructor.name}: mvvm=true 但 data 未定义，VM 绑定已跳过`);
+            console.warn('[OopsFramework]', `${this.constructor.name}: mvvm = true 但 data 未定义，VM 绑定已跳过`);
             return;
         }
 
@@ -195,13 +188,13 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
 
         const tid = this.tid;
         if (tid < 0) {
-            console.error('[OopsFramework]', `组件 ${this.name} 移除失败，组件未注册 (tid=${tid})`);
+            console.error('[OopsFramework]', `组件 ${this.name} 移除失败，组件未注册 (tid = ${tid})`);
             return;
         }
 
         const cct = ECSModel.compCtors[tid];
         if (!cct) {
-            console.error('[OopsFramework]', `组件 ${this.name} 移除失败，组件构造函数不存在 (tid=${tid})`);
+            console.error('[OopsFramework]', `组件 ${this.name} 移除失败，组件构造函数不存在 (tid = ${tid})`);
             return;
         }
 

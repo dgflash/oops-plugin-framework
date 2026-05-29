@@ -1,12 +1,5 @@
 import type { TTFFont } from 'cc';
 
-/*
- * @Author: dgflash
- * @Date: 2022-02-11 09:31:52
- * @LastEditors: dgflash
- * @LastEditTime: 2023-08-22 16:37:40
- */
-
 /** 框架支持的语言数据类型 */
 export enum LanguageDataType {
     /** Json格式配置 */

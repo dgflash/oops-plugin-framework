@@ -1,10 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2021-06-30 13:56:26
- * @LastEditors: dgflash
- * @LastEditTime: 2021-11-04 10:46:00
- */
-
 import { AnimationClip, CCFloat, game, SkeletalAnimation, _decorator } from 'cc';
 import AnimatorAnimation from './AnimatorAnimation';
 

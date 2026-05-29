@@ -1,10 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2021-07-03 16:13:17
- * @LastEditors: dgflash
- * @LastEditTime: 2022-11-01 15:47:16
- */
-
 import { BuildTimeConstants } from './BuildTimeConstants';
 import type { GameConfig } from './GameConfig';
 import type { GameQueryConfig } from './GameQueryConfig';

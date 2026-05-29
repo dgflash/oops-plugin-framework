@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2023-07-25 10:44:38
- * @LastEditors: dgflash
- * @LastEditTime: 2023-07-25 11:48:52
- */
 import { CCString, Component, _decorator, sp } from 'cc';
 import { EDITOR } from 'cc/env';
 import { resLoader } from '../../../core/common/loader/ResLoader';

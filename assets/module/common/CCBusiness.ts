@@ -1,35 +1,31 @@
-/*
- * @Author: dgflash
- * @Date: 2025-09-18 10:20:51
- * @LastEditors: dgflash
- * @LastEditTime: 2025-09-18 17:20:51
- */
-
-import { EventDispatcher } from '../../core/common/event/EventDispatcher';
 import type { ListenerFunc, ListenerFuncTyped } from '../../core/common/event/EventMessage';
+import { GamePartEvent } from './part/GamePartEvent';
+import { GamePartRegistry, GamePartKey, createPart } from './GamePartRegistry';
 import type { CCEntity } from './CCEntity';
 
 /** 业务逻辑 */
 export class CCBusiness<T extends CCEntity> {
-    private _destroyed: boolean = false;
-
-    /** 当前业务逻辑是否有效（未销毁） */
-    get isValid(): boolean {
-        return !this._destroyed;
-    }
-
     private _ent: T | null = null;
 
     /** 所属实体引用 */
     get ent(): T {
-        if (this._destroyed) {
-            console.warn('[OopsFramework]', '尝试访问已销毁的业务逻辑的实体引用');
-        }
         return this._ent!;
     }
 
     set ent(value: T) {
         this._ent = value;
+    }
+
+    private _parts: GamePartRegistry | null = null;
+
+    /** 获取模块注册表（懒加载） */
+    private get parts(): GamePartRegistry {
+        return (this._parts ??= createPart(this));
+    }
+
+    /** 获取事件模块 */
+    get event(): GamePartEvent {
+        return this.parts.get(GamePartKey.Event);
     }
 
     /** 业务逻辑初始化（由 CCEntity.addBusiness 自动调用） */
@@ -38,36 +34,17 @@ export class CCBusiness<T extends CCEntity> {
     }
 
     destroy() {
-        if (this._destroyed) {
-            console.warn('[OopsFramework]', '业务逻辑已销毁，无需重复销毁');
-            return;
-        }
-
-        this._destroyed = true;
-
-        // 释放消息对象
-        if (this._event) {
-            this._event.clear();
-            this._event = null;
+        // 销毁所有模块
+        if (this._parts) {
+            this._parts.destroy();
+            this._parts = null;
         }
 
         // 清空实体引用，避免循环引用导致的内存泄漏
         this._ent = null;
     }
 
-    //#region 全局事件管理
-
-    private _event: EventDispatcher | null = null;
-    /** 全局事件管理器 */
-    private get event(): EventDispatcher {
-        if (this._destroyed) {
-            console.warn('[OopsFramework]', '尝试访问已销毁的业务逻辑的事件管理器');
-        }
-        if (this._event == null) this._event = new EventDispatcher();
-        return this._event;
-    }
-
-    //#region 强类型事件方法
+    //#region ========== 兼容旧版本 API 如果是新项目可以把注释包起来的代码都删除 ==========
 
     /**
      * 注册全局事件（强类型）
@@ -76,11 +53,7 @@ export class CCBusiness<T extends CCEntity> {
      * @param object      侦听函数绑定的this对象
      */
     watch<K extends keyof OopsFramework.TypedEventMap>(event: K, listener: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>, object: any): void {
-        if (this._destroyed) {
-            console.warn('[OopsFramework]', '尝试在已销毁的业务逻辑上注册事件');
-            return;
-        }
-        this.event.on(event as string, listener as ListenerFunc, object);
+        this.event.watch(event, listener, object);
     }
 
     /**
@@ -90,11 +63,7 @@ export class CCBusiness<T extends CCEntity> {
      * @param object    侦听函数绑定的this对象
      */
     watchOnce<K extends keyof OopsFramework.TypedEventMap>(event: K, listener: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>, object: any): void {
-        if (this._destroyed) {
-            console.warn('[OopsFramework]', '尝试在已销毁的业务逻辑上注册一次性事件');
-            return;
-        }
-        this.event.once(event as string, listener as ListenerFunc, object);
+        this.event.watchOnce(event, listener, object);
     }
 
     /**
@@ -104,8 +73,7 @@ export class CCBusiness<T extends CCEntity> {
      * @param object     侦听函数绑定的this对象（可选）
      */
     unwatch<K extends keyof OopsFramework.TypedEventMap>(event: K, listener?: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>, object?: any): void {
-        if (this._destroyed) return;
-        this.event.off(event as string, listener as ListenerFunc, object);
+        this.event.unwatch(event, listener, object);
     }
 
     /**
@@ -114,10 +82,6 @@ export class CCBusiness<T extends CCEntity> {
      * @param data       事件数据
      */
     emit<K extends keyof OopsFramework.TypedEventMap>(event: K, data?: OopsFramework.TypedEventMap[K]): void {
-        if (this._destroyed) {
-            console.warn('[OopsFramework]', '尝试在已销毁的业务逻辑上触发事件');
-            return;
-        }
         this.event.emit(event, data);
     }
 
@@ -127,16 +91,8 @@ export class CCBusiness<T extends CCEntity> {
      * @param data       事件数据（必须完全匹配类型定义）
      */
     emitAsync<K extends keyof OopsFramework.TypedEventMap>(event: K, data: OopsFramework.TypedEventMap[K]): Promise<void> {
-        if (this._destroyed) {
-            console.warn('[OopsFramework]', '尝试在已销毁的业务逻辑上触发异步事件');
-            return Promise.resolve();
-        }
         return this.event.emitAsync(event, data);
     }
-
-    //#endregion
-
-    //#region 弱类型事件方法
 
     /**
      * 注册全局事件
@@ -145,10 +101,6 @@ export class CCBusiness<T extends CCEntity> {
      * @param object      侦听函数绑定的this对象
      */
     on(event: string, listener: ListenerFunc, object: object) {
-        if (this._destroyed) {
-            console.warn('[OopsFramework]', '尝试在已销毁的业务逻辑上注册事件');
-            return;
-        }
         this.event.on(event, listener, object);
     }
 
@@ -159,10 +111,6 @@ export class CCBusiness<T extends CCEntity> {
      * @param object    侦听函数绑定的this对象
      */
     once(event: string, listener: ListenerFunc, object: object) {
-        if (this._destroyed) {
-            console.warn('[OopsFramework]', '尝试在已销毁的业务逻辑上注册一次性事件');
-            return;
-        }
         this.event.once(event, listener, object);
     }
 
@@ -173,7 +121,6 @@ export class CCBusiness<T extends CCEntity> {
      * @param object     侦听函数绑定的this对象（可选）
      */
     off(event: string, listener?: ListenerFunc, object?: object) {
-        if (this._destroyed) return;
         this.event.off(event, listener, object);
     }
 
@@ -183,10 +130,6 @@ export class CCBusiness<T extends CCEntity> {
      * @param args       事件参数
      */
     dispatchEvent(event: string, ...args: unknown[]) {
-        if (this._destroyed) {
-            console.warn('[OopsFramework]', '尝试在已销毁的业务逻辑上触发事件');
-            return;
-        }
         this.event.dispatchEvent(event, ...args);
     }
 
@@ -196,10 +139,6 @@ export class CCBusiness<T extends CCEntity> {
      * @param args       事件参数
      */
     dispatchEventAsync(event: string, ...args: unknown[]): Promise<void> {
-        if (this._destroyed) {
-            console.warn('[OopsFramework]', '尝试在已销毁的业务逻辑上触发异步事件');
-            return Promise.resolve();
-        }
         return this.event.dispatchEventAsync(event, ...args);
     }
 
@@ -212,22 +151,8 @@ export class CCBusiness<T extends CCEntity> {
      *  onGlobal(event: string, args: unknown) { console.log(args) };
      */
     protected setEvent(...args: string[]) {
-        if (this._destroyed) {
-            console.warn('[OopsFramework]', '尝试在已销毁的业务逻辑上批量设置事件');
-            return;
-        }
-        for (const name of args) {
-            const func = (this as Record<string, unknown>)[name];
-            if (typeof func === 'function') {
-                this.on(name, func as ListenerFunc, this);
-            }
-            else {
-                console.error('[OopsFramework]', `名为【${name}】的全局事方法不存在`);
-            }
-        }
+        this.event.setEvent(...args);
     }
-
-    //#endregion
 
     //#endregion
 }

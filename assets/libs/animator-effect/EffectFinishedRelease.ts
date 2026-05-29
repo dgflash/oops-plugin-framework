@@ -1,10 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2022-08-19 15:36:08
- * @LastEditors: dgflash
- * @LastEditTime: 2023-03-01 18:28:55
- */
-
 import { Animation, Component, ParticleSystem, _decorator, sp } from 'cc';
 import { EffectEvent } from './EffectEvent';
 import { message } from '../../core/common/event/MessageManager';

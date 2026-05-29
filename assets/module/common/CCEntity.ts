@@ -106,30 +106,36 @@ export abstract class CCEntity extends ecs.Entity {
 
             node = result;
 
+            const comp = node.getComponent(ctor);
+            if (comp) this.add(comp as unknown as ecs.Comp);
+
             // 检查实体是否已销毁
             if ( !this.isValid) {
                 console.warn('[OopsFramework]', `实体已销毁，取消添加预制体组件: ${(ctor as any).name}`);
+                // 移除已添加的 ECS 组件
+                if (comp) this.remove(ctor as unknown as CompType<ecs.IComp>);
                 node.destroy();
                 return null;
             }
 
-            const comp = node.getComponent(ctor);
-            if (comp) this.add(comp as unknown as ecs.Comp);
             node.parent = parent.node;
         }
         // 手动内存管理
         else {
             node = await ViewUtil.createPrefabNodeAsync(path, bundleName);
 
+            const comp = node.getComponent(ctor);
+            if (comp) this.add(comp as unknown as ecs.Comp);
+
             // 检查实体是否已销毁
             if (!this.isValid) {
                 console.warn('[OopsFramework]', `实体已销毁，取消添加预制体组件: ${(ctor as any).name}`);
+                // 移除已添加的 ECS 组件
+                if (comp) this.remove(ctor as unknown as CompType<ecs.IComp>);
                 node.destroy();
                 return null;
             }
 
-            const comp = node.getComponent(ctor);
-            if (comp) this.add(comp as unknown as ecs.Comp);
             node.parent = parent;
         }
 
@@ -175,15 +181,17 @@ export abstract class CCEntity extends ecs.Entity {
 
         const node = await oops.gui.open(key, params);
 
+        const comp = node.getComponent(ctor) as unknown as ecs.Comp;
+        if (comp) this.add(comp);
+
         // 检查实体是否已销毁
         if (!this.isValid) {
             console.warn('[OopsFramework]', `实体已销毁，取消添加界面组件: ${key}`);
+            // 移除已添加的 ECS 组件
+            if (comp) this.remove(ctor as unknown as CompType<ecs.IComp>);
             oops.gui.remove(key);
             return null;
         }
-
-        const comp = node.getComponent(ctor) as unknown as ecs.Comp;
-        if (comp) this.add(comp);
 
         oops.gui.show(key);
         return node;
@@ -288,7 +296,7 @@ export abstract class CCEntity extends ecs.Entity {
                 this.businesss.delete(cls);
 
                 // 清理实体上的业务逻辑组件引用
-                Reflect.set(this, cls.name, null);
+                delete (this as any)[cls.name];
             }
         }
     }
@@ -299,6 +307,7 @@ export abstract class CCEntity extends ecs.Entity {
         if (this.singletons) {
             this.singletons.forEach((entity) => {
                 if (entity && typeof entity.destroy === 'function') {
+                    this.removeChild(entity);
                     entity.destroy();
                 }
             });
@@ -308,7 +317,11 @@ export abstract class CCEntity extends ecs.Entity {
 
         // 2. 再销毁所有业务组件
         if (this.businesss) {
-            this.businesss.forEach((business) => business.destroy());
+            this.businesss.forEach((business, cls) => {
+                business.destroy();
+                // 清理实体上的业务逻辑组件引用
+                delete (this as any)[cls.name];
+            });
             this.businesss.clear();
             this.businesss = null!;
         }

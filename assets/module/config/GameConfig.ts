@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2021-07-03 16:13:17
- * @LastEditors: dgflash
- * @LastEditTime: 2023-02-14 14:27:22
- */
 import { oops } from '../../core/Oops';
 
 /** 游戏自定义参数分组类型 */

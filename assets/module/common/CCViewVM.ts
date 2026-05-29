@@ -1,10 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2021-11-11 19:05:32
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-06 17:20:51
- */
-
 import type { CCEntity } from './CCEntity';
 import { CCView } from './CCView';
 

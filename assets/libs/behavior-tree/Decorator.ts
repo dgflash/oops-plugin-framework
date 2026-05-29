@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2022-06-21 12:05:14
- * @LastEditors: dgflash
- * @LastEditTime: 2022-07-20 14:05:02
- */
 import { BehaviorTree } from './BehaviorTree';
 import type { BTNodeJson } from './BTNodeJson';
 import { BTreeNode } from './BTreeNode';

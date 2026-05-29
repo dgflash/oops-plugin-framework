@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2025-08-15 10:06:47
- * @LastEditors: dgflash
- * @LastEditTime: 2025-08-15 10:06:47
- */
 import { Node, NodePool, Vec3, warn } from 'cc';
 import { resLoader } from '../../common/loader/ResLoader';
 import { ViewUtil } from '../../utils/ViewUtil';

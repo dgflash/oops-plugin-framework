@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2022-09-01 18:00:28
- * @LastEditors: dgflash
- * @LastEditTime: 2023-01-09 11:55:03
- */
 import type { Node } from 'cc';
 import { Component, _decorator } from 'cc';
 import { oops } from '../../Oops';

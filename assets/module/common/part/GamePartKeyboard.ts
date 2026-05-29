@@ -1,11 +1,6 @@
-/*
- * @Author: dgflash
- * @Date: 2022-04-14 17:08:01
- * @LastEditors: dgflash
- */
 import type { EventKeyboard } from 'cc';
 import { Input, input } from 'cc';
-import { GameViewModule } from './GameViewModuleBase';
+import { GamePartBase } from '../GamePartBase';
 
 /** 键盘事件回调 */
 export interface KeyboardCallbacks {
@@ -15,7 +10,7 @@ export interface KeyboardCallbacks {
 }
 
 /** 键盘输入 */
-export class GameKeyboardModule extends GameViewModule {
+export class GamePartKeyboard extends GamePartBase {
     private _enabled = false;
     private _callbacks: KeyboardCallbacks | null = null;
 

@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2023-01-30 14:00:41
- * @LastEditors: dgflash
- * @LastEditTime: 2023-02-09 10:54:28
- */
 import type { EventTouch } from 'cc';
 import { Animation, AnimationClip, Node, Sprite, _decorator } from 'cc';
 import { oops } from '../../../core/Oops';
@@ -11,9 +5,12 @@ import ButtonSimple from './ButtonSimple';
 
 const { ccclass, property, menu } = _decorator;
 
-/** 有特效按钮 */
+/**
+ * 有特效按钮
+ * @deprecated 该组件已废弃，请使用 UIButton 替代，废弃 button_scale_start，button_scale_end 动画
+ */
 @ccclass('ButtonEffect')
-@menu('OopsFramework/Button/ButtonEffect （有特效按钮）')
+@menu('OopsFramework/Button/ButtonEffect （有特效按钮）[已废弃]')
 export default class ButtonEffect extends ButtonSimple {
     @property({
         tooltip: '是否开启'

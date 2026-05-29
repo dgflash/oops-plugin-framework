@@ -1,10 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2021-08-11 16:41:12
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 14:50:57
- */
-
 /** 数组工具 */
 export class ArrayUtil {
     /**

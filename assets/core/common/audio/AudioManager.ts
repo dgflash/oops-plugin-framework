@@ -26,20 +26,20 @@ export class AudioManager extends Component {
 
     /**
      * 播放背景音乐
-     * @param path      资源路径
+     * @param clip      AudioClip 实例
      * @param params    音效参数
      */
-    playMusic(path: string, params?: IAudioParams) {
-        this.music.loadAndPlay(path, params);
+    playMusic(clip: AudioClip, params?: IAudioParams) {
+        this.music.play(clip, params);
     }
 
     /**
      * 播放音效
-     * @param path      资源路径
+     * @param clip      AudioClip 实例
      * @param params    音效参数
      */
-    playEffect(path: string | AudioClip, params?: IAudioParams): Promise<AudioEffect> {
-        return this.effect.loadAndPlay(path, params);
+    playEffect(clip: AudioClip, params?: IAudioParams): AudioEffect | null {
+        return this.effect.play(clip, params);
     }
 
     /** 回收音效播放器 */
@@ -47,18 +47,10 @@ export class AudioManager extends Component {
         this.effect.put(ae);
     }
 
-    /**
-     * 释放指定远程音效资源
-     * @param path      远程资源 URL
-     * @returns         是否成功释放
-     */
-    releaseEffectRemote(path: string): boolean {
-        return this.effect.releaseResRemoteByPath(path);
-    }
-
     /** 恢复当前暂停的音乐与音效播放 */
     resumeAll() {
         this.music.resume();
+        this.effect.resume();
     }
 
     /** 暂停当前音乐与音效的播放 */
@@ -126,10 +118,9 @@ export class AudioManager extends Component {
         this.save();
     }
 
-    /** 组件销毁时释放所有音频资源 */
+    /** 组件销毁时停止所有音频 */
     onDestroy() {
         this.stopAll();
-        this.music?.release();
         this.effect?.release();
         this.music = null!;
         this.data = null!;

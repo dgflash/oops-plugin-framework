@@ -1,25 +1,19 @@
-/*
- * @Author: dgflash
- * @Date: 2022-04-14 17:08:01
- * @LastEditors: dgflash
- * @LastEditTime: 2022-12-13 11:36:00
- */
 import type { Asset, EventKeyboard, Node, Sprite, __private } from 'cc';
 import { Component, _decorator } from 'cc';
 import type { AudioEffect } from '../../core/common/audio/AudioEffect';
 import type { IAudioParams } from '../../core/common/audio/IAudio';
 import type { ListenerFunc, ListenerFuncTyped } from '../../core/common/event/EventMessage';
-import { resAutoTracker } from '../../core/common/loader/ResAutoTracker';
 import type { AssetType, CompleteCallback, Paths, ProgressCallback } from '../../core/common/loader/ResLoader';
 import { resLoader } from '../../core/common/loader/ResLoader';
 import { oops } from '../../core/Oops';
-import type { GameAudioModule } from './view/GameAudioModule';
-import type { GameButtonModule } from './view/GameButtonModule';
-import type { GameEventModule } from './view/GameEventModule';
-import type { GameKeyboardModule } from './view/GameKeyboardModule';
-import type { GameNodeModule } from './view/GameNodeModule';
-import type { GameResModule } from './view/GameResModule';
-import { GameViewModuleRegistry, ViewModuleKey } from './view/GameViewModuleRegistry';
+import type { GamePartAudio } from './part/GamePartAudio';
+import type { GamePartButton } from './part/GamePartButton';
+import type { GamePartNodePool } from './part/GamePartNodePool';
+import type { GamePartEvent } from './part/GamePartEvent';
+import type { GamePartKeyboard } from './part/GamePartKeyboard';
+import type { GamePartNode } from './part/GamePartNode';
+import type { GamePartRes } from './part/GamePartRes';
+import { createPart, GamePartRegistry, GamePartKey } from './GamePartRegistry';
 
 const { ccclass } = _decorator;
 
@@ -47,40 +41,45 @@ const { ccclass } = _decorator;
  */
 @ccclass('GameComponent')
 export class GameComponent extends Component {
-    private _viewRegistry: GameViewModuleRegistry | null = null;
+    private _parts: GamePartRegistry | null = null;
 
-    private get viewRegistry(): GameViewModuleRegistry {
-        return (this._viewRegistry ??= new GameViewModuleRegistry(this));
+    private get parts(): GamePartRegistry {
+        return (this._parts ??= createPart(this));
     }
 
     /** 获取事件模块 */
-    get event(): GameEventModule {
-        return this.viewRegistry.get(ViewModuleKey.Event);
+    get event(): GamePartEvent {
+        return this.parts.get(GamePartKey.Event);
     }
 
     /** 获取节点模块 */
-    get nodes(): GameNodeModule {
-        return this.viewRegistry.get(ViewModuleKey.Nodes);
+    get nodes(): GamePartNode {
+        return this.parts.get(GamePartKey.Nodes);
     }
 
     /** 获取资源模块 */
-    get res(): GameResModule {
-        return this.viewRegistry.get(ViewModuleKey.Res);
+    get res(): GamePartRes {
+        return this.parts.get(GamePartKey.Res);
     }
 
     /** 获取音频模块 */
-    get audio(): GameAudioModule {
-        return this.viewRegistry.get(ViewModuleKey.Audio);
+    get audio(): GamePartAudio {
+        return this.parts.get(GamePartKey.Audio);
     }
 
     /** 获取按钮模块 */
-    get button(): GameButtonModule {
-        return this.viewRegistry.get(ViewModuleKey.Button);
+    get button(): GamePartButton {
+        return this.parts.get(GamePartKey.Button);
     }
 
     /** 获取键盘模块 */
-    get keyboard(): GameKeyboardModule {
-        return this.viewRegistry.get(ViewModuleKey.Keyboard);
+    get keyboard(): GamePartKeyboard {
+        return this.parts.get(GamePartKey.Keyboard);
+    }
+
+    /** 游戏节点池模块 */
+    get pool(): GamePartNodePool {
+        return this.parts.get(GamePartKey.Pool);
     }
 
     /** 移除当前节点 */
@@ -90,20 +89,10 @@ export class GameComponent extends Component {
 
     /** 组件销毁时调用 */
     protected onDestroy() {
-        this._viewRegistry?.destroy();
+        this._parts?.destroy();
     }
 
-    /** 打印全局资源状态 */
-    static printGlobalResStatus() {
-        resAutoTracker.printStatus();
-    }
-
-    /** 设置资源调试模式 */
-    static setResDebugMode(enabled: boolean) {
-        resAutoTracker.enableDebug(enabled);
-    }
-
-    //#region ========== 兼容旧版本 API ==========
+    //#region ========== 兼容旧版本 API 如果是新项目可以把注释包起来的代码都删除 ==========
 
     //#region 全局事件管理（兼容旧版本）
     /** @deprecated 请使用 this.event.watch() */
@@ -160,7 +149,7 @@ export class GameComponent extends Component {
     //#region 预制节点管理（兼容旧版本）
     /** @deprecated 请使用 this.nodes.getNode() */
     getNode(name: string): Node | undefined {
-        return this.nodes.getNode(name);
+        return this.nodes.get(name);
     }
 
     /** @deprecated 请使用 this.nodes.nodeTreeInfoLite() */
@@ -177,7 +166,7 @@ export class GameComponent extends Component {
     //#region 资源加载管理（兼容旧版本）
     /** @deprecated 请使用 this.res.getRes() */
     getRes<T extends Asset>(path: string, type?: __private.__types_globals__Constructor<T> | null, bundleName?: string): T | null {
-        return this.res.getRes(path, type, bundleName);
+        return this.res.get(path, type, bundleName);
     }
 
     /** @deprecated 请使用 this.res.load() */
@@ -216,12 +205,12 @@ export class GameComponent extends Component {
     //#endregion
 
     //#region 音频播放管理（兼容旧版本）
-    /** @deprecated 请使用 this.audio.playMusic() */
-    playMusic(url: string, params?: IAudioParams): void {
-        this.audio.playMusic(url, params);
+    /** @deprecated 请使用 await this.audio.playMusic() */
+    async playMusic(url: string, params?: IAudioParams): Promise<void> {
+        return this.audio.playMusic(url, params);
     }
 
-    /** @deprecated 请使用 this.audio.playEffect() */
+    /** @deprecated 请使用 await this.audio.playEffect() */
     playEffect(url: string, params?: IAudioParams): Promise<AudioEffect | null> {
         return this.audio.playEffect(url, params);
     }
@@ -230,7 +219,7 @@ export class GameComponent extends Component {
     //#region 游戏逻辑事件（兼容旧版本）
     /** @deprecated 请使用 this.button.setButton() */
     protected setButton(bindRootEvent = true): void {
-        this.button.setButton(bindRootEvent);
+        this.button.bind(bindRootEvent);
     }
 
     /** @deprecated 请使用 this.event.setEvent() */

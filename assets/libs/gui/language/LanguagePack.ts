@@ -1,13 +1,6 @@
-/*
- * @Author: dgflash
- * @Date: 2021-07-03 16:13:17
- * @LastEditors: dgflash
- * @LastEditTime: 2023-08-22 16:34:28
- */
 import { director, error, JsonAsset, TTFFont } from 'cc';
 import { resLoader } from '../../../core/common/loader/ResLoader';
 import { Logger } from '../../../core/common/log/Logger';
-import { JsonUtil } from '../../../core/utils/JsonUtil';
 import { LanguageData, LanguageDataType, LanguageType } from './LanguageData';
 
 export class LanguagePack {

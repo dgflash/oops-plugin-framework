@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2021-08-16 09:34:56
- * @LastEditors: dgflash
- * @LastEditTime: 2023-01-19 14:52:12
- */
 import type { EventTouch, Node, Vec3 } from 'cc';
 import { Animation, AnimationClip, instantiate, Prefab, Size, UITransform, v3 } from 'cc';
 import { resLoader } from '../common/loader/ResLoader';

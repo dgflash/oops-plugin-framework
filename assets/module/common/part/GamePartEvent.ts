@@ -1,14 +1,9 @@
-/*
- * @Author: dgflash
- * @Date: 2022-04-14 17:08:01
- * @LastEditors: dgflash
- */
 import { EventDispatcher } from '../../../core/common/event/EventDispatcher';
 import { EventMessage, type ListenerFunc, type ListenerFuncTyped } from '../../../core/common/event/EventMessage';
-import { GameViewModule } from './GameViewModuleBase';
+import { GamePartBase } from '../GamePartBase';
 
 /** 全局事件管理（含游戏前后台、画布、全屏、旋转等生命周期） */
-export class GameEventModule extends GameViewModule {
+export class GamePartEvent extends GamePartBase {
     private _event: EventDispatcher | null = null;
 
     /** 获取事件分发器 */

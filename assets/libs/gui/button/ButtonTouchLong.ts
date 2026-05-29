@@ -1,18 +1,15 @@
-/*
- * @Author: dgflash
- * @Date: 2022-04-14 17:08:01
- * @LastEditors: dgflash
- * @LastEditTime: 2022-04-14 18:15:42
- */
 import type { EventTouch } from 'cc';
 import { EventHandler, _decorator } from 'cc';
 import ButtonEffect from './ButtonEffect';
 
 const { ccclass, property, menu } = _decorator;
 
-/** 长按按钮 */
+/**
+ * 长按按钮
+ * @deprecated 该组件已废弃，请使用 UIButton 替代
+ */
 @ccclass('ButtonTouchLong')
-@menu('OopsFramework/Button/ButtonTouchLong （长按按钮）')
+@menu('OopsFramework/Button/ButtonTouchLong （长按按钮）[已废弃]')
 export class ButtonTouchLong extends ButtonEffect {
     @property({
         tooltip: '长按时间（秒）'
@@ -75,9 +72,6 @@ export class ButtonTouchLong extends ButtonEffect {
                 this.longPressEvents.forEach((event) => {
                     event.emit([event.customEventData]);
                 });
-
-                // 长按触摸音效（只播放一次）
-                this.playEffect();
 
                 this.removeTouchLong();
             }

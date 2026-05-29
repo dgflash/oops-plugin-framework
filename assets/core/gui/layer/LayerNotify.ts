@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2022-08-15 10:06:47
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 13:44:12
- */
 import { BlockInputEvents, Node, instantiate } from 'cc';
 import { EDITOR } from 'cc/env';
 import { ViewUtil } from '../../utils/ViewUtil';

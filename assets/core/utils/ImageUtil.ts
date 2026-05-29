@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2022-09-01 18:00:28
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 14:49:42
- */
 import { assetManager, Color, ImageAsset, sys, Texture2D } from 'cc';
 
 /**

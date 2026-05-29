@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2022-04-14 17:08:01
- * @LastEditors: dgflash
- * @LastEditTime: 2023-08-11 10:00:51
- */
 import { _decorator } from 'cc';
 import LabelNumber from './LabelNumber';
 

@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2022-07-21 17:30:59
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 14:40:28
- */
 import type { Node } from 'cc';
 
 /** 物理分组数据 */

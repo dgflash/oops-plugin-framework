@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2022-02-10 09:50:41
- * @LastEditors: dgflash
- * @LastEditTime: 2022-09-02 12:09:55
- */
 import type { Node } from 'cc';
 import { director, isValid } from 'cc';
 import { GameComponent } from '../../module/common/GameComponent';

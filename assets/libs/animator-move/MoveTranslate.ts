@@ -1,14 +1,7 @@
-
-/*
- * @Author: dgflash
- * @Date: 2022-03-25 18:12:10
- * @LastEditors: dgflash
- * @LastEditTime: 2022-07-25 11:52:23
- */
 import { Component, Node, Vec3, _decorator } from 'cc';
 import { Vec3Util } from '../../core/utils/Vec3Util';
 
-const { ccclass, property } = _decorator;
+const { ccclass } = _decorator;
 
 /** 角色坐标方式移动 */
 @ccclass('MoveTranslate')

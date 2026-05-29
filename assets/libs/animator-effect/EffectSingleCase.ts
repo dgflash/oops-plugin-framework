@@ -1,9 +1,3 @@
-/*
- * @Author: dgflash
- * @Date: 2021-10-12 14:00:43
- * @LastEditors: dgflash
- * @LastEditTime: 2023-03-06 14:40:34
- */
 import type { Node, Vec3 } from 'cc';
 import { Animation, NodePool, ParticleSystem, Prefab, sp } from 'cc';
 import { message } from '../../core/common/event/MessageManager';
@@ -29,6 +23,7 @@ export interface IEffectParams {
  * 1、支持Spine动画
  * 2、支持Cocos Animation动画
  * 3、支持Cocos ParticleSystem粒子动画
+ * @deprecated 已废弃，建议用 GameNodePool.ts
  */
 export class EffectSingleCase {
     private static _instance: EffectSingleCase;
