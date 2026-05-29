@@ -1,48 +1,24 @@
 import type { Node, Vec3 } from 'cc';
 import { Animation, ParticleSystem, Prefab, sp } from 'cc';
-import type { GameComponent } from '../GameComponent';
-import { GameNodePool } from '../../../core/common/pool/GameNodePool';
 import { resLoader } from '../../../core/common/loader/ResLoader';
+import { gameNodePool } from '../../../core/common/pool/GameNodePool';
+import type { GameComponent } from '../GameComponent';
 import { GamePartBase } from '../GamePartBase';
+import { AnimationEffectAutoRelease } from './animator-effect/AnimationEffectAutoRelease';
+import { ParticleEffectAutoRelease } from './animator-effect/ParticleEffectAutoRelease';
+import { SpineEffectAutoRelease } from './animator-effect/SpineEffectAutoRelease';
 
 /**
  * 自动释放接口
  * 实现此接口的组件可以自动播放并在播放完成后自动回收到对象池
- *
- * 使用场景：
- * 1、Spine 动画组件
- * 2、Cocos Animation 动画组件
- * 3、ParticleSystem 粒子组件
- * 4、自定义动画组件
- *
- * 实现示例：
- * ```typescript
- * class MyAnimation extends Component implements IAutoRelease {
- *     onAutoRelease(callback: () => void): void {
- *         // 监听动画完成事件
- *         this.animation.once(Animation.EventType.FINISHED, callback);
- *     }
- *
- *     play(): void {
- *         // 开始播放动画
- *         this.animation.play();
- *     }
- * }
- * ```
  */
 export interface IAutoRelease {
-    /**
-     * 设置自动释放回调
-     * 当动画播放完成时调用 callback，对象池会自动回收节点
-     * @param callback 释放回调函数
-     */
-    onAutoRelease(callback: () => void): void;
-
-    /**
-     * 播放动画
-     * 对象池获取节点后自动调用此方法播放动画
-     */
+    /** 设置自动释放回调 */
+    onPlayComplete(callback: () => void): void;
+    /** 播放动画 */
     play(): void;
+    /** 设置动画播放速度 */
+    setSpeed(speed: number): void;
 }
 
 /** 特效参数 */
@@ -74,19 +50,10 @@ export class GamePartNodePool extends GamePartBase {
     /** 全局动画播放速度 */
     private _speed = 1;
 
-    /**
-     * 获取全局动画播放速度
-     */
-    get speed(): number {
-        return this._speed;
-    }
-
-    /**
-     * 设置全局动画播放速度
-     */
-    set speed(value: number) {
-        this._speed = value;
-    }
+    /** 获取全局动画播放速度 */
+    get speed(): number { return this._speed; }
+    /** 设置全局动画播放速度 */
+    set speed(value: number) { this._speed = value; }
 
     /**
      * 获取指定资源池中对象数量
@@ -96,10 +63,7 @@ export class GamePartNodePool extends GamePartBase {
     getCount(path: string, bundle?: string): number {
         const bundleName = bundle ?? resLoader.defaultBundleName;
         const prefab = this.comp.res.get(path, Prefab, bundleName);
-        if (!prefab) {
-            return 0;
-        }
-        return GameNodePool.instance.getCount(prefab);
+        return prefab ? gameNodePool.getCount(prefab) : 0;
     }
 
     /**
@@ -110,15 +74,9 @@ export class GamePartNodePool extends GamePartBase {
      */
     async preload(count: number, path: string, params?: IEffectParams): Promise<void> {
         const bundleName = params?.bundle ?? resLoader.defaultBundleName;
-
-        // 使用 GameResModule 加载资源，自动管理引用计数
         const prefab = await this.comp.res.load(bundleName, path, Prefab);
-
-        // 记录已加载的资源
         this._loadedPrefabs.add(prefab);
-
-        // 使用 GameNodePool 预加载到对象池
-        GameNodePool.instance.preload(count, prefab);
+        gameNodePool.preload(count, prefab);
     }
 
     /**
@@ -129,33 +87,19 @@ export class GamePartNodePool extends GamePartBase {
      */
     show(path: string, parent?: Node, params?: IEffectParams): Node {
         const bundleName = params?.bundle ?? resLoader.defaultBundleName;
-
-        // 获取已加载的预制资源
         const prefab = this.comp.res.get(path, Prefab, bundleName);
         if (!prefab) {
             console.warn(`[GamePartNodePool] 预制资源未加载: ${bundleName}/${path}`);
             return null!;
         }
-
-        // 记录已加载的资源
         this._loadedPrefabs.add(prefab);
-
-        // 使用 GameNodePool 获取节点
-        const node = GameNodePool.instance.get(prefab, parent);
-
-        // 应用特效参数
+        const node = gameNodePool.get(prefab, parent);
         this._applyEffectParams(node, params);
-
         return node;
     }
 
-    /**
-     * 回收对象
-     * @param node 节点
-     */
-    put(node: Node) {
-        GameNodePool.instance.put(node);
-    }
+    /** 回收对象 */
+    put(node: Node) { gameNodePool.put(node); }
 
     /**
      * 清除对象池数据（只清除本模块管理的）
@@ -164,53 +108,39 @@ export class GamePartNodePool extends GamePartBase {
      */
     clear(path?: string, bundle?: string) {
         if (path) {
-            // 只清除本模块管理的指定对象池
             const bundleName = bundle ?? resLoader.defaultBundleName;
             const prefab = this.comp.res.get(path, Prefab, bundleName);
             if (prefab && this._loadedPrefabs.has(prefab)) {
-                GameNodePool.instance.clear(prefab);
+                gameNodePool.clear(prefab);
             }
         }
         else {
-            // 只清除本模块管理的所有对象池
-            this._loadedPrefabs.forEach((p) => {
-                GameNodePool.instance.clear(p);
-            });
+            this._loadedPrefabs.forEach((p) => gameNodePool.clear(p));
         }
     }
 
-    /** 
+    /**
      * 释放对象池中显示对象的资源内存（只释放本模块管理的）
      * @param path 预制体资源路径，为空时释放所有本模块管理的资源
      * @param bundle 资源包名，默认为 resources
      */
     release(path?: string, bundle?: string) {
         if (path) {
-            // 只释放本模块管理的指定资源
             const bundleName = bundle ?? resLoader.defaultBundleName;
             const prefab = this.comp.res.get(path, Prefab, bundleName);
             if (prefab && this._loadedPrefabs.has(prefab)) {
-                // 清除对象池
-                GameNodePool.instance.clear(prefab);
-                // 释放资源
+                gameNodePool.clear(prefab);
                 this.comp.res.releaseRes(prefab.uuid);
                 this._loadedPrefabs.delete(prefab);
             }
         }
         else {
-            // 释放本模块加载的所有资源
             this._loadedPrefabs.forEach((p) => {
-                GameNodePool.instance.clear(p);
+                gameNodePool.clear(p);
                 this.comp.res.releaseRes(p.uuid);
             });
             this._loadedPrefabs.clear();
         }
-    }
-
-    /** 销毁特效模块 */
-    override destroy(): void {
-        // 释放本模块管理的所有资源
-        this.release();
     }
 
     /**
@@ -220,156 +150,36 @@ export class GamePartNodePool extends GamePartBase {
      */
     private _applyEffectParams(node: Node, params?: IEffectParams) {
         if (!params) return;
-
-        // 设置位置
         if (params.pos) node.position = params.pos;
         if (params.worldPos) node.worldPosition = params.worldPos;
 
-        // 播放完成后自动回收
-        if (params.isPlayFinishedRelease) {
-            // 监听动画完成事件，自动回收
-            this.setupAutoRelease(node);
-        }
+        const comp = this.getAutoRelease(node);
+        if (comp) {
+            // 设置自动回收
+            if (params.isPlayFinishedRelease) {
+                // @ts-ignore
+                if (node._oops_auto_release) return;
+                // @ts-ignore
+                node._oops_auto_release = true;
 
-        // 设置动画速度并播放
-        this._setSpeed(node);
-        this._playAnimation(node);
-    }
-
-    /**
-     * 设置动画速度
-     * @param node 节点
-     */
-    private _setSpeed(node: Node) {
-        // Spine动画
-        const spine = node.getComponent(sp.Skeleton);
-        if (spine) {
-            spine.timeScale = this._speed;
-            return;
-        }
-
-        // Cocos动画
-        const anims = node.getComponentsInChildren(Animation);
-        if (anims.length > 0) {
-            anims.forEach((animator) => {
-                const aniName = animator.defaultClip?.name;
-                if (aniName) {
-                    const aniState = animator.getState(aniName);
-                    if (aniState) {
-                        aniState.speed = this._speed;
-                    }
-                }
-            });
-            return;
-        }
-
-        // 粒子动画
-        const particles = node.getComponentsInChildren(ParticleSystem);
-        particles.forEach((particle) => {
-            particle.simulationSpeed = this._speed;
-        });
-    }
-
-    /**
-     * 播放动画
-     * @param node 节点
-     */
-    private _playAnimation(node: Node) {
-        // Spine动画
-        const spine = node.getComponent(sp.Skeleton);
-        if (spine) {
-            // @ts-ignore
-            const animationName = spine.defaultAnimation ?? spine.animation;
-            if (animationName) {
-                spine.setAnimation(0, animationName, false);
+                comp.onPlayComplete(() => this.put(node));
             }
-            return;
-        }
-
-        // Cocos Animation动画
-        const anim = node.getComponent(Animation);
-        if (anim && anim.defaultClip) {
-            anim.play();
-            return;
-        }
-
-        // 粒子动画
-        const particles = node.getComponentsInChildren(ParticleSystem);
-        if (particles.length > 0) {
-            particles.forEach((particle) => {
-                particle.play();
-            });
+            comp.setSpeed(this._speed);
+            comp.play();
         }
     }
 
-    /**
-     * 设置自动回收
-     * 优先使用 IAutoRelease 接口，其次使用内置动画检测
-     * 每个节点只设置一次事件监听，避免重复设置
-     * @param node 节点
-     */
-    private setupAutoRelease(node: Node) {
-        // 检查是否已经设置过自动回收
-        // @ts-ignore
-        if (node._autoRelease) return;
-        // @ts-ignore
-        node._autoRelease = true;
-
-        // 优先检查是否实现了 IAutoRelease 接口
-        const components = node.components;
-        for (const comp of components) {
-            if (this.isAutoRelease(comp)) {
-                comp.onAutoRelease(() => this.put(node));
-                comp.play();
-                return;
-            }
-        }
-
-        // 内置动画类型检测
-        this.setupBuiltinAutoRelease(node);
-    }
-
-    /**
-     * 判断组件是否实现 IAutoRelease 接口
-     * @param component 组件
-     * @returns 是否实现接口
-     */
-    private isAutoRelease(component: any): component is IAutoRelease {
-        return component && typeof component.onAutoRelease === 'function';
-    }
-
-    /**
-     * 设置内置动画类型的自动回收
-     * 每个节点只调用一次，通过 _autoRelease 标记控制
-     * @param node 节点
-     */
-    private setupBuiltinAutoRelease(node: Node) {
-        // Spine动画
+    /** 获取 IAutoRelease 组件（查找或自动添加） */
+    private getAutoRelease(node: Node): IAutoRelease | null {
         const spine = node.getComponent(sp.Skeleton);
-        if (spine) {
-            spine.setCompleteListener(() => {
-                this.put(node);
-            });
-            return;
-        }
-
-        // Cocos Animation动画
+        if (spine) return node.addComponent(SpineEffectAutoRelease);
         const anim = node.getComponent(Animation);
-        if (anim) {
-            anim.once(Animation.EventType.FINISHED, () => {
-                this.put(node);
-            });
-            return;
-        }
-
-        // 粒子动画
+        if (anim) return node.addComponent(AnimationEffectAutoRelease);
         const particle = node.getComponent(ParticleSystem);
-        if (particle) {
-            // 粒子没有完成事件，使用持续时间估算
-            const duration = particle.duration;
-            setTimeout(() => {
-                this.put(node);
-            }, duration * 1000);
-        }
+        if (particle) return node.addComponent(ParticleEffectAutoRelease);
+        return null;
     }
+
+    /** 销毁特效模块 */
+    override destroy(): void { this.release(); }
 }

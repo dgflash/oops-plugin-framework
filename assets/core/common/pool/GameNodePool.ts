@@ -13,16 +13,7 @@ import { instantiate, NodePool, Prefab } from 'cc';
  * 注意：本类只管理对象池，不管理资源加载与释放
  * 资源管理请使用各模块自己的资源管理系统
  */
-export class GameNodePool {
-    private static _instance: GameNodePool;
-    /** 获取单例实例 */
-    static get instance(): GameNodePool {
-        if (this._instance == null) {
-            this._instance = new GameNodePool();
-        }
-        return this._instance;
-    }
-
+class GameNodePool {
     /** 对象池集合 - key 为 Prefab 的 UUID */
     private _pools: Map<string, NodePool> = new Map();
 
@@ -55,7 +46,7 @@ export class GameNodePool {
         for (let i = 0; i < count; i++) {
             const node = instantiate(prefab);
             // @ts-ignore
-            node._pool_uuid = uuid;
+            node._oops_pool_uuid = uuid;
             pool.put(node);
         }
     }
@@ -79,7 +70,7 @@ export class GameNodePool {
         if (pool.size() == 0) {
             node = instantiate(prefab);
             // @ts-ignore
-            node._pool_uuid = uuid;
+            node._oops_pool_uuid = uuid;
         }
         // 从池中获取对象
         else {
@@ -100,7 +91,7 @@ export class GameNodePool {
      */
     put(node: Node) {
         // @ts-ignore
-        const uuid = node._pool_uuid;
+        const uuid = node._oops_pool_uuid;
         if (uuid) {
             const pool = this._pools.get(uuid);
             if (pool) {
@@ -138,3 +129,4 @@ export class GameNodePool {
         }
     }
 }
+export const gameNodePool = new GameNodePool();
