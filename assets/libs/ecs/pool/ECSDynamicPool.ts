@@ -9,18 +9,16 @@ import { IECSPoolMetrics } from './IECSPoolMetrics';
  * @template T 池中对象的类型
  */
 export class ECSDynamicPool<T> {
+    /** 空闲对象栈 */
     private pool: T[] = [];
+    /** 池统计指标 */
     private metrics: IECSPoolMetrics;
 
     /**
      * 构造函数
-     * @param typeName 池类型名称
      * @param factory 对象工厂函数
      */
-    constructor(
-        private typeName: string,
-        private factory: () => T
-    ) {
+    constructor(private factory: () => T) {
         this.metrics = {
             createCount: 0,
             recycleCount: 0,

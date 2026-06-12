@@ -1,5 +1,5 @@
 import type { ecs } from '../../libs/ecs/ECS';
-import { ECSModel } from '../../libs/ecs/ECSModel';
+import { registry } from '../../libs/ecs/registry/ECSTypeRegistry';
 import { VM } from '../../libs/model-view/ViewModel';
 import { VMBase } from '../../libs/model-view/VMBase';
 import type { CCEntity } from './CCEntity';
@@ -192,7 +192,7 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
             return;
         }
 
-        const cct = ECSModel.compCtors[tid];
+        const cct = registry.compCtors[tid];
         if (!cct) {
             console.error('[OopsFramework]', `组件 ${this.name} 移除失败，组件构造函数不存在 (tid = ${tid})`);
             return;

@@ -5,10 +5,10 @@ import type { UIParam } from '../../core/gui/layer/LayerUIElement';
 import { LayerUIElement } from '../../core/gui/layer/LayerUIElement';
 import { ViewUtil } from '../../core/utils/ViewUtil';
 import { ecs } from '../../libs/ecs/ECS';
-import type { ECSEntity } from '../../libs/ecs/ECSEntity';
-import type { CompType } from '../../libs/ecs/ECSModel';
+import type { CompType } from '../../libs/ecs/registry/ECSTypes';
 import type { CCBusiness } from './CCBusiness';
 import { GameComponent } from './GameComponent';
+import { ECSEntity } from '../../libs/ecs/entity/ECSEntity';
 
 /** ECS 游戏模块实体 */
 export abstract class CCEntity extends ecs.Entity {

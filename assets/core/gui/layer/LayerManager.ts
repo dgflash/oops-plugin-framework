@@ -186,17 +186,23 @@ export class LayerManager {
     oops.gui.open(UIID.Loading);
      */
     open(uiid: Uiid, param?: UIParam): Promise<Node> {
-        return new Promise<Node>(async (resolve, reject) => {
-            const info = this.getInfo(uiid);
-            const layer = this.uiLayers.get(info.config.layer);
-            if (layer) {
-                const node = await layer.add(info.key, info.config, param);
-                resolve(node);
-            }
-            else {
-                console.error(`打开编号为【${uiid}】的界面失败，界面层不存在`);
-            }
-        });
+        const info = this.getInfo(uiid);
+
+        // 配置不存在时直接拒绝，避免 Promise 永久挂起
+        if (info.config == null) {
+            const error = `打开编号为【${uiid}】的界面失败，配置信息不存在`;
+            console.error(error);
+            return Promise.reject(new Error(error));
+        }
+
+        const layer = this.uiLayers.get(info.config.layer);
+        if (!layer) {
+            const error = `打开编号为【${uiid}】的界面失败，界面层【${info.config.layer}】不存在`;
+            console.error(error);
+            return Promise.reject(new Error(error));
+        }
+
+        return layer.add(info.key, info.config, param);
     }
 
     /** 显示指定界面 */
@@ -282,12 +288,10 @@ export class LayerManager {
      * @param openUiid    新打开场景编号
      * @param param       新打开场景参数
      */
-    replace(removeUiId: Uiid, openUiid: Uiid, param?: UIParam): Promise<Node> {
-        return new Promise<Node>(async (resolve, reject) => {
-            const node = await this.open(openUiid, param);
-            this.remove(removeUiId);
-            resolve(node);
-        });
+    async replace(removeUiId: Uiid, openUiid: Uiid, param?: UIParam): Promise<Node> {
+        const node = await this.open(openUiid, param);
+        this.remove(removeUiId);
+        return node;
     }
 
     /**

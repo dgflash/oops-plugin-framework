@@ -1,6 +1,4 @@
 import { DEBUG } from 'cc/env';
-import { ecs } from '../libs/ecs/ECS';
-import type { ECSRootSystem } from '../libs/ecs/ECSSystem';
 import { LanguageManager } from '../libs/gui/language/Language';
 import { VM } from '../libs/model-view/ViewModel';
 import { Config } from '../module/config/Config';
@@ -13,6 +11,7 @@ import type { StorageManager } from './common/storage/StorageManager';
 import type { TimerManager } from './common/timer/TimerManager';
 import type { GameManager } from './game/GameManager';
 import type { LayerManager } from './gui/layer/LayerManager';
+import { ECSDriver } from '../libs/ecs/ECSDriver';
 
 /** 框架版本号 */
 export var version = '3.1.0.20260504';
@@ -44,10 +43,10 @@ export class oops {
 
     /** ----------可选模块---------- */
 
+    /** ECS 驱动（由 Root.update 通过 execute 驱动） */
+    static ecs = new ECSDriver();
     /** 多语言模块 */
     static language: LanguageManager = new LanguageManager();
-    /** ECS */
-    static ecs: ECSRootSystem = new ecs.RootSystem();
     /** MVVM */
     static mvvm = VM;
 }

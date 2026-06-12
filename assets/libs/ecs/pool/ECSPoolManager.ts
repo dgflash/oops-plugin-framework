@@ -2,11 +2,13 @@
  * 池管理器
  */
 
+import { ECSMask } from '../component/ECSMask';
 import { ECSDynamicPool } from './ECSDynamicPool';
 import type { IECSPoolMetrics } from './IECSPoolMetrics';
-import type { ECSEntity } from '../ECSEntity';
+import type { ECSEntity } from '../entity/ECSEntity';
 import type { ecs } from '../ECS';
-import { ECSModel, type CompCtor, type EntityCtor } from '../ECSModel';
+import { type CompCtor, type EntityCtor } from '../registry/ECSTypes';
+import { registry } from '../registry/ECSTypeRegistry';
 
 /** 池对象类型 - 实体或组件 */
 type ECSPoolObject = ECSEntity | ecs.IComp;
@@ -15,7 +17,7 @@ type ECSPoolObject = ECSEntity | ecs.IComp;
 type ECSPoolTypeName = string;
 
 /**
- * 池管理器 - 统一管理所有对象池
+ * 池管理器 —— 统一管理实体 / 组件动态对象池，并作为 `ecs.pool` 对外暴露。
  */
 export class ECSPoolManager {
     /** 所有对象池的映射 */
@@ -33,8 +35,8 @@ export class ECSPoolManager {
             return ctorAny.compName;
         }
 
-        // 检查是否是实体构造函数（从 ECSModel.entityCtors 查找）
-        const entityName = ECSModel.entityCtors.get(ctor as EntityCtor<ECSEntity>);
+        // 检查是否是实体构造函数（从 registry.entityCtors 查找）
+        const entityName = registry.entityCtors.get(ctor as EntityCtor<ECSEntity>);
         if (entityName) {
             return entityName;
         }
@@ -51,7 +53,7 @@ export class ECSPoolManager {
      */
     getPool<T extends ECSPoolObject>(typeName: ECSPoolTypeName, factory: () => T): ECSDynamicPool<T> {
         if (!this.pools.has(typeName)) {
-            const pool = new ECSDynamicPool<ECSPoolObject>(typeName, factory);
+            const pool = new ECSDynamicPool<ECSPoolObject>(factory);
             this.pools.set(typeName, pool);
         }
 
@@ -88,6 +90,17 @@ export class ECSPoolManager {
     clearAll(): void {
         this.pools.forEach(pool => pool.clear());
         this.pools.clear();
+    }
+
+    /**
+     * 清理所有对象池缓存 —— 仅释放「已回收待复用」的空闲对象，不触碰存活数据。
+     *
+     * 清理范围：Mask 位掩码池 + 实体 / 组件动态对象池。
+     * 不清理 SoA 列存储；整体重置请用 `ecs.world.clear()`。
+     */
+    clearPools(): void {
+        ECSMask.clearPool();
+        this.clearAll();
     }
 
     /**
@@ -140,3 +153,6 @@ export class ECSPoolManager {
         return pool ? pool.getMetrics() : undefined;
     }
 }
+
+/** 全局池管理器实例（`ecs.pool` 即此对象） */
+export const ecsPoolCoordinator = new ECSPoolManager();

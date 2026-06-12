@@ -48,6 +48,7 @@ export class CCBusiness<T extends CCEntity> {
 
     /**
      * 注册全局事件（强类型）
+     * @deprecated 请使用 this.event.watch()
      * @param event       事件名（枚举）
      * @param listener    处理事件的侦听器函数
      * @param object      侦听函数绑定的this对象
@@ -58,6 +59,7 @@ export class CCBusiness<T extends CCEntity> {
 
     /**
      * 监听一次事件，事件响应后，该监听自动移除（强类型）
+     * @deprecated 请使用 this.event.watchOnce()
      * @param event     事件名（枚举）
      * @param listener  事件触发回调方法
      * @param object    侦听函数绑定的this对象
@@ -68,6 +70,7 @@ export class CCBusiness<T extends CCEntity> {
 
     /**
      * 移除全局事件（强类型）
+     * @deprecated 请使用 this.event.unwatch()
      * @param event      事件名（枚举）
      * @param listener   处理事件的侦听器函数（可选）
      * @param object     侦听函数绑定的this对象（可选）
@@ -78,6 +81,7 @@ export class CCBusiness<T extends CCEntity> {
 
     /**
      * 触发强类型全局事件
+     * @deprecated 请使用 this.event.emit()
      * @param event      事件名（枚举）
      * @param data       事件数据
      */
@@ -87,6 +91,7 @@ export class CCBusiness<T extends CCEntity> {
 
     /**
      * 触发强类型异步全局事件（严格类型检查）
+     * @deprecated 请使用 this.event.emitAsync()
      * @param event      事件名（枚举）
      * @param data       事件数据（必须完全匹配类型定义）
      */
@@ -96,6 +101,7 @@ export class CCBusiness<T extends CCEntity> {
 
     /**
      * 注册全局事件
+     * @deprecated 请使用 this.event.on()
      * @param event       事件名
      * @param listener    处理事件的侦听器函数
      * @param object      侦听函数绑定的this对象
@@ -106,6 +112,7 @@ export class CCBusiness<T extends CCEntity> {
 
     /**
      * 监听一次事件，事件响应后，该监听自动移除
+     * @deprecated 请使用 this.event.once()
      * @param event     事件名
      * @param listener  事件触发回调方法
      * @param object    侦听函数绑定的this对象
@@ -116,6 +123,7 @@ export class CCBusiness<T extends CCEntity> {
 
     /**
      * 移除全局事件
+     * @deprecated 请使用 this.event.off()
      * @param event      事件名
      * @param listener   处理事件的侦听器函数（可选）
      * @param object     侦听函数绑定的this对象（可选）
@@ -126,6 +134,7 @@ export class CCBusiness<T extends CCEntity> {
 
     /**
      * 触发全局事件
+     * @deprecated 请使用 this.event.dispatchEvent()
      * @param event      事件名
      * @param args       事件参数
      */
@@ -135,6 +144,7 @@ export class CCBusiness<T extends CCEntity> {
 
     /**
      * 触发全局事件,支持同步与异步处理
+     * @deprecated 请使用 this.event.dispatchEventAsync()
      * @param event      事件名
      * @param args       事件参数
      */
@@ -144,6 +154,7 @@ export class CCBusiness<T extends CCEntity> {
 
     /**
      * 批量设置全局事件
+     * @deprecated 请使用 this.event.setEvent()
      * @example
      *  this.setEvent("onGlobal");
      *  this.dispatchEvent("onGlobal", "全局事件");

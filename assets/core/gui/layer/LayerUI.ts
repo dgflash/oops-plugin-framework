@@ -18,6 +18,8 @@ export class LayerUI extends Node {
     protected ui_nodes = new Collection<string, UIState>();
     /** 被移除的界面缓存数据 */
     protected ui_cache = new Map<string, UIState>();
+    /** 正在加载中的界面 Promise（用于并发去重，避免狂点按钮触发重复加载） */
+    protected ui_loading = new Map<string, Promise<Node>>();
     /** 缓存界面的最大数量限制 */
     protected readonly MAX_CACHE_SIZE = 10;
 
@@ -52,28 +54,39 @@ export class LayerUI extends Node {
      * @returns ture为成功,false为失败
      */
     add(uiid: Uiid, config: UIConfig, params?: UIParam): Promise<Node> {
-        return new Promise<Node>(async (resolve, reject) => {
-            if (this.ui_nodes.has(config.prefab)) {
-                const error = `路径为【${config.prefab}】的预制重复加载`;
-                console.warn(error);
-                reject(new Error(error));
-                return;
-            }
+        // 并发去重：同一预制正在加载中时复用同一个 Promise，避免重复加载
+        const pending = this.ui_loading.get(config.prefab);
+        if (pending) return pending;
 
-            try {
-                // 检查缓存中是否存界面
-                const state = this.initUIConfig(uiid, config, params);
-                await this.load(state);
-                if (state.node) {
-                    resolve(state.node);
-                } else {
-                    reject(new Error(`路径为【${config.prefab}】的预制加载失败，节点为空`));
-                }
-            } catch (error) {
-                console.error(`添加界面【${config.prefab}】时发生错误:`, error);
-                reject(error);
+        // 已显示的界面，保持原有「重复加载」拒绝行为
+        if (this.ui_nodes.has(config.prefab)) {
+            const error = `路径为【${config.prefab}】的预制重复加载`;
+            console.warn(error);
+            return Promise.reject(new Error(error));
+        }
+
+        const promise = this.doAdd(uiid, config, params);
+        this.ui_loading.set(config.prefab, promise);
+        const cleanup = () => this.ui_loading.delete(config.prefab);
+        promise.then(cleanup, cleanup);
+        return promise;
+    }
+
+    /** 实际执行界面加载流程 */
+    private async doAdd(uiid: Uiid, config: UIConfig, params?: UIParam): Promise<Node> {
+        try {
+            // 检查缓存中是否存界面
+            const state = this.initUIConfig(uiid, config, params);
+            await this.load(state);
+            if (state.node) {
+                return state.node;
             }
-        });
+            throw new Error(`路径为【${config.prefab}】的预制加载失败，节点为空`);
+        } 
+        catch (error) {
+            console.error(`添加界面【${config.prefab}】时发生错误:`, error);
+            throw error;
+        }
     }
 
     /** 初始化界面配置初始值 */
@@ -102,91 +115,76 @@ export class LayerUI extends Node {
      * @param bundle     远程资源包名，如果为空就是默认本地资源包
      */
     protected async load(state: UIState): Promise<Node> {
-        return new Promise<Node>(async (resolve, reject) => {
-            // 加载界面资源超时提示
-            if (state.node == null) {
-                let timerId: any = null;
-                
-                try {
-                    timerId = setTimeout(this.onLoadingTimeoutGui, oops.config.game.loadingTimeoutGui);
+        // 首次加载：拉取预制并实例化节点
+        if (state.node == null) {
+            let timerId: any = null;
+            try {
+                timerId = setTimeout(this.onLoadingTimeoutGui, oops.config.game.loadingTimeoutGui);
 
-                    // 优先加载配置的指定资源包中资源，如果没配置则加载默认资源包资源
-                    const res = await resLoader.load(state.config.bundle!, state.config.prefab, Prefab);
-                    
-                    // 检查加载完成后 state 是否已被标记为移除，避免创建僵尸节点
-                    if (!state.valid) {
-                        console.log(`界面【${state.config.prefab}】在加载过程中已被移除，取消实例化`);
-                        if (res) {
-                            res.decRef();
-                        }
-                        resolve(null!);
-                        return;
-                    }
-                    
-                    if (res) {
-                        state.node = instantiate(res);
+                const res = await resLoader.load(state.config.bundle!, state.config.prefab, Prefab);
 
-                        // 是否启动真机安全区域显示
-                        if (state.config.safeArea) state.node.addComponent(SafeArea);
+                // 加载期间已被移除，取消实例化
+                if (!state.valid) {
+                    console.log(`界面【${state.config.prefab}】在加载过程中已被移除，取消实例化`);
+                    if (res) res.decRef();
+                    return null!;
+                }
 
-                        // 窗口事件委托
-                        const comp = state.node.addComponent(LayerUIElement);
-                        comp.state = state;
+                if (res) {
+                    state.node = instantiate(res);
 
-                        const viewRoot = state.node.getComponent(GameComponent);
-                        if (viewRoot) {
-                            resAutoTracker.acquire(viewRoot, res);
-                            state.prefabTrackedByView = true;
-                        }
-                        else {
-                            state.prefabTrackedByView = false;
-                        }
+                    if (state.config.safeArea) state.node.addComponent(SafeArea);
+
+                    const comp = state.node.addComponent(LayerUIElement);
+                    comp.state = state;
+
+                    const viewRoot = state.node.getComponent(GameComponent);
+                    if (viewRoot) {
+                        resAutoTracker.acquire(viewRoot, res);
+                        state.prefabTrackedByView = true;
                     }
                     else {
-                        console.warn(`路径为【${state.config.prefab}】的预制加载失败`);
-                        this.failure(state);
+                        state.prefabTrackedByView = false;
                     }
-                } finally {
-                    // 确保在所有情况下都清理定时器和关闭等待提示
-                    if (timerId !== null) {
-                        clearTimeout(timerId);
-                    }
-                    oops.gui.waitClose();
+                }
+                else {
+                    console.warn(`路径为【${state.config.prefab}】的预制加载失败`);
+                    this.failure(state);
                 }
             }
+            finally {
+                if (timerId !== null) clearTimeout(timerId);
+                oops.gui.waitClose();
+            }
+        }
 
-            await this.uiInit(state);
-            resolve(state.node);
-        });
+        await this.uiInit(state);
+        return state.node;
     }
 
     /**
      * 创建界面节点
      * @param state  视图参数
      */
-    protected uiInit(state: UIState): Promise<boolean> {
-        return new Promise<boolean>(async (resolve, reject) => {
-            // 如果节点为空或已被标记为无效，直接返回失败
-            if (!state.node || !state.valid) {
-                resolve(false);
-                return;
+    protected async uiInit(state: UIState): Promise<boolean> {
+        if (!state.node || !state.valid) {
+            return false;
+        }
+
+        const comp = state.node.getComponent(LayerUIElement)!;
+        const r = await comp.add();
+        if (r) {
+            state.valid = true;
+            if (!state.params.preload) {
+                state.params.preload = false;
+                state.node.parent = this;
             }
-            
-            const comp = state.node.getComponent(LayerUIElement)!;
-            const r: boolean = await comp.add();
-            if (r) {
-                state.valid = true; // 标记界面为使用状态
-                if (!state.params.preload) {
-                    state.params.preload = false;
-                    state.node.parent = this;
-                }
-            }
-            else {
-                console.warn(`路径为【${state.config.prefab}】的自定义预处理逻辑异常.检查预制上绑定的组件中 onAdded 方法,返回true才能正确完成窗口显示流程`);
-                this.failure(state);
-            }
-            resolve(r);
-        });
+        }
+        else {
+            console.warn(`路径为【${state.config.prefab}】的自定义预处理逻辑异常.检查预制上绑定的组件中 onAdded 方法,返回true才能正确完成窗口显示流程`);
+            this.failure(state);
+        }
+        return r;
     }
 
     /** 加载超时事件*/
