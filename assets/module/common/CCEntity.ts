@@ -296,11 +296,21 @@ export abstract class CCEntity extends ecs.Entity {
                 this.businesss.delete(cls);
 
                 // 清理实体上的业务逻辑组件引用
-                delete (this as any)[cls.name];
+                this.deleteBusinessRef(business);
             }
         }
     }
     //#endregion
+
+    /** 删除实体上指向指定 business 实例的属性引用 */
+    private deleteBusinessRef(business: CCBusiness<CCEntity>) {
+        for (const key of Object.keys(this)) {
+            if ((this as any)[key] === business) {
+                delete (this as any)[key];
+                break;
+            }
+        }
+    }
 
     destroy(): void {
         // 1. 先销毁所有子实体，避免内存泄漏
@@ -317,10 +327,10 @@ export abstract class CCEntity extends ecs.Entity {
 
         // 2. 再销毁所有业务组件
         if (this.businesss) {
-            this.businesss.forEach((business, cls) => {
+            this.businesss.forEach((business) => {
                 business.destroy();
                 // 清理实体上的业务逻辑组件引用
-                delete (this as any)[cls.name];
+                this.deleteBusinessRef(business);
             });
             this.businesss.clear();
             this.businesss = null!;
