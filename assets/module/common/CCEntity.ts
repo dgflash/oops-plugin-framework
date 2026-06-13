@@ -7,6 +7,7 @@ import { ViewUtil } from '../../core/utils/ViewUtil';
 import { ecs } from '../../libs/ecs/ECS';
 import type { CompType } from '../../libs/ecs/registry/ECSTypes';
 import type { CCBusiness } from './CCBusiness';
+import { getClassName } from '../decorator/ClassNameDecorator';
 import { GameComponent } from './GameComponent';
 import { ECSEntity } from '../../libs/ecs/entity/ECSEntity';
 
@@ -269,7 +270,8 @@ export abstract class CCEntity extends ecs.Entity {
         this.businesss.set(cls, business);
 
         // 将业务逻辑组件直接附加到实体对象身上，方便直接获取
-        Reflect.set(this, cls.name, business);
+        // 使用 classname.getName 获取注册名，避免打包压缩后 cls.name 被混淆
+        Reflect.set(this, getClassName(cls), business);
 
         return business as T;
     }
