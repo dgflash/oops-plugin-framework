@@ -13,7 +13,6 @@
  * - 场景优化：场景切换时自动预热相关对象池
  */
 
-export { IECSPoolMetrics } from './IECSPoolMetrics';
 export { ECSDynamicPool } from './ECSDynamicPool';
 export { ECSPoolManager } from './ECSPoolManager';
 
