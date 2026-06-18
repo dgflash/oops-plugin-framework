@@ -80,7 +80,7 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
      * 组件加载时调用
      * 注意：如果子类需要覆盖此方法，必须调用 super.onLoad()
      */
-    onLoad() {
+    protected onLoad() {
         if (!this.mvvm) return;
 
         this.onBind();

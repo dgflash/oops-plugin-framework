@@ -5,6 +5,8 @@ export interface IAudioParams {
     loop?: boolean;
     /** 音效音量 */
     volume?: number;
+    /** 音效资源路径（用于调试提示） */
+    path?: string;
     /** 播放完成事件 */
     onPlayComplete?: Function;
 }

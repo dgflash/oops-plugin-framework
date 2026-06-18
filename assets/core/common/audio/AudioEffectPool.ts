@@ -105,10 +105,18 @@ export class AudioEffectPool {
 
         if (finalParams.volume == null) finalParams.volume = iad.volume;
 
+        // 检查音效资源是否为空
+        if (!clip) {
+            const pathInfo = params?.path ? `路径: ${params.path}` : '路径未知';
+            console.warn(`音效资源为空，${pathInfo}`);
+            return null;
+        }
+
         const key = `${finalParams.type}_${clip.uuid}_${this.getAeId()}`;
 
         if (!clip.isValid) {
-            console.warn(`音效资源【${key}】已失效`);
+            const pathInfo = finalParams.path ? `，路径: ${finalParams.path}` : '';
+            console.warn(`音效资源【${key}】已失效${pathInfo}`);
             return null;
         }
 
@@ -248,6 +256,7 @@ export class AudioEffectPool {
             type: params.type ?? AudioEffectType.Effect,
             loop: params.loop ?? false,
             volume: params.volume,
+            path: params.path,
             onPlayComplete: params.onPlayComplete
         } : {
             type: AudioEffectType.Effect,

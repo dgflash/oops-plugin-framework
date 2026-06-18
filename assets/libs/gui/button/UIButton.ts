@@ -36,7 +36,7 @@ export default class UIButton extends Component {
     onLoad() {
         this._button = this.getComponent(Button);
         if (!this._button) {
-            console.warn('[UIButton] 未找到 Button 组件，请确保节点上有 Button 组件');
+            console.warn(`[UIButton] 未找到 Button 组件，节点路径: ${this.node.getPathInHierarchy()}`);
             return;
         }
 
