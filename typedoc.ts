@@ -26,7 +26,7 @@ export * from './assets/core/common/timer/TimerManager';
 export * from './assets/core/game/GameManager';
 /** core/gui */
 export * from './assets/core/gui/Gui';
-export * from './assets/core/gui/GuiEnum';
+export * from './assets/core/gui/GuiPromptConfig';
 export * from './assets/core/gui/layer/LayerDialog';
 export * from './assets/core/gui/layer/LayerEnum';
 export * from './assets/core/gui/layer/LayerGame';

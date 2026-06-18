@@ -1,9 +1,9 @@
 import { BlockInputEvents, Node, instantiate } from 'cc';
 import { EDITOR } from 'cc/env';
 import { ViewUtil } from '../../utils/ViewUtil';
-import { PromptResType } from '../GuiEnum';
 import { Notify } from '../prompt/Notify';
 import { LayerHelper } from './LayerHelper';
+import { GuiPromptConfig } from '../GuiPromptConfig';
 
 /* 滚动消息提示层 */
 export class LayerNotify extends Node {
@@ -35,10 +35,12 @@ export class LayerNotify extends Node {
             if (this.wait == null) {
                 // 兼容编辑器预览模式
                 if (EDITOR) {
-                    this.wait = await ViewUtil.createPrefabNodeAsync(PromptResType.Wait);
-                }
-                else {
-                    this.wait = ViewUtil.createPrefabNode(PromptResType.Wait);
+                    this.wait = await ViewUtil.createPrefabNodeAsync(
+                        GuiPromptConfig.Wait.path,
+                        GuiPromptConfig.Wait.bundle
+                    );
+                } else {
+                    this.wait = ViewUtil.createPrefabNode(GuiPromptConfig.Wait.path, GuiPromptConfig.Wait.bundle);
                 }
             }
 
@@ -85,13 +87,7 @@ export class LayerNotify extends Node {
      */
     async toast(content: string, useI18n: boolean) {
         if (this.notify == null) {
-            // 兼容编辑器预览模式
-            if (EDITOR) {
-                this.notify = await ViewUtil.createPrefabNodeAsync(PromptResType.Toast);
-            }
-            else {
-                this.notify = ViewUtil.createPrefabNode(PromptResType.Toast);
-            }
+            this.notify = await ViewUtil.createPrefabNodeAsync(GuiPromptConfig.Notify.path, GuiPromptConfig.Notify.bundle);
             this.notifyItem = this.notify.children[0];
             this.notifyItem.parent = null;
         }
@@ -122,19 +118,19 @@ export class LayerNotify extends Node {
             this.wait.destroy();
             this.wait = null!;
         }
-        
+
         // 清理通知提示节点
         if (this.notify) {
             this.notify.destroy();
             this.notify = null!;
         }
-        
+
         // 清理通知项模板节点
         if (this.notifyItem) {
             this.notifyItem.destroy();
             this.notifyItem = null!;
         }
-        
+
         // 清理事件阻挡组件
         this.black = null!;
     }

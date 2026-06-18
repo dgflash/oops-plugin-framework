@@ -1,10 +1,10 @@
 import type { EventTouch } from 'cc';
 import { BlockInputEvents, Node } from 'cc';
 import { ViewUtil } from '../../utils/ViewUtil';
-import { PromptResType } from '../GuiEnum';
 import { LayerUI } from './LayerUI';
 import type { UIState } from './LayerUIElement';
 import type { UIConfig } from './UIConfig';
+import { GuiPromptConfig } from '../GuiPromptConfig';
 
 /* 弹窗层，允许同时弹出多个窗口 */
 export class LayerPopUp extends LayerUI {
@@ -23,11 +23,11 @@ export class LayerPopUp extends LayerUI {
     }
 
     protected uiInit(state: UIState): Promise<boolean> {
-        return new Promise(async (resolve) => {
+        return new Promise(async resolve => {
             const r = await super.uiInit(state);
             if (r) {
                 // 界面加载完成显示时，启动触摸非窗口区域关闭
-                this.openVacancyRemove(state.config);
+                await this.openVacancyRemove(state.config);
 
                 // 界面加载完成显示时，层级事件阻挡
                 this.black.enabled = true;
@@ -88,10 +88,10 @@ export class LayerPopUp extends LayerUI {
     }
 
     /** 启动触摸非窗口区域关闭 */
-    protected openVacancyRemove(config: UIConfig) {
+    protected async openVacancyRemove(config: UIConfig) {
         // 背景半透明遮罩
         if (this.mask == null) {
-            this.mask = ViewUtil.createPrefabNode(PromptResType.Mask);
+            this.mask = await ViewUtil.createPrefabNodeAsync(GuiPromptConfig.Mask.path, GuiPromptConfig.Mask.bundle);
             this.mask.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
 
             this.black = this.mask.addComponent(BlockInputEvents);
