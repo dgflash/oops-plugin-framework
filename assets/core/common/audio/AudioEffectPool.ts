@@ -81,7 +81,7 @@ export class AudioEffectPool {
         if (iad == null) console.error(`类型为【${type}】的音效配置不存在`);
         iad.volume = value;
 
-        this.effects.forEach((ac) => ac.volume = value);
+        this.effects.forEach(ac => (ac.volume = value));
     }
 
     /**
@@ -128,8 +128,7 @@ export class AudioEffectPool {
             node = new Node('AudioEffect');
             ae = node.addComponent(AudioEffect)!;
             ae.onComplete = this.onAudioEffectPlayComplete.bind(this);
-        }
-        else {
+        } else {
             node = this.pool.get()!;
             ae = node.getComponent(AudioEffect)!;
         }
@@ -150,8 +149,7 @@ export class AudioEffectPool {
             ae.play();
 
             return ae;
-        }
-        catch (e) {
+        } catch (e) {
             // 播放异常时清理 effects 条目，防止残留
             this.effects.delete(ae.key);
             this.put(ae);
@@ -195,17 +193,24 @@ export class AudioEffectPool {
         this.effects.clear();
     }
 
-    /** 恢复或播放所有音效 */
+    /** 恢复所有未播完的音效（仅恢复暂停状态，已播完的不恢复） */
     resume() {
-        this.effects.forEach((ae) => {
-            // 如果是暂停状态则恢复，如果是停止状态则播放
+        const finishedKeys: string[] = [];
+        this.effects.forEach((ae, key) => {
             if (ae.state === AudioSource.AudioState.PAUSED) {
                 ae.play();
-            }
-            else if (ae.state === AudioSource.AudioState.INIT || ae.state === AudioSource.AudioState.STOPPED) {
-                ae.play();
+            } else {
+                // 已播完（STOPPED/INIT），不再恢复，记录待清理
+                finishedKeys.push(key);
             }
         });
+        // 清理已播完的音效
+        for (const key of finishedKeys) {
+            const ae = this.effects.get(key);
+            if (ae) {
+                this.onAudioEffectPlayComplete(ae);
+            }
+        }
     }
 
     /** 暂停所有音效 */
@@ -243,8 +248,7 @@ export class AudioEffectPool {
             if (node) {
                 node.destroy();
                 destroyed++;
-            }
-            else {
+            } else {
                 break;
             }
         }
@@ -252,15 +256,17 @@ export class AudioEffectPool {
     }
 
     private mergeParams(params?: IAudioParams): IAudioParams {
-        return params ? {
-            type: params.type ?? AudioEffectType.Effect,
-            loop: params.loop ?? false,
-            volume: params.volume,
-            path: params.path,
-            onPlayComplete: params.onPlayComplete
-        } : {
-            type: AudioEffectType.Effect,
-            loop: false
-        };
+        return params
+            ? {
+                  type: params.type ?? AudioEffectType.Effect,
+                  loop: params.loop ?? false,
+                  volume: params.volume,
+                  path: params.path,
+                  onPlayComplete: params.onPlayComplete,
+              }
+            : {
+                  type: AudioEffectType.Effect,
+                  loop: false,
+              };
     }
 }
