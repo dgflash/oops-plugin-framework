@@ -72,44 +72,6 @@ export namespace debounce {
         };
     }
 
-    /**
-     * 手动包装防连点（装饰器在微信小游戏构建失效时的降级方案）
-     * @param fn 需要防连点的函数
-     * @param interval 间隔时间（毫秒），默认 500ms
-     * @param context 函数绑定的 this 上下文（可选）
-     * @returns 包装后的防连点函数
-     *
-     * @example
-     * ```typescript
-     * class GameView extends Component {
-     *     private debouncedClick: Function;
-     *
-     *     onLoad() {
-     *         // 手动包装，适用于装饰器失效的场景
-     *         this.debouncedClick = debounce.wrap(this.onClick, 500, this);
-     *     }
-     *
-     *     onClick() {
-     *         console.log('点击');
-     *     }
-     * }
-     * ```
-     */
-    export function wrap<T extends (...args: any[]) => any>(
-        fn: T,
-        interval: number = DEFAULT_INTERVAL,
-        context?: any
-    ): T {
-        let lastCall = 0;
-        const wrapped = function (this: any, ...args: any[]) {
-            const now = Date.now();
-            if (now - lastCall < interval) return;
-            lastCall = now;
-            return fn.apply(context ?? this, args);
-        };
-        return wrapped as T;
-    }
-
     // ========================================
     // 内部常量
     // ========================================
