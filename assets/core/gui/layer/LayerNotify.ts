@@ -33,15 +33,10 @@ export class LayerNotify extends Node {
 
         try {
             if (this.wait == null) {
-                // 兼容编辑器预览模式
-                if (EDITOR) {
-                    this.wait = await ViewUtil.createPrefabNodeAsync(
-                        GuiPromptConfig.Wait.path,
-                        GuiPromptConfig.Wait.bundle
-                    );
-                } else {
-                    this.wait = ViewUtil.createPrefabNode(GuiPromptConfig.Wait.path, GuiPromptConfig.Wait.bundle);
-                }
+                this.wait = await ViewUtil.createPrefabNodeAsync(
+                    GuiPromptConfig.Wait.path,
+                    GuiPromptConfig.Wait.bundle
+                );
             }
 
             // 异步操作完成后，检查是否已被请求关闭
@@ -87,23 +82,26 @@ export class LayerNotify extends Node {
      */
     async toast(content: string, useI18n: boolean) {
         if (this.notify == null) {
-            this.notify = await ViewUtil.createPrefabNodeAsync(GuiPromptConfig.Notify.path, GuiPromptConfig.Notify.bundle);
+            this.notify = await ViewUtil.createPrefabNodeAsync(
+                GuiPromptConfig.Notify.path,
+                GuiPromptConfig.Notify.bundle
+            );
             this.notifyItem = this.notify.children[0];
             this.notifyItem.parent = null;
         }
 
         this.notify.parent = this;
-        const childNode = instantiate(this.notifyItem);
-        const prompt = childNode.getChildByName('prompt')!;
-        const toastCom = prompt.getComponent(Notify)!;
-        childNode.parent = this.notify;
+        const item = instantiate(this.notifyItem);
+        const prompt = item.getChildByName('prompt')!;
+        const notify = prompt.getComponent(Notify)!;
+        item.parent = this.notify;
 
-        toastCom.onComplete = () => {
-            if (this.notify.children.length == 0) {
+        notify.onComplete = () => {
+            if (this.notify.children.length <= 1) {
                 this.notify.parent = null;
             }
         };
-        toastCom.toast(content, useI18n);
+        notify.toast(content, useI18n);
 
         // 超过3个提示，就释放第一个提示
         if (this.notify.children.length > 3) {

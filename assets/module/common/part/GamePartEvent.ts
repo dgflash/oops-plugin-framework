@@ -22,7 +22,7 @@ export class GamePartEvent extends GamePartBase {
     watch<K extends keyof OopsFramework.TypedEventMap>(
         event: K,
         listener: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>,
-        object: object,
+        object: object
     ): void {
         this.event.on(event as string, listener as ListenerFunc, object);
     }
@@ -35,7 +35,7 @@ export class GamePartEvent extends GamePartBase {
     watchOnce<K extends keyof OopsFramework.TypedEventMap>(
         event: K,
         listener: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>,
-        object: object,
+        object: object
     ): void {
         this.event.once(event as string, listener as ListenerFunc, object);
     }
@@ -48,7 +48,7 @@ export class GamePartEvent extends GamePartBase {
     unwatch<K extends keyof OopsFramework.TypedEventMap>(
         event: K,
         listener?: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>,
-        object?: object,
+        object?: object
     ): void {
         this.event.off(event as string, listener as ListenerFunc, object);
     }
@@ -65,7 +65,10 @@ export class GamePartEvent extends GamePartBase {
      * @param event 事件类型
      * @param data 事件数据
      */
-    emitAsync<K extends keyof OopsFramework.TypedEventMap>(event: K, data: OopsFramework.TypedEventMap[K]): Promise<void> {
+    emitAsync<K extends keyof OopsFramework.TypedEventMap>(
+        event: K,
+        data?: OopsFramework.TypedEventMap[K]
+    ): Promise<void> {
         return this.event.emitAsync(event, data);
     }
 
@@ -124,8 +127,7 @@ export class GamePartEvent extends GamePartBase {
             const func = self[name];
             if (func) {
                 this.on(name, func, this.comp);
-            }
-            else {
+            } else {
                 console.error(`名为【${name}】的全局事方法不存在`);
             }
         }

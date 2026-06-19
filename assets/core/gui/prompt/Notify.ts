@@ -16,8 +16,7 @@ export class Notify extends Component {
     onComplete: Function = null!;
 
     onLoad() {
-        if (this.animation)
-            this.animation.on(Animation.EventType.FINISHED, this.onFinished, this);
+        this.animation.on(Animation.EventType.FINISHED, this.onFinished, this);
     }
 
     private onFinished() {
@@ -36,8 +35,7 @@ export class Notify extends Component {
         if (useI18n) {
             label.enabled = true;
             label.dataID = msg;
-        }
-        else {
+        } else {
             label.enabled = false;
             this.lab_content.string = msg;
         }

@@ -89,9 +89,9 @@ export class LanguageLabel extends Component {
     /** 初始化并缓存组件引用 */
     private _initComponents() {
         if (this._componentInitialized) return;
-        
+
         this._labelCache = this.getComponent(Label);
-        this._richTextCache = this.getComponent(RichText);
+        this._richTextCache = RichText ? this.getComponent(RichText) : null;
         this._componentInitialized = true;
 
         if (!this._labelCache && !this._richTextCache) {

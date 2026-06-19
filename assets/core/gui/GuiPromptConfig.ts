@@ -8,9 +8,9 @@ export const GuiPromptConfig: {
     Mask: { bundle: string; path: string };
 } = {
     /** 飘动提示 */
-    Notify: { bundle: 'game_common', path: 'gui/window/prefab/notify' },
+    Notify: { bundle: 'game_common', path: 'gui/window/prefab/UI_Notify' },
     /** 延迟等待提示 */
-    Wait: { bundle: 'game_common', path: 'gui/window/prefab/wait' },
+    Wait: { bundle: 'game_common', path: 'gui/window/prefab/UI_Wait' },
     /** 遮罩层 */
-    Mask: { bundle: 'game_common', path: 'gui/window/prefab/mask' },
+    Mask: { bundle: 'game_common', path: 'gui/window/prefab/UI_Mask' },
 };

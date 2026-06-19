@@ -16,7 +16,11 @@ export class EventDispatcher {
      * @param listener   处理事件的侦听器函数
      * @param object     侦听函数绑定的作用域对象
      */
-    watch<K extends keyof OopsFramework.TypedEventMap>(event: K, listener: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>, object: object): void {
+    watch<K extends keyof OopsFramework.TypedEventMap>(
+        event: K,
+        listener: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>,
+        object: object
+    ): void {
         this.on(event as string, listener as ListenerFunc, object);
     }
 
@@ -26,7 +30,11 @@ export class EventDispatcher {
      * @param listener  事件触发回调方法
      * @param object    侦听函数绑定的作用域对象
      */
-    watchOnce<K extends keyof OopsFramework.TypedEventMap>(event: K, listener: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>, object: object): void {
+    watchOnce<K extends keyof OopsFramework.TypedEventMap>(
+        event: K,
+        listener: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>,
+        object: object
+    ): void {
         this.once(event as string, listener as ListenerFunc, object);
     }
 
@@ -36,7 +44,11 @@ export class EventDispatcher {
      * @param listener  处理事件的侦听器函数（可选，不传则移除该事件的所有监听器）
      * @param object    侦听函数绑定的作用域对象（可选）
      */
-    unwatch<K extends keyof OopsFramework.TypedEventMap>(event: K, listener?: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>, object?: object): void {
+    unwatch<K extends keyof OopsFramework.TypedEventMap>(
+        event: K,
+        listener?: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>,
+        object?: object
+    ): void {
         this.off(event as string, listener as ListenerFunc, object);
     }
 
@@ -54,7 +66,10 @@ export class EventDispatcher {
      * @param event      事件名（枚举）
      * @param data       事件数据（必须完全匹配类型定义）
      */
-    emitAsync<K extends keyof OopsFramework.TypedEventMap>(event: K, data: OopsFramework.TypedEventMap[K]): Promise<void> {
+    emitAsync<K extends keyof OopsFramework.TypedEventMap>(
+        event: K,
+        data?: OopsFramework.TypedEventMap[K]
+    ): Promise<void> {
         return message.emitAsync(event, data);
     }
 
