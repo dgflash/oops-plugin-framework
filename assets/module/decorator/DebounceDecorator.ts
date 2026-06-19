@@ -6,8 +6,6 @@
  *
  * 使用方式：
  * 1. 装饰器方式：@debounce.click() 或 @debounce.click(1000)
- * 2. 手动包装方式：debounce.wrap(this.onClick, 500, this)
- *    当微信小游戏构建导致装饰器失效时，可用手动包装作为降级方案
  *
  * @example
  * ```typescript
