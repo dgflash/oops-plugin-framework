@@ -2,6 +2,7 @@ import { registry } from '../registry/ECSTypeRegistry';
 import type { ECSComblockSystem } from '../system/ECSComblockSystem';
 import { ECSRootSystem } from '../system/ECSRootSystem';
 import { ECSWorld } from './ECSWorld';
+import { worldCurrent } from './ECSWorldCurrent';
 
 /**
  * 世界管理器 —— 持有所有 {@link ECSWorld} 实例与「当前世界」指针，并作为 `ecs.world` 对外暴露。
@@ -23,7 +24,12 @@ export class ECSWorldManager {
     readonly defaultWorld: ECSWorld;
 
     /** 当前世界（未指定世界的操作都作用于此） */
-    current: ECSWorld;
+    get current(): ECSWorld {
+        return worldCurrent.current!;
+    }
+    set current(value: ECSWorld) {
+        worldCurrent.current = value;
+    }
 
     constructor() {
         this.defaultWorld = new ECSWorld(this.DEFAULT_WORLD);

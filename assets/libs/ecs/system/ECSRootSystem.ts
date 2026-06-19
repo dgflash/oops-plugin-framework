@@ -1,5 +1,5 @@
 import { registry } from '../registry/ECSTypeRegistry';
-import { ecsWorldManager } from '../world/ECSWorldManager';
+import { worldCurrent } from '../world/ECSWorldCurrent';
 import type { ECSWorld } from '../world/ECSWorld';
 import { ECSComblockSystem } from './ECSComblockSystem';
 import { sortSystemsByDependencies } from './SystemScheduler';
@@ -67,8 +67,8 @@ export class ECSRootSystem {
      * @param dt 帧间隔时间（秒）
      */
     execute(dt: number) {
-        const prev = ecsWorldManager.current;
-        ecsWorldManager.current = this.world;
+        const prev = worldCurrent.current!;
+        worldCurrent.current = this.world;
         // 兼容未调用 init() 的用法（如 root.add(sys) 后直接 execute）：仅绑定尚未绑定的新系统。
         // 增量游标避免每帧重复遍历——稳定运行后 boundCount === systemCnt，此循环零开销。
         for (let i = this.boundCount; i < this.systemCnt; i++) {
@@ -80,7 +80,7 @@ export class ECSRootSystem {
             this.executeSystemFlows[i].tick(dt);
         }
         if (this.world.commands.size > 0) this.world.commands.flush();
-        ecsWorldManager.current = prev;
+        worldCurrent.current = prev;
     }
 
     /** 销毁所有子系统并清空执行列表，同时解除与所属世界的关联 */

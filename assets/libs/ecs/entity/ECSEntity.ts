@@ -2,7 +2,6 @@ import type { ecs } from '../ECS';
 import { registry } from '../registry/ECSTypeRegistry';
 import { ECSMask } from '../component/ECSMask';
 import type { CompCtor, CompType } from '../registry/ECSTypes';
-import { ecsWorldManager } from '../world/ECSWorldManager';
 import type { ECSWorld } from '../world/ECSWorld';
 import { EntityHelper } from './EntityHelper';
 import { clearComponentEntityRefs } from '../reference/ECSEntityRef';
@@ -32,9 +31,9 @@ export class ECSEntity {
     /**
      * 实体所属世界（{@link ECSWorld.getEntity} 取出/创建时赋值）。
      * 组件增删广播、SoA、@EntityRef、销毁与 eid 释放均落到此世界，
-     * 不依赖全局 {@link ecsWorldManager.current}，从而支持多世界隔离。
+     * 不依赖全局 {@link ecs.world.current}，从而支持多世界隔离。
      */
-    world: ECSWorld = ecsWorldManager.current;
+    world: ECSWorld = null!;
     /**
      * 组件位掩码（哪些 tid 当前挂载在实体上）。
      * 构造时按已注册组件数分配字数；set 越界时自动扩容（兼容晚注册组件类型）。

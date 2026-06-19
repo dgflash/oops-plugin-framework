@@ -1,7 +1,7 @@
-import { Serializer, SerializedComponent, SerializedEntity, getCompCtorByName } from './Serialization';
 import { ecsWorldManager } from '../world/ECSWorldManager';
 import type { ecs } from '../ECS';
 import type { ECSEntity } from '../entity/ECSEntity';
+import { SerializedComponent, SerializedEntity, getCompCtorByName, serializeEntity } from './SerializationBase';
 
 /** 世界快照（按 eid 索引序列化实体） */
 export interface Snapshot {
@@ -54,8 +54,8 @@ export class IncrementalSerializer {
     /** 对当前世界拍快照 */
     static createSnapshot(): Snapshot {
         const entities = new Map<number, SerializedEntity>();
-        ecsWorldManager.current.entities.forEach((e) => {
-            if (e.isValid) entities.set(e.eid, Serializer.serializeEntity(e));
+        ecsWorldManager.current.entities.forEach(e => {
+            if (e.isValid) entities.set(e.eid, serializeEntity(e));
         });
         return { version: SNAPSHOT_VERSION, entities };
     }
@@ -89,10 +89,13 @@ export class IncrementalSerializer {
         const ed: EntityDelta = { eid: cur.eid };
         let dirty = false;
 
-        if (prev.parentEid !== cur.parentEid) { ed.parentEid = cur.parentEid; dirty = true; }
+        if (prev.parentEid !== cur.parentEid) {
+            ed.parentEid = cur.parentEid;
+            dirty = true;
+        }
 
-        const prevMap = new Map(prev.components.map((c) => [c.type, c]));
-        const curMap = new Map(cur.components.map((c) => [c.type, c]));
+        const prevMap = new Map(prev.components.map(c => [c.type, c]));
+        const curMap = new Map(cur.components.map(c => [c.type, c]));
 
         const upserted: SerializedComponent[] = [];
         curMap.forEach((c, key) => {
@@ -104,8 +107,14 @@ export class IncrementalSerializer {
             if (!curMap.has(key)) removedComps.push(key);
         });
 
-        if (upserted.length > 0) { ed.upserted = upserted; dirty = true; }
-        if (removedComps.length > 0) { ed.removed = removedComps; dirty = true; }
+        if (upserted.length > 0) {
+            ed.upserted = upserted;
+            dirty = true;
+        }
+        if (removedComps.length > 0) {
+            ed.removed = removedComps;
+            dirty = true;
+        }
 
         return dirty ? ed : null;
     }
@@ -123,8 +132,7 @@ export class IncrementalSerializer {
         deltaOrJson: IncrementalDelta | string,
         createEntityByName: (name: string) => ECSEntity | undefined
     ): void {
-        const delta: IncrementalDelta =
-            typeof deltaOrJson === 'string' ? JSON.parse(deltaOrJson) : deltaOrJson;
+        const delta: IncrementalDelta = typeof deltaOrJson === 'string' ? JSON.parse(deltaOrJson) : deltaOrJson;
 
         for (const eid of delta.removed) {
             const e = ecsWorldManager.current.entities.get(eid);
