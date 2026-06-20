@@ -4,11 +4,11 @@ const { ccclass, property } = _decorator;
 /** 三维摄像机内容显示到模型上 */
 @ccclass('RtToModel')
 export class RtToModel extends Component {
-    @property(Camera)
-        camara: Camera = null!;
+    @property('Camera')
+    camara: Camera = null!;
 
-    @property(MeshRenderer)
-        model: MeshRenderer = null!;
+    @property('MeshRenderer')
+    model: MeshRenderer = null!;
 
     private rt: RenderTexture = new RenderTexture();
 
