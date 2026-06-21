@@ -1,4 +1,4 @@
-import { AudioClip, Button, Component, EventHandler, Node } from 'cc';
+import { AudioClip, Component, EventHandler, Node } from 'cc';
 import { oops } from 'db://oops-framework/core/Oops';
 import ButtonSimple from './ButtonSimple';
 
