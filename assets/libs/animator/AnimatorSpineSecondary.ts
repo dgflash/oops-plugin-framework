@@ -4,13 +4,12 @@ import type { AnimationPlayer } from './core/AnimatorBase';
 import AnimatorBase from './core/AnimatorBase';
 import type { AnimatorStateLogic } from './core/AnimatorStateLogic';
 
-const { ccclass, property, requireComponent, menu, help } = _decorator;
+const { ccclass, property, menu, help } = _decorator;
 
 /**
  * Spine状态机组件（次状态机），同一节点可添加多个，用于在不同track中播放动画，trackIndex必须大于0
  */
 @ccclass
-@requireComponent(sp.Skeleton)
 @menu('OopsFramework/Animator/AnimatorSpine （Spine 次状态机）')
 @help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12036279&doc_id=2873565')
 export default class AnimatorSpineSecondary extends AnimatorBase {
@@ -22,13 +21,27 @@ export default class AnimatorSpineSecondary extends AnimatorBase {
     private _spine: sp.Skeleton = null!;
 
     protected start() {
+        // 检查 Spine 模块是否可用
+        if (typeof sp === 'undefined' || !sp.Skeleton) {
+            console.error('[AnimatorSpineSecondary] Spine module not enabled!');
+            return;
+        }
+
         if (!this.PlayOnStart || this._hasInit) {
             return;
         }
         this._hasInit = true;
 
+        // 获取或自动添加 Spine 组件
         this._spine = this.getComponent(sp.Skeleton)!;
+        if (!this._spine) {
+            this._spine = this.addComponent(sp.Skeleton)!;
+        }
         this._main = this.getComponent(AnimatorSpine)!;
+        if (!this._main) {
+            console.error('[AnimatorSpineSecondary] AnimatorSpine component not found!');
+            return;
+        }
         this._main.addSecondaryListener(this.onAnimFinished, this);
 
         if (this.AssetRawUrl !== null) {
@@ -44,6 +57,12 @@ export default class AnimatorSpineSecondary extends AnimatorBase {
      * @override
      */
     onInit(...args: Array<Map<string, AnimatorStateLogic> | ((fromState: string, toState: string) => void) | AnimationPlayer>) {
+        // 检查 Spine 模块是否可用
+        if (typeof sp === 'undefined' || !sp.Skeleton) {
+            console.error('[AnimatorSpineSecondary] Spine module not enabled!');
+            return;
+        }
+
         if (this.PlayOnStart || this._hasInit) {
             return;
         }
@@ -51,8 +70,16 @@ export default class AnimatorSpineSecondary extends AnimatorBase {
 
         this.initArgs(...args);
 
+        // 获取或自动添加 Spine 组件
         this._spine = this.getComponent(sp.Skeleton)!;
+        if (!this._spine) {
+            this._spine = this.addComponent(sp.Skeleton)!;
+        }
         this._main = this.getComponent(AnimatorSpine)!;
+        if (!this._main) {
+            console.error('[AnimatorSpineSecondary] AnimatorSpine component not found!');
+            return;
+        }
         this._main.addSecondaryListener(this.onAnimFinished, this);
 
         if (this.AssetRawUrl !== null) {

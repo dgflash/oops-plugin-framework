@@ -4,14 +4,13 @@ import type { AnimationPlayer } from './core/AnimatorBase';
 import AnimatorBase from './core/AnimatorBase';
 import type { AnimatorStateLogic } from './core/AnimatorStateLogic';
 
-const { ccclass, property, requireComponent, disallowMultiple, menu, help } = _decorator;
+const { ccclass, property, disallowMultiple, menu, help } = _decorator;
 
 /**
  * Spine状态机组件（主状态机），trackIndex为0
  */
 @ccclass
 @disallowMultiple
-@requireComponent(sp.Skeleton)
 @menu('OopsFramework/Animator/AnimatorSpine（Spine 状态机）')
 @help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12036279&doc_id=2873565')
 export default class AnimatorSpine extends AnimatorBase {
@@ -26,12 +25,22 @@ export default class AnimatorSpine extends AnimatorBase {
     private _boundCompleteCallback: ((entry: any) => void) | null = null;
 
     protected start() {
+        // 检查 Spine 模块是否可用
+        if (typeof sp === 'undefined' || !sp.Skeleton) {
+            console.error('[AnimatorSpine] Spine module not enabled!');
+            return;
+        }
+
         if (!this.PlayOnStart || this._hasInit) {
             return;
         }
         this._hasInit = true;
 
+        // 获取或自动添加 Spine 组件
         this._spine = this.getComponent(sp.Skeleton)!;
+        if (!this._spine) {
+            this._spine = this.addComponent(sp.Skeleton)!;
+        }
         this._boundEventCallback = this.onSpineEvent.bind(this);
         this._boundCompleteCallback = this.onSpineComplete.bind(this);
         this._spine.setEventListener(this._boundEventCallback);
@@ -50,6 +59,12 @@ export default class AnimatorSpine extends AnimatorBase {
      * @override
      */
     onInit(...args: Array<Map<string, AnimatorStateLogic> | ((fromState: string, toState: string) => void) | AnimationPlayer>) {
+        // 检查 Spine 模块是否可用
+        if (typeof sp === 'undefined' || !sp.Skeleton) {
+            console.error('[AnimatorSpine] Spine module not enabled!');
+            return;
+        }
+
         if (this.PlayOnStart || this._hasInit) {
             return;
         }
@@ -57,7 +72,11 @@ export default class AnimatorSpine extends AnimatorBase {
 
         this.initArgs(...args);
 
+        // 获取或自动添加 Spine 组件
         this._spine = this.getComponent(sp.Skeleton)!;
+        if (!this._spine) {
+            this._spine = this.addComponent(sp.Skeleton)!;
+        }
         this._boundEventCallback = this.onSpineEvent.bind(this);
         this._boundCompleteCallback = this.onSpineComplete.bind(this);
         this._spine.setEventListener(this._boundEventCallback);

@@ -3,14 +3,13 @@ import type { AnimationPlayer } from './core/AnimatorBase';
 import AnimatorBase from './core/AnimatorBase';
 import type { AnimatorStateLogic } from './core/AnimatorStateLogic';
 
-const { ccclass, property, requireComponent, disallowMultiple, menu, help } = _decorator;
+const { ccclass, disallowMultiple, menu, help } = _decorator;
 
 /**
  * DragonBones状态机组件
  */
 @ccclass
 @disallowMultiple
-@requireComponent(dragonBones.ArmatureDisplay)
 @menu('OopsFramework/Animator/AnimatorDragonBones （龙骨状态机）')
 @help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12036279&doc_id=2873565')
 export default class AnimatorDragonBones extends AnimatorBase {
@@ -18,12 +17,22 @@ export default class AnimatorDragonBones extends AnimatorBase {
     private _dragonBones: dragonBones.ArmatureDisplay = null!;
 
     protected start() {
+        // 检查 DragonBones 模块是否可用
+        if (typeof dragonBones === 'undefined' || !dragonBones.ArmatureDisplay) {
+            console.error('[AnimatorDragonBones] DragonBones module not enabled!');
+            return;
+        }
+
         if (!this.PlayOnStart || this._hasInit) {
             return;
         }
         this._hasInit = true;
 
+        // 获取或自动添加 DragonBones 组件
         this._dragonBones = this.getComponent(dragonBones.ArmatureDisplay)!;
+        if (!this._dragonBones) {
+            this._dragonBones = this.addComponent(dragonBones.ArmatureDisplay)!;
+        }
         this._dragonBones.addEventListener('complete', this.onAnimFinished, this);
 
         if (this.AssetRawUrl !== null) {
@@ -39,6 +48,12 @@ export default class AnimatorDragonBones extends AnimatorBase {
      * @override
      */
     onInit(...args: Array<Map<string, AnimatorStateLogic> | ((fromState: string, toState: string) => void) | AnimationPlayer>) {
+        // 检查 DragonBones 模块是否可用
+        if (typeof dragonBones === 'undefined' || !dragonBones.ArmatureDisplay) {
+            console.error('[AnimatorDragonBones] DragonBones module not enabled!');
+            return;
+        }
+
         if (this.PlayOnStart || this._hasInit) {
             return;
         }
@@ -46,7 +61,11 @@ export default class AnimatorDragonBones extends AnimatorBase {
 
         this.initArgs(...args);
 
+        // 获取或自动添加 DragonBones 组件
         this._dragonBones = this.getComponent(dragonBones.ArmatureDisplay)!;
+        if (!this._dragonBones) {
+            this._dragonBones = this.addComponent(dragonBones.ArmatureDisplay)!;
+        }
         this._dragonBones.addEventListener('complete', this.onAnimFinished, this);
 
         if (this.AssetRawUrl !== null) {

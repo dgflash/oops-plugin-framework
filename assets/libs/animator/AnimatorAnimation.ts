@@ -4,7 +4,7 @@ import type { AnimationPlayer } from './core/AnimatorBase';
 import AnimatorBase from './core/AnimatorBase';
 import type { AnimatorStateLogic } from './core/AnimatorStateLogic';
 
-const { ccclass, property, requireComponent, disallowMultiple, menu, help } = _decorator;
+const { ccclass, property, disallowMultiple, menu, help } = _decorator;
 
 /** 动画循环播放模式 */
 const WRAP_MODE_LOOP = AnimationClip.WrapMode.Loop;
@@ -16,7 +16,6 @@ const WRAP_MODE_NORMAL = AnimationClip.WrapMode.Normal;
  */
 @ccclass
 @disallowMultiple
-@requireComponent(Animation)
 @menu('OopsFramework/Animator/AnimatorAnimation （动画状态机）')
 @help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12036279&doc_id=2873565')
 export default class AnimatorAnimation extends AnimatorBase {
@@ -28,12 +27,22 @@ export default class AnimatorAnimation extends AnimatorBase {
     protected _wrapModeMap: Map<AnimationState, number> = new Map();
 
     protected start() {
+        // 检查 Animation 模块是否可用
+        if (typeof Animation === 'undefined' || !Animation) {
+            console.error('[AnimatorAnimation] Animation module not enabled!');
+            return;
+        }
+
         if (!this.PlayOnStart || this._hasInit) {
             return;
         }
         this._hasInit = true;
 
+        // 获取或自动添加 Animation 组件
         this._animation = this.getComponent(Animation)!;
+        if (!this._animation) {
+            this._animation = this.addComponent(Animation)!;
+        }
         this._animation.on(Animation.EventType.FINISHED, this.onAnimFinished, this);
         this._animation.on(Animation.EventType.LASTFRAME, this.onAnimFinished, this);
 
@@ -50,6 +59,12 @@ export default class AnimatorAnimation extends AnimatorBase {
      * @override
      */
     onInit(...args: Array<Map<string, AnimatorStateLogic> | ((fromState: string, toState: string) => void) | AnimationPlayer>) {
+        // 检查 Animation 模块是否可用
+        if (typeof Animation === 'undefined' || !Animation) {
+            console.error('[AnimatorAnimation] Animation module not enabled!');
+            return;
+        }
+
         if (this.PlayOnStart || this._hasInit) {
             return;
         }
@@ -57,7 +72,11 @@ export default class AnimatorAnimation extends AnimatorBase {
 
         this.initArgs(...args);
 
+        // 获取或自动添加 Animation 组件
         this._animation = this.getComponent(Animation)!;
+        if (!this._animation) {
+            this._animation = this.addComponent(Animation)!;
+        }
         this._animation.on(Animation.EventType.FINISHED, this.onAnimFinished, this);
         this._animation.on(Animation.EventType.LASTFRAME, this.onAnimFinished, this);
 

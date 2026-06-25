@@ -1,7 +1,7 @@
 import { AnimationClip, CCFloat, game, SkeletalAnimation, _decorator } from 'cc';
 import AnimatorAnimation from './AnimatorAnimation';
 
-const { ccclass, property, requireComponent, disallowMultiple, menu, help } = _decorator;
+const { ccclass, property, disallowMultiple, menu, help } = _decorator;
 
 /** 动画循环播放模式 */
 const WRAP_MODE_LOOP = AnimationClip.WrapMode.Loop;
@@ -10,7 +10,6 @@ const WRAP_MODE_NORMAL = AnimationClip.WrapMode.Normal;
 
 @ccclass
 @disallowMultiple
-@requireComponent(SkeletalAnimation)
 @menu('OopsFramework/Animator/AnimatorSkeletal （骨骼动画状态机）')
 @help('https://gitee.com/dgflash/oops-framework/wikis/pages?sort_id=12036279&doc_id=2873565')
 export class AnimatorSkeletal extends AnimatorAnimation {
@@ -27,6 +26,46 @@ export class AnimatorSkeletal extends AnimatorAnimation {
 
     onLoad() {
         this._crossDurationMs = this.duration * 1000;
+    }
+
+    protected start() {
+        // 检查 SkeletalAnimation 模块是否可用
+        if (typeof SkeletalAnimation === 'undefined' || !SkeletalAnimation) {
+            console.error('[AnimatorSkeletal] SkeletalAnimation module not enabled!');
+            return;
+        }
+
+        // 获取或自动添加 SkeletalAnimation 组件
+        let skeletalAnim = this.getComponent(SkeletalAnimation);
+        if (!skeletalAnim) {
+            skeletalAnim = this.addComponent(SkeletalAnimation)!;
+        }
+        this._animation = skeletalAnim;
+
+        // 调用父类的 start()
+        super.start();
+    }
+
+    /**
+     * 手动初始化状态机
+     * @override
+     */
+    onInit(...args: any[]) {
+        // 检查 SkeletalAnimation 模块是否可用
+        if (typeof SkeletalAnimation === 'undefined' || !SkeletalAnimation) {
+            console.error('[AnimatorSkeletal] SkeletalAnimation module not enabled!');
+            return;
+        }
+
+        // 获取或自动添加 SkeletalAnimation 组件
+        let skeletalAnim = this.getComponent(SkeletalAnimation);
+        if (!skeletalAnim) {
+            skeletalAnim = this.addComponent(SkeletalAnimation)!;
+        }
+        this._animation = skeletalAnim;
+
+        // 调用父类的 onInit()
+        super.onInit(...args);
     }
 
     /**
