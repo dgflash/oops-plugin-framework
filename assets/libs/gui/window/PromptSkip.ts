@@ -1,7 +1,6 @@
 import type { Toggle } from 'cc';
 import { _decorator } from 'cc';
 import { oops } from 'db://oops-framework/core/Oops';
-import { GameStorage } from 'db://oops-framework/module/common/GameStorage';
 import { PromptBase, PromptConfig } from './PromptBase';
 
 const { ccclass } = _decorator;
@@ -28,7 +27,7 @@ export class PromptSkip extends PromptBase {
     /** 获取跳过记录数据（懒加载） */
     private static getSkipData(): PromptSkipData {
         if (this._skipData === null) {
-            this._skipData = oops.storage.getJson(GameStorage.PromptSkip, {});
+            this._skipData = oops.storage.getJson('OopsFrameworkPromptSkip', {});
         }
         return this._skipData;
     }
@@ -36,7 +35,7 @@ export class PromptSkip extends PromptBase {
     /** 保存跳过记录数据（带防抖优化） */
     private static saveSkipData(): void {
         if (this._skipData !== null) {
-            oops.storage.set(GameStorage.PromptSkip, JSON.stringify(this._skipData));
+            oops.storage.set('OopsFrameworkPromptSkip', JSON.stringify(this._skipData));
         }
     }
 
@@ -101,7 +100,7 @@ export class PromptSkip extends PromptBase {
             expireDate.setDate(expireDate.getDate() + skipDay);
             expireDate.setHours(0, 0, 0, 0);
             skipData[this.config.id] = expireDate.getTime();
-        } 
+        }
         else {
             // 取消跳过：删除记录而不是设置为null
             delete skipData[this.config.id];

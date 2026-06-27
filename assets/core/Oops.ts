@@ -1,4 +1,5 @@
 import { DEBUG } from 'cc/env';
+import { ECSDriver } from '../libs/ecs/ECSDriver';
 import { LanguageManager } from '../libs/gui/language/Language';
 import { VM } from '../libs/model-view/ViewModel';
 import { Config } from '../module/config/Config';
@@ -11,7 +12,6 @@ import type { StorageManager } from './common/storage/StorageManager';
 import type { TimerManager } from './common/timer/TimerManager';
 import type { GameManager } from './game/GameManager';
 import type { LayerManager } from './gui/layer/LayerManager';
-import { ECSDriver } from '../libs/ecs/ECSDriver';
 
 /** 框架版本号 */
 export var version = '3.1.0.20260504';

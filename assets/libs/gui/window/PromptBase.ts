@@ -106,7 +106,8 @@ export class PromptBase extends GameComponent {
             this.remove();
             // 在窗口移除后执行回调，避免回调中的逻辑影响窗口关闭
             callback();
-        } else {
+        }
+        else {
             this.remove();
         }
     }
@@ -119,7 +120,8 @@ export class PromptBase extends GameComponent {
             this.remove();
             // 在窗口移除后执行回调，避免回调中的逻辑影响窗口关闭
             callback();
-        } else {
+        }
+        else {
             this.remove();
         }
     }
