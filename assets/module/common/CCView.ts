@@ -136,7 +136,8 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
             for (let i = 0; i < len; i++) {
                 pathArr[i] = pathArr[i].replace('*', tag);
             }
-        } else if (comp.watchPath[0] === '*') {
+        }
+        else if (comp.watchPath[0] === '*') {
             comp.watchPath = comp.watchPath.replace('*', tag);
         }
     }

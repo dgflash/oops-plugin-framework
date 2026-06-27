@@ -183,13 +183,14 @@ export abstract class CCEntity extends ecs.Entity {
         const node = await oops.gui.open(key, params);
 
         const comp = node.getComponent(ctor) as unknown as ecs.Comp;
-        if (comp) this.add(comp);
+        const isEcsComp = comp && 'ent' in comp && 'tid' in comp;
+        if (isEcsComp) this.add(comp);
 
         // 检查实体是否已销毁
         if (!this.isValid) {
             console.warn('[OopsFramework]', `实体已销毁，取消添加界面组件: ${key}`);
             // 移除已添加的 ECS 组件
-            if (comp) this.remove(ctor as unknown as CompType<ecs.IComp>);
+            if (isEcsComp) this.remove(ctor as unknown as CompType<ecs.IComp>);
             oops.gui.remove(key);
             return null;
         }
