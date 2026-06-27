@@ -16,12 +16,12 @@ export enum LogType {
 }
 
 let names = {
-    "1": "网络日志",
-    "2": "数据日志",
-    "4": "业务日志",
-    "8": "视图日志",
-    "16": "配置日志",
-    "32": "标准日志"
+    '1': '网络日志',
+    '2': '数据日志',
+    '4': '业务日志',
+    '8': '视图日志',
+    '16': '配置日志',
+    '32': '标准日志'
 };
 
 export interface ILoggerConsole {
@@ -112,7 +112,7 @@ oops.log.setTags(LogType.View|LogType.Business)
         if (startTime) {
             const duration = Date.now() - startTime;
             this.timeMap.delete(describe);
-            const colorStyle = "color:#fff;background:#ec1b3c;padding:2px 6px;border-radius:4px;";
+            const colorStyle = 'color:#fff;background:#ec1b3c;padding:2px 6px;border-radius:4px;';
             console.log(`%c[性能][${describe}]消耗[${duration}ms]`, colorStyle);
         }
         else {
@@ -139,7 +139,7 @@ oops.log.table(object);
      * 打印标准日志
      * @param msg       日志消息
      */
-    trace(msg: any, color: string = "#000000ff") {
+    trace(msg: any, color: string = '#ffffffff') {
         this.print(LogType.Trace, msg, color);
     }
 
@@ -186,27 +186,27 @@ oops.log.table(object);
 
     // 橙色
     private orange(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, "#ee7700", describe);
+        this.print(tag, msg, '#ee7700', describe);
     }
 
     // 紫色
     private violet(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, "#800080", describe);
+        this.print(tag, msg, '#800080', describe);
     }
 
     // 蓝色
     private blue(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, "#3a5fcd", describe);
+        this.print(tag, msg, '#3a5fcd', describe);
     }
 
     // 绿色
     private green(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, "#008000", describe);
+        this.print(tag, msg, '#008000', describe);
     }
 
     // 灰色
     private gray(tag: LogType, msg: any, describe?: string) {
-        this.print(tag, msg, "#808080", describe);
+        this.print(tag, msg, '#808080', describe);
     }
 
     private isOpen(tag: LogType): boolean {
@@ -228,23 +228,23 @@ oops.log.table(object);
         if (this.lc == null) {
             // 使用原始console方法，避免循环调用
             const backLog = console.log;
-            color = "color:" + color + ";";
+            color = 'color:' + color + ';';
 
             // 处理数组参数，展开打印
             if (Array.isArray(msg)) {
                 if (describe) {
-                    backLog("%c%s%s: %s", color, this.getDateString(), "[" + type + "]", describe, ...msg);
+                    backLog('%c%s%s: %s', color, this.getDateString(), '[' + type + ']', describe, ...msg);
                 }
                 else {
-                    backLog("%c%s%s: ", color, this.getDateString(), "[" + type + "]", ...msg);
+                    backLog('%c%s%s: ', color, this.getDateString(), '[' + type + ']', ...msg);
                 }
             }
             else {
                 if (describe) {
-                    backLog("%c%s%s: %s%o", color, this.getDateString(), "[" + type + "]", describe, msg);
+                    backLog('%c%s%s: %s%o', color, this.getDateString(), '[' + type + ']', describe, msg);
                 }
                 else {
-                    backLog("%c%s%s: %o", color, this.getDateString(), "[" + type + "]", msg);
+                    backLog('%c%s%s: %o', color, this.getDateString(), '[' + type + ']', msg);
                 }
             }
         }
@@ -256,18 +256,18 @@ oops.log.table(object);
     private getDateString(): string {
         let d = new Date();
         let str = d.getHours().toString();
-        let timeStr = "";
-        timeStr += (str.length == 1 ? "0" + str : str) + ":";
+        let timeStr = '';
+        timeStr += (str.length == 1 ? '0' + str : str) + ':';
         str = d.getMinutes().toString();
-        timeStr += (str.length == 1 ? "0" + str : str) + ":";
+        timeStr += (str.length == 1 ? '0' + str : str) + ':';
         str = d.getSeconds().toString();
-        timeStr += (str.length == 1 ? "0" + str : str) + ":";
+        timeStr += (str.length == 1 ? '0' + str : str) + ':';
         str = d.getMilliseconds().toString();
-        if (str.length == 1) str = "00" + str;
-        if (str.length == 2) str = "0" + str;
+        if (str.length == 1) str = '00' + str;
+        if (str.length == 2) str = '0' + str;
         timeStr += str;
 
-        timeStr = "[" + timeStr + "]";
+        timeStr = '[' + timeStr + ']';
         return timeStr;
     }
 }
