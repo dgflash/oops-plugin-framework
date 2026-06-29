@@ -120,7 +120,8 @@ export class GamePartAudio extends GamePartBase {
         if (isRemote) {
             // 加载远程资源（ResAutoTracker 自动管理）
             return await this.comp.res.loadRemote<AudioClip>(url);
-        } else {
+        }
+        else {
             // 加载本地资源（ResAutoTracker 自动管理）
             return await this.comp.res.load(bundle, url, AudioClip);
         }

@@ -51,9 +51,13 @@ export class GamePartNodePool extends GamePartBase {
     private _speed = 1;
 
     /** 获取全局动画播放速度 */
-    get speed(): number { return this._speed; }
+    get speed(): number {
+        return this._speed;
+    }
     /** 设置全局动画播放速度 */
-    set speed(value: number) { this._speed = value; }
+    set speed(value: number) {
+        this._speed = value;
+    }
 
     /**
      * 获取指定资源池中对象数量
@@ -98,7 +102,9 @@ export class GamePartNodePool extends GamePartBase {
     }
 
     /** 回收对象 */
-    put(node: Node) { gameNodePool.put(node); }
+    put(node: Node) {
+        gameNodePool.put(node);
+    }
 
     /**
      * 清除对象池数据（只清除本模块管理的）
@@ -175,5 +181,7 @@ export class GamePartNodePool extends GamePartBase {
     }
 
     /** 销毁特效模块 */
-    override destroy(): void { this.release(); }
+    override destroy(): void {
+        this.release();
+    }
 }
