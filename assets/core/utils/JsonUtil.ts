@@ -2,16 +2,15 @@ import { JsonAsset } from 'cc';
 import { ZipLoader } from 'db://oops-framework/core/common/loader/ZipLoader';
 import { resLoader } from '../common/loader/ResLoader';
 
-/** 资源路径 */
-const pathJson = 'config/game/';
-/** 压缩包资源路径 */
-const pathZip = 'config/game/game';
-
 /** 数据缓存 */
 const data: Map<string, any> = new Map();
 
 /** JSON数据表工具 */
 export class JsonUtil {
+    /** 资源路径 */
+    static pathJson: string = 'config/game/';
+    /** 压缩包资源路径 */
+    static pathZip: string = 'config/game/game';
     /** 是否使用压缩包加载配置表 */
     static zip = false;
 
@@ -34,9 +33,9 @@ export class JsonUtil {
                 resolve(data.get(name));
             }
             else {
-                const url = pathJson + name;
+                const url = JsonUtil.pathJson + name;
                 if (this.zip) {
-                    content = await ZipLoader.getJson(pathZip, `${name}.json`);
+                    content = await ZipLoader.getJson(JsonUtil.pathZip, `${name}.json`);
                 }
                 else {
                     content = await resLoader.load(url, JsonAsset);
@@ -62,16 +61,16 @@ export class JsonUtil {
     static loadDir(): Promise<void> {
         return new Promise(async (resolve, reject) => {
             if (this.zip) {
-                const zip = await ZipLoader.load(pathZip);
+                const zip = await ZipLoader.load(JsonUtil.pathZip);
                 for (const key in zip.files) {
                     const name = key.replace('.json', '');
-                    data.set(name, ZipLoader.getJson(pathZip, `${name}.json`));
+                    data.set(name, ZipLoader.getJson(JsonUtil.pathZip, `${name}.json`));
                 }
-                ZipLoader.release(pathZip);
+                ZipLoader.release(JsonUtil.pathZip);
                 resolve();
             }
             else {
-                resLoader.loadDir(pathJson, (err: Error | null, assets: JsonAsset[]) => {
+                resLoader.loadDir(JsonUtil.pathJson, (err: Error | null, assets: JsonAsset[]) => {
                     if (err) {
                         console.error(err.message);
                         resolve();
@@ -80,7 +79,7 @@ export class JsonUtil {
                         assets.forEach((asset) => {
                             data.set(asset.name, asset.json);
                         });
-                        resLoader.releaseDir(pathJson);
+                        resLoader.releaseDir(JsonUtil.pathJson);
                         resolve();
                     }
                 });
