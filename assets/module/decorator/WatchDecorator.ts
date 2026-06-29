@@ -123,7 +123,8 @@ export namespace watch {
         for (const meta of metadata) {
             if (meta.deep) {
                 setupDeepPropertyWatcher(target, meta);
-            } else {
+            }
+            else {
                 setupPropertyWatcher(target, meta);
             }
         }
@@ -186,7 +187,8 @@ export namespace watch {
                     if (result === false) {
                         // 可以在这里添加回滚逻辑
                     }
-                } catch (error) {
+                }
+                catch (error) {
                     console.error(`[WatchDecorator] 执行 ${methodName} 时出错:`, error);
                 }
             },
@@ -199,7 +201,8 @@ export namespace watch {
             try {
                 instance[methodName].call(instance, initialValue, undefined, propertyKey);
                 instance[initializedKey] = true;
-            } catch (error) {
+            }
+            catch (error) {
                 console.error(`[WatchDecorator] 执行 ${methodName} 时出错:`, error);
             }
         }
@@ -267,7 +270,8 @@ export namespace watch {
                 // 触发回调
                 try {
                     callback.call(this, newValue, oldValue, propertyKey, propertyKey);
-                } catch (error) {
+                }
+                catch (error) {
                     console.error(`[WatchDecorator] 执行 ${methodName} 时出错:`, error);
                 }
             },
@@ -281,7 +285,8 @@ export namespace watch {
                 const originalValue = descriptor?.value;
                 instance[methodName].call(instance, originalValue, undefined, propertyKey, propertyKey);
                 instance[initializedKey] = true;
-            } catch (error) {
+            }
+            catch (error) {
                 console.error(`[WatchDecorator] 执行 ${methodName} 时出错:`, error);
             }
         }
@@ -383,7 +388,8 @@ export namespace watch {
 
         try {
             callback.call(instance, newValue, oldValue, propertyKey, path);
-        } catch (error) {
+        }
+        catch (error) {
             console.error(`[WatchDecorator] 执行 ${methodName} 时出错:`, error);
         }
     }
