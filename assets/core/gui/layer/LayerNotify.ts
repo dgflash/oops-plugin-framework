@@ -1,9 +1,8 @@
 import { BlockInputEvents, Node, instantiate } from 'cc';
-import { EDITOR } from 'cc/env';
 import { ViewUtil } from '../../utils/ViewUtil';
+import { GuiPromptConfig } from '../GuiPromptConfig';
 import { Notify } from '../prompt/Notify';
 import { LayerHelper } from './LayerHelper';
-import { GuiPromptConfig } from '../GuiPromptConfig';
 
 /* 滚动消息提示层 */
 export class LayerNotify extends Node {
@@ -34,8 +33,7 @@ export class LayerNotify extends Node {
         try {
             if (this.wait == null) {
                 this.wait = await ViewUtil.createPrefabNodeAsync(
-                    GuiPromptConfig.Wait.path,
-                    GuiPromptConfig.Wait.bundle
+                    GuiPromptConfig.Wait.path
                 );
             }
 
@@ -50,7 +48,8 @@ export class LayerNotify extends Node {
                 this.wait.parent = this;
                 this.black.enabled = true;
             }
-        } finally {
+        }
+        finally {
             this.waitOpening = false;
         }
     }
@@ -83,8 +82,7 @@ export class LayerNotify extends Node {
     async toast(content: string, useI18n: boolean) {
         if (this.notify == null) {
             this.notify = await ViewUtil.createPrefabNodeAsync(
-                GuiPromptConfig.Notify.path,
-                GuiPromptConfig.Notify.bundle
+                GuiPromptConfig.Notify.path
             );
             this.notifyItem = this.notify.children[0];
             this.notifyItem.parent = null;

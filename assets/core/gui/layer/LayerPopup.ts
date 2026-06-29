@@ -91,7 +91,7 @@ export class LayerPopUp extends LayerUI {
     protected async openVacancyRemove(config: UIConfig) {
         // 背景半透明遮罩
         if (this.mask == null) {
-            this.mask = await ViewUtil.createPrefabNodeAsync(GuiPromptConfig.Mask.path, GuiPromptConfig.Mask.bundle);
+            this.mask = await ViewUtil.createPrefabNodeAsync(GuiPromptConfig.Mask.path);
             this.mask.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
 
             this.black = this.mask.addComponent(BlockInputEvents);
