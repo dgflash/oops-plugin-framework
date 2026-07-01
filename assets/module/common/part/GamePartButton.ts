@@ -1,5 +1,5 @@
 import type { EventTouch } from 'cc';
-import { Button, EventHandler, Node } from 'cc';
+import { Button, EventHandler, Node, Toggle } from 'cc';
 import type { GameComponent } from '../GameComponent';
 import { GamePartBase } from '../GamePartBase';
 
@@ -31,6 +31,9 @@ export class GamePartButton extends GamePartBase {
         const componentName = match[1];
         const buttons = this.comp.node.getComponentsInChildren<Button>(Button);
         buttons.forEach((b: Button) => {
+            // 跳过 Toggle 节点，避免与 Toggle 编辑器中配置的 checkEvents 冲突
+            if (b.node.getComponent(Toggle)) return;
+
             const node = b.node;
             const self: any = this.comp;
             const func = self[node.name];
