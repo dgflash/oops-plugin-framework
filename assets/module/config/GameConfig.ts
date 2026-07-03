@@ -26,18 +26,6 @@ export interface IConfigEnvironmentBase {
     mobileSafeArea: boolean;
     /** 是否显示统计信息 */
     stats: boolean;
-    /** Http 服务器地址 */
-    httpServer: string;
-    /** Http 请求超时时间（毫秒） */
-    httpTimeout: number;
-    /** WebSocket 服务器地址 */
-    webSocketServer: string;
-    /** WebSocket 心跳间隔时间（毫秒） */
-    webSocketHeartTime: number;
-    /** WebSocket 指定时间没收到消息就断开连接（毫秒） */
-    webSocketReceiveTime: number;
-    /** WebSocket 重连间隔时间（毫秒） */
-    webSocketReconnetTimeOut: number;
 }
 
 /** 环境配置类型（游戏项目可通过模块增强扩展自定义字段） */
@@ -99,31 +87,6 @@ export class GameConfig {
     get stats(): boolean {
         return this.data.stats;
     }
-    /** Http 服务器地址 */
-    get httpServer(): string {
-        return this.data.httpServer;
-    }
-    /** Http 请求超时时间 */
-    get httpTimeout(): number {
-        return this.data.httpTimeout;
-    }
-    /** WebSocket 服务器地址 */
-    get webSocketServer(): string {
-        return this.data.webSocketServer;
-    }
-    /** WebSocket 心跳间隔时间（毫秒） */
-    get webSocketHeartTime(): number {
-        return this.data.webSocketHeartTime;
-    }
-    /** WebSocket 指定时间没收到消息就断开连接（毫秒） */
-    get webSocketReceiveTime(): number {
-        return this.data.webSocketReceiveTime;
-    }
-    /** WebSocket 重连间隔时间（毫秒） */
-    get webSocketReconnetTimeOut(): number {
-        return this.data.webSocketReconnetTimeOut;
-    }
-
     /** 获取当前客户端支持的语言类型 */
     get language(): Array<string> {
         return this._data.language.type || ['zh'];
