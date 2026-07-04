@@ -171,7 +171,7 @@ export class GamePartNodePool extends GamePartBase {
 
     /** 获取 IAutoRelease 组件（查找或自动添加） */
     private _getAutoRelease(node: Node): IAutoRelease | null {
-        const spine = node.getComponent(sp.Skeleton);
+        const spine = sp && node.getComponent(sp.Skeleton);
         if (spine) return node.addComponent(SpineEffectAutoRelease);
         const anim = node.getComponent(Animation);
         if (anim) return node.addComponent(AnimationEffectAutoRelease);
