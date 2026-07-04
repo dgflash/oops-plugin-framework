@@ -29,7 +29,7 @@ export class AudioManager extends Component {
      * @param params    音效参数
      */
     playMusic(clip: AudioClip, params?: IAudioParams) {
-        this.music.play(clip, params);
+        this.music?.play(clip, params);
     }
 
     /**
@@ -38,30 +38,30 @@ export class AudioManager extends Component {
      * @param params    音效参数
      */
     playEffect(clip: AudioClip, params?: IAudioParams): AudioEffect | null {
-        return this.effect.play(clip, params);
+        return this.effect?.play(clip, params) ?? null;
     }
 
     /** 回收音效播放器 */
     putEffect(ae: AudioEffect) {
-        this.effect.put(ae);
+        this.effect?.put(ae);
     }
 
     /** 恢复当前暂停的音乐与音效播放 */
     resumeAll() {
-        this.music.resume();
-        this.effect.resume();
+        this.music?.resume();
+        this.effect?.resume();
     }
 
     /** 暂停当前音乐与音效的播放 */
     pauseAll() {
-        this.music.pause();
-        this.effect.pause();
+        this.music?.pause();
+        this.effect?.pause();
     }
 
     /** 停止当前音乐与音效的播放 */
     stopAll() {
-        this.music.stop();
-        this.effect.stop();
+        this.music?.stop();
+        this.effect?.stop();
     }
 
     /** 保存音乐音效的音量、开关配置数据到本地 */

@@ -45,7 +45,10 @@ export class AudioEffectPool {
      */
     getSwitch(type: string = AudioEffectType.Effect) {
         const iad = this.data[type];
-        if (iad == null) console.error(`类型为【${type}】的音效配置不存在`);
+        if (iad == null) {
+            console.error(`类型为【${type}】的音效配置不存在`);
+            return false;
+        }
         return iad.switch;
     }
     /**
@@ -55,7 +58,10 @@ export class AudioEffectPool {
      */
     setSwitch(value: boolean, type: string = AudioEffectType.Effect) {
         const iad = this.data[type];
-        if (iad == null) console.error(`类型为【${type}】的音效配置不存在`);
+        if (iad == null) {
+            console.error(`类型为【${type}】的音效配置不存在`);
+            return;
+        }
         iad.switch = value;
 
         if (!value) this.stop();
@@ -68,7 +74,10 @@ export class AudioEffectPool {
      */
     getVolume(type: string = AudioEffectType.Effect) {
         const iad = this.data[type];
-        if (iad == null) console.error(`类型为【${type}】的音效配置不存在`);
+        if (iad == null) {
+            console.error(`类型为【${type}】的音效配置不存在`);
+            return 0;
+        }
         return iad.volume;
     }
     /**
@@ -78,7 +87,10 @@ export class AudioEffectPool {
      */
     setVolume(value: number, type: string = AudioEffectType.Effect) {
         const iad = this.data[type];
-        if (iad == null) console.error(`类型为【${type}】的音效配置不存在`);
+        if (iad == null) {
+            console.error(`类型为【${type}】的音效配置不存在`);
+            return;
+        }
         iad.volume = value;
 
         this.effects.forEach(ac => (ac.volume = value));
@@ -128,7 +140,8 @@ export class AudioEffectPool {
             node = new Node('AudioEffect');
             ae = node.addComponent(AudioEffect)!;
             ae.onComplete = this.onAudioEffectPlayComplete.bind(this);
-        } else {
+        }
+        else {
             node = this.pool.get()!;
             ae = node.getComponent(AudioEffect)!;
         }
@@ -149,7 +162,8 @@ export class AudioEffectPool {
             ae.play();
 
             return ae;
-        } catch (e) {
+        }
+        catch (e) {
             // 播放异常时清理 effects 条目，防止残留
             this.effects.delete(ae.key);
             this.put(ae);
@@ -199,7 +213,8 @@ export class AudioEffectPool {
         this.effects.forEach((ae, key) => {
             if (ae.state === AudioSource.AudioState.PAUSED) {
                 ae.play();
-            } else {
+            }
+            else {
                 // 已播完（STOPPED/INIT），不再恢复，记录待清理
                 finishedKeys.push(key);
             }
@@ -248,7 +263,8 @@ export class AudioEffectPool {
             if (node) {
                 node.destroy();
                 destroyed++;
-            } else {
+            }
+            else {
                 break;
             }
         }
@@ -258,15 +274,15 @@ export class AudioEffectPool {
     private mergeParams(params?: IAudioParams): IAudioParams {
         return params
             ? {
-                  type: params.type ?? AudioEffectType.Effect,
-                  loop: params.loop ?? false,
-                  volume: params.volume,
-                  path: params.path,
-                  onPlayComplete: params.onPlayComplete,
-              }
+                    type: params.type ?? AudioEffectType.Effect,
+                    loop: params.loop ?? false,
+                    volume: params.volume,
+                    path: params.path,
+                    onPlayComplete: params.onPlayComplete,
+                }
             : {
-                  type: AudioEffectType.Effect,
-                  loop: false,
-              };
+                    type: AudioEffectType.Effect,
+                    loop: false,
+                };
     }
 }

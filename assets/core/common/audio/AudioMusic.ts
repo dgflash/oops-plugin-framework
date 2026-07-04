@@ -49,12 +49,12 @@ export class AudioMusic extends Node {
      */
     setVolume(value: number) {
         this.data[AudioEffectType.Music].volume = value;
-        this._ae.volume = value;
+        if (this._ae) this._ae.volume = value;
     }
 
     /** 获取音乐播放进度 */
     get progress(): number {
-        if (this._ae.duration > 0) this._progress = this._ae.currentTime / this._ae.duration;
+        if (this._ae && this._ae.duration > 0) this._progress = this._ae.currentTime / this._ae.duration;
         return this._progress;
     }
     /**
@@ -63,7 +63,7 @@ export class AudioMusic extends Node {
      */
     set progress(value: number) {
         this._progress = value;
-        this._ae.currentTime = value * this._ae.duration;
+        if (this._ae) this._ae.currentTime = value * this._ae.duration;
     }
 
     constructor() {
@@ -85,6 +85,7 @@ export class AudioMusic extends Node {
      */
     play(clip: AudioClip, params?: IAudioParams) {
         if (!this.getSwitch()) return;
+        if (!this._ae) return;
 
         if (this._ae.playing) this.stop();
 
@@ -98,17 +99,17 @@ export class AudioMusic extends Node {
 
     /** 恢复当前暂停的音乐与音效播放 */
     resume() {
-        if (!this._ae.playing && this.progress > 0) this._ae.play();
+        if (this._ae && !this._ae.playing && this.progress > 0) this._ae.play();
     }
 
     /** 暂停当前音乐与音效的播放 */
     pause() {
-        if (this._ae.playing) this._ae.pause();
+        if (this._ae && this._ae.playing) this._ae.pause();
     }
 
     /** 停止当前音乐与音效的播放 */
     stop(): void {
-        if (this._ae.playing) this._ae.stop();
+        if (this._ae && this._ae.playing) this._ae.stop();
     }
 
     /** 节点销毁时清理 */
