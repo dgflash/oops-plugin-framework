@@ -1,6 +1,22 @@
 import { BufferAsset, SpriteFrame, Texture2D } from 'cc';
 import { resLoader } from './ResLoader';
 
+/*
+ * jszip 按下面注里的办法「导入为插件」挂在全局上，不经 import，所以这里补一份**本文件用到的那几个成员**的类型。
+ * `@types/jszip` 只是个空壳（jszip 本体自带类型，要装 jszip 包才有），为这段默认不启用的代码
+ * （`JsonUtil.zip` 为 true 才走）不值得多装一个包。以后要用更多 API 就在这里补，或者改装 jszip。
+ */
+interface JSZipObject {
+    async(type: 'text' | 'base64'): Promise<string>;
+}
+interface JSZip {
+    files: Record<string, JSZipObject>;
+    file(path: string): JSZipObject;
+}
+declare const JSZip: {
+    loadAsync(data: ArrayBuffer): Promise<JSZip>;
+};
+
 /**
  * 加载Zip资源
  * 注：

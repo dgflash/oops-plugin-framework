@@ -1,6 +1,7 @@
 import { _decorator, Component, log } from 'cc';
 import { DEBUG } from 'cc/env';
 import { VM } from './ViewModel';
+import type { ViewModel } from './ViewModel';
 import { VMEnv } from './VMEnv';
 
 // 用来处理通知数据的层级

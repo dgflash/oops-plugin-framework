@@ -1,6 +1,4 @@
-import type { Node } from 'cc';
 import { Component, _decorator } from 'cc';
-import type { ListenerFunc, ListenerFuncTyped } from '../../core/common/event/EventMessage';
 import { oops } from '../../core/Oops';
 import type { GamePartAudio } from './part/GamePartAudio';
 import type { GamePartButton } from './part/GamePartButton';
@@ -87,75 +85,4 @@ export class GameComponent extends Component {
     protected onDestroy() {
         this._parts?.destroy();
     }
-
-    //#region ========== 兼容旧版本 API 如果是新项目可以把注释包起来的代码都删除 ==========
-
-    //#region 全局事件管理（兼容旧版本）
-    /** @deprecated 请使用 this.event.watch() */
-    watch<K extends keyof OopsFramework.TypedEventMap>(event: K, listener: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>, object: any): void {
-        this.event.watch(event, listener, object);
-    }
-
-    /** @deprecated 请使用 this.event.watchOnce() */
-    watchOnce<K extends keyof OopsFramework.TypedEventMap>(event: K, listener: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>, object: any): void {
-        this.event.watchOnce(event, listener, object);
-    }
-
-    /** @deprecated 请使用 this.event.unwatch() */
-    unwatch<K extends keyof OopsFramework.TypedEventMap>(event: K, listener?: ListenerFuncTyped<K, OopsFramework.TypedEventMap[K]>, object?: any): void {
-        this.event.unwatch(event, listener, object);
-    }
-
-    /** @deprecated 请使用 this.event.emit() */
-    emit<K extends keyof OopsFramework.TypedEventMap>(event: K, data?: OopsFramework.TypedEventMap[K]): void {
-        this.event.emit(event, data);
-    }
-
-    /** @deprecated 请使用 this.event.emitAsync() */
-    emitAsync<K extends keyof OopsFramework.TypedEventMap>(event: K, data: OopsFramework.TypedEventMap[K]): Promise<void> {
-        return this.event.emitAsync(event, data);
-    }
-
-    /** @deprecated 请使用 this.event.on() */
-    on(event: string, listener: ListenerFunc, object: any): void {
-        this.event.on(event, listener, object);
-    }
-
-    /** @deprecated 请使用 this.event.once() */
-    once(event: string, listener: ListenerFunc, object: any): void {
-        this.event.once(event, listener, object);
-    }
-
-    /** @deprecated 请使用 this.event.off() */
-    off(event: string, listener?: ListenerFunc, object?: object): void {
-        this.event.off(event, listener, object);
-    }
-
-    /** @deprecated 请使用 this.event.dispatchEvent() */
-    dispatchEvent(event: string, ...args: any[]): void {
-        this.event.dispatchEvent(event, ...args);
-    }
-
-    /** @deprecated 请使用 this.event.dispatchEventAsync() */
-    dispatchEventAsync(event: string, ...args: any[]): Promise<void> {
-        return this.event.dispatchEventAsync(event, ...args);
-    }
-    //#endregion
-
-    //#region 预制节点管理（兼容旧版本）
-    /** @deprecated 请使用 this.nodes.getNode() */
-    getNode(name: string): Node | undefined {
-        return this.nodes.get(name);
-    }
-
-    /** @deprecated 请使用 this.nodes.nodeTreeInfoLite() */
-    nodeTreeInfoLite(): void {
-        this.nodes.nodeTreeInfoLite();
-    }
-
-    /** @deprecated 请使用 this.nodes.createPrefabNode() */
-    async createPrefabNode(path: string, bundleName: string = oops.res.defaultBundleName): Promise<Node | null> {
-        return this.nodes.createPrefabNode(path, bundleName);
-    }
-    //#endregion
 }

@@ -9,6 +9,19 @@ export class PlatformUtil {
     }
 
     /**
+     * 判断当前设备是否可连接网络
+     * - 原生平台使用 `sys.getNetworkType()`
+     * - H5/小游戏平台使用浏览器 `navigator.onLine`
+     * @return true 表示有网络，false 表示无网络
+     */
+    static isNetworkAvailable(): boolean {
+        if (sys.isNative) {
+            return sys.getNetworkType() !== sys.NetworkType.NONE;
+        }
+        return typeof navigator !== 'undefined' && navigator.onLine;
+    }
+
+    /**
      * 获取当前设备的电池电量，如果电量无法获取，默认将返回 1
      * @return - 0.0 ~ 1.0
      */

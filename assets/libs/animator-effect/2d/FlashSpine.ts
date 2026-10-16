@@ -1,5 +1,5 @@
 import { Component, Material, sp, _decorator } from 'cc';
-const { ccclass, property } = _decorator;
+const { ccclass } = _decorator;
 
 @ccclass('FlashSpine')
 export default class FlashSpine extends Component {
@@ -16,12 +16,12 @@ export default class FlashSpine extends Component {
         // 获取材质
         this._skeleton = this.node.getComponent(sp.Skeleton)!;
         this._material = this._skeleton.customMaterial!;
-        
+
         // 创建一个自定义材质副本，只创建一次
         this._customMaterial = new Material();
         this._customMaterial.copy(this._material);
         this._skeleton.customMaterial = this._customMaterial;
-        
+
         // 设置材质对应的属性
         this._customMaterial.setProperty('u_rate', 1);
     }
@@ -32,7 +32,7 @@ export default class FlashSpine extends Component {
 
             this._time = this._time < 0 ? 0 : this._time;
             const rate = Math.abs(this._time - this._median) * 2 / this.duration;
-            
+
             // 直接更新已有材质的属性，不再每帧创建新材质
             this._customMaterial.setProperty('u_rate', rate);
         }

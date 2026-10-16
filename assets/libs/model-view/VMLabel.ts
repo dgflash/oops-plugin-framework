@@ -69,7 +69,7 @@ export default class VMLabel extends VMBase {
         }
     })
     /** 按照匹配参数顺序保存的 path 数组 （固定） */
-    protected watchPathArr: string[] = [];
+    watchPathArr: string[] = [];
 
     /** 按照路径参数顺序保存的 值的数组（固定）*/
     protected templateValueArr: any[] = [];

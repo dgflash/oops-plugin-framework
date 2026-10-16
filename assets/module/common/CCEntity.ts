@@ -181,6 +181,8 @@ export abstract class CCEntity extends ecs.Entity {
         }
 
         const node = await oops.gui.open(key, params);
+        // 还没显示出来就被移除了（在 Dialog 层排队时被 remove / clear，或加载途中被 remove）
+        if (!node) return null;
 
         const comp = node.getComponent(ctor) as unknown as ecs.Comp;
         const isEcsComp = comp && 'ent' in comp && 'tid' in comp;
@@ -209,7 +211,9 @@ export abstract class CCEntity extends ecs.Entity {
         if (key) {
             const node = oops.gui.get(key);
             if (node == null) {
-                console.warn('[OopsFramework]', `${key} 界面不存在或已关闭`);
+                // 已登记但还没有节点：在 Dialog 层排队，或还在加载。移除后对应的 addUi 兑现为 null，ECS 组件不会挂上
+                if (oops.gui.has(key)) oops.gui.remove(key);
+                else console.warn('[OopsFramework]', `${key} 界面不存在或已关闭`);
                 return;
             }
 

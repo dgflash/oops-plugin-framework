@@ -13,10 +13,10 @@ export class LayerNotify extends Node {
     private notify: Node = null!;
     /** 自定义弹出提示内容资源 */
     private notifyItem: Node = null!;
-    /** 标记是否正在打开等待提示中 */
-    private waitOpening: boolean = false;
-    /** 标记是否在打开过程中被请求关闭 */
-    private waitShouldClose: boolean = false;
+    /** 最后一次请求是开还是关（开关不计数，以最后一次为准） */
+    private waitWanted: boolean = false;
+    /** 等待提示预制的创建过程；所有并发的 waitOpen 共用这一次 */
+    private waitCreating: Promise<void> | null = null;
 
     constructor(name: string) {
         super(name);
@@ -26,52 +26,43 @@ export class LayerNotify extends Node {
         this.black.enabled = false;
     }
 
-    /** 打开等待提示 */
+    /**
+     * 打开等待提示
+     *
+     * 预制第一次用时要异步创建，期间可能又来几次开 / 关：创建只做一次，建好后按最后一次请求显示或隐藏。
+     * 切到后台时引擎的资源加载回调（走 rAF）全停，几个界面的加载超时定时器却照样触发，
+     * 回前台后开、关、创建完成的先后是乱的 —— 之前每次开各建一份、「建好前被关过」只记一个标记，
+     * 第二份建好时标记已被第一份用掉，转圈连同挡输入就一直留在屏幕上。
+     */
     async waitOpen() {
-        this.waitOpening = true;
-
-        try {
-            if (this.wait == null) {
-                this.wait = await ViewUtil.createPrefabNodeAsync(
-                    GuiPromptConfig.Wait.path
-                );
-            }
-
-            // 异步操作完成后，检查是否已被请求关闭
-            if (this.waitShouldClose) {
-                this.waitShouldClose = false;
-                this.doWaitClose();
-                return;
-            }
-
-            if (this.wait.parent == null) {
-                this.wait.parent = this;
-                this.black.enabled = true;
-            }
+        this.waitWanted = true;
+        if (this.wait == null) {
+            this.waitCreating ??= ViewUtil.createPrefabNodeAsync(GuiPromptConfig.Wait.path).then(node => {
+                this.wait = node;
+            }).finally(() => {
+                this.waitCreating = null;
+            });
+            await this.waitCreating;
         }
-        finally {
-            this.waitOpening = false;
-        }
+        this.applyWait();
     }
 
     /** 关闭等待提示 */
     waitClose() {
-        // 如果正在打开中，标记应该关闭，等打开完成后再关闭
-        if (this.waitOpening) {
-            this.waitShouldClose = true;
-            return;
-        }
-
-        this.doWaitClose();
+        this.waitWanted = false;
+        this.applyWait();
     }
 
-    /** 实际执行关闭等待提示 */
-    private doWaitClose() {
-        if (this.wait && this.wait.parent) {
-            this.wait.parent = null;
-            this.black.enabled = false;
+    /** 按最后一次请求显示或隐藏等待提示（预制还没建好就等建好后再来） */
+    private applyWait() {
+        if (this.wait == null) return;
+        if (this.waitWanted) {
+            if (this.wait.parent == null) this.wait.parent = this;
         }
-        this.waitShouldClose = false;
+        else if (this.wait.parent) {
+            this.wait.parent = null;
+        }
+        this.black.enabled = this.waitWanted;
     }
 
     /**

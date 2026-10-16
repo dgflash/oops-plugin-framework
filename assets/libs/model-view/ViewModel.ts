@@ -38,7 +38,7 @@ function getValueFromPath(obj: any, path: string, def?: any, tag: string | null 
 /**
  * ModelViewer 类
  */
-class ViewModel<T> {
+export class ViewModel<T> {
     constructor(data: T, tag: string) {
         this._tag = tag; // 先设置tag
         this.$data = data;
@@ -317,8 +317,11 @@ class VMManager {
             console.error(path, '路径不合法,可能错误覆盖了 VMParent 的onLoad 方法, 或者父节点并未挂载 VMParent 相关的组件脚本');
             return;
         }
+        const key = VM_EMIT_HEAD + path;
         // @ts-ignore
-        director.off(VM_EMIT_HEAD + path, callback, target);
+        director.off(key, callback, target);
+        // 引擎 off 不删空表项；界面实例的 VM 标签各不相同，空表项会随开关界面无限累积
+        if (!director.hasEventListener(key)) director.removeAll(key);
     }
 
     /** 冻结所有标签的 VM，视图将不会受到任何信息 */

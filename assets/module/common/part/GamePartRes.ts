@@ -1,11 +1,10 @@
 import type { Asset, Sprite, __private } from 'cc';
 import { SpriteFrame, isValid } from 'cc';
-import type { GameComponent } from '../GameComponent';
+import { resAutoTracker } from '../../../core/common/loader/ResAutoTracker';
 import type { AssetType, CompleteCallback, IRemoteOptions, Paths, ProgressCallback } from '../../../core/common/loader/ResLoader';
 import { resLoader } from '../../../core/common/loader/ResLoader';
-import { resAutoTracker } from '../../../core/common/loader/ResAutoTracker';
+import type { GameComponent } from '../GameComponent';
 import { GamePartBase } from '../GamePartBase';
-import { DEBUG } from 'cc/env';
 
 /** 资源加载与引用计数管理 */
 export class GamePartRes extends GamePartBase {
@@ -95,10 +94,7 @@ export class GamePartRes extends GamePartBase {
 
     /** 销毁资源模块 */
     override destroy(): void {
-        const released = resAutoTracker.releaseAll(this.comp);
-        if (DEBUG && released > 0) {
-            console.log(`[GameComponent] ${this.comp.node?.name} 释放 ${released} 条资源登记`);
-        }
+        resAutoTracker.releaseAll(this.comp);
     }
 
     /** 加载远程资源

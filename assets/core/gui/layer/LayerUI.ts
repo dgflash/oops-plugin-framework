@@ -2,7 +2,6 @@ import { instantiate, Node, Prefab, SafeArea } from 'cc';
 import { Collection } from 'db://oops-framework/libs/collection/Collection';
 import { resAutoTracker } from '../../common/loader/ResAutoTracker';
 import { resLoader } from '../../common/loader/ResLoader';
-import { GameComponent } from '../../../module/common/GameComponent';
 import { oops } from '../../Oops';
 import type { Uiid } from './LayerEnum';
 import { LayerHelper } from './LayerHelper';
@@ -14,6 +13,8 @@ import type { UIConfig } from './UIConfig';
 export class LayerUI extends Node {
     /** 全局窗口打开失败事件 */
     onOpenFailure: Function = null!;
+    /** 全局窗口打开成功事件 */
+    onOpenSuccess: Function = null!;
     /** 显示界面节点集合 */
     protected ui_nodes = new Collection<string, UIState>();
     /** 被移除的界面缓存数据 */
@@ -81,8 +82,10 @@ export class LayerUI extends Node {
             if (state.node) {
                 return state.node;
             }
+            // 加载途中被 remove 了，不算失败
+            if (!state.valid) return null!;
             throw new Error(`路径为【${config.prefab}】的预制加载失败，节点为空`);
-        } 
+        }
         catch (error) {
             console.error(`添加界面【${config.prefab}】时发生错误:`, error);
             throw error;
@@ -127,6 +130,8 @@ export class LayerUI extends Node {
                 if (!state.valid) {
                     console.log(`界面【${state.config.prefab}】在加载过程中已被移除，取消实例化`);
                     if (res) res.decRef();
+                    // 没有节点就等不到 onChildRemoved，登记得在这里撤掉，否则 has() 永远为真（Dialog 层还会一直堵着）
+                    if (this.ui_nodes.get(state.config.prefab) === state) this.closeUi(state);
                     return null!;
                 }
 
@@ -137,15 +142,9 @@ export class LayerUI extends Node {
 
                     const comp = state.node.addComponent(LayerUIElement);
                     comp.state = state;
-
-                    const viewRoot = state.node.getComponent(GameComponent);
-                    if (viewRoot) {
-                        resAutoTracker.acquire(viewRoot, res);
-                        state.prefabTrackedByView = true;
-                    }
-                    else {
-                        state.prefabTrackedByView = false;
-                    }
+                    // 记在 LayerUIElement 名下、由它关窗时放掉。别记到根节点的 GameComponent 上：
+                    // 它销毁时只在建过 `this.res` 子模块的情况下才放，没用过 res 的界面每开一次就多留一份
+                    resAutoTracker.acquire(comp, res);
                 }
                 else {
                     console.warn(`路径为【${state.config.prefab}】的预制加载失败`);
@@ -179,6 +178,9 @@ export class LayerUI extends Node {
                 state.params.preload = false;
                 state.node.parent = this;
             }
+            // 打开成功回调（全局），把当前预制体路径与界面节点作为参数传入，
+            // 便于回调中识别「打开的是哪个界面」（如 enter_ui 任务上报）并操作节点
+            this.onOpenSuccess && this.onOpenSuccess(state.config.prefab, state.node);
         }
         else {
             console.warn(`路径为【${state.config.prefab}】的自定义预处理逻辑异常.检查预制上绑定的组件中 onAdded 方法,返回true才能正确完成窗口显示流程`);
@@ -222,7 +224,7 @@ export class LayerUI extends Node {
                 const comp = state.node.getComponent(LayerUIElement);
                 comp && comp.remove(release);
             }
-            
+
             // 标记为无效，防止异步加载完成后创建僵尸节点
             state.valid = false;
         }

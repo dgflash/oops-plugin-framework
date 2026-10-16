@@ -1,5 +1,5 @@
 import type { Asset, Component } from 'cc';
-import { assetManager } from 'cc';
+import { assetManager, isValid } from 'cc';
 
 /**
  * 一次 acquire 记录的根资源及其递归依赖（均已在引擎缓存中执行过 addRef）
@@ -36,7 +36,9 @@ class ResAutoTracker {
         let totalTrackedRoots = 0;
         let totalDepAssetsInEntries = 0;
 
-        const owners = [...this.ownerEntries.keys()];
+        // ⚠ 不能写 `[...this.ownerEntries.keys()]`：构建时按 loose 模式转译成 `[].concat(迭代器)`，
+        // 构建包里持有者数恒为 1、条目数恒为 0（编辑器预览看不出来）
+        const owners = Array.from(this.ownerEntries.keys());
         const totalOwners = owners.length;
 
         owners.forEach((owner) => {
@@ -133,6 +135,9 @@ class ResAutoTracker {
         if (this.debugMode) {
             console.log(`[ResAutoTracker] 获取 [持有者]${this.ownerLabel(owner)} [资源]${asset.name} [依赖数]${deps.length} [引用数]${asset.refCount}`);
         }
+
+        // 异步加载回来时持有者可能已销毁，销毁时的 releaseAll 早跑过了：这份登记再没人放，当场还掉
+        if (!isValid(owner)) this.releaseAll(owner);
     }
 
     /**
