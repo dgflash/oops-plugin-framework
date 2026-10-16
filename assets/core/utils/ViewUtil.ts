@@ -10,18 +10,35 @@ export class ViewUtil {
      * @param parent 被遍历的Node组件
      * @param obj    绑定的js对象 (可选)
      */
-    static nodeTreeInfoLite(parent: Node, obj?: Map<string, Node>): Map<string, Node> | null {
+    static nodeTreeInfoLite(
+        parent: Node,
+        obj?: Map<string, Node>,
+        options?: { filterNodes?: string[]; filterSubtreeNodes?: string[] }
+    ): Map<string, Node> | null {
         const map: Map<string, Node> = obj || new Map();
         const items = parent.children;
+        const filterNodes = options?.filterNodes;
+        const filterSubtreeNodes = options?.filterSubtreeNodes;
+        const filterNodeSet = filterNodes && filterNodes.length > 0 ? new Set(filterNodes) : null;
+        const filterSubtreeSet = filterSubtreeNodes && filterSubtreeNodes.length > 0 ? new Set(filterSubtreeNodes) : null;
         for (let i = 0; i < items.length; i++) {
             const _node = items[i];
-            if (_node.name.length > 0) {
-                if (map.has(_node.name))
-                    console.error(`使用ViewUtil.nodeTreeInfoLite方法时发现重复的节点名称【${_node.name}】`);
-                else
-                    map.set(_node.name, _node);
+            const _name = _node.name;
+            // 命中指定名字的节点，直接过滤掉（含其整棵子树）
+            if (filterNodeSet && filterNodeSet.has(_name)) {
+                continue;
             }
-            ViewUtil.nodeTreeInfoLite(_node, map);
+            // 命中指定子树根节点名，过滤掉该节点及其下所有子节点
+            if (filterSubtreeSet && filterSubtreeSet.has(_name)) {
+                continue;
+            }
+            if (_name.length > 0) {
+                if (map.has(_name))
+                    console.error(`使用ViewUtil.nodeTreeInfoLite方法时发现重复的节点名称【${_name}】`);
+                else
+                    map.set(_name, _node);
+            }
+            ViewUtil.nodeTreeInfoLite(_node, map, options);
         }
         return map;
     }

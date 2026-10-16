@@ -59,7 +59,7 @@ export default class VMEvent extends VMBase {
             return this.templateMode === true;
         }
     })
-    protected watchPathArr: string[] = [];
+    watchPathArr: string[] = [];
 
     @property({
         tooltip: '过滤模式，会根据条件过滤掉时间的触发',

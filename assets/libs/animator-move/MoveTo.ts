@@ -43,6 +43,19 @@ export class MoveTo extends Component {
         this.enabled = true;
     }
 
+    /**
+     * 外部打断移动：停在当前位置，**不触发** onComplete。
+     *
+     * 打断方通常要自己接管收尾（兑现 await、复位姿势），再让 onComplete 跑一遍就是同一件事做两次。
+     * 而只把 `enabled` 置 false 是不够的：终点备份与计时器会残留在组件里，
+     * 下次移动到同一个终点时会被 `end.strictEquals` 判成「目标没变」，
+     * 于是沿用上一段的移动方向与剩余时长。
+     */
+    cancel() {
+        this.onComplete = null;
+        this.exit();
+    }
+
     protected update(dt: number) {
         let end: Vec3 | null = null;
 

@@ -1,6 +1,6 @@
 import type { Node } from 'cc';
 import { Component, _decorator } from 'cc';
-import { oops } from '../../Oops';
+import { resAutoTracker } from '../../common/loader/ResAutoTracker';
 import type { UIConfig } from './UIConfig';
 
 const EventOnAdded = 'onAdded';
@@ -74,13 +74,8 @@ export class LayerUIElement extends Component {
         if (isDestroy) {
             // 释放界面显示对象
             this.node.destroy();
-
-            // 预制已由根节点 GameComponent + ResAutoTracker 管理时可不额外 release，否则会与 decRef 重复
-            if (!this.state.prefabTrackedByView) {
-                oops.res.release(this.state.config.prefab, this.state.config.bundle);
-            }
-
-            // oops.log.logView(`【界面管理】释放【${uip.config.prefab}】界面资源`);
+            // 预载（preload）后没挂上层的节点不会走 onDestroy（引擎只给 onLoad 过的组件调），所以在这里放
+            resAutoTracker.releaseAll(this);
         }
         else {
             this.node.removeFromParent();
@@ -101,6 +96,8 @@ export class LayerUIElement extends Component {
     }
 
     onDestroy() {
+        // 节点没走 LayerUI.remove、被直接 destroy 时，靠这里放掉打开时记的预制引用
+        resAutoTracker.releaseAll(this);
         this.state = null!;
         this.onClose = null!;
     }
@@ -118,10 +115,6 @@ export class UIState {
     valid = true;
     /** 界面根节点 */
     node: Node = null!;
-    /**
-     * 根节点上存在 GameComponent 时，LayerUI 已将预制资源交给 ResAutoTracker，关闭界面时不再调用 oops.res.release
-     */
-    prefabTrackedByView = false;
 }
 
 /*** 界面打开参数 */

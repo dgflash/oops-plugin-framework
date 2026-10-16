@@ -57,6 +57,13 @@ export class StorageManager {
     private iss: IStorageSecurity = null!;
     private keyCache: LRUCache<string, string> = new LRUCache(100);
 
+    /**
+     * 不需要携带用户编号的全局存储 key 集合。
+     * 框架内置（语言、音效、提示跳过等应用级配置）默认不随用户切换而隔离，
+     * 业务层可通过 {@link setGlobalKeys} 在外部扩展更多不需要用户编号的 key。
+     */
+    private globalKeys: Set<string> = new Set([]);
+
     private get encrypted(): boolean {
         return !PREVIEW;
     }
@@ -71,6 +78,19 @@ export class StorageManager {
             this.keyCache.clear();
         }
         this.id = id;
+    }
+
+    /**
+     * 注册不需要携带用户编号的全局存储 key（例外项）。
+     * 这些 key 的本地存储 key 不会拼接 `${this.id}_` 前缀，可在切换用户后保持共享。
+     * 适用于语言、音效等应用级配置，也可在外部传入业务层 key 进行扩展。
+     * @param keys 单个 key 或 key 数组
+     */
+    setGlobalKeys(keys: GameStorageKey | GameStorageKey[]): void {
+        const arr = Array.isArray(keys) ? keys : [keys];
+        for (const key of arr) {
+            this.globalKeys.add(key);
+        }
     }
 
     set(key: GameStorageKey, value: any): boolean {
@@ -266,6 +286,10 @@ export class StorageManager {
     }
 
     private getKey(key: string): string {
+        // 全局 key（例外项）不拼接用户编号前缀
+        if (this.globalKeys.has(key)) {
+            return key;
+        }
         if (this.id == null || this.id == '') {
             return key;
         }

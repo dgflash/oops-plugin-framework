@@ -119,6 +119,16 @@ export class LayerManager {
     }
 
     /**
+     * 设置窗口打开成功回调
+     * @param callback  回调方法
+     */
+    setOpenSuccess(callback: Function) {
+        this.uiLayers.forEach((layer: LayerUI) => {
+            layer.onOpenSuccess = callback;
+        });
+    }
+
+    /**
      * 渐隐飘过提示
      * @param content 文本表示
      * @param useI18n 是否使用多语言

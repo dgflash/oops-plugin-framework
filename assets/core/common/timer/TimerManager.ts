@@ -169,8 +169,8 @@ export class TimerManager extends Component {
         object: object,
         field: keyof T,
         target: object,
-        onSecond?: Function,
-        onComplete?: Function
+        onSecond?: Function | null,
+        onComplete?: Function | null
     ): string {
         const timer = new Timer();
         timer.step = 1;
@@ -188,14 +188,16 @@ export class TimerManager extends Component {
         if (onSecond) {
             data.onSeconds = data.onSeconds || [];
             data.onSeconds.push(onSecond);
-        } else {
+        }
+        else {
             data.onSeconds = null;
         }
 
         if (onComplete) {
             data.onCompletes = data.onCompletes || [];
             data.onCompletes.push(onComplete);
-        } else {
+        }
+        else {
             data.onCompletes = null;
         }
 
@@ -210,7 +212,7 @@ export class TimerManager extends Component {
      * @param onSecond      每秒事件
      * @param onComplete    倒计时完成事件
      */
-    addCallback(id: string, onSecond?: Function, onComplete?: Function): void {
+    addCallback(id: string, onSecond?: Function | null, onComplete?: Function | null): void {
         const data = this.times.get(id);
         if (data) {
             // 检查回调是否已存在，避免重复添加

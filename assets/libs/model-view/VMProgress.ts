@@ -25,7 +25,7 @@ export default class VMProgress extends VMCustom {
         type: [CCString],
         tooltip: '第一个值是min 值，第二个值 是 max 值，会计算出两者的比例'
     })
-    protected watchPathArr: string[] = ['[min]', '[max]'];
+    watchPathArr: string[] = ['[min]', '[max]'];
 
     templateMode = true;
 

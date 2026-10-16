@@ -29,10 +29,17 @@ export class GamePartNode extends GamePartBase {
         return this._nodes?.get(name);
     }
 
-    /** 获取节点树信息 */
-    nodeTreeInfoLite(): void {
+    /**
+     * 获取节点树信息
+     * @param options 过滤配置（JSON 对象，传入即生效，缺省为不过滤）
+     * @param options.filterNodes 需要过滤掉指定名字的节点（多个）
+     * @param options.filterSubtreeNodes 过滤这些节点下的所有子节点（只传节点名，其下所有子孙节点都会被过滤）
+     * @example
+     * this.nodes.nodeTreeInfoLite({ filterNodes: ['LoadingTxt', 'Border'], filterSubtreeNodes: ['ProgressBar'] });
+     */
+    nodeTreeInfoLite(options?: { filterNodes?: string[]; filterSubtreeNodes?: string[] }): void {
         this.nodes.clear();
-        ViewUtil.nodeTreeInfoLite(this.comp.node, this.nodes);
+        ViewUtil.nodeTreeInfoLite(this.comp.node, this.nodes, options);
     }
 
     /** 创建预制体节点

@@ -78,6 +78,8 @@ export class Root extends Component {
             security.key = oops.config.game.localDataKey;
             security.iv = oops.config.game.localDataIv;
             oops.storage.init(security);
+            // 框架内置的应用级配置（音效、提示跳过）不随用户切换而隔离，项目可再调用 setGlobalKeys 追加
+            oops.storage.setGlobalKeys(['OopsFrameworkAudio', 'OopsFrameworkPromptSkip']);
 
             // 创建音频模块
             oops.audio = this.persist.addComponent(AudioManager);

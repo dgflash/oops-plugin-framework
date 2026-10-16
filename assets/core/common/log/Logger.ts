@@ -1,4 +1,6 @@
 
+import { sys } from 'cc';
+
 /** 日志类型 */
 export enum LogType {
     /** 网络层日志 */
@@ -51,6 +53,20 @@ export class Logger {
 
     private tags: number = 0;
     private lc: ILoggerConsole = null!;
+
+    /** 是否原生平台（原生平台 console 不支持 %c 颜色样式，需纯文本输出） */
+    private _isNative: boolean | null = null;
+    private get isNative(): boolean {
+        if (this._isNative === null) {
+            try {
+                this._isNative = !!(sys && (sys as any).isNative);
+            }
+            catch {
+                this._isNative = false;
+            }
+        }
+        return this._isNative;
+    }
 
     /** 禁用日志 */
     disable(): void {
@@ -112,8 +128,14 @@ oops.log.setTags(LogType.View|LogType.Business)
         if (startTime) {
             const duration = Date.now() - startTime;
             this.timeMap.delete(describe);
-            const colorStyle = 'color:#fff;background:#ec1b3c;padding:2px 6px;border-radius:4px;';
-            console.log(`%c[性能][${describe}]消耗[${duration}ms]`, colorStyle);
+            // 原生平台 console 不支持 %c 颜色样式，去掉颜色前缀
+            if (this.isNative) {
+                console.log(`[性能][${describe}]消耗[${duration}ms]`);
+            }
+            else {
+                const colorStyle = 'color:#fff;background:#ec1b3c;padding:2px 6px;border-radius:4px;';
+                console.log(`%c[性能][${describe}]消耗[${duration}ms]`, colorStyle);
+            }
         }
         else {
             console.error(`未找到名为"${describe}"的计时记录`);
@@ -228,28 +250,55 @@ oops.log.table(object);
         if (this.lc == null) {
             // 使用原始console方法，避免循环调用
             const backLog = console.log;
-            color = 'color:' + color + ';';
-
-            // 处理数组参数，展开打印
-            if (Array.isArray(msg)) {
+            // 原生平台 console 不支持 %c 颜色样式，去掉颜色前缀与 color 参数，纯文本输出（保留完整日志内容）
+            if (this.isNative) {
+                // 原生平台只保留纯字符串格式：数组/对象统一转为字符串，不使用 %o 与数组展开
+                const content = this.toNativeString(msg);
                 if (describe) {
-                    backLog('%c%s%s: %s', color, this.getDateString(), '[' + type + ']', describe, ...msg);
+                    backLog('%s%s: %s %s', this.getDateString(), '[' + type + ']', describe, content);
                 }
                 else {
-                    backLog('%c%s%s: ', color, this.getDateString(), '[' + type + ']', ...msg);
+                    backLog('%s%s: %s', this.getDateString(), '[' + type + ']', content);
                 }
             }
             else {
-                if (describe) {
-                    backLog('%c%s%s: %s%o', color, this.getDateString(), '[' + type + ']', describe, msg);
+                color = 'color:' + color + ';';
+                // 处理数组参数，展开打印
+                if (Array.isArray(msg)) {
+                    if (describe) {
+                        backLog('%c%s%s: %s', color, this.getDateString(), '[' + type + ']', describe, ...msg);
+                    }
+                    else {
+                        backLog('%c%s%s: ', color, this.getDateString(), '[' + type + ']', ...msg);
+                    }
                 }
                 else {
-                    backLog('%c%s%s: %o', color, this.getDateString(), '[' + type + ']', msg);
+                    if (describe) {
+                        backLog('%c%s%s: %s%o', color, this.getDateString(), '[' + type + ']', describe, msg);
+                    }
+                    else {
+                        backLog('%c%s%s: %o', color, this.getDateString(), '[' + type + ']', msg);
+                    }
                 }
             }
         }
         else {
             this.lc.trace(`${this.getDateString()}[${type}]${msg}`, color);
+        }
+    }
+
+    /** 原生平台统一将日志内容转为纯字符串（避免 %o 与数组展开） */
+    private toNativeString(msg: any): string {
+        if (msg == null) return String(msg);
+        if (typeof msg === 'string') return msg;
+        if (Array.isArray(msg)) {
+            return msg.map((m) => this.toNativeString(m)).join(' ');
+        }
+        try {
+            return JSON.stringify(msg);
+        }
+        catch {
+            return String(msg);
         }
     }
 
