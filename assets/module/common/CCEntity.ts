@@ -123,7 +123,10 @@ export abstract class CCEntity extends ecs.Entity {
         }
         // 手动内存管理
         else {
-            node = await ViewUtil.createPrefabNodeAsync(path, bundleName);
+            const result = await ViewUtil.createPrefabNodeAsync(path, bundleName);
+            if (result == null) return null;
+
+            node = result;
 
             const comp = node.getComponent(ctor);
             if (comp) this.add(comp as unknown as ecs.Comp);

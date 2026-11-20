@@ -6,6 +6,9 @@ import { VMBase } from './VMBase';
 
 const { ccclass, help, executionOrder } = _decorator;
 
+/** 私有路径的首段：编辑器里写的 `*`，或已经指向某个实例的 `_temp<节点uuid>` */
+const OWN_PATH_HEAD = /^(\*|_temp<[^>]*>)\./;
+
 /**
  * 提供VM环境，控制旗下所有VM节点
  * 一般用于 非全局的 VM绑定,VM 环境与组件紧密相连
@@ -55,28 +58,16 @@ export default class VMParent extends GameComponent {
     /**在 onDestroy() 后调用,此时仍然可以获取绑定的 data 数据*/
     protected onUnBind() { }
 
-    private replaceVMPath(comp: Component, tag: string) {
-        // @ts-ignore
-        const path: string = comp['watchPath'];
-        // @ts-ignore
-        if (comp['templateMode'] == true) {
-            // @ts-ignore
-            const pathArr: string[] = comp['watchPathArr'];
-            if (pathArr) {
-                for (let i = 0; i < pathArr.length; i++) {
-                    const path = pathArr[i];
-                    pathArr[i] = path.replace('*', tag);
-                }
-            }
-
+    /**
+     * 路径首段是 `*` 或别的实例 tag 都换成自己的：从已经 onLoad 过的模板节点克隆出来的行（如列表的行），
+     * 带着的是模板那个实例的 tag。全局路径不动。
+     */
+    private replaceVMPath(comp: VMBase, tag: string) {
+        if (comp.templateMode) {
+            comp.watchPathArr = comp.watchPathArr.map(p => p.replace(OWN_PATH_HEAD, tag + '.'));
         }
         else {
-            // VMLabel
-            // 遇到特殊 path 就优先替换路径
-            if (path.split('.')[0] === '*') {
-                // @ts-ignore
-                comp['watchPath'] = path.replace('*', tag);
-            }
+            comp.watchPath = comp.watchPath.replace(OWN_PATH_HEAD, tag + '.');
         }
     }
 

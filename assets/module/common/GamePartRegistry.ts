@@ -73,6 +73,11 @@ export class GamePartRegistry {
         return module;
     }
 
+    /** 已经建过的模块实例，没建过回 undefined（不新建） */
+    peek<M extends GamePartBase = GamePartBase>(key: GamePartKey): M | undefined {
+        return this.instances?.get(key) as M | undefined;
+    }
+
     /** 销毁所有模块 */
     destroy(): void {
         if (this.instances) {

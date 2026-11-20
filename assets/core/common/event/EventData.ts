@@ -8,11 +8,14 @@ export class EventData {
     listener!: ListenerFunc;
     /** 监听器绑定的作用域对象 */
     object!: object;
+    /** 一次性监听：派发时先注销再调 */
+    once = false;
 
-    /** 重置数据，准备回收到对象池 */
+    /** 注销时清空：派发中的快照据此跳过它 */
     reset() {
         this.event = '';
         this.listener = null!;
         this.object = null!;
+        this.once = false;
     }
 }

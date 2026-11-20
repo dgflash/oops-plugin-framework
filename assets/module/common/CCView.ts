@@ -2,6 +2,7 @@ import type { ecs } from '../../libs/ecs/ECS';
 import { registry } from '../../libs/ecs/registry/ECSTypeRegistry';
 import { VM } from '../../libs/model-view/ViewModel';
 import { VMBase } from '../../libs/model-view/VMBase';
+import VMParent from '../../libs/model-view/VMParent';
 import type { CCEntity } from './CCEntity';
 import { GameComponent } from './GameComponent';
 
@@ -143,7 +144,7 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
     }
 
     /**
-     * 获取当前节点下属于本 CCView 管辖的 VMBase 组件（排除嵌套启用 MVVM 的子 CCView 管辖范围）
+     * 获取当前节点下属于本 CCView 管辖的 VMBase 组件（排除嵌套启用 MVVM 的子 CCView、VMParent 管辖范围）
      * 使用深度优先遍历 + 剪枝优化性能
      * @private
      */
@@ -152,6 +153,9 @@ export abstract class CCView<T extends CCEntity> extends GameComponent implement
         const myUuid = this.uuid;
 
         const traverse = (node: any) => {
+            // VMParent 连自己节点上的 VM 组件一起管；不剪掉的话，它没激活、onLoad 还没跑时路径就先被这里改走了
+            if (node !== this.node && node.getComponent(VMParent)) return;
+
             const vmComps = node.getComponents(VMBase);
             const vmLen = vmComps.length;
             for (let i = 0; i < vmLen; i++) {

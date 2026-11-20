@@ -1,4 +1,4 @@
-import { Component, _decorator } from 'cc';
+import { Component, _decorator, type Node } from 'cc';
 import { oops } from '../../core/Oops';
 import type { GamePartAudio } from './part/GamePartAudio';
 import type { GamePartButton } from './part/GamePartButton';
@@ -74,6 +74,19 @@ export class GameComponent extends Component {
     /** 游戏节点池模块 */
     get pool(): GamePartNodePool {
         return this.parts.get(GamePartKey.Pool);
+    }
+
+    /**
+     * 当场退订本组件经 `event` 登记的全局事件。界面关掉时由界面层调（{@link GameComponent.stopEventsIn}）：
+     * `node.destroy()` 要到帧末才真正销毁，这一帧里再来的推送不该再刷新已关的界面。之后 `event` 照常能用。
+     */
+    stopEvents(): void {
+        this._parts?.peek<GamePartEvent>(GamePartKey.Event)?.clear();
+    }
+
+    /** `node` 和子孙上的 {@link GameComponent} 都 {@link stopEvents}：界面层 destroy 一个界面节点之前调 */
+    static stopEventsIn(node: Node): void {
+        for (const comp of node.getComponentsInChildren(GameComponent)) comp.stopEvents();
     }
 
     /** 移除当前节点 */

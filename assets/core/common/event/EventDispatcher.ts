@@ -1,12 +1,17 @@
-import { EventData } from './EventData';
-import { EventDataPool } from './EventDataPool';
 import type { ListenerFunc, ListenerFuncTyped } from './EventMessage';
 import { message } from './MessageManager';
+
+/** 本地登记的一条监听：按调用方给的 listener 查找，按 handler（实际登记到全局的那个）注销 */
+interface Watch {
+    listener: ListenerFunc;
+    object: object;
+    handler: ListenerFunc;
+}
 
 /** 批量注册、移除全局事件对象（用于组件级事件管理） */
 export class EventDispatcher {
     /** 本地事件列表，用于批量清理 */
-    private events: Map<string, Array<EventData>> = new Map();
+    private events: Map<string, Array<Watch>> = new Map();
 
     //#region 强类型事件方法
 
@@ -84,44 +89,27 @@ export class EventDispatcher {
      * @param object     侦听函数绑定的作用域对象
      */
     on(event: string, listener: ListenerFunc, object: object): void {
-        // 先注册到全局消息管理器
         message.on(event, listener, object);
-
-        // 记录到本地事件列表，用于批量清理
-        let eds = this.events.get(event);
-        if (eds == null) {
-            eds = [];
-            this.events.set(event, eds);
-        }
-
-        const ed: EventData = EventDataPool.get();
-        ed.event = event;
-        ed.listener = listener;
-        ed.object = object;
-        eds.push(ed);
+        this.keep(event, { listener, object, handler: listener });
     }
 
     /**
-     * 监听一次事件，事件响应后，该监听自动移除
+     * 监听一次事件，事件响应后，该监听自动移除（本地登记一并清掉）
      * @param event     事件名
      * @param listener  事件触发回调方法
      * @param object    侦听函数绑定的作用域对象
      */
     once(event: string, listener: ListenerFunc, object: object): void {
-        message.once(event, listener, object);
-
-        // 记录到本地事件列表
-        let eds = this.events.get(event);
-        if (eds == null) {
-            eds = [];
-            this.events.set(event, eds);
-        }
-
-        const ed: EventData = EventDataPool.get();
-        ed.event = event;
-        ed.listener = listener;
-        ed.object = object;
-        eds.push(ed);
+        const watch: Watch = {
+            listener,
+            object,
+            handler: ($event: string, ...$args: any[]) => {
+                this.forget(event, watch);
+                listener.call(object, $event, ...$args);
+            },
+        };
+        message.once(event, watch.handler, object);
+        this.keep(event, watch);
     }
 
     /**
@@ -136,29 +124,17 @@ export class EventDispatcher {
 
         // 如果没有指定 listener，移除该事件的所有监听器
         if (!listener) {
-            for (const eb of eds) {
-                message.off(event, eb.listener, eb.object);
-                EventDataPool.put(eb);
+            for (const watch of eds) {
+                message.off(event, watch.handler, watch.object);
             }
             this.events.delete(event);
             return;
         }
 
-        // 移除指定的监听器
-        const length = eds.length;
-        for (let i = 0; i < length; i++) {
-            const eb = eds[i];
-            if (eb.listener == listener && eb.object == object) {
-                message.off(event, eb.listener, eb.object);
-                EventDataPool.put(eb);
-                eds.splice(i, 1);
-                break;
-            }
-        }
-
-        // 如果该事件已无监听器，删除事件
-        if (eds.length == 0) {
-            this.events.delete(event);
+        const watch = eds.find(w => w.listener == listener && w.object == object);
+        if (watch) {
+            message.off(event, watch.handler, watch.object);
+            this.forget(event, watch);
         }
     }
 
@@ -186,11 +162,27 @@ export class EventDispatcher {
     clear(): void {
         // 直接遍历 Map，避免创建临时数组
         for (const [event, eds] of this.events) {
-            for (const eb of eds) {
-                message.off(event, eb.listener, eb.object);
-                EventDataPool.put(eb);
+            for (const watch of eds) {
+                message.off(event, watch.handler, watch.object);
             }
         }
         this.events.clear();
+    }
+
+    private keep(event: string, watch: Watch): void {
+        let eds = this.events.get(event);
+        if (eds == null) {
+            eds = [];
+            this.events.set(event, eds);
+        }
+        eds.push(watch);
+    }
+
+    private forget(event: string, watch: Watch): void {
+        const eds = this.events.get(event);
+        if (!eds) return;
+        const i = eds.indexOf(watch);
+        if (i >= 0) eds.splice(i, 1);
+        if (eds.length == 0) this.events.delete(event);
     }
 }

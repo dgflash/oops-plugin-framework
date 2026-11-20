@@ -345,14 +345,14 @@ export class LayerManager {
     }
 
     /**
-     * 缓存中是否存在指定标识的窗口
+     * 已打开窗口的节点；没开或预制还在下载都给 null（下载中 {@link has} 已为真）
      * @param uiid 窗口唯一标识
      * @example
-     * oops.gui.has(UIID.Loading);
+     * oops.gui.get(UIID.Loading)?.getChildByName('bg');
      */
-    get(uiid: Uiid): Node {
+    get(uiid: Uiid): Node | null {
         const info = this.getInfo(uiid);
-        let result: Node = null!;
+        let result: Node | null = null;
         const layer = this.uiLayers.get(info.config.layer);
         if (layer) {
             result = layer.get(info.config.prefab);

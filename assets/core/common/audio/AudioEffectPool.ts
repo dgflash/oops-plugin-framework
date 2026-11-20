@@ -22,6 +22,7 @@ export class AudioEffectPool {
     private pool: NodePool = new NodePool();
     /** 正在播放的音效播放器集合 */
     private effects: Map<string, AudioEffect> = new Map();
+    private readonly onEffectEnded = (ae: AudioEffect) => this.onAudioEffectPlayComplete(ae);
 
     private _aeId = 0;
     /** 获取请求唯一编号 */
@@ -139,12 +140,13 @@ export class AudioEffectPool {
         if (this.pool.size() === 0) {
             node = new Node('AudioEffect');
             ae = node.addComponent(AudioEffect)!;
-            ae.onComplete = this.onAudioEffectPlayComplete.bind(this);
         }
         else {
             node = this.pool.get()!;
             ae = node.getComponent(AudioEffect)!;
         }
+        // 回池时 reset 会清掉回调，复用的播放器也要重新挂上，否则播完不回收
+        ae.onComplete = this.onEffectEnded;
 
         ae.key = key;
         ae.aeid = this._aeId;

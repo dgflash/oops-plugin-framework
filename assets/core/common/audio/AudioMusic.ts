@@ -33,6 +33,7 @@ export class AudioMusic extends Node {
     setSwitch(value: boolean) {
         this.data[AudioEffectType.Music].switch = value;
         if (!value) this.stop();
+        else if (this._ae?.clip && !this._ae.playing) this._ae.play();
     }
 
     /**
@@ -84,17 +85,17 @@ export class AudioMusic extends Node {
      * @param params        背景音乐资源播放参数
      */
     play(clip: AudioClip, params?: IAudioParams) {
-        if (!this.getSwitch()) return;
         if (!this._ae) return;
 
         if (this._ae.playing) this.stop();
 
+        // 开关关着也挂上（只是不放）：开关再打开时 setSwitch 接着放这一首
         this._ae.params = params!;
         this._ae.clip = clip;
         this._ae.loop = params?.loop ?? true;
         this._ae.volume = params?.volume ?? this.getVolume();
         this._ae.currentTime = 0;
-        this._ae.play();
+        if (this.getSwitch()) this._ae.play();
     }
 
     /** 恢复当前暂停的音乐与音效播放 */
@@ -110,6 +111,16 @@ export class AudioMusic extends Node {
     /** 停止当前音乐与音效的播放 */
     stop(): void {
         if (this._ae && this._ae.playing) this._ae.stop();
+    }
+
+    /**
+     * 挂着的正是这段音乐就停播并摘下，没挂着什么也不做。外部释放音乐资源之前调：
+     * AudioSource 自己的播放器也握着同一份解码数据，不摘下，资源销毁了内存也放不掉。只摘不释放。
+     */
+    detach(clip: AudioClip): void {
+        if (!this._ae || this._ae.clip !== clip) return;
+        this._ae.stop();
+        this._ae.clip = null;
     }
 
     /** 节点销毁时清理 */

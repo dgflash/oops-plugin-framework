@@ -169,6 +169,11 @@ export class GamePartEvent extends GamePartBase {
         this.on(EventMessage.GAME_ORIENTATION, callback, this.comp);
     }
 
+    /** 退订本模块登记过的全部监听，模块留着、之后还能再用（销毁见 {@link destroy}） */
+    clear(): void {
+        this._event?.clear();
+    }
+
     /** 销毁事件模块 */
     override destroy(): void {
         if (this._event) {

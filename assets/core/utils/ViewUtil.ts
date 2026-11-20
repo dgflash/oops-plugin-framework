@@ -113,21 +113,20 @@ export class ViewUtil {
     }
 
     /**
-     * 加载预制并创建预制节点（建议使用GameComponent里的同名方法，能自动管理内存施放）
+     * 加载预制并创建预制节点（建议使用GameComponent里的同名方法，能自动管理内存施放）；加载失败返回 null，不抛
      * @param path        资源路径
      * @param bundleName  资源包名
      */
-    static createPrefabNodeAsync(path: string, bundleName: string = resLoader.defaultBundleName): Promise<Node> {
-        return new Promise(async (resolve, reject) => {
+    static async createPrefabNodeAsync(path: string, bundleName: string = resLoader.defaultBundleName): Promise<Node> {
+        try {
             const p = await resLoader.load(bundleName, path, Prefab);
-            if (p) {
-                resolve(instantiate(p));
-            }
-            else {
-                console.error(`名为【${path}】的资源加载失败`);
-                resolve(null!);
-            }
-        });
+            if (p) return instantiate(p);
+            console.error(`名为【${path}】的资源加载失败`);
+        }
+        catch (error) {
+            console.error(`名为【${path}】的资源加载失败`, error);
+        }
+        return null!;
     }
 
     /**

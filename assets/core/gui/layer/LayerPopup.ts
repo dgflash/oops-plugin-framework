@@ -3,6 +3,7 @@ import { BlockInputEvents, Node } from 'cc';
 import { ViewUtil } from '../../utils/ViewUtil';
 import { LayerUI } from './LayerUI';
 import type { UIState } from './LayerUIElement';
+import { LayerUIElement } from './LayerUIElement';
 import type { UIConfig } from './UIConfig';
 import { GuiPromptConfig } from '../GuiPromptConfig';
 
@@ -12,28 +13,56 @@ export class LayerPopUp extends LayerUI {
     protected black!: BlockInputEvents;
     /** 半透明遮罩资源 */
     protected mask!: Node;
+    /** 同一层的并发开窗共用一次遮罩加载，避免建出多个遮罩、只有最后一个被登记 */
+    private maskLoading: Promise<void> | null = null;
+    /** 层已销毁：还在路上的遮罩加载回来后直接释放 */
+    private disposed = false;
 
     protected onChildAdded(child: Node) {
-        this.mask && this.mask.setSiblingIndex(this.children.length - 2);
+        super.onChildAdded(child);
+        this.arrangeMask();
     }
 
     protected onChildRemoved(child: Node) {
-        this.mask && this.mask.setSiblingIndex(this.children.length - 2);
+        this.arrangeMask();
         super.onChildRemoved(child);
     }
 
-    protected uiInit(state: UIState): Promise<boolean> {
-        return new Promise(async resolve => {
-            const r = await super.uiInit(state);
-            if (r) {
-                // 界面加载完成显示时，启动触摸非窗口区域关闭
-                await this.openVacancyRemove(state.config);
+    /** 遮罩贴在最上面那一窗的正下方 */
+    private arrangeMask() {
+        if (!this.mask?.parent) return;
+        // 只认本层开的窗（带 LayerUIElement）：别处挂进来的节点不算窗，遮罩不能跟着它跑到窗上面挡住点击
+        const windows = this.children.filter(c => c !== this.mask && !!c.getComponent(LayerUIElement));
+        const top = windows[windows.length - 1];
+        if (top) {
+            const at = top.getSiblingIndex();
+            this.mask.setSiblingIndex(this.mask.getSiblingIndex() < at ? at - 1 : at);
+        }
+        else {
+            this.mask.setSiblingIndex(this.children.length - 2);
+        }
+    }
 
-                // 界面加载完成显示时，层级事件阻挡
-                this.black.enabled = true;
-            }
-            resolve(r);
-        });
+    protected async uiInit(state: UIState): Promise<boolean> {
+        const ready = await super.uiInit(state);
+        if (!ready || !state.valid || this.disposed) return false;
+        try {
+            // 界面加载完成显示时，启动触摸非窗口区域关闭
+            await this.openVacancyRemove(state.config);
+        }
+        catch (error) {
+            state.valid = false;
+            this.failure(state);
+            throw error;
+        }
+        // 遮罩加载期间窗口可能已被关闭，不能在异步返回后重新阻挡输入
+        if (this.disposed || !state.valid || this.ui_nodes.get(state.config.prefab) !== state) {
+            this.closeBlack();
+            return false;
+        }
+        // 界面加载完成显示时，层级事件阻挡
+        this.black.enabled = true;
+        return true;
     }
 
     protected closeUi(state: UIState) {
@@ -89,18 +118,36 @@ export class LayerPopUp extends LayerUI {
 
     /** 启动触摸非窗口区域关闭 */
     protected async openVacancyRemove(config: UIConfig) {
-        // 背景半透明遮罩
+        if (this.disposed) return;
+        // 背景半透明遮罩（各窗口共用一份）
         if (this.mask == null) {
-            this.mask = await ViewUtil.createPrefabNodeAsync(GuiPromptConfig.Mask.path);
-            this.mask.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
-
-            this.black = this.mask.addComponent(BlockInputEvents);
-            this.black.enabled = false;
+            if (!this.maskLoading) this.maskLoading = this.loadMask();
+            await this.maskLoading;
         }
 
-        if (config.mask) {
+        // 遮罩加载期间要遮罩的窗可能都关了，这时不再挂上
+        if (!this.disposed && config.mask && this.hasMaskWindow()) {
             this.mask.parent = this;
             this.mask.uiSprite.enabled = true;
+        }
+    }
+
+    /** 加载遮罩预制；层已销毁就当场释放 */
+    private async loadMask(): Promise<void> {
+        try {
+            const mask = await ViewUtil.createPrefabNodeAsync(GuiPromptConfig.Mask.path);
+            if (!mask) throw new Error(`遮罩预制【${GuiPromptConfig.Mask.path}】加载失败`);
+            if (this.disposed) {
+                mask.destroy();
+                return;
+            }
+            this.mask = mask;
+            mask.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
+            this.black = mask.addComponent(BlockInputEvents);
+            this.black.enabled = false;
+        }
+        finally {
+            this.maskLoading = null;
         }
     }
 
@@ -128,6 +175,10 @@ export class LayerPopUp extends LayerUI {
 
     /** 销毁时释放资源 */
     onDestroy() {
+        this.disposed = true;
+        for (const state of this.ui_nodes.values()) state.valid = false;
+        this.ui_nodes.clear();
+
         // 清理遮罩节点
         if (this.mask) {
             this.mask.destroy();

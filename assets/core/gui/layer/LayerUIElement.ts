@@ -1,6 +1,7 @@
 import type { Node } from 'cc';
 import { Component, _decorator } from 'cc';
 import { resAutoTracker } from '../../common/loader/ResAutoTracker';
+import { GameComponent } from '../../../module/common/GameComponent';
 import type { UIConfig } from './UIConfig';
 
 const EventOnAdded = 'onAdded';
@@ -17,28 +18,23 @@ export class LayerUIElement extends Component {
     /** 关闭窗口之前 */
     onClose: Function = null!;
 
-    /** 添加界面且界面设置到父节点之前 */
-    add(): Promise<boolean> {
-        return new Promise(async (resolve, reject) => {
-            // 触发窗口组件上添加到父节点后的事件
-            for (let i = 0; i < this.node.components.length; i++) {
-                const component: any = this.node.components[i];
-                const func = component[EventOnAdded];
-                if (func) {
-                    if (await func.call(component, this.state.params.data) == false) {
-                        resolve(false);
-                        return;
-                    }
-                }
+    /** 添加界面且界面设置到父节点之前（onAdded 抛错会传给调用方，不会让开窗流程永远挂住） */
+    async add(): Promise<boolean> {
+        // 触发窗口组件上添加到父节点后的事件
+        for (let i = 0; i < this.node.components.length; i++) {
+            const component: any = this.node.components[i];
+            const func = component[EventOnAdded];
+            if (func) {
+                if (await func.call(component, this.state.params.data) == false) return false;
             }
+        }
 
-            // 触发外部窗口显示前的事件（辅助实现自定义动画逻辑）
-            if (typeof this.state.params.onAdded === 'function') {
-                this.state.params.onAdded(this.node, this.state.params.data);
-            }
+        // 触发外部窗口显示前的事件（辅助实现自定义动画逻辑）
+        if (typeof this.state.params.onAdded === 'function') {
+            this.state.params.onAdded(this.node, this.state.params.data);
+        }
 
-            resolve(true);
-        });
+        return true;
     }
 
     /** 删除节点，该方法只能调用一次，将会触发onBeforeRemoved回调 */
@@ -72,6 +68,8 @@ export class LayerUIElement extends Component {
         this.onClose && this.onClose();
 
         if (isDestroy) {
+            // destroy 要到帧末才真正销毁：先当场退订全局事件，这一帧里再来的推送不再刷新已关的界面
+            GameComponent.stopEventsIn(this.node);
             // 释放界面显示对象
             this.node.destroy();
             // 预载（preload）后没挂上层的节点不会走 onDestroy（引擎只给 onLoad 过的组件调），所以在这里放

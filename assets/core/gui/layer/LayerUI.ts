@@ -37,7 +37,7 @@ export class LayerUI extends Node {
     }
 
     protected onChildAdded(child: Node) {
-
+        LayerHelper.realign(child);
     }
 
     protected onChildRemoved(child: Node) {
@@ -79,11 +79,11 @@ export class LayerUI extends Node {
             // 检查缓存中是否存界面
             const state = this.initUIConfig(uiid, config, params);
             await this.load(state);
+            // 加载或初始化途中被 remove 了，不算失败，也不能把已取消的节点交给调用方再显示
+            if (!state.valid) return null!;
             if (state.node) {
                 return state.node;
             }
-            // 加载途中被 remove 了，不算失败
-            if (!state.valid) return null!;
             throw new Error(`路径为【${config.prefab}】的预制加载失败，节点为空`);
         }
         catch (error) {
@@ -121,8 +121,13 @@ export class LayerUI extends Node {
         // 首次加载：拉取预制并实例化节点
         if (state.node == null) {
             let timerId: any = null;
+            // 等待提示全局只有一个开关：只收自己开的那次，别处（断线重连、慢请求）开着的不能替它关
+            let waiting = false;
             try {
-                timerId = setTimeout(this.onLoadingTimeoutGui, oops.config.game.loadingTimeoutGui);
+                timerId = setTimeout(() => {
+                    waiting = true;
+                    oops.gui.waitOpen();
+                }, oops.config.game.loadingTimeoutGui);
 
                 const res = await resLoader.load(state.config.bundle!, state.config.prefab, Prefab);
 
@@ -151,14 +156,32 @@ export class LayerUI extends Node {
                     this.failure(state);
                 }
             }
+            catch (error) {
+                this.dropFailed(state);
+                throw error;
+            }
             finally {
                 if (timerId !== null) clearTimeout(timerId);
-                oops.gui.waitClose();
+                if (waiting) oops.gui.waitClose();
             }
         }
 
-        await this.uiInit(state);
+        try {
+            await this.uiInit(state);
+        }
+        catch (error) {
+            this.dropFailed(state);
+            throw error;
+        }
         return state.node;
+    }
+
+    /**
+     * 下载或初始化抛错：节点没挂上层就等不到 onChildRemoved，登记得在这里撤掉，
+     * 否则 has() 永远为真，Dialog 层一直堵着，带遮罩的登记还会让遮罩撤不掉。
+     */
+    private dropFailed(state: UIState) {
+        if (this.ui_nodes.get(state.config.prefab) === state) this.failure(state);
     }
 
     /**
@@ -172,8 +195,9 @@ export class LayerUI extends Node {
 
         const comp = state.node.getComponent(LayerUIElement)!;
         const r = await comp.add();
+        // onAdded 等待期间被关掉：不能再挂上层，也不能重新标成有效
+        if (!state.valid) return false;
         if (r) {
-            state.valid = true;
             if (!state.params.preload) {
                 state.params.preload = false;
                 state.node.parent = this;
@@ -189,14 +213,9 @@ export class LayerUI extends Node {
         return r;
     }
 
-    /** 加载超时事件*/
-    private onLoadingTimeoutGui() {
-        oops.gui.waitOpen();
-    }
-
-    /** 窗口关闭事件 */
+    /** 窗口关闭事件（只撤自己的登记：旧窗迟到的移除通知不能抹掉同一预制新开的窗） */
     protected closeUi(state: UIState) {
-        this.ui_nodes.delete(state.config.prefab);
+        if (this.ui_nodes.get(state.config.prefab) === state) this.ui_nodes.delete(state.config.prefab);
     }
 
     /** 打开窗口失败逻辑 */
@@ -213,6 +232,8 @@ export class LayerUI extends Node {
         const state = this.ui_nodes.get(prefabPath);
         if (state) {
             const release: boolean = state.config.destroy!;
+            // 没挂在本层（还在下载、预载还没挂上）：关掉时本层收不到 CHILD_REMOVED，登记要在这里撤
+            const unmounted = state.node?.parent !== this;
 
             // 不释放界面，缓存起来待下次使用
             if (release === false) {
@@ -227,6 +248,7 @@ export class LayerUI extends Node {
 
             // 标记为无效，防止异步加载完成后创建僵尸节点
             state.valid = false;
+            if (unmounted) this.closeUi(state);
         }
     }
 
@@ -260,17 +282,16 @@ export class LayerUI extends Node {
     /** 显示界面 */
     show(prefabPath: string) {
         const state = this.ui_nodes.get(prefabPath);
-        if (state) state.node.parent = this;
+        if (state?.valid && state.node) state.node.parent = this;
     }
 
     /**
      * 根据预制路径获取已打开界面的节点对象
+     * 预制还在下载时 {@link has} 已为真、这里给 null，只问开没开用 has，要节点就判空
      * @param prefabPath  预制路径
      */
-    get(prefabPath: string): Node {
-        const state = this.ui_nodes.get(prefabPath);
-        if (state) return state.node;
-        return null!;
+    get(prefabPath: string): Node | null {
+        return this.ui_nodes.get(prefabPath)?.node ?? null;
     }
 
     /**

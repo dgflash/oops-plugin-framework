@@ -1,5 +1,6 @@
 import { Node, NodePool, Vec3, warn } from 'cc';
 import { resLoader } from '../../common/loader/ResLoader';
+import { GameComponent } from '../../../module/common/GameComponent';
 import { ViewUtil } from '../../utils/ViewUtil';
 import { LayerCustomType } from './LayerEnum';
 import { GameElementParams, LayerGameElement } from './LayerGameElement';
@@ -93,6 +94,8 @@ export class LayerGame extends Node {
                         resLoader.release(lge.params.config.prefab!, lge.params.config.bundle);
                     }
                 }
+                // 同 LayerUIElement：destroy 到帧末才生效，先当场退订全局事件
+                GameComponent.stopEventsIn(node);
                 node.destroy();
             }
         }

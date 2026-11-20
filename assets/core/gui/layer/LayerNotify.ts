@@ -57,7 +57,10 @@ export class LayerNotify extends Node {
     private applyWait() {
         if (this.wait == null) return;
         if (this.waitWanted) {
-            if (this.wait.parent == null) this.wait.parent = this;
+            if (this.wait.parent == null) {
+                this.wait.parent = this;
+                LayerHelper.realign(this.wait);
+            }
         }
         else if (this.wait.parent) {
             this.wait.parent = null;
@@ -72,9 +75,9 @@ export class LayerNotify extends Node {
      */
     async toast(content: string, useI18n: boolean) {
         if (this.notify == null) {
-            this.notify = await ViewUtil.createPrefabNodeAsync(
-                GuiPromptConfig.Notify.path
-            );
+            const notify = await ViewUtil.createPrefabNodeAsync(GuiPromptConfig.Notify.path);
+            if (!notify) return;
+            this.notify = notify;
             this.notifyItem = this.notify.children[0];
             this.notifyItem.parent = null;
         }

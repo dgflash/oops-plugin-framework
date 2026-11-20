@@ -121,17 +121,16 @@ export default class VMLabel extends VMBase {
         if (!this.originText) return '';
         const res = this.originText.match(REGEX_ALL); // 匹配结果数组 [{{value}}，{{value}}，{{value}}]
         if (res == null) return ''; // 未匹配到文本
-        let str = this.originText; // 原始字符串模板 "name:{{0}} 或 name:{{0:fix2}}"
 
-        for (let i = 0; i < res.length; i++) {
-            const e = res[i];
+        // 原始字符串模板 "name:{{0}} 或 name:{{0:fix2}}"。一遍替换、用回调取值：
+        // 值里的 `$&` `$$` 不能被当成替换模式，值里带的 `{{n}}` 也不能再被下一个占位符替换
+        let i = 0;
+        return this.originText.replace(REGEX_ALL, e => {
             const arr = e.match(REGEX_SINGLE); // 匹配到的数组 [{{value}}, value]
             const indexNum = parseInt(arr![1] || '0') || 0; // 取出数组的 value 元素 转换成整数
-            const format = this.templateFormatArr[i]; // 格式化字符 的 配置参数
-            const getValue = this.templateValueArr[indexNum];
-            str = str.replace(e, this.getValueFromFormat(getValue, format));//从路径缓存值获取数据
-        }
-        return str;
+            const format = this.templateFormatArr[i++]; // 格式化字符 的 配置参数
+            return this.getValueFromFormat(this.templateValueArr[indexNum], format); // 从路径缓存值获取数据
+        });
     }
 
     /** 格式化字符串 */

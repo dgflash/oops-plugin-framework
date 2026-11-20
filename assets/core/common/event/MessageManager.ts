@@ -1,16 +1,17 @@
 import { log, warn } from 'cc';
 import { EventData } from './EventData';
-import { EventDataPool } from './EventDataPool';
 import type { ListenerFunc, ListenerFuncTyped } from './EventMessage';
 
 /**
  * 全局消息管理
  *
  * @性能优化说明
- * 1. 使用对象池管理 EventData 对象，减少 GC 压力
- * 2. 重复注册检测，避免同一监听器被多次添加
- * 3. Map 数据结构，提供 O(1) 的事件查找性能
- * 4. 支持精确移除单个监听器，避免误删
+ * 1. 重复注册检测，避免同一监听器被多次添加
+ * 2. Map 数据结构，提供 O(1) 的事件查找性能
+ * 3. 支持精确移除单个监听器，避免误删
+ *
+ * 派发按注册表快照逐个调；回调里同步 off 掉的监听记录当场清空、派发时跳过。
+ * 记录不回收复用：派发途中被 off 的记录若又被新 on 拿去，快照会按旧位置调到新监听。
  *
  * @内存管理注意事项
  * ⚠️ 重要：组件销毁时必须调用 off() 移除事件监听，否则会导致内存泄漏
@@ -82,7 +83,8 @@ export class MessageManager {
             const length = eds.length;
             for (let i = 0; i < length; i++) {
                 const ed = eds[i];
-                ed.listener.call(ed.object, event, data);
+                const listener = this.take(event as string, ed);
+                if (listener) listener.call(ed.object, event, data);
             }
         }
     }
@@ -105,7 +107,8 @@ export class MessageManager {
                 (async () => {
                     for (let i = 0; i < length; i++) {
                         const ed = eds[i];
-                        await Promise.resolve(ed.listener.call(ed.object, event, data));
+                        const listener = this.take(event as string, ed);
+                        if (listener) await Promise.resolve(listener.call(ed.object, event, data));
                     }
                     resolve();
                 })();
@@ -126,6 +129,20 @@ export class MessageManager {
      * @param object     侦听函数绑定的作用域对象
      */
     on(event: string, listener: ListenerFunc, object: object): void {
+        this.add(event, listener, object, false);
+    }
+
+    /**
+     * 监听一次事件，事件响应后，该监听自动移除；没触发前可按同一个 listener 用 off 移除
+     * @param event     事件名
+     * @param listener  事件触发回调方法
+     * @param object    侦听函数绑定的作用域对象
+     */
+    once(event: string, listener: ListenerFunc, object: object): void {
+        this.add(event, listener, object, true);
+    }
+
+    private add(event: string, listener: ListenerFunc, object: object, once: boolean): void {
         if (!event || !listener) {
             warn(`注册【${event}】事件的侦听器函数为空`);
             return;
@@ -147,26 +164,12 @@ export class MessageManager {
             }
         }
 
-        // 从对象池获取 EventData 对象
-        const data: EventData = EventDataPool.get();
+        const data = new EventData();
         data.event = event;
         data.listener = listener;
         data.object = object;
+        data.once = once;
         eds.push(data);
-    }
-
-    /**
-     * 监听一次事件，事件响应后，该监听自动移除
-     * @param event     事件名
-     * @param listener  事件触发回调方法
-     * @param object    侦听函数绑定的作用域对象
-     */
-    once(event: string, listener: ListenerFunc, object: object): void {
-        const _listener: any = ($event: string, ...$args: any[]) => {
-            this.off(event, _listener, object);
-            listener.call(object, $event, ...$args);
-        };
-        this.on(event, _listener, object);
     }
 
     /**
@@ -186,7 +189,7 @@ export class MessageManager {
         // 如果没有指定 listener，移除该事件的所有监听器
         if (!listener) {
             for (const bin of eds) {
-                EventDataPool.put(bin);
+                bin.reset();
             }
             this.events.delete(event);
             return;
@@ -197,7 +200,7 @@ export class MessageManager {
         for (let i = 0; i < length; i++) {
             const bin: EventData = eds[i];
             if (bin.listener == listener && bin.object == object) {
-                EventDataPool.put(bin);
+                bin.reset();
                 eds.splice(i, 1);
                 break;
             }
@@ -221,7 +224,8 @@ export class MessageManager {
             const length = eds.length;
             for (let i = 0; i < length; i++) {
                 const ed = eds[i];
-                ed.listener.call(ed.object, event, ...args);
+                const listener = this.take(event, ed);
+                if (listener) listener.call(ed.object, event, ...args);
             }
         }
     }
@@ -241,7 +245,8 @@ export class MessageManager {
                 (async () => {
                     for (let i = 0; i < length; i++) {
                         const ed = eds[i];
-                        await Promise.resolve(ed.listener.call(ed.object, event, ...args));
+                        const listener = this.take(event, ed);
+                        if (listener) await Promise.resolve(listener.call(ed.object, event, ...args));
                     }
                     resolve();
                 })();
@@ -252,6 +257,13 @@ export class MessageManager {
     }
 
     //#endregion
+
+    /** 派发到这条记录时要调的回调；已注销的为空，一次性的先注销 */
+    private take(event: string, ed: EventData): ListenerFunc | null {
+        const listener = ed.listener;
+        if (listener && ed.once) this.off(event, listener, ed.object);
+        return listener;
+    }
 }
 
 export const message = new MessageManager();
